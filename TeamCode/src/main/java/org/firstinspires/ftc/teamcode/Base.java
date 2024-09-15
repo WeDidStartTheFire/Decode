@@ -4,6 +4,7 @@ import static java.lang.Math.*;
 
 import androidx.annotation.Nullable;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.*;
 
 import com.qualcomm.hardware.rev.*;
@@ -11,12 +12,8 @@ import com.qualcomm.robotcore.eventloop.opmode.*;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.*;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.*;
-//import org.firstinspires.ftc.robotcore.external.tfod.*;
 import org.firstinspires.ftc.vision.*;
 import org.firstinspires.ftc.vision.apriltag.*;
-//import org.firstinspires.ftc.vision.tfod.*;
-import java.util.*;
 
 /** Base class that contains common methods and other configuration. */
 public abstract class Base extends LinearOpMode {
@@ -67,20 +64,13 @@ public abstract class Base extends LinearOpMode {
     static final double     B                       = 1.1375;
     static final double     M                       = 0.889;
     static final double     TURN_SPEED              = 0.5;
-    static final double[]   BOUNDARIES              = {0, 350};
-    static final double     CAR_WASH_POWER          = 1.0;
     private static final int WAIT_TIME              = 100;
                  double     velocity                = 2000;
-    public spike pos; // Team prop position
     public double x;
     public VisionPortal visionPortal;
     public String tfodModelName;
     private AprilTagProcessor tagProcessor;
 
-    // Define the labels recognized in the model for TFOD (must be in training order!)
-    private static final String[] LABELS = {
-            "prop",
-    };
     private static final IMU.Parameters IMU_PARAMETERS = new IMU.Parameters(new RevHubOrientationOnRobot(
             RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
             RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
@@ -94,9 +84,6 @@ public abstract class Base extends LinearOpMode {
 
     /** Directions. Options: left, right, forward, backward **/
     public enum dir { left, right, forward, backward }
-
-    /** Spike mark positions for the team prop. Options: left, middle, right, none **/
-    public enum spike { left, middle, right, none }
 
     /** Initializes all hardware devices on the robot.
      * @param teamColor The color of the team prop.
@@ -134,12 +121,12 @@ public abstract class Base extends LinearOpMode {
         try {pixelLockingServo = hardwareMap.get(Servo.class, "pixelFrontServo");}catch (IllegalArgumentException e){except("pixelFrontServo not connected");}
         try {trayTiltingServo = hardwareMap.get(Servo.class,"trayTiltingServo");}catch (IllegalArgumentException e){except("trayTiltingServo not connected");}
         try {touchSensor = hardwareMap.get(TouchSensor.class,"touchSensor");}catch (IllegalArgumentException e){except("touchSensor not connected");}
-       /* if (useCam) {
+       if (useCam) {
             try {
                 WebcamName cam = hardwareMap.get(WebcamName.class, "Webcam 1");
                 initProcessors(cam);
             } catch (IllegalArgumentException e) {except("Webcam not connected");}
-        }*/
+        }
 
         if (lf != null) {
             lf.setDirection(DcMotorEx.Direction.REVERSE);
@@ -255,12 +242,6 @@ public abstract class Base extends LinearOpMode {
               stopRobot();
             }
         }
-    }
-
-    /** Drives using encoder velocity. An inches value of zero will cause the robot to drive until manually stopped.
-     * @param inches Amount of inches to drive.**/
-    private void encoderDrive(double inches){
-        encoderDrive(inches, dir.forward);
     }
 
     /** Turns the robot a specified number of degrees. Positive values turn right,
@@ -414,27 +395,6 @@ public abstract class Base extends LinearOpMode {
      * @param tiles The value of tiles to be converted. **/
     public double tilesToInches(double tiles) {return tiles * TILE_LENGTH;}
 
-    /** Makes the car wash outtake for 1 second. **/
-    public void ejectPixel(double time) {
-        if (carWashMotor != null) {
-            print("Car Wash", "Ejecting Pixel");
-            update();
-            double t = runtime.milliseconds() + time;
-            carWashMotor.setPower(CAR_WASH_POWER);
-            while (opModeIsActive()) {
-                if (!(runtime.milliseconds() < t)) {
-                    break;
-                }
-            }
-            carWashMotor.setPower(0);
-        } else {
-            print("Car Wash", "Not Connected");
-            update();
-        }
-        sleep(WAIT_TIME);
-    }
-    public void ejectPixel() {ejectPixel(2000);}
-
     /** Stops all drive train motors on the robot. **/
     public void stopRobot() {
         if (lb != null) {
@@ -473,38 +433,6 @@ public abstract class Base extends LinearOpMode {
             sleep(WAIT_TIME);
         }
     }
-   /** Initializes the TFOD and April Tag processors. **/
-  /*  private void initProcessors(WebcamName camera){
-
-       tfod = new TfodProcessor.Builder()
-
-               .setModelAssetName(tfodModelName)
-               .setModelLabels(LABELS)
-
-                .build();
-        tagProcessor = new AprilTagProcessor.Builder()
-                .setDrawAxes(true)
-                .setDrawCubeProjection(true)
-                .setDrawTagID(true)
-                .setDrawTagOutline(true)
-                .build();
-
-        VisionPortal.Builder builder = new VisionPortal.Builder();
-
-        builder.setCamera(camera);
-
-        builder.enableLiveView(true);
-
-        builder.addProcessor(tfod);
-        builder.addProcessor(tagProcessor);
-
-        visionPortal = builder.build();
-
-        tfod.setMinResultConfidence(0.75f);
-
-
-    }
-*/
     /** Returns information about a tag with the specified ID if it is currently detected.
      * @param id ID of tag to detect.
      * @return Information about the tag detected. **/
@@ -560,78 +488,6 @@ public abstract class Base extends LinearOpMode {
         }
     }
 
-    /** Detects the team prop and returns its X coordinate relative to the camera.
-     * (-1 if none is detected)
-     * @return (double) The X coordinate of the team prop. **/
-   /* private double detectProp() {
-        List<Recognition> currentRecognitions = tfod.getRecognitions();
-        for (int i = 0; i < 5 && currentRecognitions.isEmpty(); i++) {
-            sleep(100);
-            currentRecognitions = tfod.getRecognitions();
-        }
-        x = -1;
-        double y;
-        // Step through the list of recognitions and display info for each one.
-        for (Recognition recognition : currentRecognitions) {
-            x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-            y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
-
-            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-            telemetry.addData("- Position", "%.0f / %.0f", x, y);
-            telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
-            update();
-        }   // end for() loop
-        return x;
-    }   // end method detectProp()
-*/
-    /** Uses predefined boundaries to return the spike mark that the team prop is on.
-     * @return The spike mark that the team prop is on. **/
-    /*
-    public spike findPos() {
-        s(2);
-        double x = detectProp();
-        if (x == -1){
-            return spike.left;
-        }
-        if (x > BOUNDARIES[0] && x < BOUNDARIES[1]){
-            return spike.middle;
-        }
-        else if (x >= BOUNDARIES[1]){
-            return spike.right;
-        } else if (x <= BOUNDARIES[0]){
-            return spike.left;
-        }
-        return spike.none;
-    }
-*/
-    /** Sets the AprilTag ID based on the spike location and robot color.
-     * @param location Location of the team prop
-     * @param teamColor Color of the team's alliance
-     * @return ID of the April Tag.
-     */
-    public int setID(spike location, color teamColor) {
-        int ID;
-        if (teamColor == color.blue) {
-            ID = 0;
-        } else {
-            ID = 3;
-        }
-        switch (location) {
-            case left:
-                ID += 1;
-                break;
-            case middle:
-                ID += 2;
-                break;
-            case right:
-                ID += 3;
-                break;
-            default:
-                break;
-        }
-        return ID;
-    }
-
     /** Sends an exception message to Driver Station telemetry.
      * @param e The exception. **/
     public final void except(Object e) {
@@ -641,34 +497,6 @@ public abstract class Base extends LinearOpMode {
     /** Sleep a specified number of seconds.
      * @param seconds The amount of seconds to sleep. **/
     public final void s (double seconds){ sleep((long) seconds * 1000);}
-
-    /** Place the purple pixel. **/
-    public void purplePixel() {
-        s(1);
-        drive(-18);
-        s(.5);
-        if (pos == spike.left) {
-            turn(-35);
-            drive(-11);
-            drive(11);
-            turn(35);
-        } else if (pos == spike.middle) {
-            drive(-15);
-            drive(15);
-            turn(0);
-        } else if (pos == spike.right) {
-            turn(35);
-            drive(-13);
-            drive(13);
-            turn(-35);
-        }
-        s(.5);
-//        turn(180 * modifier);
-        drive(17);
-//*        setSpeed(1000);
-//*       drive(10);
-//*      setSpeed(2000);
-    }
 
     /** Moves the lift motor a specified number of inches.
      * @param encoders Number of encoders to turn the motor.
@@ -703,22 +531,23 @@ public abstract class Base extends LinearOpMode {
         }
     }
 
-    public void dropPixels() {
-        if (pixelLockingServo != null && trayTiltingServo != null) {
-            pixelLockingServo.setPosition(0);
-            s(1);
-            trayTiltingServo.setPosition(0.5);
-            s(1);
-            pixelLockingServo.setPosition(1);
-            s(1);
-            trayTiltingServo.setPosition(0);
-            s(1);
-        } else {
-            print("ERROR", "Pixel Locking Servo or Tray Tilting Servo not connected");
-            s(0.5);
-        }
-    }
+    private void initProcessors(WebcamName camera){
 
+        tagProcessor = new AprilTagProcessor.Builder()
+                .setDrawAxes(true)
+                .setDrawCubeProjection(true)
+                .setDrawTagID(true)
+                .setDrawTagOutline(true)
+                .build();
+
+        VisionPortal.Builder builder = new VisionPortal.Builder();
+
+        builder.setCamera(camera);
+        builder.enableLiveView(true);
+        builder.addProcessor(tagProcessor);
+
+        visionPortal = builder.build();
+    }
     /** A less space consuming way to add telemetry.
     * Format: "(caption): (content)" 
     * @param quick If true, instantly update the telemetry. **/

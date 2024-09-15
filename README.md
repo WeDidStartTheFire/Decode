@@ -1,7 +1,4 @@
-<<<<<<< HEAD
 <h1>We Did Start The Fire's (team 16657) CenterStage Code</h1>
-=======
-## NOTICE
 
 This repository contains the public FTC SDK for the INTO THE DEEP (2024-2025) competition season.
 

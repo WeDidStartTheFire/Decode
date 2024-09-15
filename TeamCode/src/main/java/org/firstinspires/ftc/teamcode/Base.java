@@ -12,17 +12,17 @@ import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.*;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.*;
-import org.firstinspires.ftc.robotcore.external.tfod.*;
+//import org.firstinspires.ftc.robotcore.external.tfod.*;
 import org.firstinspires.ftc.vision.*;
 import org.firstinspires.ftc.vision.apriltag.*;
-import org.firstinspires.ftc.vision.tfod.*;
+//import org.firstinspires.ftc.vision.tfod.*;
 import java.util.*;
 
 /** Base class that contains common methods and other configuration. */
 public abstract class Base extends LinearOpMode {
     private static final double LIFT_VEL = 1500;
     public static final double GOAL_ENCODERS = 2000;
-    private TfodProcessor tfod;
+//    private TfodProcessor tfod;
     private static final ElapsedTime runtime = new ElapsedTime();
     // All non-primitive data types initialize to null on default.
     public DcMotorEx lf, lb, rf, rb, carWashMotor, pixelLiftingMotor;
@@ -134,12 +134,12 @@ public abstract class Base extends LinearOpMode {
         try {pixelLockingServo = hardwareMap.get(Servo.class, "pixelFrontServo");}catch (IllegalArgumentException e){except("pixelFrontServo not connected");}
         try {trayTiltingServo = hardwareMap.get(Servo.class,"trayTiltingServo");}catch (IllegalArgumentException e){except("trayTiltingServo not connected");}
         try {touchSensor = hardwareMap.get(TouchSensor.class,"touchSensor");}catch (IllegalArgumentException e){except("touchSensor not connected");}
-        if (useCam) {
+       /* if (useCam) {
             try {
                 WebcamName cam = hardwareMap.get(WebcamName.class, "Webcam 1");
                 initProcessors(cam);
             } catch (IllegalArgumentException e) {except("Webcam not connected");}
-        }
+        }*/
 
         if (lf != null) {
             lf.setDirection(DcMotorEx.Direction.REVERSE);
@@ -474,12 +474,12 @@ public abstract class Base extends LinearOpMode {
         }
     }
    /** Initializes the TFOD and April Tag processors. **/
-    private void initProcessors(WebcamName camera){
+  /*  private void initProcessors(WebcamName camera){
 
-        tfod = new TfodProcessor.Builder()
+       tfod = new TfodProcessor.Builder()
 
-                .setModelAssetName(tfodModelName)
-                .setModelLabels(LABELS)
+               .setModelAssetName(tfodModelName)
+               .setModelLabels(LABELS)
 
                 .build();
         tagProcessor = new AprilTagProcessor.Builder()
@@ -504,7 +504,7 @@ public abstract class Base extends LinearOpMode {
 
 
     }
-
+*/
     /** Returns information about a tag with the specified ID if it is currently detected.
      * @param id ID of tag to detect.
      * @return Information about the tag detected. **/
@@ -563,7 +563,7 @@ public abstract class Base extends LinearOpMode {
     /** Detects the team prop and returns its X coordinate relative to the camera.
      * (-1 if none is detected)
      * @return (double) The X coordinate of the team prop. **/
-    private double detectProp() {
+   /* private double detectProp() {
         List<Recognition> currentRecognitions = tfod.getRecognitions();
         for (int i = 0; i < 5 && currentRecognitions.isEmpty(); i++) {
             sleep(100);
@@ -583,9 +583,10 @@ public abstract class Base extends LinearOpMode {
         }   // end for() loop
         return x;
     }   // end method detectProp()
-
+*/
     /** Uses predefined boundaries to return the spike mark that the team prop is on.
      * @return The spike mark that the team prop is on. **/
+    /*
     public spike findPos() {
         s(2);
         double x = detectProp();
@@ -602,7 +603,7 @@ public abstract class Base extends LinearOpMode {
         }
         return spike.none;
     }
-
+*/
     /** Sets the AprilTag ID based on the spike location and robot color.
      * @param location Location of the team prop
      * @param teamColor Color of the team's alliance

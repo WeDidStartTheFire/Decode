@@ -8,14 +8,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class TeleOp_OneGamepad extends Base {
 
     // Declare OpMode members for each of the 4 motors.
-    boolean wasY = false;
-    boolean wasX = false;
-    boolean wasLT = false;
     double axial = 0.0;
     double lateral = 0.0;
     double yaw = 0.0;
-    boolean TS = false;
-    boolean wasTS = false;
+    boolean touchSensorPressed = false;
+    boolean touchSensorWasPressed = false;
     double leftFrontPower = 0.0;
     double leftBackPower = 0.0;
     double rightFrontPower = 0.0;
@@ -24,8 +21,6 @@ public class TeleOp_OneGamepad extends Base {
     static final double SPEED_MULTIPLIER = 0.75;
     static final double BASE_TURN_SPEED = 2.5;
     double slowdownMultiplier = 0.0;
-    static final double CAR_WASH_POWER = 1.0;
-    static final double[] BACK_BOUNDS = {0.3, 0.6};
 
     @Override
     public void runOpMode() {
@@ -70,9 +65,9 @@ public class TeleOp_OneGamepad extends Base {
                     pixelLiftingMotor.setPower(0);
                 } else {
                     if (touchSensor != null) {
-                        TS = touchSensor.isPressed();
+                        touchSensorPressed = touchSensor.isPressed();
                     } else {
-                        TS = false;
+                        touchSensorPressed = false;
                         addTelemetry("Touch sensor not connected");
                     }
                     if (gamepad2.dpad_up && !gamepad2.dpad_down) {
@@ -84,7 +79,7 @@ public class TeleOp_OneGamepad extends Base {
                             addTelemetry("pixelLiftingMotor no longer moving");
                         }
                     }
-                    if (gamepad2.dpad_down && !gamepad2.dpad_up && !TS) {
+                    if (gamepad2.dpad_down && !gamepad2.dpad_up && !touchSensorPressed) {
                         if (pixelLiftingMotor.getCurrentPosition() > 0) {
                             pixelLiftingMotor.setPower(-0.75);
                             addTelemetry("pixelLiftingMotor now moving");
@@ -96,84 +91,19 @@ public class TeleOp_OneGamepad extends Base {
                 }
             }
 
-            // Logic for turning car wash on and off
-            if (carWashMotor != null) {
-                if (!gamepad1.a && !gamepad1.b) {
-                    carWashMotor.setPower(0);
-                } else {
-                    if (gamepad1.a) {
-                        carWashMotor.setPower(CAR_WASH_POWER);
-                        addTelemetry("carWashMotor now moving forward");
-                    } else if (gamepad1.b) {
-                        carWashMotor.setPower(-CAR_WASH_POWER);
-                        addTelemetry("carWashMotor now moving backward");
-                    }
-                }
-            }
-
-            // Logic for pixel box rotation
-            if (trayTiltingServo != null) {
-                boolean isLT = (gamepad2.left_trigger > 0.25);
-                if (isLT && !wasLT) {
-                    if (trayTiltingServo.getPosition() != 0) {
-                        trayTiltingServo.setPosition(0);
-                        addTelemetry("Set trayTiltingServo to 0");
+            // Logic for touch sensor
+            if (touchSensor != null) {
+                if (!touchSensorWasPressed) {
+                    if (touchSensor.isPressed()) {
+                        pixelLiftingMotor.setPower(0);
+                        pixelLiftingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        touchSensorWasPressed = true;
                     } else {
-                        trayTiltingServo.setPosition(1);
-                        addTelemetry("Set trayTiltingServo to 1");
+                        touchSensorWasPressed = false;
                     }
+                } else if (!touchSensor.isPressed()) {
+                    touchSensorWasPressed = false;
                 }
-                wasLT = isLT;
-            }
-
-            // Logic for back pixel locking servo
-            if (pixelBackServo != null) {
-                if (gamepad2.y && !wasY) {
-                    if (pixelBackServo.getPosition() > BACK_BOUNDS[1] - 0.05 && pixelBackServo.getPosition() < BACK_BOUNDS[1] + 0.05) {
-                        pixelBackServo.setPosition(BACK_BOUNDS[0]);
-                        addTelemetry("Set pixelBackServo to 0");
-                    } else {
-                        pixelBackServo.setPosition(BACK_BOUNDS[1]);
-                        addTelemetry("Set pixelBackServo to 0.6");
-                    }
-                }
-                wasY = gamepad2.y;
-            }
-
-            // Logic for front pixel locking servo
-            if (pixelLockingServo != null) {
-                if (gamepad2.x && !wasX) {
-                    if (pixelLockingServo.getPosition() > 0.83 - 0.05 && pixelLockingServo.getPosition() < 0.83 + 0.05) {
-                        pixelLockingServo.setPosition(0.5);
-                        addTelemetry("Set pixelFrontServo to 0.5");
-                    } else {
-                        pixelLockingServo.setPosition(0.83);
-                        addTelemetry("Set pixelFrontServo to 0.83");
-                    }
-                }
-                wasX = gamepad2.x;
-            }
-
-            // Logic for drone servo
-            if (droneServo != null) {
-                if (gamepad1.left_bumper && gamepad1.right_bumper) {
-                    droneServo.setPosition(0);
-                }
-            }
-        }
-
-        // Logic for touch sensor
-        if (touchSensor != null) {
-            if (!wasTS) {
-                if (touchSensor.isPressed()) {
-                    pixelLiftingMotor.setPower(0);
-                    pixelLiftingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    wasTS = true;
-                } else {
-                    wasTS = false;
-                }
-            } else if (!touchSensor.isPressed()) {
-                wasTS = false;
             }
         }
     }

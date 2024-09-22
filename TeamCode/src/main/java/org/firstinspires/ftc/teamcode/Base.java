@@ -228,7 +228,7 @@ public abstract class Base extends LinearOpMode {
      * Initializes all hardware devices on the robot. Note: When called without useCam manually set,
      * useCam defaults to true.
      *
-     * @param teamColor The color of the team prop. *
+     * @param teamColor The color of the team prop.
      */
     public void setup(color teamColor) {
         setup(teamColor, true);
@@ -379,6 +379,11 @@ public abstract class Base extends LinearOpMode {
         sleep(WAIT_TIME);
     }
 
+    /**
+     * Sets the mode of all drive train motors.
+     *
+     * @param mode The mode to set the motors to.
+     */
     private void setMotorModes(DcMotor.RunMode mode) {
         if (lb != null) {
             lf.setMode(mode);
@@ -388,6 +393,13 @@ public abstract class Base extends LinearOpMode {
         }
     }
 
+    /**
+     * Sets the power of all drive train motors.
+     *
+     * @param lbPower Left back motor power.
+     * @param rbPower Right back motor power.
+     * @param lfPower Left front motor power.
+     */
     private void setMotorPowers(double lbPower, double rbPower, double lfPower, double rfPower) {
         if (lb != null) {
             lb.setPower(lbPower);
@@ -497,7 +509,7 @@ public abstract class Base extends LinearOpMode {
      * Drives the specified number of inches. Negative values will drive backwards. An inches value
      * of zero will cause the robot to drive until manually stopped.
      *
-     * @param inches Amount of inches to drive. *
+     * @param inches Amount of inches to drive.
      */
     public void drive(double inches) {
         drive(inches, dir.forward);
@@ -506,7 +518,7 @@ public abstract class Base extends LinearOpMode {
     /**
      * Converts an amount of tiles on the game board to an amount of inches.
      *
-     * @param tiles The value of tiles to be converted. *
+     * @param tiles The value of tiles to be converted.
      */
     public double tilesToInches(double tiles) {
         return tiles * TILE_LENGTH;
@@ -547,7 +559,7 @@ public abstract class Base extends LinearOpMode {
      * Returns information about a tag with the specified ID if it is currently detected.
      *
      * @param id ID of tag to detect.
-     * @return Information about the tag detected. *
+     * @return Information about the tag detected.
      */
     @Nullable
     public AprilTagDetection tagDetections(int id) {
@@ -566,7 +578,7 @@ public abstract class Base extends LinearOpMode {
      *
      * @param id ID of tag to detect.
      * @param timeout Detection timeout (seconds).
-     * @return Information about the tag detected. *
+     * @return Information about the tag detected.
      */
     @Nullable
     public AprilTagDetection tagDetections(int id, double timeout) {
@@ -616,7 +628,7 @@ public abstract class Base extends LinearOpMode {
     /**
      * Sends an exception message to Driver Station telemetry.
      *
-     * @param e The exception. *
+     * @param e The exception.
      */
     public final void except(Object e) {
         print("Exception", e);
@@ -625,7 +637,7 @@ public abstract class Base extends LinearOpMode {
     /**
      * Sleep a specified number of seconds.
      *
-     * @param seconds The amount of seconds to sleep. *
+     * @param seconds The amount of seconds to sleep.
      */
     public final void s(double seconds) {
         sleep((long) seconds * 1000);
@@ -656,6 +668,7 @@ public abstract class Base extends LinearOpMode {
         }
     }
 
+    /** Retracts the lift motor. */
     public void retractLift() {
         if (pixelLiftingMotor != null) {
             pixelLiftingMotor.setVelocity(-LIFT_VEL);
@@ -674,6 +687,11 @@ public abstract class Base extends LinearOpMode {
         }
     }
 
+    /**
+     * Initializes the AprilTag processor.
+     *
+     * @param camera The camera to use.
+     */
     private void initProcessors(WebcamName camera) {
 
         tagProcessor =
@@ -696,7 +714,7 @@ public abstract class Base extends LinearOpMode {
     /**
      * A less space consuming way to add telemetry. Format: "(caption): (content)"
      *
-     * @param quick If true, instantly update the telemetry. *
+     * @param quick If true, instantly update the telemetry.
      */
     public void print(String caption, Object content, boolean quick) {
         telemetry.addData(caption, content);

@@ -195,17 +195,8 @@ public abstract class Base extends LinearOpMode {
 
         // Ensure that the OpMode is still active
         if (opModeIsActive() && lf != null) {
-            lb.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            rb.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            lf.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            rf.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            // Determine new target position, and pass to motor controller
-
-            // Turn On RUN_TO_POSITION for front motors
-            lb.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-            rb.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-            lf.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-            rf.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            setMotorModes(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            setMotorModes(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
             // reset the timeout time and start motion.
             if (inches != 0) {
@@ -326,15 +317,9 @@ public abstract class Base extends LinearOpMode {
     public void strafe(double inches, dir direction) {
 
         if (opModeIsActive() && lf != null) {
-            lb.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            rb.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            lf.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            rf.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            setMotorModes(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
-            lb.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-            rb.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-            lf.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-            rf.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            setMotorModes(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
             double d = 0;
 
@@ -418,10 +403,7 @@ public abstract class Base extends LinearOpMode {
     /** Stops all drive train motors on the robot. **/
     public void stopRobot() {
         if (lb != null) {
-            lb.setPower(0);
-            rb.setPower(0);
-            lf.setPower(0);
-            rf.setPower(0);
+            setMotorPowers(0, 0, 0, 0);
             lb.setVelocity(0);
             rb.setVelocity(0);
             lf.setVelocity(0);
@@ -434,10 +416,7 @@ public abstract class Base extends LinearOpMode {
             rf.setTargetPosition(rf.getCurrentPosition());
 
             // Turn On RUN_TO_POSITION
-            lb.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            rb.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            lf.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            rf.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            setMotorModes(DcMotorEx.RunMode.RUN_TO_POSITION);
 
             // Stop all motion
             lb.setTargetPosition(lb.getCurrentPosition());
@@ -446,10 +425,8 @@ public abstract class Base extends LinearOpMode {
             rf.setTargetPosition(rf.getCurrentPosition());
 
             // Turn off RUN_TO_POSITION
-            lb.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-            rb.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-            lf.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-            rf.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            setMotorModes(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
             sleep(WAIT_TIME);
         }
     }

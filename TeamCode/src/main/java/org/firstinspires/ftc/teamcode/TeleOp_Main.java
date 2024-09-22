@@ -129,7 +129,9 @@ public class TeleOp_Main extends Base {
 
     /** Adds information messages to telemetry and updates it */
     public void updateAll() {
-        telemetry.addData("Pixel Lifting Motor Position", pixelLiftingMotor.getCurrentPosition());
+        if (pixelLiftingMotor != null) {
+            telemetry.addData("Pixel Lifting Motor Position", pixelLiftingMotor.getCurrentPosition());
+        }
         if (trayTiltingServo == null) {
             telemetry.addData("Tray Tilting Servo", "Disconnected");
         }

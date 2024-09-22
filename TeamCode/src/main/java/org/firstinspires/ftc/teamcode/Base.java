@@ -430,6 +430,7 @@ public abstract class Base extends LinearOpMode {
             sleep(WAIT_TIME);
         }
     }
+
     /** Returns information about a tag with the specified ID if it is currently detected.
      * @param id ID of tag to detect.
      * @return Information about the tag detected. **/

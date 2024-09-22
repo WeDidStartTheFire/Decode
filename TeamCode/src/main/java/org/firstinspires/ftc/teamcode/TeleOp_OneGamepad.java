@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-//@TeleOp(name = "One Gamepad", group = "CenterStage")
+// @TeleOp(name = "One Gamepad", group = "CenterStage")
 @Disabled
 public class TeleOp_OneGamepad extends Base {
 
@@ -61,7 +61,8 @@ public class TeleOp_OneGamepad extends Base {
 
             // Logic for moving pixel lift
             if (pixelLiftingMotor != null) {
-                if (!gamepad2.dpad_up && !gamepad2.dpad_down || gamepad2.dpad_down && gamepad2.dpad_up) {
+                if (!gamepad2.dpad_up && !gamepad2.dpad_down
+                        || gamepad2.dpad_down && gamepad2.dpad_up) {
                     pixelLiftingMotor.setPower(0);
                 } else {
                     if (touchSensor != null) {
@@ -107,10 +108,11 @@ public class TeleOp_OneGamepad extends Base {
             }
         }
     }
-    public void addTelemetry(String message){
-        telemetry.addData("Last Action",message); // Last Action: message
+
+    public void addTelemetry(String message) {
+        telemetry.addData("Last Action", message); // Last Action: message
         telemetry.addData("Pixel Lifting Motor Position", pixelLiftingMotor.getCurrentPosition());
-        if(trayTiltingServo == null) {
+        if (trayTiltingServo == null) {
             telemetry.addData("Tray Tilting Servo", "Disconnected");
         }
         if (pixelLockingServo == null) {

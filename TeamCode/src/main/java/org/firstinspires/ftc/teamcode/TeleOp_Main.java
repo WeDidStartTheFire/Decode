@@ -23,13 +23,18 @@ public class TeleOp_Main extends Base {
     @Override
     public void runOpMode() {
         setup();
-        if (trayTiltingServo != null) { trayTiltingServo.setPosition(0); }
-        if (pixelLockingServo != null) { pixelLockingServo.setPosition(1); }
+        if (trayTiltingServo != null) {
+            trayTiltingServo.setPosition(0);
+        }
+        if (pixelLockingServo != null) {
+            pixelLockingServo.setPosition(1);
+        }
 
         while (opModeIsActive()) {
             // Slows down movement for better handling the more the right trigger is held down
             slowdownMultiplier = (1.0 - gamepad1.right_trigger);
-//            if (gamepad1.left_stick_button || gamepad1.right_stick_button) { slowdownMultiplier *= 0.5; }
+            //            if (gamepad1.left_stick_button || gamepad1.right_stick_button) {
+            // slowdownMultiplier *= 0.5; }
 
             axial = ((-gamepad1.left_stick_y * SPEED_MULTIPLIER) * slowdownMultiplier);
             lateral = ((gamepad1.left_stick_x * SPEED_MULTIPLIER) * slowdownMultiplier);
@@ -64,7 +69,8 @@ public class TeleOp_Main extends Base {
             // Logic to raise or lower the lift
             if (pixelLiftingMotor != null) {
                 addTelemetry("Current position: " + pixelLiftingMotor.getCurrentPosition());
-                if (!gamepad2.dpad_up && !gamepad2.dpad_down || gamepad2.dpad_down && gamepad2.dpad_up) {
+                if (!gamepad2.dpad_up && !gamepad2.dpad_down
+                        || gamepad2.dpad_down && gamepad2.dpad_up) {
                     pixelLiftingMotor.setPower(0);
                 } else {
                     if (touchSensor != null) {
@@ -114,18 +120,17 @@ public class TeleOp_Main extends Base {
 
     /**
      * Adds telemetry data from the last action
+     *
      * @param message Message to be sent
      */
-    public void addTelemetry(String message){
+    public void addTelemetry(String message) {
         telemetry.addData("Last Action", message);
     }
 
-    /**
-     * Adds information messages to telemetry and updates it
-     */
+    /** Adds information messages to telemetry and updates it */
     public void updateAll() {
         telemetry.addData("Pixel Lifting Motor Position", pixelLiftingMotor.getCurrentPosition());
-        if(trayTiltingServo == null) {
+        if (trayTiltingServo == null) {
             telemetry.addData("Tray Tilting Servo", "Disconnected");
         }
         if (pixelLockingServo == null) {
@@ -135,6 +140,5 @@ public class TeleOp_Main extends Base {
             telemetry.addData("Touch Sensor", "Disconnected");
         }
         telemetry.update();
-
     }
 }

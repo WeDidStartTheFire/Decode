@@ -63,8 +63,10 @@ public class SampleTankDrive extends TankDrive {
 
     private TrajectorySequenceRunner trajectorySequenceRunner;
 
-    private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
-    private static final TrajectoryAccelerationConstraint accelConstraint = getAccelerationConstraint(MAX_ACCEL);
+    private static final TrajectoryVelocityConstraint VEL_CONSTRAINT =
+            getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
+    private static final TrajectoryAccelerationConstraint accelConstraint =
+            getAccelerationConstraint(MAX_ACCEL);
 
     private TrajectoryFollower follower;
 
@@ -76,8 +78,9 @@ public class SampleTankDrive extends TankDrive {
     public SampleTankDrive(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH);
 
-        follower = new TankPIDVAFollower(AXIAL_PID, CROSS_TRACK_PID,
-                new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
+        follower =
+                new TankPIDVAFollower(
+                        AXIAL_PID, CROSS_TRACK_PID, new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
 
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
 
@@ -89,8 +92,10 @@ public class SampleTankDrive extends TankDrive {
 
         // TODO: adjust the names of the following hardware devices to match your configuration
         imu = hardwareMap.get(IMU.class, "imu");
-        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                DriveConstants.LOGO_FACING_DIR, DriveConstants.USB_FACING_DIR));
+        IMU.Parameters parameters =
+                new IMU.Parameters(
+                        new RevHubOrientationOnRobot(
+                                DriveConstants.LOGO_FACING_DIR, DriveConstants.USB_FACING_DIR));
         imu.initialize(parameters);
 
         // add/remove motors depending on your robot (e.g., 6WD)
@@ -124,10 +129,15 @@ public class SampleTankDrive extends TankDrive {
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
 
-        trajectorySequenceRunner = new TrajectorySequenceRunner(
-                follower, HEADING_PID, batteryVoltageSensor,
-                new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()
-        );
+        trajectorySequenceRunner =
+                new TrajectorySequenceRunner(
+                        follower,
+                        HEADING_PID,
+                        batteryVoltageSensor,
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        new ArrayList<>());
     }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
@@ -144,18 +154,12 @@ public class SampleTankDrive extends TankDrive {
 
     public TrajectorySequenceBuilder trajectorySequenceBuilder(Pose2d startPose) {
         return new TrajectorySequenceBuilder(
-                startPose,
-                VEL_CONSTRAINT, accelConstraint,
-                MAX_ANG_VEL, MAX_ANG_ACCEL
-        );
+                startPose, VEL_CONSTRAINT, accelConstraint, MAX_ANG_VEL, MAX_ANG_ACCEL);
     }
 
     public void turnAsync(double angle) {
         trajectorySequenceRunner.followTrajectorySequenceAsync(
-                trajectorySequenceBuilder(getPoseEstimate())
-                        .turn(angle)
-                        .build()
-        );
+                trajectorySequenceBuilder(getPoseEstimate()).turn(angle).build());
     }
 
     public void turn(double angle) {
@@ -165,10 +169,7 @@ public class SampleTankDrive extends TankDrive {
 
     public void followTrajectoryAsync(Trajectory trajectory) {
         trajectorySequenceRunner.followTrajectorySequenceAsync(
-                trajectorySequenceBuilder(trajectory.start())
-                        .addTrajectory(trajectory)
-                        .build()
-        );
+                trajectorySequenceBuilder(trajectory.start()).addTrajectory(trajectory).build());
     }
 
     public void followTrajectory(Trajectory trajectory) {
@@ -189,7 +190,6 @@ public class SampleTankDrive extends TankDrive {
         return trajectorySequenceRunner.getLastPoseError();
     }
 
-
     public void update() {
         updatePoseEstimate();
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
@@ -197,8 +197,7 @@ public class SampleTankDrive extends TankDrive {
     }
 
     public void waitForIdle() {
-        while (!Thread.currentThread().isInterrupted() && isBusy())
-            update();
+        while (!Thread.currentThread().isInterrupted() && isBusy()) update();
     }
 
     public boolean isBusy() {
@@ -218,10 +217,12 @@ public class SampleTankDrive extends TankDrive {
     }
 
     public void setPIDFCoefficients(DcMotor.RunMode runMode, PIDFCoefficients coefficients) {
-        PIDFCoefficients compensatedCoefficients = new PIDFCoefficients(
-                coefficients.p, coefficients.i, coefficients.d,
-                coefficients.f * 12 / batteryVoltageSensor.getVoltage()
-        );
+        PIDFCoefficients compensatedCoefficients =
+                new PIDFCoefficients(
+                        coefficients.p,
+                        coefficients.i,
+                        coefficients.d,
+                        coefficients.f * 12 / batteryVoltageSensor.getVoltage());
         for (DcMotorEx motor : motors) {
             motor.setPIDFCoefficients(runMode, compensatedCoefficients);
         }
@@ -232,14 +233,16 @@ public class SampleTankDrive extends TankDrive {
 
         if (Math.abs(drivePower.getX()) + Math.abs(drivePower.getHeading()) > 1) {
             // re-normalize the powers according to the weights
-            double denom = VX_WEIGHT * Math.abs(drivePower.getX())
-                    + OMEGA_WEIGHT * Math.abs(drivePower.getHeading());
+            double denom =
+                    VX_WEIGHT * Math.abs(drivePower.getX())
+                            + OMEGA_WEIGHT * Math.abs(drivePower.getHeading());
 
-            vel = new Pose2d(
-                    VX_WEIGHT * drivePower.getX(),
-                    0,
-                    OMEGA_WEIGHT * drivePower.getHeading()
-            ).div(denom);
+            vel =
+                    new Pose2d(
+                                    VX_WEIGHT * drivePower.getX(),
+                                    0,
+                                    OMEGA_WEIGHT * drivePower.getHeading())
+                            .div(denom);
         } else {
             // Ensure the y axis is zeroed out.
             vel = new Pose2d(drivePower.getX(), 0, drivePower.getHeading());
@@ -292,11 +295,12 @@ public class SampleTankDrive extends TankDrive {
         return (double) imu.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
     }
 
-    public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {
-        return new MinVelocityConstraint(Arrays.asList(
-                new AngularVelocityConstraint(maxAngularVel),
-                new TankVelocityConstraint(maxVel, trackWidth)
-        ));
+    public static TrajectoryVelocityConstraint getVelocityConstraint(
+            double maxVel, double maxAngularVel, double trackWidth) {
+        return new MinVelocityConstraint(
+                Arrays.asList(
+                        new AngularVelocityConstraint(maxAngularVel),
+                        new TankVelocityConstraint(maxVel, trackWidth)));
     }
 
     public static TrajectoryAccelerationConstraint getAccelerationConstraint(double maxAccel) {

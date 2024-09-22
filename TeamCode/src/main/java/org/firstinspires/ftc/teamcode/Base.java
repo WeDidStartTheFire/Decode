@@ -39,19 +39,22 @@ public abstract class Base extends LinearOpMode {
     public String           hubName;
     public static final String SMALL_WHEEL_ROBOT_NAME = "Expansion Hub 2";
     public static final String LARGE_WHEEL_ROBOT_NAME = "Control Hub";
+    public static final double SMALL_WHEEL_DIAMETER = 3.77953;
+    public static final double LARGE_WHEEL_DIAMETER = 5.511811;
     static double           WHEEL_DIAMETER_INCHES;
     {
         try {
             hubName = hardwareMap.get(String.class, "Control Hub");
             print("Hub Name", hubName);
             if (SMALL_WHEEL_ROBOT_NAME.equals(hubName)) {
-                WHEEL_DIAMETER_INCHES = 3.77953;     // For figuring out circumference
+                WHEEL_DIAMETER_INCHES = SMALL_WHEEL_DIAMETER;     // For figuring out circumference
             } else if (LARGE_WHEEL_ROBOT_NAME.equals(hubName)) {
-                WHEEL_DIAMETER_INCHES = 5.511811;     // For figuring out circumference
+                WHEEL_DIAMETER_INCHES = LARGE_WHEEL_DIAMETER;     // For figuring out circumference
             } else {
-                WHEEL_DIAMETER_INCHES = 3.77953;     // Default value
+                WHEEL_DIAMETER_INCHES = SMALL_WHEEL_DIAMETER;     // Default value
             }
         } catch (Exception e) {
+            WHEEL_DIAMETER_INCHES = SMALL_WHEEL_DIAMETER;
             telemetry.addData("Error", e);
             telemetry.update();
         }
@@ -273,10 +276,7 @@ public abstract class Base extends LinearOpMode {
             difference = min(abs(initialGoalAngle - currentAngle), abs(correctedGoalAngle - currentAngle));
             turnModifier = min(1, (difference + 3) / 30);
             turnPower = degrees / abs(degrees) * TURN_SPEED * turnModifier * direct;
-            lb.setPower(-turnPower);
-            rb.setPower(turnPower);
-            lf.setPower(-turnPower);
-            rf.setPower(turnPower);
+            setMotorPowers(-turnPower, turnPower, -turnPower, turnPower);
             currentAngle = imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
             difference = min(abs(initialGoalAngle - currentAngle), abs(correctedGoalAngle - currentAngle));
             print("Corrected Goal", correctedGoalAngle);
@@ -290,6 +290,26 @@ public abstract class Base extends LinearOpMode {
         imu.resetYaw();
         sleep(WAIT_TIME);
     }
+
+
+    private void setMotorModes(DcMotor.RunMode mode) {
+        if (lb != null) {
+            lf.setMode(mode);
+            lb.setMode(mode);
+            rf.setMode(mode);
+            rb.setMode(mode);
+        }
+    }
+
+    private void setMotorPowers(double lbPower, double rbPower, double lfPower, double rfPower) {
+        if (lb != null) {
+            lb.setPower(lbPower);
+            rb.setPower(rbPower);
+            lf.setPower(lfPower);
+            rf.setPower(rfPower);
+        }
+    }
+
 
     /** Turns the robot a specified number of degrees. Positive values turn right,
      * negative values turn left. A degrees value of zero will cause the robot to turn until manually stopped.

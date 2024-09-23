@@ -732,7 +732,7 @@ public abstract class Base extends LinearOpMode {
     public void update() {
         telemetry.update();
     }
-    
+
     /**
      * Adds telemetry data from the last action
      *
@@ -741,11 +741,12 @@ public abstract class Base extends LinearOpMode {
     public void addTelemetry(String message) {
         telemetry.addData("Last Action", message);
     }
-    
+
     /** Adds information messages to telemetry and updates it */
     public void updateAll() {
         if (pixelLiftingMotor != null) {
-            telemetry.addData("Pixel Lifting Motor Position", pixelLiftingMotor.getCurrentPosition());
+            telemetry.addData(
+                    "Pixel Lifting Motor Position", pixelLiftingMotor.getCurrentPosition());
         }
         if (trayTiltingServo == null) {
             telemetry.addData("Tray Tilting Servo", "Disconnected");

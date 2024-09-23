@@ -143,7 +143,7 @@ public class TeleOp_Old extends Base {
                     addTelemetry("Set droneServo to 0");
                 }
             }
-            
+
             if (touchSensor != null && pixelLiftingMotor != null) {
                 if (!wasTS) {
                     if (touchSensor.isPressed()) {

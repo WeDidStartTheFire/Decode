@@ -732,4 +732,30 @@ public abstract class Base extends LinearOpMode {
     public void update() {
         telemetry.update();
     }
+    
+    /**
+     * Adds telemetry data from the last action
+     *
+     * @param message Message to be sent
+     */
+    public void addTelemetry(String message) {
+        telemetry.addData("Last Action", message);
+    }
+    
+    /** Adds information messages to telemetry and updates it */
+    public void updateAll() {
+        if (pixelLiftingMotor != null) {
+            telemetry.addData("Pixel Lifting Motor Position", pixelLiftingMotor.getCurrentPosition());
+        }
+        if (trayTiltingServo == null) {
+            telemetry.addData("Tray Tilting Servo", "Disconnected");
+        }
+        if (pixelLockingServo == null) {
+            telemetry.addData("Pixel Front Servo", "Disconnected");
+        }
+        if (touchSensor == null) {
+            telemetry.addData("Touch Sensor", "Disconnected");
+        }
+        telemetry.update();
+    }
 }

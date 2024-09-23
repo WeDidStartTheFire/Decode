@@ -23,18 +23,10 @@ public class TeleOp_Main extends Base {
     @Override
     public void runOpMode() {
         setup();
-        if (trayTiltingServo != null) {
-            trayTiltingServo.setPosition(0);
-        }
-        if (pixelLockingServo != null) {
-            pixelLockingServo.setPosition(1);
-        }
 
         while (opModeIsActive()) {
             // Slows down movement for better handling the more the right trigger is held down
             slowdownMultiplier = (1.0 - gamepad1.right_trigger);
-            //            if (gamepad1.left_stick_button || gamepad1.right_stick_button) {
-            // slowdownMultiplier *= 0.5; }
 
             axial = ((-gamepad1.left_stick_y * SPEED_MULTIPLIER) * slowdownMultiplier);
             lateral = ((gamepad1.left_stick_x * SPEED_MULTIPLIER) * slowdownMultiplier);
@@ -100,7 +92,7 @@ public class TeleOp_Main extends Base {
             }
 
             // Logic to stop lift when it hits touch sensor
-            if (touchSensor != null) {
+            if (touchSensor != null && pixelLiftingMotor != null) {
                 if (!touchSensorWasPressed) {
                     if (touchSensor.isPressed()) {
                         pixelLiftingMotor.setPower(0);
@@ -116,31 +108,5 @@ public class TeleOp_Main extends Base {
 
             updateAll();
         }
-    }
-
-    /**
-     * Adds telemetry data from the last action
-     *
-     * @param message Message to be sent
-     */
-    public void addTelemetry(String message) {
-        telemetry.addData("Last Action", message);
-    }
-
-    /** Adds information messages to telemetry and updates it */
-    public void updateAll() {
-        if (pixelLiftingMotor != null) {
-            telemetry.addData("Pixel Lifting Motor Position", pixelLiftingMotor.getCurrentPosition());
-        }
-        if (trayTiltingServo == null) {
-            telemetry.addData("Tray Tilting Servo", "Disconnected");
-        }
-        if (pixelLockingServo == null) {
-            telemetry.addData("Pixel Front Servo", "Disconnected");
-        }
-        if (touchSensor == null) {
-            telemetry.addData("Touch Sensor", "Disconnected");
-        }
-        telemetry.update();
     }
 }

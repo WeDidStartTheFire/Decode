@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "Test", group = "Into The Deep")
@@ -20,10 +21,9 @@ public class TeleOp_Debug extends Base {
     double slowdownMultiplier = 0.0;
     boolean wasDownA = false;
     boolean wasDownB = false;
-    boolean wasDownX = false;
-    boolean wasDownY = false;
     public Servo servoA, servoB;
     public CRServo servoC, servoD;
+    public DcMotorEx motorA, motorB;
 
     @Override
     public void runOpMode() {
@@ -31,8 +31,19 @@ public class TeleOp_Debug extends Base {
 
         servoA = droneServo;
         servoB = pixelBackServo;
-        servoC = hardwareMap.get(CRServo.class, "pixelFrontServo");
-        servoD = hardwareMap.get(CRServo.class, "trayTiltingServo");
+        try {
+            servoC = hardwareMap.get(CRServo.class, "pixelFrontServo");
+        } catch (IllegalArgumentException e) {
+            except("pixelFrontServo/servoC not connected");
+        }
+        try {
+            servoD = hardwareMap.get(CRServo.class, "trayTiltingServo");
+        } catch (IllegalArgumentException e) {
+            except("trayTiltingServo/servoD not connected");
+        }
+
+        motorA = pixelLiftingMotor;
+        motorB = carWashMotor;
 
         while (opModeIsActive()) {
             // Slows down movement for better handling the more the right trigger is held down
@@ -99,16 +110,40 @@ public class TeleOp_Debug extends Base {
             if (servoC != null) {
                 if (gamepad1.x) {
                     servoC.setPower(1);
+                    addTelemetry("Set servoC to 1");
                 } else {
                     servoC.setPower(0);
+                    addTelemetry("Set servoC to 0");
                 }
             }
 
             if (servoD != null) {
                 if (gamepad1.y) {
                     servoD.setPower(-1);
+                    addTelemetry("Set servoD to -1");
                 } else {
                     servoD.setPower(0);
+                    addTelemetry("Set servoD to 0");
+                }
+            }
+
+            if (motorA != null) {
+                if (gamepad1.dpad_up) {
+                    motorA.setPower(1);
+                } else if (gamepad1.dpad_down) {
+                    motorA.setPower(-1);
+                } else {
+                    motorA.setPower(0);
+                }
+            }
+
+            if (motorB != null) {
+                if (gamepad1.dpad_right) {
+                    motorB.setPower(1);
+                } else if (gamepad1.dpad_left) {
+                    motorB.setPower(-1);
+                } else {
+                    motorB.setPower(0);
                 }
             }
 

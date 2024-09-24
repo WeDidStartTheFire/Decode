@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "Test", group = "Into The Deep")
@@ -21,8 +22,8 @@ public class TeleOp_Debug extends Base {
     boolean wasDownB = false;
     boolean wasDownX = false;
     boolean wasDownY = false;
-    public Servo droneServo, pixelBackServo, pixelLockingServo, trayTiltingServo;
-    public Servo servoA, servoB, servoC, servoD;
+    public Servo servoA, servoB;
+    public CRServo servoC, servoD;
 
     @Override
     public void runOpMode() {
@@ -30,8 +31,8 @@ public class TeleOp_Debug extends Base {
 
         servoA = droneServo;
         servoB = pixelBackServo;
-        servoC = pixelLockingServo;
-        servoD = trayTiltingServo;
+        servoC = hardwareMap.get(CRServo.class, "pixelFrontServo");
+        servoD = hardwareMap.get(CRServo.class, "trayTiltingServo");
 
         while (opModeIsActive()) {
             // Slows down movement for better handling the more the right trigger is held down
@@ -96,29 +97,19 @@ public class TeleOp_Debug extends Base {
             }
 
             if (servoC != null) {
-                if (gamepad1.x && !wasDownX) {
-                    if (servoC.getPosition() > 0.95) {
-                        servoC.setPosition(0);
-                        addTelemetry("Set servoC to 0");
-                    } else {
-                        servoC.setPosition(1);
-                        addTelemetry("Set servoC to 1");
-                    }
+                if (gamepad1.x) {
+                    servoC.setPower(1);
+                } else {
+                    servoC.setPower(0);
                 }
-                wasDownX = gamepad1.x;
             }
 
             if (servoD != null) {
-                if (gamepad1.y && !wasDownY) {
-                    if (servoD.getPosition() > 0.95) {
-                        servoD.setPosition(0);
-                        addTelemetry("Set servoD to 0");
-                    } else {
-                        servoD.setPosition(1);
-                        addTelemetry("Set servoD to 1");
-                    }
+                if (gamepad1.y) {
+                    servoD.setPower(-1);
+                } else {
+                    servoD.setPower(0);
                 }
-                wasDownY = gamepad1.y;
             }
 
             updateAll();

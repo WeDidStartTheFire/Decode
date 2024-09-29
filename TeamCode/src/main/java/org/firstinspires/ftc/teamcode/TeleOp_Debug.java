@@ -24,6 +24,7 @@ public class TeleOp_Debug extends Base {
     public Servo servoA, servoB;
     public CRServo servoC, servoD;
     public DcMotorEx motorA, motorB;
+    public final double MOTOR_SPEED = 0.25;
 
     @Override
     public void runOpMode() {
@@ -92,6 +93,8 @@ public class TeleOp_Debug extends Base {
                     }
                 }
                 wasDownA = gamepad1.a;
+            } else {
+                addTelemetry("servoA disconnected");
             }
 
             if (servoB != null) {
@@ -105,46 +108,62 @@ public class TeleOp_Debug extends Base {
                     }
                 }
                 wasDownB = gamepad1.b;
+            } else {
+                addTelemetry("servoB diconnected");
             }
 
             if (servoC != null) {
                 if (gamepad1.x) {
                     servoC.setPower(1);
                     addTelemetry("Set servoC to 1");
+                } else if (gamepad1.y) {
+                    servoC.setPower(-1);
+                    addTelemetry("Set servoC to -1");
                 } else {
                     servoC.setPower(0);
                     addTelemetry("Set servoC to 0");
                 }
+            } else {
+                addTelemetry("servoC disconnected");
             }
 
             if (servoD != null) {
-                if (gamepad1.y) {
+                if (gamepad1.left_bumper) {
                     servoD.setPower(-1);
                     addTelemetry("Set servoD to -1");
+                } else if (gamepad1.right_bumper) {
+                    servoD.setPower(1);
+                    addTelemetry("Set servoD to 1");
                 } else {
                     servoD.setPower(0);
                     addTelemetry("Set servoD to 0");
                 }
+            } else {
+                addTelemetry("servoD disconnected");
             }
 
             if (motorA != null) {
                 if (gamepad1.dpad_up) {
-                    motorA.setPower(1);
+                    motorA.setPower(1 * MOTOR_SPEED);
                 } else if (gamepad1.dpad_down) {
-                    motorA.setPower(-1);
+                    motorA.setPower(-1 * MOTOR_SPEED);
                 } else {
                     motorA.setPower(0);
                 }
+            } else {
+                addTelemetry("motorA disconnected");
             }
 
             if (motorB != null) {
                 if (gamepad1.dpad_right) {
-                    motorB.setPower(1);
+                    motorB.setPower(1 * MOTOR_SPEED);
                 } else if (gamepad1.dpad_left) {
-                    motorB.setPower(-1);
+                    motorB.setPower(-1 * MOTOR_SPEED);
                 } else {
                     motorB.setPower(0);
                 }
+            } else {
+                addTelemetry("motorB disconnected");
             }
 
             updateAll();

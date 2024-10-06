@@ -18,6 +18,7 @@ import com.qualcomm.robotcore.util.*;
 
 import org.firstinspires.ftc.vision.*;
 import org.firstinspires.ftc.vision.apriltag.*;
+import static org.firstinspires.ftc.teamcode.Base.dir.*;
 
 /** Base class that contains common methods and other configuration. */
 public abstract class Base extends LinearOpMode {
@@ -221,12 +222,12 @@ public abstract class Base extends LinearOpMode {
                 rb.setVelocity(velocity * signum(inches));
                 lf.setVelocity(velocity * signum(inches));
                 rf.setVelocity(velocity * signum(inches));
-            } else if (direction == dir.forward) {
+            } else if (direction == forward) {
                 lb.setVelocity(velocity);
                 rb.setVelocity(velocity);
                 lf.setVelocity(velocity);
                 rf.setVelocity(velocity);
-            } else if (direction == dir.backward) {
+            } else if (direction == backward) {
                 lb.setVelocity(-velocity);
                 rb.setVelocity(-velocity);
                 lf.setVelocity(-velocity);
@@ -261,9 +262,9 @@ public abstract class Base extends LinearOpMode {
      */
     public void turn(double degrees, dir direction) {
         double direct = 0;
-        if (direction == dir.left) {
+        if (direction == left) {
             direct = -1;
-        } else if (direction == dir.right) {
+        } else if (direction == right) {
             direct = 1;
         }
         sleep(100);
@@ -340,7 +341,7 @@ public abstract class Base extends LinearOpMode {
      * @param degrees The amount of degrees to turn.
      */
     public void turn(double degrees) {
-        turn(degrees, dir.right);
+        turn(degrees, right);
     }
 
     /**
@@ -360,9 +361,9 @@ public abstract class Base extends LinearOpMode {
 
         double d = 0;
 
-        if (direction == dir.right) {
+        if (direction == right) {
             d = -1;
-        } else if (direction == dir.left) {
+        } else if (direction == left) {
             d = 1;
         }
 
@@ -398,7 +399,7 @@ public abstract class Base extends LinearOpMode {
      * @param inches Amount of inches to strafe.
      */
     public void strafe(double inches) {
-        strafe(inches, dir.right);
+        strafe(inches, right);
     }
 
     /**
@@ -437,7 +438,7 @@ public abstract class Base extends LinearOpMode {
      * @param inches Amount of inches to drive.
      */
     public void drive(double inches) {
-        drive(inches, dir.forward);
+        drive(inches, forward);
     }
 
     /**

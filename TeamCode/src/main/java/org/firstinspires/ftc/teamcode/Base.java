@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.util.*;
 
 import org.firstinspires.ftc.vision.*;
 import org.firstinspires.ftc.vision.apriltag.*;
-import static org.firstinspires.ftc.teamcode.Base.dir.*;
+import static org.firstinspires.ftc.teamcode.Base.Dir.*;
 
 /** Base class that contains common methods and other configuration. */
 public abstract class Base extends LinearOpMode {
@@ -90,7 +90,7 @@ public abstract class Base extends LinearOpMode {
 
 
     /** Directions. Options: left, right, forward, backward * */
-    public enum dir {
+    public enum Dir {
         left,
         right,
         forward,
@@ -208,7 +208,7 @@ public abstract class Base extends LinearOpMode {
      * @param inches Amount of inches to drive.
      * @param direction (opt.) Direction to drive if inches is zero.*
      */
-    private void encoderDrive(double inches, dir direction) {
+    private void encoderDrive(double inches, Dir direction) {
         int lfTarget = 0;
         int rfTarget = 0;
 
@@ -262,7 +262,7 @@ public abstract class Base extends LinearOpMode {
      * @param degrees The amount of degrees to turn.
      * @param direction (opt.) Direction to turn if degrees is zero.
      */
-    public void turn(double degrees, dir direction) {
+    public void turn(double degrees, Dir direction) {
         double direct = 0;
         if (direction == left) {
             direct = -1;
@@ -353,7 +353,7 @@ public abstract class Base extends LinearOpMode {
      * @param inches Amount of inches to strafe.
      * @param direction Direction to strafe in.*
      */
-    public void strafe(double inches, dir direction) {
+    public void strafe(double inches, Dir direction) {
         if (!opModeIsActive() || lf == null) {
             return;
         }
@@ -420,7 +420,7 @@ public abstract class Base extends LinearOpMode {
      * @param inches Amount of inches to drive.
      * @param direction (opt.) Direction to drive if inches is zero.*
      */
-    public void drive(double inches, dir direction) {
+    public void drive(double inches, Dir direction) {
         int checks = 1;
         if (inches == 0) {
             encoderDrive(0, direction);

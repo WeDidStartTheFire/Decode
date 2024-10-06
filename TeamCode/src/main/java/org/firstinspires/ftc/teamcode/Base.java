@@ -22,7 +22,7 @@ public abstract class Base extends LinearOpMode {
     //    private TfodProcessor tfod;
     private static final ElapsedTime runtime = new ElapsedTime();
     // All non-primitive data types initialize to null on default.
-    public DcMotorEx lf, lb, rf, rb, carWashMotor, pixelLiftingMotor;
+    public DcMotorEx lf, lb, rf, rb, liftMotor, pixelLiftingMotor;
     public Servo droneServo, pixelBackServo, pixelLockingServo, trayTiltingServo;
     public TouchSensor touchSensor;
     public side stageSide;
@@ -141,37 +141,37 @@ public abstract class Base extends LinearOpMode {
         }
         // If given an error, the motor is already null
         try {
-            carWashMotor = hardwareMap.get(DcMotorEx.class, "liftMotor");
+            liftMotor = hardwareMap.get(DcMotorEx.class, "liftMotor"); // Port 0
         } catch (IllegalArgumentException e) {
-            except("carWashMotor (liftMotor) not connected");
+            except("liftMotor (previously used as carWashMotor) not connected");
         }
         try {
-            pixelLiftingMotor = hardwareMap.get(DcMotorEx.class, "pixelLiftingMotor");
+            pixelLiftingMotor = hardwareMap.get(DcMotorEx.class, "pixelLiftingMotor"); // Port 1
         } catch (IllegalArgumentException e) {
             except("pixelLiftingMotor not connected");
         }
         try {
-            droneServo = hardwareMap.get(Servo.class, "droneServo");
+            droneServo = hardwareMap.get(Servo.class, "droneServo"); // Port 4
         } catch (IllegalArgumentException e) {
             except("droneServo not connected");
         }
         try {
-            pixelBackServo = hardwareMap.get(Servo.class, "pixelBackServo");
+            pixelBackServo = hardwareMap.get(Servo.class, "pixelBackServo"); // Port 0
         } catch (IllegalArgumentException e) {
             except("pixelBackServo not connected");
         }
         try {
-            pixelLockingServo = hardwareMap.get(Servo.class, "pixelFrontServo");
+            pixelLockingServo = hardwareMap.get(Servo.class, "pixelFrontServo"); // Port 2
         } catch (IllegalArgumentException e) {
             except("pixelFrontServo not connected");
         }
         try {
-            trayTiltingServo = hardwareMap.get(Servo.class, "trayTiltingServo");
+            trayTiltingServo = hardwareMap.get(Servo.class, "trayTiltingServo"); // Port 1
         } catch (IllegalArgumentException e) {
             except("trayTiltingServo not connected");
         }
         try {
-            touchSensor = hardwareMap.get(TouchSensor.class, "touchSensor");
+            touchSensor = hardwareMap.get(TouchSensor.class, "touchSensor"); // Port 0
         } catch (IllegalArgumentException e) {
             except("touchSensor not connected");
         }

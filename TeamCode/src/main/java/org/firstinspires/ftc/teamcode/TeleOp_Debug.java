@@ -44,7 +44,7 @@ public class TeleOp_Debug extends Base {
         }
 
         motorA = pixelLiftingMotor;
-        motorB = carWashMotor;
+        motorB = liftMotor;
 
         while (opModeIsActive()) {
             // Slows down movement for better handling the more the right trigger is held down

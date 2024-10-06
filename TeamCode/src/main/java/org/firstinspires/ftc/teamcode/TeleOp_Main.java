@@ -59,11 +59,11 @@ public class TeleOp_Main extends Base {
             }
 
             // Logic to raise or lower the lift
-            if (pixelLiftingMotor != null) {
-                addTelemetry("Current position: " + pixelLiftingMotor.getCurrentPosition());
+            if (liftMotor != null) {
+                addTelemetry("Current position: " + liftMotor.getCurrentPosition());
                 if (!gamepad2.dpad_up && !gamepad2.dpad_down
                         || gamepad2.dpad_down && gamepad2.dpad_up) {
-                    pixelLiftingMotor.setPower(0);
+                    liftMotor.setPower(0);
                 } else {
                     if (touchSensor != null) {
                         touchSensorPressed = touchSensor.isPressed();
@@ -72,19 +72,19 @@ public class TeleOp_Main extends Base {
                         addTelemetry("Touch sensor not connected");
                     }
                     if (gamepad2.dpad_up && !gamepad2.dpad_down) {
-                        if (pixelLiftingMotor.getCurrentPosition() < 5500) {
-                            pixelLiftingMotor.setPower(1);
+                        if (liftMotor.getCurrentPosition() < 5500) {
+                            liftMotor.setPower(1);
                             addTelemetry("pixelLiftingMotor now moving");
                         } else {
-                            pixelLiftingMotor.setPower(0);
+                            liftMotor.setPower(0);
                             addTelemetry("pixelLiftingMotor no longer moving");
                         }
                     } else if (gamepad2.dpad_down && !gamepad2.dpad_up && !touchSensorPressed) {
-                        if (pixelLiftingMotor.getCurrentPosition() > 0) {
-                            pixelLiftingMotor.setPower(-1);
+                        if (liftMotor.getCurrentPosition() > 0) {
+                            liftMotor.setPower(-1);
                             addTelemetry("pixelLiftingMotor now moving");
                         } else {
-                            pixelLiftingMotor.setPower(0);
+                            liftMotor.setPower(0);
                             addTelemetry("pixelLiftingMotor no longer moving");
                         }
                     }
@@ -92,11 +92,11 @@ public class TeleOp_Main extends Base {
             }
 
             // Logic to stop lift when it hits touch sensor
-            if (touchSensor != null && pixelLiftingMotor != null) {
+            if (touchSensor != null && liftMotor != null) {
                 if (!touchSensorWasPressed) {
                     if (touchSensor.isPressed()) {
-                        pixelLiftingMotor.setPower(0);
-                        pixelLiftingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        liftMotor.setPower(0);
+                        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                         touchSensorWasPressed = true;
                     } else {
                         touchSensorWasPressed = false;

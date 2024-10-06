@@ -100,15 +100,15 @@ public class TeleOp_Old extends Base {
                 }
             }
 
-            if (carWashMotor != null) {
+            if (liftMotor != null) {
                 if (!gamepad2.a && !gamepad2.b) {
-                    carWashMotor.setPower(0);
+                    liftMotor.setPower(0);
                 } else {
                     if (gamepad2.b) {
-                        carWashMotor.setPower(CAR_WASH_POWER);
+                        liftMotor.setPower(CAR_WASH_POWER);
                         addTelemetry("carWashMotor now moving forward");
                     } else if (gamepad2.a) {
-                        carWashMotor.setPower(-CAR_WASH_POWER);
+                        liftMotor.setPower(-CAR_WASH_POWER);
                         addTelemetry("carWashMotor now moving backward");
                     }
                 }

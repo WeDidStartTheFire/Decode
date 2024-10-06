@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 import static java.lang.Math.*;
 
 import androidx.annotation.Nullable;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.*;
 
 import com.qualcomm.hardware.rev.*;
 import com.qualcomm.robotcore.eventloop.opmode.*;
@@ -82,9 +86,7 @@ public abstract class Base extends LinearOpMode {
             new IMU.Parameters(
                     new RevHubOrientationOnRobot(
                             RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                            RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
-                    )
-            );
+                            RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
 
     /** Color options for the team prop. Options: red, blue, none * */
     public enum color {
@@ -196,8 +198,8 @@ public abstract class Base extends LinearOpMode {
         if (pixelLiftingMotor != null) {
             pixelLiftingMotor.setDirection(DcMotorEx.Direction.REVERSE);
             pixelLiftingMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-            pixelLiftingMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            pixelLiftingMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            pixelLiftingMotor.setMode(STOP_AND_RESET_ENCODER);
+            pixelLiftingMotor.setMode(RUN_USING_ENCODER);
         }
 
         print("Status", "Initialized");
@@ -231,7 +233,6 @@ public abstract class Base extends LinearOpMode {
         setup(false);
     }
 
-
     /**
      * Drives using encoder velocity. An inches value of zero will cause the robot to drive until
      * manually stopped.
@@ -245,8 +246,8 @@ public abstract class Base extends LinearOpMode {
 
         // Ensure that the OpMode is still active
         if (opModeIsActive() && lf != null) {
-            setMotorModes(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            setMotorModes(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            setMotorModes(STOP_AND_RESET_ENCODER);
+            setMotorModes(RUN_USING_ENCODER);
 
             // reset the timeout time and start motion.
             if (inches != 0) {
@@ -275,15 +276,9 @@ public abstract class Base extends LinearOpMode {
 
             while (opModeIsActive() && (runtime.seconds() < duration) && inches != 0) {
                 // Display it for the driver.
-                print(
-                        "Angle",
-                        imu.getRobotOrientation(
-                                        AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
-                                .firstAngle);
+                print("Angle", imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
                 print("Running to", " " + lfTarget + ":" + rfTarget);
-                print(
-                        "Currently at",
-                        " at " + lf.getCurrentPosition() + ":" + rf.getCurrentPosition());
+                print("Currently at", lf.getCurrentPosition() + ":" + rf.getCurrentPosition());
                 update();
             }
             if (inches != 0) {
@@ -308,15 +303,11 @@ public abstract class Base extends LinearOpMode {
         }
         sleep(100);
         degrees *= -1;
-        degrees -=
-                imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
-                        .firstAngle;
+        degrees -= imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
         imu.resetYaw();
         double tolerance = 1;
-        double startAngle =
-                imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
-                        .firstAngle;
-        double currentAngle;
+        double startAngle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
+        double angle;
         double initialGoalAngle = startAngle + degrees;
         double correctedGoalAngle = initialGoalAngle;
         double difference = 999;
@@ -326,29 +317,19 @@ public abstract class Base extends LinearOpMode {
             correctedGoalAngle -= abs(initialGoalAngle) / initialGoalAngle * 360;
         }
         while (opModeIsActive() && (difference > tolerance) && degrees != 0) {
-            currentAngle =
-                    imu.getRobotOrientation(
-                                    AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
-                            .firstAngle;
-            difference =
-                    min(
-                            abs(initialGoalAngle - currentAngle),
-                            abs(correctedGoalAngle - currentAngle));
+            angle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
+            difference = min(abs(initialGoalAngle - angle), abs(correctedGoalAngle - angle));
             turnModifier = min(1, (difference + 3) / 30);
             turnPower = degrees / abs(degrees) * TURN_SPEED * turnModifier * direct;
             setMotorPowers(-turnPower, turnPower, -turnPower, turnPower);
-            currentAngle =
-                    imu.getRobotOrientation(
-                                    AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
-                            .firstAngle;
-            difference =
-                    min(
-                            abs(initialGoalAngle - currentAngle),
-                            abs(correctedGoalAngle - currentAngle));
+
+            angle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
+            difference = min(abs(initialGoalAngle - angle), abs(correctedGoalAngle - angle));
+
             print("Corrected Goal", correctedGoalAngle);
             print("Initial Goal", initialGoalAngle);
             print("Start", startAngle);
-            print("Angle", currentAngle);
+            print("Angle", angle);
             print("Distance from goal", difference);
             update();
         }
@@ -405,43 +386,43 @@ public abstract class Base extends LinearOpMode {
      * @param direction Direction to strafe in.*
      */
     public void strafe(double inches, dir direction) {
+        if (!opModeIsActive() || lf == null) {
+            return;
+        }
+        setMotorModes(STOP_AND_RESET_ENCODER);
 
-        if (opModeIsActive() && lf != null) {
-            setMotorModes(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        setMotorModes(RUN_USING_ENCODER);
 
-            setMotorModes(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        double d = 0;
 
-            double d = 0;
+        if (direction == dir.right) {
+            d = -1;
+        } else if (direction == dir.left) {
+            d = 1;
+        }
 
-            if (direction == dir.right) {
-                d = -1;
-            } else if (direction == dir.left) {
-                d = 1;
-            }
+        runtime.reset();
+        lb.setVelocity(velocity * d);
+        rb.setVelocity(-velocity * d);
+        lf.setVelocity(-velocity * STRAFE_FRONT_MODIFIER * d);
+        rf.setVelocity(velocity * STRAFE_FRONT_MODIFIER * d);
+        if (inches != 0) {
+            inches = (abs(inches) + 1.0125) / 0.7155;
+        }
 
-            runtime.reset();
-            lb.setVelocity(velocity * d);
-            rb.setVelocity(-velocity * d);
-            lf.setVelocity(-velocity * STRAFE_FRONT_MODIFIER * d);
-            rf.setVelocity(velocity * STRAFE_FRONT_MODIFIER * d);
-            if (inches != 0) {
-                inches = (abs(inches) + 1.0125) / 0.7155;
-            }
+        double duration = abs(inches * COUNTS_PER_INCH / velocity);
 
-            double duration = abs(inches * COUNTS_PER_INCH / velocity);
-
-            runtime.reset();
-            while (opModeIsActive() && (runtime.seconds() < duration) && inches != 0) {
-                print("Strafing until", duration + " seconds");
-                print("Currently at", runtime.seconds() + " seconds");
-                update();
-            }
-            if (inches != 0) {
-                stopRobot();
-            }
-            print("Strafing", "Complete");
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < duration) && inches != 0) {
+            print("Strafing until", duration + " seconds");
+            print("Currently at", runtime.seconds() + " seconds");
             update();
         }
+        if (inches != 0) {
+            stopRobot();
+        }
+        print("Strafing", "Complete");
+        update();
         sleep(WAIT_TIME);
     }
 
@@ -473,14 +454,15 @@ public abstract class Base extends LinearOpMode {
      */
     public void drive(double inches, dir direction) {
         int checks = 1;
-        if (inches != 0) {
-            for (int i = 0; i < checks; i++) {
-                encoderDrive(inches / checks, direction);
-            }
-            stopRobot();
-        } else {
+        if (inches == 0) {
             encoderDrive(0, direction);
+            return;
         }
+
+        for (int i = 0; i < checks; i++) {
+            encoderDrive(inches / checks, direction);
+        }
+        stopRobot();
     }
 
     /**
@@ -527,7 +509,7 @@ public abstract class Base extends LinearOpMode {
             rf.setTargetPosition(rf.getCurrentPosition());
 
             // Turn off RUN_TO_POSITION
-            setMotorModes(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            setMotorModes(RUN_USING_ENCODER);
 
             sleep(WAIT_TIME);
         }
@@ -633,11 +615,7 @@ public abstract class Base extends LinearOpMode {
             runtime.reset();
             while (opModeIsActive() && pixelLiftingMotor.getCurrentPosition() < encoders) {
                 // Display it for the driver.
-                print(
-                        "Angle",
-                        imu.getRobotOrientation(
-                                        AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
-                                .firstAngle);
+                print("Angle", imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
                 print("Currently at", " at " + pixelLiftingMotor.getCurrentPosition());
                 print("Goal", encoders);
                 update();
@@ -649,14 +627,12 @@ public abstract class Base extends LinearOpMode {
     /** Retracts the lift motor. */
     public void retractLift() {
         if (pixelLiftingMotor != null) {
+            float angle;
             pixelLiftingMotor.setVelocity(-LIFT_VEL);
             while (opModeIsActive() && pixelLiftingMotor.getCurrentPosition() > 0) {
                 // Display it for the driver.
-                print(
-                        "Angle",
-                        imu.getRobotOrientation(
-                                        AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
-                                .firstAngle);
+                angle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
+                print("Angle", angle);
                 print("Currently at", " at " + pixelLiftingMotor.getCurrentPosition());
                 print("Goal", 0);
                 update();

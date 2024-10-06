@@ -26,7 +26,7 @@ public class TeleOp_Main extends Base {
 
         while (opModeIsActive()) {
             // Slows down movement for better handling the more the right trigger is held down
-            slowdownMultiplier = (1.0 - gamepad1.right_trigger);
+            slowdownMultiplier = (1.0 - gamepad1.right_trigger) * 0.7 + 0.3;
 
             axial = ((-gamepad1.left_stick_y * SPEED_MULTIPLIER) * slowdownMultiplier);
             lateral = ((gamepad1.left_stick_x * SPEED_MULTIPLIER) * slowdownMultiplier);

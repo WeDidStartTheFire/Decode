@@ -48,7 +48,7 @@ public class TeleOp_Debug extends Base {
 
         while (opModeIsActive()) {
             // Slows down movement for better handling the more the right trigger is held down
-            slowdownMultiplier = (1.0 - gamepad1.right_trigger);
+            slowdownMultiplier = (1.0 - gamepad1.right_trigger) * 0.7 + 0.3;
             // f (gamepad1.left_stick_button || gamepad1.right_stick_button) {
             // slowdownMultiplier *= 0.5; }
 

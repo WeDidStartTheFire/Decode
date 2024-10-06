@@ -31,12 +31,8 @@ public class TeleOp_Debug extends Base {
         setup();
 
         servoA = droneServo;
-        servoB = intakeServo;
-        try {
-            servoC = hardwareMap.get(CRServo.class, "pixelFrontServo");
-        } catch (IllegalArgumentException e) {
-            except("pixelFrontServo/servoC not connected");
-        }
+        servoB = pixelLockingServo;
+        servoC = intakeServo;
         try {
             servoD = hardwareMap.get(CRServo.class, "trayTiltingServo");
         } catch (IllegalArgumentException e) {

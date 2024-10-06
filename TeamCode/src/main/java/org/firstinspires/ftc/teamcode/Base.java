@@ -109,10 +109,8 @@ public abstract class Base extends LinearOpMode {
 
     /**
      * Initializes all hardware devices on the robot.
-     *
-     * @param useCam Should the camera be initialized? *
      */
-    public void setup(boolean useCam) {
+    public void setup() {
         imu = hardwareMap.get(IMU.class, "imu");
         if (!imu.initialize(IMU_PARAMETERS)) {
             throw new RuntimeException("IMU initialization failed");
@@ -167,14 +165,6 @@ public abstract class Base extends LinearOpMode {
         } catch (IllegalArgumentException e) {
             except("touchSensor not connected");
         }
-        if (useCam) {
-            try {
-                WebcamName cam = hardwareMap.get(WebcamName.class, "Webcam 1");
-                initProcessors(cam);
-            } catch (IllegalArgumentException e) {
-                except("Webcam not connected");
-            }
-        }
 
         if (lf != null) {
             lf.setDirection(DcMotorEx.Direction.REVERSE);
@@ -215,20 +205,17 @@ public abstract class Base extends LinearOpMode {
     }
 
     /**
-     * Initializes all hardware devices on the robot. Note: When called without useCam manually set,
-     * useCam defaults to true.
-     *
-     * @param teamColor The color of the team prop.
-     * @param useCam Should the camera be initialized?
+     * Initializes all hardware devices on the robot.
      */
     @Deprecated
     public void setup(color teamColor, boolean useCam) {
-        setup(useCam);
+        setup();
     }
 
     /** Initializes all hardware devices on the robot. * */
-    public void setup() {
-        setup(false);
+    @Deprecated
+    public void setup(boolean useCam) {
+        setup();
     }
 
 

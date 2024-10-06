@@ -82,7 +82,9 @@ public abstract class Base extends LinearOpMode {
             new IMU.Parameters(
                     new RevHubOrientationOnRobot(
                             RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                            RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
+                            RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
+                    )
+            );
 
     /** Color options for the team prop. Options: red, blue, none * */
     public enum color {

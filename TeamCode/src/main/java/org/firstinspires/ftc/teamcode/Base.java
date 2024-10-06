@@ -29,8 +29,6 @@ public abstract class Base extends LinearOpMode {
     public DcMotorEx lf, lb, rf, rb, liftMotor, pixelLiftingMotor;
     public Servo droneServo, pixelBackServo, pixelLockingServo, trayTiltingServo;
     public TouchSensor touchSensor;
-    public side stageSide;
-    public color allianceColor;
     private IMU imu;
     /*
      - Calculate the COUNTS_PER_INCH for your specific drive train.
@@ -88,18 +86,7 @@ public abstract class Base extends LinearOpMode {
                             RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                             RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
 
-    /** Color options for the team prop. Options: red, blue, none * */
-    public enum color {
-        red,
-        blue,
-        none
-    }
 
-    /** Side of the robot. Options: front, back * */
-    public enum side {
-        front,
-        back
-    }
 
     /** Directions. Options: left, right, forward, backward * */
     public enum dir {
@@ -206,13 +193,6 @@ public abstract class Base extends LinearOpMode {
         runtime.reset();
     }
 
-    /**
-     * Initializes all hardware devices on the robot.
-     */
-    @Deprecated
-    public void setup(color teamColor, boolean useCam) {
-        setup();
-    }
 
     /** Initializes all hardware devices on the robot. * */
     @Deprecated

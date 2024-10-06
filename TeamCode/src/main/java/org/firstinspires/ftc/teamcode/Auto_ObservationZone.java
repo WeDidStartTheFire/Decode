@@ -8,6 +8,15 @@ public class Auto_ObservationZone extends Base {
     @Override
     public void runOpMode() {
         setup();
-        strafe(36, right);
+        strafe(24, right);
+        drive(48, forward);
+        strafe(12, right);
+        drive(36, backward);
+        drive(36, forward);
+        strafe(8, right);
+        drive(36, backward);
+        drive(36, forward);
+        strafe(8, right);
+        drive(36, backward);
     }
 }

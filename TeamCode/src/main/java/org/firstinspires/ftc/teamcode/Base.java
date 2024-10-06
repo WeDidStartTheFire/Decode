@@ -24,7 +24,7 @@ public abstract class Base extends LinearOpMode {
     private static final double LIFT_VEL = 1500;
     public static final double GOAL_ENCODERS = 2000;
     //    private TfodProcessor tfod;
-    private static final ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
     // All non-primitive data types initialize to null on default.
     public DcMotorEx lf, lb, rf, rb, liftMotor, pixelLiftingMotor;
     public Servo droneServo, pixelBackServo, pixelLockingServo, trayTiltingServo;

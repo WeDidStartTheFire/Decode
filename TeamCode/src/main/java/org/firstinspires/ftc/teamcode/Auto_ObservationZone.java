@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 public class Auto_ObservationZone extends Base {
     @Override
     public void runOpMode() {
-        setup(false);
+        setup();
         strafe(36, dir.right);
     }
 }

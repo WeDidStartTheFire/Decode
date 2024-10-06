@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 public class Auto_NetZone extends Base {
     @Override
     public void runOpMode() {
-        setup(false);
+        setup();
         strafe(18, dir.left);
     }
 }

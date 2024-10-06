@@ -60,10 +60,10 @@ public class TeleOp_OneGamepad extends Base {
             rb.setPower(rightBackPower);
 
             // Logic for moving pixel lift
-            if (pixelLiftingMotor != null) {
+            if (wristMotor != null) {
                 if (!gamepad2.dpad_up && !gamepad2.dpad_down
                         || gamepad2.dpad_down && gamepad2.dpad_up) {
-                    pixelLiftingMotor.setPower(0);
+                    wristMotor.setPower(0);
                 } else {
                     if (touchSensor != null) {
                         touchSensorPressed = touchSensor.isPressed();
@@ -72,20 +72,20 @@ public class TeleOp_OneGamepad extends Base {
                         addTelemetry("Touch sensor not connected");
                     }
                     if (gamepad2.dpad_up && !gamepad2.dpad_down) {
-                        if (pixelLiftingMotor.getCurrentPosition() < 2450) {
-                            pixelLiftingMotor.setPower(0.75);
+                        if (wristMotor.getCurrentPosition() < 2450) {
+                            wristMotor.setPower(0.75);
                             addTelemetry("pixelLiftingMotor now moving");
                         } else {
-                            pixelLiftingMotor.setPower(0);
+                            wristMotor.setPower(0);
                             addTelemetry("pixelLiftingMotor no longer moving");
                         }
                     }
                     if (gamepad2.dpad_down && !gamepad2.dpad_up && !touchSensorPressed) {
-                        if (pixelLiftingMotor.getCurrentPosition() > 0) {
-                            pixelLiftingMotor.setPower(-0.75);
+                        if (wristMotor.getCurrentPosition() > 0) {
+                            wristMotor.setPower(-0.75);
                             addTelemetry("pixelLiftingMotor now moving");
                         } else {
-                            pixelLiftingMotor.setPower(0);
+                            wristMotor.setPower(0);
                             addTelemetry("pixelLiftingMotor no longer moving");
                         }
                     }
@@ -96,8 +96,8 @@ public class TeleOp_OneGamepad extends Base {
             if (touchSensor != null) {
                 if (!touchSensorWasPressed) {
                     if (touchSensor.isPressed()) {
-                        pixelLiftingMotor.setPower(0);
-                        pixelLiftingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        wristMotor.setPower(0);
+                        wristMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                         touchSensorWasPressed = true;
                     } else {
                         touchSensorWasPressed = false;
@@ -111,9 +111,9 @@ public class TeleOp_OneGamepad extends Base {
 
     public void addTelemetry(String message) {
         telemetry.addData("Last Action", message); // Last Action: message
-        if (pixelLiftingMotor != null) {
+        if (wristMotor != null) {
             telemetry.addData(
-                    "Pixel Lifting Motor Position", pixelLiftingMotor.getCurrentPosition());
+                    "Pixel Lifting Motor Position", wristMotor.getCurrentPosition());
         }
         if (trayTiltingServo == null) {
             telemetry.addData("Tray Tilting Servo", "Disconnected");

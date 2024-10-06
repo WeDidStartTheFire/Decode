@@ -27,8 +27,9 @@ public abstract class Base extends LinearOpMode {
     //    private TfodProcessor tfod;
     private final ElapsedTime runtime = new ElapsedTime();
     // All non-primitive data types initialize to null on default.
-    public DcMotorEx lf, lb, rf, rb, liftMotor, pixelLiftingMotor;
-    public Servo droneServo, pixelBackServo, pixelLockingServo, trayTiltingServo;
+    public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor;
+    public Servo droneServo, pixelLockingServo, trayTiltingServo;
+    public CRServo intakeServo;
     public TouchSensor touchSensor;
     private IMU imu;
     /*
@@ -124,7 +125,7 @@ public abstract class Base extends LinearOpMode {
             except("liftMotor (previously used as carWashMotor) not connected");
         }
         try {
-            pixelLiftingMotor = hardwareMap.get(DcMotorEx.class, "pixelLiftingMotor"); // Port 1
+            wristMotor = hardwareMap.get(DcMotorEx.class, "pixelLiftingMotor"); // Port 1
         } catch (IllegalArgumentException e) {
             except("pixelLiftingMotor not connected");
         }
@@ -134,7 +135,7 @@ public abstract class Base extends LinearOpMode {
             except("droneServo not connected");
         }
         try {
-            pixelBackServo = hardwareMap.get(Servo.class, "pixelBackServo"); // Port 0
+            intakeServo = hardwareMap.get(CRServo.class, "pixelBackServo"); // Port 0
         } catch (IllegalArgumentException e) {
             except("pixelBackServo not connected");
         }
@@ -171,11 +172,11 @@ public abstract class Base extends LinearOpMode {
             rf.setTargetPosition(rf.getCurrentPosition());
         }
 
-        if (pixelLiftingMotor != null) {
-            pixelLiftingMotor.setDirection(DcMotorEx.Direction.REVERSE);
-            pixelLiftingMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-            pixelLiftingMotor.setMode(STOP_AND_RESET_ENCODER);
-            pixelLiftingMotor.setMode(RUN_USING_ENCODER);
+        if (wristMotor != null) {
+            wristMotor.setDirection(DcMotorEx.Direction.REVERSE);
+            wristMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+            wristMotor.setMode(STOP_AND_RESET_ENCODER);
+            wristMotor.setMode(RUN_USING_ENCODER);
         }
 
         print("Status", "Initialized");
@@ -575,35 +576,35 @@ public abstract class Base extends LinearOpMode {
      * @param encoders Number of encoders to turn the motor.
      */
     public void moveLift(double encoders) {
-        if (pixelLiftingMotor != null) {
-            pixelLiftingMotor.setVelocity(LIFT_VEL * signum(encoders));
+        if (wristMotor != null) {
+            wristMotor.setVelocity(LIFT_VEL * signum(encoders));
 
             runtime.reset();
-            while (opModeIsActive() && pixelLiftingMotor.getCurrentPosition() < encoders) {
+            while (opModeIsActive() && wristMotor.getCurrentPosition() < encoders) {
                 // Display it for the driver.
                 print("Angle", imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
-                print("Currently at", " at " + pixelLiftingMotor.getCurrentPosition());
+                print("Currently at", " at " + wristMotor.getCurrentPosition());
                 print("Goal", encoders);
                 update();
             }
-            pixelLiftingMotor.setVelocity(0);
+            wristMotor.setVelocity(0);
         }
     }
 
     /** Retracts the lift motor. */
     public void retractLift() {
-        if (pixelLiftingMotor != null) {
+        if (wristMotor != null) {
             float angle;
-            pixelLiftingMotor.setVelocity(-LIFT_VEL);
-            while (opModeIsActive() && pixelLiftingMotor.getCurrentPosition() > 0) {
+            wristMotor.setVelocity(-LIFT_VEL);
+            while (opModeIsActive() && wristMotor.getCurrentPosition() > 0) {
                 // Display it for the driver.
                 angle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
                 print("Angle", angle);
-                print("Currently at", " at " + pixelLiftingMotor.getCurrentPosition());
+                print("Currently at", " at " + wristMotor.getCurrentPosition());
                 print("Goal", 0);
                 update();
             }
-            pixelLiftingMotor.setVelocity(0);
+            wristMotor.setVelocity(0);
         }
     }
 
@@ -664,9 +665,8 @@ public abstract class Base extends LinearOpMode {
 
     /** Adds information messages to telemetry and updates it */
     public void updateAll() {
-        if (pixelLiftingMotor != null) {
-            telemetry.addData(
-                    "Pixel Lifting Motor Position", pixelLiftingMotor.getCurrentPosition());
+        if (liftMotor != null) {
+            telemetry.addData("Lift Motor Position", liftMotor.getCurrentPosition());
         }
         if (trayTiltingServo == null) {
             telemetry.addData("Tray Tilting Servo", "Disconnected");

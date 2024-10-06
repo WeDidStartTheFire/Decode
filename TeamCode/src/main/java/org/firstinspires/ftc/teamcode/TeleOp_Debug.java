@@ -31,7 +31,7 @@ public class TeleOp_Debug extends Base {
         setup();
 
         servoA = droneServo;
-        servoB = pixelBackServo;
+        servoB = intakeServo;
         try {
             servoC = hardwareMap.get(CRServo.class, "pixelFrontServo");
         } catch (IllegalArgumentException e) {
@@ -43,7 +43,7 @@ public class TeleOp_Debug extends Base {
             except("trayTiltingServo/servoD not connected");
         }
 
-        motorA = pixelLiftingMotor;
+        motorA = wristMotor;
         motorB = liftMotor;
 
         while (opModeIsActive()) {

@@ -19,6 +19,8 @@ public class TeleOp_Main extends Base {
     static final double SPEED_MULTIPLIER = 0.75;
     static final double BASE_TURN_SPEED = 2.5;
     double slowdownMultiplier = 0.0;
+    static final double WRIST_MOTOR_POWER = 0.1;
+    static final double INTAKE_SERVO_POWER = 1.0;
 
     @Override
     public void runOpMode() {
@@ -56,6 +58,26 @@ public class TeleOp_Main extends Base {
                 rb.setPower(rightBackPower);
             } else {
                 print("WARNING:", "At least one drivetrain motor disconnected");
+            }
+            
+            if (wristMotor != null) {
+                if (gamepad1.dpad_right) {
+                    wristMotor.setPower(WRIST_MOTOR_POWER);
+                } else if (gamepad1.dpad_left) {
+                    wristMotor.setPower(-WRIST_MOTOR_POWER);
+                } else {
+                    wristMotor.setPower(0);
+                }
+            }
+            
+            if (intakeServo != null) {
+                if (gamepad1.a) {
+                    intakeServo.setPower(INTAKE_SERVO_POWER);
+                } else if (gamepad1.b) {
+                    intakeServo.setPower(-INTAKE_SERVO_POWER);
+                } else {
+                    intakeServo.setPower(0);
+                }
             }
 
             // Logic to raise or lower the lift

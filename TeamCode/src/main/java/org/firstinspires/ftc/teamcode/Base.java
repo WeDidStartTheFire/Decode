@@ -108,19 +108,9 @@ public abstract class Base extends LinearOpMode {
     /**
      * Initializes all hardware devices on the robot.
      *
-     * @param teamColor The color of the team prop.
      * @param useCam Should the camera be initialized? *
      */
-    public void setup(color teamColor, boolean useCam) {
-        if (teamColor == color.red) {
-            tfodModelName = "Prop_Red.tflite";
-        } else if (teamColor == color.blue) {
-            tfodModelName = "Prop_Blue.tflite";
-        } else if (useCam) {
-            print("Warning", "teamColor not specified");
-            useCam = false;
-        }
-
+    public void setup(boolean useCam) {
         imu = hardwareMap.get(IMU.class, "imu");
         if (!imu.initialize(IMU_PARAMETERS)) {
             throw new RuntimeException("IMU initialization failed");
@@ -212,8 +202,6 @@ public abstract class Base extends LinearOpMode {
         print("Hub Name", hubName);
         update();
 
-        allianceColor = teamColor;
-
         if (droneServo != null) {
             droneServo.setPosition(1);
         }
@@ -229,30 +217,18 @@ public abstract class Base extends LinearOpMode {
      * useCam defaults to true.
      *
      * @param teamColor The color of the team prop.
+     * @param useCam Should the camera be initialized?
      */
-    public void setup(color teamColor) {
-        setup(teamColor, true);
+    @Deprecated
+    public void setup(color teamColor, boolean useCam) {
+        setup(useCam);
     }
 
     /** Initializes all hardware devices on the robot. * */
     public void setup() {
-        setup(color.none, false);
+        setup(false);
     }
 
-    /**
-     * Initializes all hardware devices on the robot.
-     *
-     * @param isRed Is the team prop red?
-     * @deprecated - use setup() with a color instead
-     */
-    @Deprecated
-    public void setup(boolean isRed) {
-        if (isRed) {
-            setup(color.red, true);
-        } else {
-            setup(color.blue, true);
-        }
-    }
 
     /**
      * Drives using encoder velocity. An inches value of zero will cause the robot to drive until

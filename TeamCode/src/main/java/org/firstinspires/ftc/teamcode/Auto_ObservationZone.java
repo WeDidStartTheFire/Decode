@@ -10,13 +10,13 @@ public class Auto_ObservationZone extends Base {
         setup();
         strafe(24, right);
         drive(48, forward);
+        strafe(14, right);
+        drive(40, backward);
+        drive(40, forward);
         strafe(12, right);
-        drive(36, backward);
-        drive(36, forward);
-        strafe(8, right);
-        drive(36, backward);
-        drive(36, forward);
-        strafe(8, right);
-        drive(36, backward);
+        drive(40, backward);
+        drive(40, forward);
+        strafe(12, right);
+        drive(46, backward);
     }
 }

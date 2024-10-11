@@ -665,17 +665,28 @@ public abstract class Base extends LinearOpMode {
 
     /** Adds information messages to telemetry and updates it */
     public void updateAll() {
-        if (liftMotor != null) {
+        if (liftMotor == null) {
+            telemetry.addData("Lift Motor", "Disconnected");
+        } else {
             telemetry.addData("Lift Motor Position", liftMotor.getCurrentPosition());
         }
+        if (wristMotor == null) {
+            telemetry.addData("Wrist Motor", "Disconnected");
+        } else {
+            telemetry.addData("Wrist Motor Position", wristMotor.getCurrentPosition());
+        }
+        
         if (trayTiltingServo == null) {
             telemetry.addData("Tray Tilting Servo", "Disconnected");
         }
         if (pixelLockingServo == null) {
-            telemetry.addData("Pixel Front Servo", "Disconnected");
+            telemetry.addData("Pixel Locking Servo", "Disconnected");
         }
         if (touchSensor == null) {
             telemetry.addData("Touch Sensor", "Disconnected");
+        }
+        if (intakeServo == null) {
+            telemetry.addData("Intake Servo", "Disconnected");
         }
         telemetry.update();
     }

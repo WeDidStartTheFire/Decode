@@ -45,25 +45,25 @@ public abstract class Base extends LinearOpMode {
     public static final String LARGE_WHEEL_ROBOT_NAME = "Control Hub";
     public static final double SMALL_WHEEL_DIAMETER = 3.77953;
     public static final double LARGE_WHEEL_DIAMETER = 5.511811;
-    static double WHEEL_DIAMETER_INCHES;
+    static double WHEEL_DIAMETER_INCHES = SMALL_WHEEL_DIAMETER;
 
-    {
-        try {
-            hubName = hardwareMap.get(String.class, "Control Hub");
-            print("Hub Name", hubName);
-            if (SMALL_WHEEL_ROBOT_NAME.equals(hubName)) {
-                WHEEL_DIAMETER_INCHES = SMALL_WHEEL_DIAMETER; // For figuring out circumference
-            } else if (LARGE_WHEEL_ROBOT_NAME.equals(hubName)) {
-                WHEEL_DIAMETER_INCHES = LARGE_WHEEL_DIAMETER; // For figuring out circumference
-            } else {
-                WHEEL_DIAMETER_INCHES = SMALL_WHEEL_DIAMETER; // Default value
-            }
-        } catch (Exception e) {
-            WHEEL_DIAMETER_INCHES = SMALL_WHEEL_DIAMETER;
-            telemetry.addData("Error", e);
-            telemetry.update();
-        }
-    }
+//    {
+//        try {
+//            hubName = hardwareMap.get(String.class, "Control Hub");
+//            print("Hub Name", hubName);
+//            if (SMALL_WHEEL_ROBOT_NAME.equals(hubName)) {
+//                WHEEL_DIAMETER_INCHES = SMALL_WHEEL_DIAMETER; // For figuring out circumference
+//            } else if (LARGE_WHEEL_ROBOT_NAME.equals(hubName)) {
+//                WHEEL_DIAMETER_INCHES = LARGE_WHEEL_DIAMETER; // For figuring out circumference
+//            } else {
+//                WHEEL_DIAMETER_INCHES = SMALL_WHEEL_DIAMETER; // Default value
+//            }
+//        } catch (Exception e) {
+//            WHEEL_DIAMETER_INCHES = SMALL_WHEEL_DIAMETER;
+//            telemetry.addData("Error", e);
+//            telemetry.update();
+//        }
+//    }
 
     static final double COUNTS_PER_MOTOR_REV =
             ((((1.0 + (46.0 / 17.0))) * (1.0 + (46.0 / 11.0))) * 28.0);
@@ -210,6 +210,14 @@ public abstract class Base extends LinearOpMode {
     private void encoderDrive(double inches, Dir direction) {
         int lfTarget = 0;
         int rfTarget = 0;
+        int dir;
+        if (direction == forward) {
+            dir = 1;
+        } else if (direction == backward) {
+            dir = -1;
+        } else {
+            dir = 0;
+        }
 
         // Ensure that the OpMode is still active
         if (opModeIsActive() && lf != null) {
@@ -219,20 +227,9 @@ public abstract class Base extends LinearOpMode {
             // reset the timeout time and start motion.
             if (inches != 0) {
                 runtime.reset();
-                lb.setVelocity(velocity * signum(inches));
-                rb.setVelocity(velocity * signum(inches));
-                lf.setVelocity(velocity * signum(inches));
-                rf.setVelocity(velocity * signum(inches));
-            } else if (direction == forward) {
-                lb.setVelocity(velocity);
-                rb.setVelocity(velocity);
-                lf.setVelocity(velocity);
-                rf.setVelocity(velocity);
-            } else if (direction == backward) {
-                lb.setVelocity(-velocity);
-                rb.setVelocity(-velocity);
-                lf.setVelocity(-velocity);
-                rf.setVelocity(-velocity);
+                setMotorVelocities(velocity * signum(inches) * dir);
+            } else {
+                setMotorVelocities(velocity * dir);
             }
 
             if (inches != 0) {
@@ -306,7 +303,7 @@ public abstract class Base extends LinearOpMode {
     }
 
     /**
-     * Sets the mode of all drive train motors.
+     * Sets the mode of all drive train motors to the same mode.
      *
      * @param mode The mode to set the motors to.
      */
@@ -320,11 +317,12 @@ public abstract class Base extends LinearOpMode {
     }
 
     /**
-     * Sets the power of all drive train motors.
+     * Sets the power of all drive train motors individually.
      *
      * @param lbPower Left back motor power.
      * @param rbPower Right back motor power.
      * @param lfPower Left front motor power.
+     * @param rfPower Right front motor power.
      */
     private void setMotorPowers(double lbPower, double rbPower, double lfPower, double rfPower) {
         if (lb != null) {
@@ -332,6 +330,18 @@ public abstract class Base extends LinearOpMode {
             rb.setPower(rbPower);
             lf.setPower(lfPower);
             rf.setPower(rfPower);
+        }
+    }
+    
+    /** Sets the velocity of all drive train motors to the same value.
+     * @param velocity Velocity of the motors.
+     */
+    private void setMotorVelocities(double velocity) {
+        if (lb != null) {
+            lf.setVelocity(velocity);
+            lb.setVelocity(velocity);
+            rf.setVelocity(velocity);
+            rb.setVelocity(velocity);
         }
     }
 
@@ -374,7 +384,7 @@ public abstract class Base extends LinearOpMode {
         lf.setVelocity(-velocity * STRAFE_FRONT_MODIFIER * d);
         rf.setVelocity(velocity * STRAFE_FRONT_MODIFIER * d);
         if (inches != 0) {
-            inches = (abs(inches) + 1.0125) / 0.7155;
+            inches = (abs(inches) + 1.0125) / 0.7155; // Linear regression from previously tested data
         }
 
         double duration = abs(inches * COUNTS_PER_INCH / velocity);

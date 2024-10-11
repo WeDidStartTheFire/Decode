@@ -75,11 +75,10 @@ public abstract class Base extends LinearOpMode {
     static final double B = 1.1375;
     static final double M = 0.889;
     static final double TURN_SPEED = 0.5;
+    public boolean useOdometry = false;
     private static final int WAIT_TIME = 100;
     double velocity = 2000;
-    public double x;
     public VisionPortal visionPortal;
-    public String tfodModelName;
     private AprilTagProcessor tagProcessor;
 
     private static final IMU.Parameters IMU_PARAMETERS =
@@ -207,7 +206,7 @@ public abstract class Base extends LinearOpMode {
      * @param inches Amount of inches to drive.
      * @param direction (opt.) Direction to drive if inches is zero.*
      */
-    private void encoderDrive(double inches, Dir direction) {
+    private void velocityDrive(double inches, Dir direction) {
         int lfTarget = 0;
         int rfTarget = 0;
         int dir;
@@ -258,7 +257,7 @@ public abstract class Base extends LinearOpMode {
      * @param degrees The amount of degrees to turn.
      * @param direction (opt.) Direction to turn if degrees is zero.
      */
-    public void turn(double degrees, Dir direction) {
+    public void IMUTurn(double degrees, Dir direction) {
         double direct = 0;
         if (direction == left) {
             direct = -1;
@@ -302,6 +301,13 @@ public abstract class Base extends LinearOpMode {
         sleep(WAIT_TIME);
     }
 
+    public void turn(double degrees, Dir direction) {
+        if (useOdometry) {
+            IMUTurn(degrees * 1, direction); // Placeholder
+            return; // Early return
+        }
+        IMUTurn(degrees, direction);
+    }
     /**
      * Sets the mode of all drive train motors to the same mode.
      *
@@ -362,7 +368,7 @@ public abstract class Base extends LinearOpMode {
      * @param inches Amount of inches to strafe.
      * @param direction Direction to strafe in.*
      */
-    public void strafe(double inches, Dir direction) {
+    public void velocityStrafe(double inches, Dir direction) {
         if (!opModeIsActive() || lf == null) {
             return;
         }
@@ -402,6 +408,14 @@ public abstract class Base extends LinearOpMode {
         update();
         sleep(WAIT_TIME);
     }
+    
+    public void strafe(double inches, Dir direction) {
+        if (useOdometry) {
+            velocityStrafe(inches * 1, direction); // Placeholder
+            return; // Early return
+        }
+        velocityStrafe(inches, direction);
+    }
 
     /**
      * Strafes right for a specified number of inches. An inches value of zero will cause the robot
@@ -430,14 +444,18 @@ public abstract class Base extends LinearOpMode {
      * @param direction (opt.) Direction to drive if inches is zero.*
      */
     public void drive(double inches, Dir direction) {
+        if (useOdometry) {
+            velocityDrive(inches * 1, direction); // Placeholder
+            return; // Early return
+        }
         int checks = 1;
         if (inches == 0) {
-            encoderDrive(0, direction);
+            velocityDrive(0, direction);
             return;
         }
 
         for (int i = 0; i < checks; i++) {
-            encoderDrive(inches / checks, direction);
+            velocityDrive(inches / checks, direction);
         }
         stopRobot();
     }

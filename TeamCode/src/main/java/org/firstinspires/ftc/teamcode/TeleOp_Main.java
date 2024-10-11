@@ -21,6 +21,7 @@ public class TeleOp_Main extends Base {
     double slowdownMultiplier = 0.0;
     static final double WRIST_MOTOR_POWER = 0.1;
     static final double INTAKE_SERVO_POWER = 1.0;
+    static final double[] WRIST_MOTOR_BOUNDARIES = {0, 112};
 
     @Override
     public void runOpMode() {
@@ -60,6 +61,7 @@ public class TeleOp_Main extends Base {
                 print("WARNING:", "At least one drivetrain motor disconnected");
             }
             
+            // Logic for the wrist motor
             if (wristMotor != null) {
                 if (gamepad1.dpad_right && wristMotor.getCurrentPosition() < 112) {
                     wristMotor.setPower(WRIST_MOTOR_POWER);
@@ -70,6 +72,7 @@ public class TeleOp_Main extends Base {
                 }
             }
             
+            // Logic for the intake servo
             if (intakeServo != null) {
                 if (gamepad1.a) {
                     intakeServo.setPower(INTAKE_SERVO_POWER);

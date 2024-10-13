@@ -1,11 +1,23 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.archive;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name = "Old", group = "Center Stage")
-public class TeleOp_Old extends Base {
+import org.firstinspires.ftc.teamcode.Base;
+import org.firstinspires.ftc.teamcode.TeleOp_Main;
 
+/*
+ * WARNING:
+ * This file was the TeleOp program used for the Center Stage season 2023-2024.
+ */
+
+/**
+ * This file was the TeleOp program used for the Center Stage season 2023-2024.
+ * @deprecated Use {@link TeleOp_Main} instead.
+ */
+@TeleOp(name = "Old", group = "Center Stage")
+@Deprecated
+public class TeleOp_CS extends Base {
     // Declare OpMode members for each of the 4 motors.
     boolean wasX = false;
     boolean wasLT = false;

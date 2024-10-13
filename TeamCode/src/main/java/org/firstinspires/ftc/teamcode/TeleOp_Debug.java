@@ -21,8 +21,7 @@ public class TeleOp_Debug extends Base {
     double slowdownMultiplier = 0.0;
     boolean wasDownA = false;
     boolean wasDownB = false;
-    public Servo servoA, servoB;
-    public CRServo servoC, servoD;
+    public Servo servoA, servoB, servoC, servoD;
     public DcMotorEx motorA, motorB;
     public final double MOTOR_SPEED = 0.25;
 
@@ -33,11 +32,7 @@ public class TeleOp_Debug extends Base {
         servoA = droneServo;
         servoB = pixelLockingServo;
         servoC = intakeServo;
-        try {
-            servoD = hardwareMap.get(CRServo.class, "trayTiltingServo");
-        } catch (IllegalArgumentException e) {
-            except("trayTiltingServo/servoD not connected");
-        }
+        servoD = trayTiltingServo;
 
         motorA = wristMotor;
         motorB = liftMotor;
@@ -110,14 +105,14 @@ public class TeleOp_Debug extends Base {
 
             if (servoC != null) {
                 if (gamepad1.x) {
-                    servoC.setPower(1);
+                    servoC.setPosition(1);
                     addTelemetry("Set servoC to 1");
                 } else if (gamepad1.y) {
-                    servoC.setPower(-1);
-                    addTelemetry("Set servoC to -1");
-                } else {
-                    servoC.setPower(0);
+                    servoC.setPosition(0);
                     addTelemetry("Set servoC to 0");
+                } else {
+                    servoC.setPosition(0.5);
+                    addTelemetry("Set servoC to 0.5");
                 }
             } else {
                 addTelemetry("servoC disconnected");
@@ -125,14 +120,14 @@ public class TeleOp_Debug extends Base {
 
             if (servoD != null) {
                 if (gamepad1.left_bumper) {
-                    servoD.setPower(-1);
-                    addTelemetry("Set servoD to -1");
+                    servoD.setPosition(0);
+                    addTelemetry("Set servoD to 0");
                 } else if (gamepad1.right_bumper) {
-                    servoD.setPower(1);
+                    servoD.setPosition(1);
                     addTelemetry("Set servoD to 1");
                 } else {
-                    servoD.setPower(0);
-                    addTelemetry("Set servoD to 0");
+                    servoD.setPosition(0.5);
+                    addTelemetry("Set servoD to 0.5");
                 }
             } else {
                 addTelemetry("servoD disconnected");

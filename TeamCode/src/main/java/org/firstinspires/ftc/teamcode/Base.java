@@ -24,12 +24,10 @@ import static org.firstinspires.ftc.teamcode.Base.Dir.*;
 public abstract class Base extends LinearOpMode {
     private static final double LIFT_VEL = 1500;
     public static final double GOAL_ENCODERS = 2000;
-    //    private TfodProcessor tfod;
     private final ElapsedTime runtime = new ElapsedTime();
     // All non-primitive data types initialize to null on default.
     public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor;
-    public Servo droneServo, pixelLockingServo, trayTiltingServo;
-    public CRServo intakeServo;
+    public Servo intakeServo, droneServo, pixelLockingServo, trayTiltingServo;
     public TouchSensor touchSensor;
     private IMU imu;
     /*
@@ -46,25 +44,6 @@ public abstract class Base extends LinearOpMode {
     public static final double SMALL_WHEEL_DIAMETER = 3.77953;
     public static final double LARGE_WHEEL_DIAMETER = 5.511811;
     static double WHEEL_DIAMETER_INCHES = SMALL_WHEEL_DIAMETER;
-
-//    {
-//        try {
-//            hubName = hardwareMap.get(String.class, "Control Hub");
-//            print("Hub Name", hubName);
-//            if (SMALL_WHEEL_ROBOT_NAME.equals(hubName)) {
-//                WHEEL_DIAMETER_INCHES = SMALL_WHEEL_DIAMETER; // For figuring out circumference
-//            } else if (LARGE_WHEEL_ROBOT_NAME.equals(hubName)) {
-//                WHEEL_DIAMETER_INCHES = LARGE_WHEEL_DIAMETER; // For figuring out circumference
-//            } else {
-//                WHEEL_DIAMETER_INCHES = SMALL_WHEEL_DIAMETER; // Default value
-//            }
-//        } catch (Exception e) {
-//            WHEEL_DIAMETER_INCHES = SMALL_WHEEL_DIAMETER;
-//            telemetry.addData("Error", e);
-//            telemetry.update();
-//        }
-//    }
-
     static final double COUNTS_PER_MOTOR_REV =
             ((((1.0 + (46.0 / 17.0))) * (1.0 + (46.0 / 11.0))) * 28.0);
     static final double DRIVE_GEAR_REDUCTION = 1.0; // No External Gearing
@@ -134,9 +113,9 @@ public abstract class Base extends LinearOpMode {
             except("droneServo not connected");
         }
         try {
-            intakeServo = hardwareMap.get(CRServo.class, "pixelBackServo"); // Port 0
+            intakeServo = hardwareMap.get(Servo.class, "pixelBackServo"); // Port 0
         } catch (IllegalArgumentException e) {
-            except("pixelBackServo not connected");
+            except("intakeServo (pixelBackServo) not connected");
         }
         try {
             pixelLockingServo = hardwareMap.get(Servo.class, "pixelFrontServo"); // Port 2

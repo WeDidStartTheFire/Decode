@@ -75,11 +75,17 @@ public class TeleOp_Main extends Base {
             // Logic for the intake servo
             if (intakeServo != null) {
                 if (gamepad1.a) {
-                    intakeServo.setPower(INTAKE_SERVO_POWER);
+                    intakeServo.setPosition(0.5 + 0.5 * INTAKE_SERVO_POWER);
+                    print("Intake Servo", "Set Power to: " + INTAKE_SERVO_POWER);
+                    print("Intake Servo", "Set Position to: " + 0.5 + 0.5 * INTAKE_SERVO_POWER);
                 } else if (gamepad1.b) {
-                    intakeServo.setPower(-INTAKE_SERVO_POWER);
+                    intakeServo.setPosition(0.5 + 0.5 * -INTAKE_SERVO_POWER);
+                    print("Intake Servo", "Set Power to: " + -INTAKE_SERVO_POWER);
+                    print("Intake Servo", "Set Position to: " + 0.5 + 0.5 * -INTAKE_SERVO_POWER);
                 } else {
-                    intakeServo.setPower(0);
+                    intakeServo.setPosition(0.5);
+                    print("Intake Servo", "Set Power to: " + 0);
+                    print("Intake Servo", "Set Position to: " + 0.5);
                 }
             }
 

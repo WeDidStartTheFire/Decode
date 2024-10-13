@@ -60,18 +60,18 @@ public class TeleOp_Main extends Base {
             } else {
                 print("WARNING:", "At least one drivetrain motor disconnected");
             }
-            
+
             // Logic for the wrist motor
             if (wristMotor != null) {
-                if (gamepad1.dpad_right && wristMotor.getCurrentPosition() < 112) {
+                if (gamepad1.dpad_right && wristMotor.getCurrentPosition() < WRIST_MOTOR_BOUNDARIES[1]) {
                     wristMotor.setPower(WRIST_MOTOR_POWER);
-                } else if (gamepad1.dpad_left && wristMotor.getCurrentPosition() > 0) {
+                } else if (gamepad1.dpad_left && wristMotor.getCurrentPosition() > WRIST_MOTOR_BOUNDARIES[0]) {
                     wristMotor.setPower(-WRIST_MOTOR_POWER);
                 } else {
                     wristMotor.setPower(0);
                 }
             }
-            
+
             // Logic for the intake servo
             if (intakeServo != null) {
                 if (gamepad1.a) {

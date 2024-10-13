@@ -20,7 +20,7 @@ import org.firstinspires.ftc.vision.*;
 import org.firstinspires.ftc.vision.apriltag.*;
 import static org.firstinspires.ftc.teamcode.Base.Dir.*;
 
-// Connect to robot: adb connect 192.168.43.1:5555
+// Connect to robot: adb connect 192.168.43.1:5555 OR rc
 
 /** Base class that contains common methods and other configuration. */
 public abstract class Base extends LinearOpMode {

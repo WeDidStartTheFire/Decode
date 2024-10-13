@@ -80,12 +80,7 @@ public class TeleOp_Main extends Base {
                 } else if (gamepad1.b) {
                     intakeServo.setPosition(0);
                     print("Intake Servo", "Set Position to: 0");
-                } /*else {
-                    intakeServo.setPosition(0.5);
-                    print("Intake Servo", "Set Power to: " + 0);
-                    print("Intake Servo", "Set Position to: " + 0.5);
-                }*/
-                print("Intake Servo", "Current Position: " + intakeServo.getPosition());
+                }
             }
 
             // Logic to raise or lower the lift

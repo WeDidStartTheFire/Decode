@@ -96,17 +96,17 @@ public class TeleOp_Main extends Base {
                         touchSensorPressed = false;
                         addTelemetry("Touch sensor not connected");
                     }
-                    if (gamepad2.dpad_down && !gamepad2.dpad_up && !touchSensorPressed) {
+                    if (gamepad2.dpad_up && !gamepad2.dpad_down) {
                         if (liftMotor.getCurrentPosition() > -5500) {
-                            liftMotor.setPower(1);
+                            liftMotor.setPower(-1);
                             addTelemetry("pixelLiftingMotor now moving");
                         } else {
                             liftMotor.setPower(0);
                             addTelemetry("pixelLiftingMotor no longer moving");
                         }
-                    } else if (gamepad2.dpad_up && !gamepad2.dpad_down) {
+                    } else if (gamepad2.dpad_down && !gamepad2.dpad_up && !touchSensorPressed) {
                         if (liftMotor.getCurrentPosition() < 0) {
-                            liftMotor.setPower(-1);
+                            liftMotor.setPower(1);
                             addTelemetry("pixelLiftingMotor now moving");
                         } else {
                             liftMotor.setPower(0);

@@ -97,7 +97,7 @@ public class TeleOp_Main extends Base {
                         addTelemetry("Touch sensor not connected");
                     }
                     if (gamepad2.dpad_up && !gamepad2.dpad_down) {
-                        if (liftMotor.getCurrentPosition() > -5500) {
+                        if (liftMotor.getCurrentPosition() > -1200) {
                             liftMotor.setPower(-1);
                             addTelemetry("pixelLiftingMotor now moving");
                         } else {

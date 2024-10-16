@@ -67,7 +67,7 @@ public abstract class Base extends LinearOpMode {
                     new RevHubOrientationOnRobot(
                             RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                             RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
-    
+
     /** Directions. Options: left, right, forward, backward * */
     public enum Dir {
         left,
@@ -76,9 +76,7 @@ public abstract class Base extends LinearOpMode {
         backward
     }
 
-    /**
-     * Initializes all hardware devices on the robot.
-     */
+    /** Initializes all hardware devices on the robot. */
     public void setup() {
         imu = hardwareMap.get(IMU.class, "imu");
         if (!imu.initialize(IMU_PARAMETERS)) {
@@ -172,7 +170,6 @@ public abstract class Base extends LinearOpMode {
         waitForStart();
         runtime.reset();
     }
-
 
     /** Initializes all hardware devices on the robot. * */
     @Deprecated
@@ -289,6 +286,7 @@ public abstract class Base extends LinearOpMode {
         }
         IMUTurn(degrees, direction);
     }
+
     /**
      * Sets the mode of all drive train motors to the same mode.
      *
@@ -319,8 +317,10 @@ public abstract class Base extends LinearOpMode {
             rf.setPower(rfPower);
         }
     }
-    
-    /** Sets the velocity of all drive train motors to the same value.
+
+    /**
+     * Sets the velocity of all drive train motors to the same value.
+     *
      * @param velocity Velocity of the motors.
      */
     private void setMotorVelocities(double velocity) {
@@ -371,7 +371,7 @@ public abstract class Base extends LinearOpMode {
         lf.setVelocity(-velocity * STRAFE_FRONT_MODIFIER * d);
         rf.setVelocity(velocity * STRAFE_FRONT_MODIFIER * d);
         if (inches != 0) {
-            inches = (abs(inches) + 1.0125) / 0.7155; // Linear regression from previously tested data
+            inches = (abs(inches) + 1.0125) / 0.7155; // Linear regression
         }
 
         double duration = abs(inches * COUNTS_PER_INCH / velocity);
@@ -389,7 +389,7 @@ public abstract class Base extends LinearOpMode {
         update();
         sleep(WAIT_TIME);
     }
-    
+
     public void strafe(double inches, Dir direction) {
         if (useOdometry) {
             velocityStrafe(inches * 1, direction); // Placeholder
@@ -684,7 +684,7 @@ public abstract class Base extends LinearOpMode {
         } else {
             telemetry.addData("Wrist Motor Position", wristMotor.getCurrentPosition());
         }
-        
+
         if (trayTiltingServo == null) {
             telemetry.addData("Tray Tilting Servo", "Disconnected");
         }

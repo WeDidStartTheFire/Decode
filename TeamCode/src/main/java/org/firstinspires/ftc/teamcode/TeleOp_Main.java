@@ -22,6 +22,7 @@ public class TeleOp_Main extends Base {
     static final double WRIST_MOTOR_POWER = 0.1;
     static final double[] WRIST_MOTOR_BOUNDARIES = {0, 140};
     double intakeServoGoal = 0;
+    boolean wasIntakeServoButtonPressed = false;
 
     @Override
     public void runOpMode() {
@@ -76,7 +77,7 @@ public class TeleOp_Main extends Base {
 
             // Logic for the intake servo
             if (intakeServo != null) {
-                if (gamepad2.a) {
+                if (gamepad2.a && !wasIntakeServoButtonPressed) {
                     if (intakeServoGoal == 0) {
                         intakeServoGoal = 1;
                         intakeServo.setPosition(intakeServoGoal);
@@ -85,6 +86,7 @@ public class TeleOp_Main extends Base {
                         intakeServo.setPosition(intakeServoGoal);
                     }
                 }
+                wasIntakeServoButtonPressed = gamepad2.a;
             }
 
             // Logic to raise or lower the lift

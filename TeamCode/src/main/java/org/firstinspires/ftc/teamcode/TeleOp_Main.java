@@ -23,6 +23,8 @@ public class TeleOp_Main extends Base {
     static final double[] WRIST_MOTOR_BOUNDARIES = {0, 140};
     double intakeServoGoal = 0;
     boolean wasIntakeServoButtonPressed = false;
+    int wristMotorStopPosition = 0;
+    boolean wristMotorWasStopped = false;
 
     @Override
     public void runOpMode() {
@@ -66,12 +68,21 @@ public class TeleOp_Main extends Base {
             if (wristMotor != null) {
                 if (gamepad2.dpad_right
                         && wristMotor.getCurrentPosition() < WRIST_MOTOR_BOUNDARIES[1]) {
+                    wristMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     wristMotor.setPower(WRIST_MOTOR_POWER);
+                    wristMotorWasStopped = false;
                 } else if (gamepad2.dpad_left
                         && wristMotor.getCurrentPosition() > WRIST_MOTOR_BOUNDARIES[0]) {
+                    wristMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     wristMotor.setPower(-WRIST_MOTOR_POWER);
+                    wristMotorWasStopped = false;
                 } else {
-                    wristMotor.setPower(0);
+                    if (!wristMotorWasStopped) {
+                        wristMotorStopPosition = wristMotor.getCurrentPosition();
+                        wristMotor.setTargetPosition(wristMotorStopPosition);
+                        wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        wristMotorWasStopped = true;
+                    }
                 }
             }
 

@@ -11,11 +11,14 @@ import androidx.annotation.Nullable;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.rev.*;
 import com.qualcomm.robotcore.eventloop.opmode.*;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.*;
 
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.*;
 import org.firstinspires.ftc.vision.apriltag.*;
 import static org.firstinspires.ftc.teamcode.Base.Dir.*;
@@ -56,11 +59,12 @@ public abstract class Base extends LinearOpMode {
     static final double B = 1.1375;
     static final double M = 0.889;
     static final double TURN_SPEED = 0.5;
-    public boolean useOdometry = false;
+    public boolean useOdometry = true;
     private static final int WAIT_TIME = 100;
     double velocity = 2000;
     public VisionPortal visionPortal;
     private AprilTagProcessor tagProcessor;
+    private SampleMecanumDrive drive;
 
     private static final IMU.Parameters IMU_PARAMETERS =
             new IMU.Parameters(
@@ -78,6 +82,7 @@ public abstract class Base extends LinearOpMode {
 
     /** Initializes all hardware devices on the robot. */
     public void setup() {
+        drive = new SampleMecanumDrive(hardwareMap);
         imu = hardwareMap.get(IMU.class, "imu");
         if (!imu.initialize(IMU_PARAMETERS)) {
             throw new RuntimeException("IMU initialization failed");
@@ -288,7 +293,9 @@ public abstract class Base extends LinearOpMode {
      */
     public void turn(double degrees, Dir direction) {
         if (useOdometry) {
-            IMUTurn(degrees * 1, direction); // Placeholder
+            int dir = 1;
+            if (direction == left) { dir = -1; }
+            drive.turn(Math.toRadians(degrees * dir));
             return; // Early return
         }
         IMUTurn(degrees, direction);
@@ -406,7 +413,17 @@ public abstract class Base extends LinearOpMode {
      */
     public void strafe(double inches, Dir direction) {
         if (useOdometry) {
-            velocityStrafe(inches * 1, direction); // Placeholder
+            Trajectory strafeTrajectory;
+            if (direction == left) {
+                strafeTrajectory = drive.trajectoryBuilder(new Pose2d())
+                        .strafeLeft(inches)
+                        .build();
+            } else {
+                strafeTrajectory = drive.trajectoryBuilder(new Pose2d())
+                        .strafeRight(inches)
+                        .build();
+            }
+            drive.followTrajectory(strafeTrajectory);
             return; // Early return
         }
         velocityStrafe(inches, direction);
@@ -440,9 +457,20 @@ public abstract class Base extends LinearOpMode {
      */
     public void drive(double inches, Dir direction) {
         if (useOdometry) {
-            velocityDrive(inches * 1, direction); // Placeholder
+            Trajectory strafeTrajectory;
+            if (direction == backward) {
+                strafeTrajectory = drive.trajectoryBuilder(new Pose2d())
+                        .forward(inches)
+                        .build();
+            } else {
+                strafeTrajectory = drive.trajectoryBuilder(new Pose2d())
+                        .back(inches)
+                        .build();
+            }
+            drive.followTrajectory(strafeTrajectory);
             return; // Early return
         }
+        
         int checks = 1;
         if (inches == 0) {
             velocityDrive(0, direction);

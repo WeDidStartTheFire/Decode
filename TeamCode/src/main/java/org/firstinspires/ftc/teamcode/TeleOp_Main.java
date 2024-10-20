@@ -98,6 +98,7 @@ public class TeleOp_Main extends Base {
                     }
                 }
                 wasIntakeServoButtonPressed = gamepad2.a;
+                print("Intake Servo Goal", intakeServoGoal);
             }
 
             // Logic to raise or lower the lift

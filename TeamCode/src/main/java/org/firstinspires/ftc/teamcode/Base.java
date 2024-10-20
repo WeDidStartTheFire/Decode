@@ -279,6 +279,13 @@ public abstract class Base extends LinearOpMode {
         sleep(WAIT_TIME);
     }
 
+    /**
+     * Turns the robot a specified number of degrees. Positive values turn right, negative values
+     * turn left.
+     *
+     * @param degrees The amount of degrees to turn.
+     * @param direction (opt.) Direction to turn if degrees is zero.
+     */
     public void turn(double degrees, Dir direction) {
         if (useOdometry) {
             IMUTurn(degrees * 1, direction); // Placeholder
@@ -390,6 +397,13 @@ public abstract class Base extends LinearOpMode {
         sleep(WAIT_TIME);
     }
 
+    /**
+     * Strafes left or right for a specified number of inches. An inches value of zero will cause
+     * the robot to strafe until manually stopped.
+     *
+     * @param inches Amount of inches to strafe.
+     * @param direction Direction to strafe in.*
+     */
     public void strafe(double inches, Dir direction) {
         if (useOdometry) {
             velocityStrafe(inches * 1, direction); // Placeholder
@@ -460,35 +474,70 @@ public abstract class Base extends LinearOpMode {
         return tiles * TILE_LENGTH;
     }
 
-    /** Stops all drive train motors on the robot. * */
+    /** Stops all drive train motors on the robot. **/
     public void stopRobot() {
-        if (lb != null) {
-            setMotorPowers(0, 0, 0, 0);
-            lb.setVelocity(0);
-            rb.setVelocity(0);
-            lf.setVelocity(0);
-            rf.setVelocity(0);
+        if (lb == null) return;
+        setMotorPowers(0, 0, 0, 0);
+        lb.setVelocity(0);
+        rb.setVelocity(0);
+        lf.setVelocity(0);
+        rf.setVelocity(0);
 
-            // Set target position to avoid an error
-            lb.setTargetPosition(lb.getCurrentPosition());
-            rb.setTargetPosition(rb.getCurrentPosition());
-            lf.setTargetPosition(lf.getCurrentPosition());
-            rf.setTargetPosition(rf.getCurrentPosition());
+        // Set target position to avoid an error
+        lb.setTargetPosition(lb.getCurrentPosition());
+        rb.setTargetPosition(rb.getCurrentPosition());
+        lf.setTargetPosition(lf.getCurrentPosition());
+        rf.setTargetPosition(rf.getCurrentPosition());
 
-            // Turn On RUN_TO_POSITION
-            setMotorModes(DcMotorEx.RunMode.RUN_TO_POSITION);
+        // Turn On RUN_TO_POSITION
+        setMotorModes(DcMotorEx.RunMode.RUN_TO_POSITION);
 
-            // Stop all motion
-            lb.setTargetPosition(lb.getCurrentPosition());
-            rb.setTargetPosition(rb.getCurrentPosition());
-            lf.setTargetPosition(lf.getCurrentPosition());
-            rf.setTargetPosition(rf.getCurrentPosition());
+        // Stop all motion
+        lb.setTargetPosition(lb.getCurrentPosition());
+        rb.setTargetPosition(rb.getCurrentPosition());
+        lf.setTargetPosition(lf.getCurrentPosition());
+        rf.setTargetPosition(rf.getCurrentPosition());
 
-            // Turn off RUN_TO_POSITION
-            setMotorModes(RUN_USING_ENCODER);
+        // Turn off RUN_TO_POSITION
+        setMotorModes(RUN_USING_ENCODER);
 
-            sleep(WAIT_TIME);
-        }
+        sleep(WAIT_TIME);
+    }
+    
+    public void moveIntake(double position) {
+        if (intakeServo == null) return;
+        intakeServo.setPosition(position);
+    }
+    
+    /** Opens the intake servo. **/
+    public void openIntake() {
+        moveIntake(1);
+    }
+    
+    /** Closes the intake servo. **/
+    public void closeIntake() {
+        moveIntake(0);
+    }
+    
+    /**
+     * Moves the wrist to the specified encoder value.
+     *
+     * @param encoderValue The encoder value to move the wrist to.
+     */
+    public void moveWrist(int encoderValue) {
+        if (wristMotor == null) return;
+        wristMotor.setTargetPosition(encoderValue);
+        wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+    
+    /** Extends the wrist. **/
+    public void extendWrist() {
+        moveWrist(50);
+    }
+    
+    /** Retracts the wrist. **/
+    public void retractWrist() {
+        moveWrist(0);
     }
 
     /**

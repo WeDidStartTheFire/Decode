@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.teamcode.Base.Dir.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 @Autonomous(name = "Net Zone Simple +", group = "IntoTheDeep", preselectTeleOp = "Main")
 public class Auto_NetZoneSimplePlus extends Base {
@@ -12,14 +11,9 @@ public class Auto_NetZoneSimplePlus extends Base {
         setup();
         strafe(2,right);
         drive(12, forward);
-        if (wristMotor != null) {
-            wristMotor.setTargetPosition(40);
-            wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
+        extendWrist();
         sleep(250);
-        if (intakeServo != null) {
-            intakeServo.setPosition(1);
-        }
+        openIntake();
         sleep(250);
         drive(76, backward);
     }

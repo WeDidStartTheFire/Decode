@@ -72,7 +72,7 @@ public abstract class Base extends LinearOpMode {
                             RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                             RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
 
-    /** Directions. Options: left, right, forward, backward * */
+    /** Directions. Options: LEFT, RIGHT, FORWARD, BACKWARD * */
     public enum Dir {
         LEFT,
         RIGHT,

@@ -23,15 +23,23 @@ public class TeleOp_Debug extends Base {
     public Servo servoA, servoB, servoC, servoD;
     public DcMotorEx motorA, motorB;
     public final double MOTOR_SPEED = 0.25;
+    public final boolean controlHub = true;
 
     @Override
     public void runOpMode() {
         setup();
-
-        servoA = droneServo;
-        servoB = pixelLockingServo;
-        servoC = intakeServo;
-        servoD = trayTiltingServo;
+        
+        if (controlHub) {
+            servoA = hardwareMap.get(Servo.class, "servoA");
+            servoB = hardwareMap.get(Servo.class, "servoB");
+            servoC = hardwareMap.get(Servo.class, "servoC");
+            servoD = hardwareMap.get(Servo.class, "servoD");
+        } else {
+            servoA = droneServo;
+            servoB = pixelLockingServo;
+            servoC = intakeServo;
+            servoD = trayTiltingServo;
+        }
 
         motorA = wristMotor;
         motorB = liftMotor;

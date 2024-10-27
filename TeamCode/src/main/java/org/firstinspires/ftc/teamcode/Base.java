@@ -59,8 +59,8 @@ public abstract class Base extends LinearOpMode {
     static final double B = 1.1375;
     static final double M = 0.889;
     static final double TURN_SPEED = 0.5;
-    public boolean useOdometry = true;
     private static final int WAIT_TIME = 100;
+    public boolean useOdometry = true;
     double velocity = 2000;
     public VisionPortal visionPortal;
     private AprilTagProcessor tagProcessor;

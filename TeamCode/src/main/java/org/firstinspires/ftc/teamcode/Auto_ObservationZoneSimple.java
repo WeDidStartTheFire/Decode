@@ -9,6 +9,6 @@ public class Auto_ObservationZoneSimple extends Base {
     @Override
     public void runOpMode() {
         setup();
-        strafe(48, right);
+        strafe(48, RIGHT);
     }
 }

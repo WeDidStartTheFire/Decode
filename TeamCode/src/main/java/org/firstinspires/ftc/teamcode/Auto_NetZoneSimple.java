@@ -9,6 +9,6 @@ public class Auto_NetZoneSimple extends Base {
     @Override
     public void runOpMode() {
         setup();
-        strafe(60, right);
+        strafe(60, RIGHT);
     }
 }

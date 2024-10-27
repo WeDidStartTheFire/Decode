@@ -9,12 +9,12 @@ public class Auto_NetZoneSimplePlusAway extends Base {
     @Override
     public void runOpMode() {
         setup();
-        strafe(2,right);
-        drive(12, forward);
+        strafe(2, RIGHT);
+        drive(12, FORWARD);
         extendWrist();
         sleep(250);
         openIntake();
         sleep(250);
-        strafe(36, right);
+        strafe(36, RIGHT);
     }
 }

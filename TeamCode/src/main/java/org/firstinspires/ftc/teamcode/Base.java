@@ -74,10 +74,10 @@ public abstract class Base extends LinearOpMode {
 
     /** Directions. Options: left, right, forward, backward * */
     public enum Dir {
-        left,
-        right,
-        forward,
-        backward
+        LEFT,
+        RIGHT,
+        FORWARD,
+        BACKWARD
     }
 
     /** Initializes all hardware devices on the robot. */
@@ -193,9 +193,9 @@ public abstract class Base extends LinearOpMode {
         int lfTarget = 0;
         int rfTarget = 0;
         int dir;
-        if (direction == forward) {
+        if (direction == FORWARD) {
             dir = 1;
-        } else if (direction == backward) {
+        } else if (direction == BACKWARD) {
             dir = -1;
         } else {
             dir = 0;
@@ -242,9 +242,9 @@ public abstract class Base extends LinearOpMode {
      */
     public void IMUTurn(double degrees, Dir direction) {
         double direct = 0;
-        if (direction == left) {
+        if (direction == LEFT) {
             direct = -1;
-        } else if (direction == right) {
+        } else if (direction == RIGHT) {
             direct = 1;
         }
         sleep(100);
@@ -294,7 +294,7 @@ public abstract class Base extends LinearOpMode {
     public void turn(double degrees, Dir direction) {
         if (useOdometry) {
             int dir = 1;
-            if (direction == left) { dir = -1; }
+            if (direction == LEFT) { dir = -1; }
             drive.turn(Math.toRadians(degrees * dir));
             return; // Early return
         }
@@ -353,7 +353,7 @@ public abstract class Base extends LinearOpMode {
      * @param degrees The amount of degrees to turn.
      */
     public void turn(double degrees) {
-        turn(degrees, right);
+        turn(degrees, RIGHT);
     }
 
     /**
@@ -373,9 +373,9 @@ public abstract class Base extends LinearOpMode {
 
         double d = 0;
 
-        if (direction == right) {
+        if (direction == RIGHT) {
             d = -1;
-        } else if (direction == left) {
+        } else if (direction == LEFT) {
             d = 1;
         }
 
@@ -414,7 +414,7 @@ public abstract class Base extends LinearOpMode {
     public void strafe(double inches, Dir direction) {
         if (useOdometry) {
             Trajectory strafeTrajectory;
-            if (direction == left) {
+            if (direction == LEFT) {
                 strafeTrajectory = drive.trajectoryBuilder(new Pose2d())
                         .strafeLeft(inches)
                         .build();
@@ -436,7 +436,7 @@ public abstract class Base extends LinearOpMode {
      * @param inches Amount of inches to strafe.
      */
     public void strafe(double inches) {
-        strafe(inches, right);
+        strafe(inches, RIGHT);
     }
 
     /**
@@ -458,7 +458,7 @@ public abstract class Base extends LinearOpMode {
     public void drive(double inches, Dir direction) {
         if (useOdometry) {
             Trajectory strafeTrajectory;
-            if (direction == backward) {
+            if (direction == BACKWARD) {
                 strafeTrajectory = drive.trajectoryBuilder(new Pose2d())
                         .forward(inches)
                         .build();
@@ -490,7 +490,7 @@ public abstract class Base extends LinearOpMode {
      * @param inches Amount of inches to drive.
      */
     public void drive(double inches) {
-        drive(inches, forward);
+        drive(inches, FORWARD);
     }
 
     /**

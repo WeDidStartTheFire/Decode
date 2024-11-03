@@ -87,14 +87,14 @@ public class TeleOp_Main extends Base {
             }
 
             // Logic for the intake servo
-            if (intakeServo != null) {
+            if (wristServo != null) {
                 if (gamepad2.a && !wasIntakeServoButtonPressed) {
                     if (intakeServoGoal == 0) {
                         intakeServoGoal = 1;
-                        intakeServo.setPosition(intakeServoGoal);
+                        wristServo.setPosition(intakeServoGoal);
                     } else {
                         intakeServoGoal = 0;
-                        intakeServo.setPosition(intakeServoGoal);
+                        wristServo.setPosition(intakeServoGoal);
                     }
                 }
                 wasIntakeServoButtonPressed = gamepad2.a;

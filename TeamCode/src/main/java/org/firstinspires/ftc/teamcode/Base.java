@@ -32,7 +32,7 @@ public abstract class Base extends LinearOpMode {
     private final ElapsedTime runtime = new ElapsedTime();
     // All non-primitive data types initialize to null on default.
     public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor;
-    public Servo intakeServo, droneServo, pixelLockingServo, trayTiltingServo;
+    public Servo wristServo, droneServo, pixelLockingServo, intakeServo;
     public TouchSensor touchSensor;
     private IMU imu;
     /*
@@ -49,22 +49,24 @@ public abstract class Base extends LinearOpMode {
     public static final double SMALL_WHEEL_DIAMETER = 3.77953;
     public static final double LARGE_WHEEL_DIAMETER = 5.511811;
     static double WHEEL_DIAMETER_INCHES = SMALL_WHEEL_DIAMETER;
+
     static final double COUNTS_PER_MOTOR_REV =
             ((((1.0 + (46.0 / 17.0))) * (1.0 + (46.0 / 11.0))) * 28.0);
     static final double DRIVE_GEAR_REDUCTION = 1.0; // No External Gearing
     static final double COUNTS_PER_INCH =
             (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * PI);
+
     static final double TILE_LENGTH = 23.25;
     static final double STRAFE_FRONT_MODIFIER = 1.3;
     static final double B = 1.1375;
     static final double M = 0.889;
     static final double TURN_SPEED = 0.5;
     private static final int WAIT_TIME = 100;
-    public boolean useOdometry = true;
+    public boolean useOdometry = false;
     double velocity = 2000;
     public VisionPortal visionPortal;
     private AprilTagProcessor tagProcessor;
-    private SampleMecanumDrive drive;
+    private SampleMecanumDrive mecDrive;
 
     private static final IMU.Parameters IMU_PARAMETERS =
             new IMU.Parameters(
@@ -82,7 +84,9 @@ public abstract class Base extends LinearOpMode {
 
     /** Initializes all hardware devices on the robot. */
     public void setup() {
-        drive = new SampleMecanumDrive(hardwareMap);
+        if (useOdometry) {
+            mecDrive = new SampleMecanumDrive(hardwareMap);
+        }
         imu = hardwareMap.get(IMU.class, "imu");
         if (!imu.initialize(IMU_PARAMETERS)) {
             throw new RuntimeException("IMU initialization failed");
@@ -101,7 +105,8 @@ public abstract class Base extends LinearOpMode {
             except("At least one drive train motor is not connected, so all will be disabled");
             lf = lb = rf = rb = null;
         }
-        // If given an error, the motor is already null
+
+        // Motors
         try {
             liftMotor = hardwareMap.get(DcMotorEx.class, "liftMotor"); // Port 0
         } catch (IllegalArgumentException e) {
@@ -112,15 +117,17 @@ public abstract class Base extends LinearOpMode {
         } catch (IllegalArgumentException e) {
             except("pixelLiftingMotor not connected");
         }
+
+        // Servos
         try {
-            droneServo = hardwareMap.get(Servo.class, "droneServo"); // Port 4
-        } catch (IllegalArgumentException e) {
-            except("droneServo not connected");
-        }
-        try {
-            intakeServo = hardwareMap.get(Servo.class, "pixelBackServo"); // Port 0
+            wristServo = hardwareMap.get(Servo.class, "pixelBackServo"); // Port 0
         } catch (IllegalArgumentException e) {
             except("intakeServo (pixelBackServo) not connected");
+        }
+        try {
+            intakeServo = hardwareMap.get(Servo.class, "trayTiltingServo"); // Port 1
+        } catch (IllegalArgumentException e) {
+            except("trayTiltingServo not connected");
         }
         try {
             pixelLockingServo = hardwareMap.get(Servo.class, "pixelFrontServo"); // Port 2
@@ -128,10 +135,12 @@ public abstract class Base extends LinearOpMode {
             except("pixelFrontServo not connected");
         }
         try {
-            trayTiltingServo = hardwareMap.get(Servo.class, "trayTiltingServo"); // Port 1
+            droneServo = hardwareMap.get(Servo.class, "droneServo"); // Port 4
         } catch (IllegalArgumentException e) {
-            except("trayTiltingServo not connected");
+            except("droneServo not connected");
         }
+
+        // Touch Sensors
         try {
             touchSensor = hardwareMap.get(TouchSensor.class, "touchSensor"); // Port 0
         } catch (IllegalArgumentException e) {
@@ -294,8 +303,10 @@ public abstract class Base extends LinearOpMode {
     public void turn(double degrees, Dir direction) {
         if (useOdometry) {
             int dir = 1;
-            if (direction == LEFT) { dir = -1; }
-            drive.turn(Math.toRadians(degrees * dir));
+            if (direction == LEFT) {
+                dir = -1;
+            }
+            mecDrive.turn(Math.toRadians(degrees * dir));
             return; // Early return
         }
         IMUTurn(degrees, direction);
@@ -415,15 +426,13 @@ public abstract class Base extends LinearOpMode {
         if (useOdometry) {
             Trajectory strafeTrajectory;
             if (direction == LEFT) {
-                strafeTrajectory = drive.trajectoryBuilder(new Pose2d())
-                        .strafeLeft(inches)
-                        .build();
+                strafeTrajectory =
+                        mecDrive.trajectoryBuilder(new Pose2d()).strafeLeft(inches).build();
             } else {
-                strafeTrajectory = drive.trajectoryBuilder(new Pose2d())
-                        .strafeRight(inches)
-                        .build();
+                strafeTrajectory =
+                        mecDrive.trajectoryBuilder(new Pose2d()).strafeRight(inches).build();
             }
-            drive.followTrajectory(strafeTrajectory);
+            mecDrive.followTrajectory(strafeTrajectory);
             return; // Early return
         }
         velocityStrafe(inches, direction);
@@ -459,18 +468,14 @@ public abstract class Base extends LinearOpMode {
         if (useOdometry) {
             Trajectory strafeTrajectory;
             if (direction == BACKWARD) {
-                strafeTrajectory = drive.trajectoryBuilder(new Pose2d())
-                        .forward(inches)
-                        .build();
+                strafeTrajectory = mecDrive.trajectoryBuilder(new Pose2d()).forward(inches).build();
             } else {
-                strafeTrajectory = drive.trajectoryBuilder(new Pose2d())
-                        .back(inches)
-                        .build();
+                strafeTrajectory = mecDrive.trajectoryBuilder(new Pose2d()).back(inches).build();
             }
-            drive.followTrajectory(strafeTrajectory);
+            mecDrive.followTrajectory(strafeTrajectory);
             return; // Early return
         }
-        
+
         int checks = 1;
         if (inches == 0) {
             velocityDrive(0, direction);
@@ -502,7 +507,7 @@ public abstract class Base extends LinearOpMode {
         return tiles * TILE_LENGTH;
     }
 
-    /** Stops all drive train motors on the robot. **/
+    /** Stops all drive train motors on the robot. * */
     public void stopRobot() {
         if (lb == null) return;
         setMotorPowers(0, 0, 0, 0);
@@ -531,22 +536,22 @@ public abstract class Base extends LinearOpMode {
 
         sleep(WAIT_TIME);
     }
-    
+
     public void moveIntake(double position) {
-        if (intakeServo == null) return;
-        intakeServo.setPosition(position);
+        if (wristServo == null) return;
+        wristServo.setPosition(position);
     }
-    
-    /** Opens the intake servo. **/
+
+    /** Opens the intake servo. * */
     public void openIntake() {
         moveIntake(1);
     }
-    
-    /** Closes the intake servo. **/
+
+    /** Closes the intake servo. * */
     public void closeIntake() {
         moveIntake(0);
     }
-    
+
     /**
      * Moves the wrist to the specified encoder value.
      *
@@ -557,13 +562,13 @@ public abstract class Base extends LinearOpMode {
         wristMotor.setTargetPosition(encoderValue);
         wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
-    
-    /** Extends the wrist. **/
+
+    /** Extends the wrist. * */
     public void extendWrist() {
         moveWrist(50);
     }
-    
-    /** Retracts the wrist. **/
+
+    /** Retracts the wrist. * */
     public void retractWrist() {
         moveWrist(0);
     }
@@ -762,7 +767,7 @@ public abstract class Base extends LinearOpMode {
             telemetry.addData("Wrist Motor Position", wristMotor.getCurrentPosition());
         }
 
-        if (trayTiltingServo == null) {
+        if (intakeServo == null) {
             telemetry.addData("Tray Tilting Servo", "Disconnected");
         }
         if (pixelLockingServo == null) {
@@ -771,7 +776,7 @@ public abstract class Base extends LinearOpMode {
         if (touchSensor == null) {
             telemetry.addData("Touch Sensor", "Disconnected");
         }
-        if (intakeServo == null) {
+        if (wristServo == null) {
             telemetry.addData("Intake Servo", "Disconnected");
         }
         telemetry.update();

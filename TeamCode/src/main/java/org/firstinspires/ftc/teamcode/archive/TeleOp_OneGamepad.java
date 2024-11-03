@@ -27,8 +27,8 @@ public class TeleOp_OneGamepad extends Base {
     @Override
     public void runOpMode() {
         setup();
-        if (trayTiltingServo != null) {
-            trayTiltingServo.setPosition(1);
+        if (intakeServo != null) {
+            intakeServo.setPosition(1);
         }
 
         while (opModeIsActive()) {
@@ -114,10 +114,9 @@ public class TeleOp_OneGamepad extends Base {
     public void addTelemetry(String message) {
         telemetry.addData("Last Action", message); // Last Action: message
         if (wristMotor != null) {
-            telemetry.addData(
-                    "Pixel Lifting Motor Position", wristMotor.getCurrentPosition());
+            telemetry.addData("Pixel Lifting Motor Position", wristMotor.getCurrentPosition());
         }
-        if (trayTiltingServo == null) {
+        if (intakeServo == null) {
             telemetry.addData("Tray Tilting Servo", "Disconnected");
         }
         if (pixelLockingServo == null) {

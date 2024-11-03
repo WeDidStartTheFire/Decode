@@ -28,7 +28,7 @@ public class TeleOp_Debug extends Base {
     @Override
     public void runOpMode() {
         setup();
-        
+
         if (controlHub) {
             servoA = hardwareMap.get(Servo.class, "servoA");
             servoB = hardwareMap.get(Servo.class, "servoB");
@@ -37,8 +37,8 @@ public class TeleOp_Debug extends Base {
         } else {
             servoA = droneServo;
             servoB = pixelLockingServo;
-            servoC = intakeServo;
-            servoD = trayTiltingServo;
+            servoC = wristServo;
+            servoD = intakeServo;
         }
 
         motorA = wristMotor;

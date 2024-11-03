@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.TeleOp_Main;
 
 /**
  * This file was the TeleOp program used for the Center Stage season 2023-2024.
+ *
  * @deprecated Use {@link TeleOp_Main} instead.
  */
 @TeleOp(name = "Old", group = "Center Stage")
@@ -40,8 +41,8 @@ public class TeleOp_CS extends Base {
     @Override
     public void runOpMode() {
         setup();
-        if (trayTiltingServo != null) {
-            trayTiltingServo.setPosition(0);
+        if (intakeServo != null) {
+            intakeServo.setPosition(0);
         }
         if (pixelLockingServo != null) {
             pixelLockingServo.setPosition(1);
@@ -126,14 +127,14 @@ public class TeleOp_CS extends Base {
                 }
             }
 
-            if (trayTiltingServo != null) {
+            if (intakeServo != null) {
                 isLT = (gamepad2.left_trigger > 0.25);
                 if (isLT && !wasLT) {
-                    if (trayTiltingServo.getPosition() != 0) {
-                        trayTiltingServo.setPosition(0);
+                    if (intakeServo.getPosition() != 0) {
+                        intakeServo.setPosition(0);
                         addTelemetry("Set trayTiltingServo to 0");
                     } else {
-                        trayTiltingServo.setPosition(0.5);
+                        intakeServo.setPosition(0.5);
                         addTelemetry("Set trayTiltingServo to 0.5");
                     }
                 }
@@ -175,10 +176,9 @@ public class TeleOp_CS extends Base {
     public void addTelemetry(String message) {
         telemetry.addData("Last Action", message);
         if (wristMotor != null) {
-            telemetry.addData(
-                    "Pixel Lifting Motor Position", wristMotor.getCurrentPosition());
+            telemetry.addData("Pixel Lifting Motor Position", wristMotor.getCurrentPosition());
         }
-        if (trayTiltingServo == null) {
+        if (intakeServo == null) {
             telemetry.addData("Tray Tilting Servo", "Disconnected");
         }
         if (pixelLockingServo == null) {

@@ -6,25 +6,32 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @TeleOp(name = "Main", group = "Into The Deep")
 public class TeleOp_Main extends Base {
 
-    double axial = 0.0;
-    double lateral = 0.0;
-    double yaw = 0.0;
+    double axial;
+    double lateral;
+    double yaw;
+    
+    double leftFrontPower;
+    double rightFrontPower;
+    double leftBackPower;
+    double rightBackPower;
+    
+    double max;
+    
+    double slowdownMultiplier;
     boolean touchSensorPressed = false;
     boolean touchSensorWasPressed = false;
-    double leftFrontPower = 0.0;
-    double rightFrontPower = 0.0;
-    double leftBackPower = 0.0;
-    double rightBackPower = 0.0;
-    double max = 0.0;
+    
     static final double SPEED_MULTIPLIER = 0.75;
     static final double BASE_TURN_SPEED = 2.5;
-    double slowdownMultiplier = 0.0;
     static final double WRIST_MOTOR_POWER = 0.1;
     static final double[] WRIST_MOTOR_BOUNDARIES = {0, 140};
+    
     double intakeServoGoal = 0;
+    double wristServoGoal = 0;
+    
     boolean wasIntakeServoButtonPressed = false;
-    int wristMotorStopPosition = 0;
-    boolean wristMotorWasStopped = false;
+    boolean wasWristServoButtonPressed = false;
+    boolean wasWristMotorStopped = false;
 
     @Override
     public void runOpMode() {
@@ -70,34 +77,48 @@ public class TeleOp_Main extends Base {
                         && wristMotor.getCurrentPosition() < WRIST_MOTOR_BOUNDARIES[1]) {
                     wristMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     wristMotor.setPower(WRIST_MOTOR_POWER);
-                    wristMotorWasStopped = false;
+                    wasWristMotorStopped = false;
                 } else if (gamepad2.dpad_left
                         && wristMotor.getCurrentPosition() > WRIST_MOTOR_BOUNDARIES[0]) {
                     wristMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     wristMotor.setPower(-WRIST_MOTOR_POWER);
-                    wristMotorWasStopped = false;
+                    wasWristMotorStopped = false;
                 } else {
-                    if (!wristMotorWasStopped) {
-                        wristMotorStopPosition = wristMotor.getCurrentPosition();
-                        wristMotor.setTargetPosition(wristMotorStopPosition);
+                    if (!wasWristMotorStopped) {
+                        wristMotor.setTargetPosition(wristMotor.getCurrentPosition());
                         wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                        wristMotorWasStopped = true;
+                        wasWristMotorStopped = true;
                     }
                 }
             }
 
-            // Logic for the intake servo
+            // Logic for the wrist servo
             if (wristServo != null) {
-                if (gamepad2.a && !wasIntakeServoButtonPressed) {
-                    if (intakeServoGoal == 0) {
-                        intakeServoGoal = 1;
-                        wristServo.setPosition(intakeServoGoal);
+                if (gamepad2.a && !wasWristServoButtonPressed) {
+                    if (wristServoGoal == 0) {
+                        wristServoGoal = 1;
+                        wristServo.setPosition(wristServoGoal);
                     } else {
-                        intakeServoGoal = 0;
-                        wristServo.setPosition(intakeServoGoal);
+                        wristServoGoal = 0;
+                        wristServo.setPosition(wristServoGoal);
                     }
                 }
-                wasIntakeServoButtonPressed = gamepad2.a;
+                wasWristServoButtonPressed = gamepad2.a;
+                print("Wrist Servo Goal", wristServoGoal);
+            }
+
+            // Logic for the intake servo
+            if (intakeServo != null) {
+                if (gamepad2.b && !wasIntakeServoButtonPressed) {
+                    if (intakeServoGoal == 0) {
+                        intakeServoGoal = 1;
+                        intakeServo.setPosition(intakeServoGoal);
+                    } else {
+                        intakeServoGoal = 0;
+                        intakeServo.setPosition(intakeServoGoal);
+                    }
+                }
+                wasIntakeServoButtonPressed = gamepad2.b;
                 print("Intake Servo Goal", intakeServoGoal);
             }
 

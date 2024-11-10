@@ -9,26 +9,26 @@ public class TeleOp_Main extends Base {
     double axial;
     double lateral;
     double yaw;
-    
+
     double leftFrontPower;
     double rightFrontPower;
     double leftBackPower;
     double rightBackPower;
-    
+
     double max;
-    
+
     double slowdownMultiplier;
     boolean touchSensorPressed = false;
     boolean touchSensorWasPressed = false;
-    
+
     static final double SPEED_MULTIPLIER = 0.75;
     static final double BASE_TURN_SPEED = 2.5;
     static final double WRIST_MOTOR_POWER = 0.1;
     static final double[] WRIST_MOTOR_BOUNDARIES = {0, 140};
-    
+
     double intakeServoGoal = 0;
     double wristServoGoal = 0;
-    
+
     boolean wasIntakeServoButtonPressed = false;
     boolean wasWristServoButtonPressed = false;
     boolean wasWristMotorStopped = false;

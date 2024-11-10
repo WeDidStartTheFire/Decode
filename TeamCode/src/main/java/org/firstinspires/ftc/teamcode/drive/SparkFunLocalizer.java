@@ -36,8 +36,7 @@ public class SparkFunLocalizer implements Localizer {
 
     @Override
     public void setPoseEstimate(Pose2d pose) {
-        // Optionally reset the pose; often unused in basic setups
-        otosSensor.resetTracking();
+        otosSensor.setPosition(new SparkFunOTOS.Pose2D(pose.getX(), pose.getY(), pose.getHeading()));
     }
 
     @Override

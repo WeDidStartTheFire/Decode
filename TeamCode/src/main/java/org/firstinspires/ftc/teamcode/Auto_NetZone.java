@@ -8,17 +8,18 @@ public class Auto_NetZone extends Base {
     @Override
     public void runOpMode() {
         setup();
-        drive(48, forward);
-        strafe(12, left);
-        drive(45, backward);
-        drive(45, forward);
-        strafe(12, left);
-        drive(40, backward);
-        drive(40, forward);
-        strafe(10, left);
-        drive(36, backward);
-        strafe(24, right);
-        drive(10, backward);
-        strafe(72, right);
+        strafe(3, RIGHT);
+        drive(48, FORWARD);
+        strafe(12, LEFT);
+        drive(47, BACKWARD);
+        drive(45, FORWARD);
+        strafe(13, LEFT);
+        drive(40, BACKWARD);
+        drive(40, FORWARD);
+        strafe(11, LEFT);
+        drive(36, BACKWARD);
+        strafe(24, RIGHT);
+        drive(10, BACKWARD);
+        strafe(72, RIGHT);
     }
 }

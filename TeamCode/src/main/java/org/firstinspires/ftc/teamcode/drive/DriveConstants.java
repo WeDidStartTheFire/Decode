@@ -46,14 +46,16 @@ public class DriveConstants {
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
     public static double WHEEL_RADIUS = 1.88976; // in, for larger wheels
-    public static double GEAR_RATIO = 1; //1.0041505558356485; <-- from calibration we werent supposed to do
+    public static double GEAR_RATIO =
+            1; // 1.0041505558356485; <-- from calibration we weren't supposed to do
     // ^^ output (wheel) speed / input (motor) speed ^^
     public static double TRACK_WIDTH = 16.15; // in, not filled out
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
      * the built-in velocity PID, *these values are fine as is*. However, if you do not have drive
-     * motor encoders or have elected not to use them for velocity control, these values should be
+     * motor encoders or have electe
+     * d not to use them for velocity control, these values should be
      * empirically tuned.
      */
     public static double kV = 0.018;

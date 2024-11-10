@@ -4,8 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name = "Test", group = "Into The Deep")
-public class TeleOp_Debug extends Base {
+@TeleOp(name = "Test No Driving", group = "Into The Deep")
+public class TeleOp_Debug_No_Driving extends Base {
 
     double axial = 0.0;
     double lateral = 0.0;
@@ -34,52 +34,18 @@ public class TeleOp_Debug extends Base {
             servoB = hardwareMap.get(Servo.class, "servoB");
             servoC = hardwareMap.get(Servo.class, "servoC");
             servoD = hardwareMap.get(Servo.class, "servoD");
+            motorA = lf;
+            motorB = lb;
         } else {
             servoA = droneServo;
             servoB = pixelLockingServo;
             servoC = wristServo;
             servoD = intakeServo;
+            motorA = wristMotor;
+            motorB = liftMotor;
         }
 
-        motorA = wristMotor;
-        motorB = liftMotor;
-
         while (opModeIsActive()) {
-            // Slows down movement for better handling the more the right trigger is held down
-            slowdownMultiplier = (1.0 - gamepad1.right_trigger) * 0.7 + 0.3;
-            // f (gamepad1.left_stick_button || gamepad1.right_stick_button) {
-            // slowdownMultiplier *= 0.5; }
-
-            axial = ((-gamepad1.left_stick_y * SPEED_MULTIPLIER) * slowdownMultiplier);
-            lateral = ((gamepad1.left_stick_x * SPEED_MULTIPLIER) * slowdownMultiplier);
-            yaw = ((gamepad1.right_stick_x * BASE_TURN_SPEED) * slowdownMultiplier);
-
-            leftFrontPower = axial + lateral + yaw;
-            rightFrontPower = axial - lateral - yaw;
-            leftBackPower = axial - lateral + yaw;
-            rightBackPower = axial + lateral - yaw;
-
-            max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-            max = Math.max(max, Math.abs(leftBackPower));
-            max = Math.max(max, Math.abs(rightBackPower));
-
-            if (max > 1.0) {
-                leftFrontPower /= max;
-                rightFrontPower /= max;
-                leftBackPower /= max;
-                rightBackPower /= max;
-            }
-
-            // Send calculated power to wheels
-            if (lf != null) {
-                lf.setPower(leftFrontPower);
-                rf.setPower(rightFrontPower);
-                lb.setPower(leftBackPower);
-                rb.setPower(rightBackPower);
-            } else {
-                print("WARNING:", "At least one drivetrain motor disconnected");
-            }
-
             if (servoA != null) {
                 if (gamepad1.a && !wasDownA) {
                     if (servoA.getPosition() > 0.95) {

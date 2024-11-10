@@ -6,22 +6,32 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @TeleOp(name = "Main", group = "Into The Deep")
 public class TeleOp_Main extends Base {
 
-    double axial = 0.0;
-    double lateral = 0.0;
-    double yaw = 0.0;
+    double axial;
+    double lateral;
+    double yaw;
+    
+    double leftFrontPower;
+    double rightFrontPower;
+    double leftBackPower;
+    double rightBackPower;
+    
+    double max;
+    
+    double slowdownMultiplier;
     boolean touchSensorPressed = false;
     boolean touchSensorWasPressed = false;
-    double leftFrontPower = 0.0;
-    double rightFrontPower = 0.0;
-    double leftBackPower = 0.0;
-    double rightBackPower = 0.0;
-    double max = 0.0;
+    
     static final double SPEED_MULTIPLIER = 0.75;
     static final double BASE_TURN_SPEED = 2.5;
-    double slowdownMultiplier = 0.0;
     static final double WRIST_MOTOR_POWER = 0.1;
-    static final double INTAKE_SERVO_POWER = 1.0;
-    static final double[] WRIST_MOTOR_BOUNDARIES = {0, 112};
+    static final double[] WRIST_MOTOR_BOUNDARIES = {0, 140};
+    
+    double intakeServoGoal = 0;
+    double wristServoGoal = 0;
+    
+    boolean wasIntakeServoButtonPressed = false;
+    boolean wasWristServoButtonPressed = false;
+    boolean wasWristMotorStopped = false;
 
     @Override
     public void runOpMode() {
@@ -60,34 +70,63 @@ public class TeleOp_Main extends Base {
             } else {
                 print("WARNING:", "At least one drivetrain motor disconnected");
             }
-            
+
             // Logic for the wrist motor
             if (wristMotor != null) {
-                if (gamepad1.dpad_right && wristMotor.getCurrentPosition() < 112) {
+                if (gamepad2.dpad_right
+                        && wristMotor.getCurrentPosition() < WRIST_MOTOR_BOUNDARIES[1]) {
+                    wristMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     wristMotor.setPower(WRIST_MOTOR_POWER);
-                } else if (gamepad1.dpad_left && wristMotor.getCurrentPosition() > 0) {
+                    wasWristMotorStopped = false;
+                } else if (gamepad2.dpad_left
+                        && wristMotor.getCurrentPosition() > WRIST_MOTOR_BOUNDARIES[0]) {
+                    wristMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     wristMotor.setPower(-WRIST_MOTOR_POWER);
+                    wasWristMotorStopped = false;
                 } else {
-                    wristMotor.setPower(0);
+                    if (!wasWristMotorStopped) {
+                        wristMotor.setTargetPosition(wristMotor.getCurrentPosition());
+                        wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        wasWristMotorStopped = true;
+                    }
                 }
             }
-            
+
+            // Logic for the wrist servo
+            if (wristServo != null) {
+                if (gamepad2.a && !wasWristServoButtonPressed) {
+                    if (wristServoGoal == 0) {
+                        wristServoGoal = 1;
+                        wristServo.setPosition(wristServoGoal);
+                    } else {
+                        wristServoGoal = 0;
+                        wristServo.setPosition(wristServoGoal);
+                    }
+                }
+                wasWristServoButtonPressed = gamepad2.a;
+                print("Wrist Servo Goal", wristServoGoal);
+            }
+
             // Logic for the intake servo
             if (intakeServo != null) {
-                if (gamepad1.a) {
-                    intakeServo.setPower(INTAKE_SERVO_POWER);
-                } else if (gamepad1.b) {
-                    intakeServo.setPower(-INTAKE_SERVO_POWER);
-                } else {
-                    intakeServo.setPower(0);
+                if (gamepad2.b && !wasIntakeServoButtonPressed) {
+                    if (intakeServoGoal == 0) {
+                        intakeServoGoal = 1;
+                        intakeServo.setPosition(intakeServoGoal);
+                    } else {
+                        intakeServoGoal = 0;
+                        intakeServo.setPosition(intakeServoGoal);
+                    }
                 }
+                wasIntakeServoButtonPressed = gamepad2.b;
+                print("Intake Servo Goal", intakeServoGoal);
             }
 
             // Logic to raise or lower the lift
             if (liftMotor != null) {
                 addTelemetry("Current position: " + liftMotor.getCurrentPosition());
-                if (!gamepad2.dpad_up && !gamepad2.dpad_down
-                        || gamepad2.dpad_down && gamepad2.dpad_up) {
+                if (!gamepad1.dpad_up && !gamepad1.dpad_down
+                        || gamepad1.dpad_down && gamepad1.dpad_up) {
                     liftMotor.setPower(0);
                 } else {
                     if (touchSensor != null) {
@@ -96,17 +135,17 @@ public class TeleOp_Main extends Base {
                         touchSensorPressed = false;
                         addTelemetry("Touch sensor not connected");
                     }
-                    if (gamepad2.dpad_up && !gamepad2.dpad_down) {
-                        if (liftMotor.getCurrentPosition() < 5500) {
-                            liftMotor.setPower(1);
+                    if (gamepad1.dpad_up && !gamepad1.dpad_down) {
+                        if (liftMotor.getCurrentPosition() > -1200) {
+                            liftMotor.setPower(-1);
                             addTelemetry("pixelLiftingMotor now moving");
                         } else {
                             liftMotor.setPower(0);
                             addTelemetry("pixelLiftingMotor no longer moving");
                         }
-                    } else if (gamepad2.dpad_down && !gamepad2.dpad_up && !touchSensorPressed) {
-                        if (liftMotor.getCurrentPosition() > 0) {
-                            liftMotor.setPower(-1);
+                    } else if (gamepad1.dpad_down && !gamepad1.dpad_up && !touchSensorPressed) {
+                        if (liftMotor.getCurrentPosition() < 0) {
+                            liftMotor.setPower(1);
                             addTelemetry("pixelLiftingMotor now moving");
                         } else {
                             liftMotor.setPower(0);

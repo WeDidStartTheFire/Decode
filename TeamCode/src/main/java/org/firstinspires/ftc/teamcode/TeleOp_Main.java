@@ -33,7 +33,9 @@ public class TeleOp_Main extends Base {
 
     boolean wasIntakeServoButtonPressed = false;
     boolean wasWristServoButtonPressed = false;
-    boolean wasWristMotorStopped = false;
+    int wristMotorTicksStopped = 0;
+    double wristMotorPosition = 0;
+    double error;
 
     @Override
     public void runOpMode() {
@@ -84,20 +86,23 @@ public class TeleOp_Main extends Base {
             if (wristMotor != null) {
                 if (gamepad2.dpad_right
                         && wristMotor.getCurrentPosition() < WRIST_MOTOR_BOUNDARIES[1]) {
-                    wristMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     wristMotor.setPower(WRIST_MOTOR_POWER);
-                    wasWristMotorStopped = false;
+                    wristMotorTicksStopped = 0;
                 } else if (gamepad2.dpad_left
                         && wristMotor.getCurrentPosition() > WRIST_MOTOR_BOUNDARIES[0]) {
-                    wristMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     wristMotor.setPower(-WRIST_MOTOR_POWER);
-                    wasWristMotorStopped = false;
+                    wristMotorTicksStopped = 0;
                 } else {
-                    if (!wasWristMotorStopped) {
-                        wristMotor.setTargetPosition(wristMotor.getCurrentPosition());
-                        wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                        wasWristMotorStopped = true;
+                    error = wristMotorPosition - wristMotor.getCurrentPosition();
+                    if (wristMotorTicksStopped < 5) {
+                        wristMotor.setPower(0);
+                        wristMotorPosition = wristMotor.getCurrentPosition();
+                    } else if (Math.abs(error) > 3) {
+                        wristMotor.setPower(WRIST_MOTOR_POWER * error / 10.0);
+                    } else {
+                        wristMotor.setPower(0);
                     }
+                    wristMotorTicksStopped++;
                 }
             }
 

@@ -30,10 +30,26 @@ public class TeleOp_Debug extends Base {
         setup();
 
         if (controlHub) {
-            servoA = hardwareMap.get(Servo.class, "servoA");
-            servoB = hardwareMap.get(Servo.class, "servoB");
-            servoC = hardwareMap.get(Servo.class, "servoC");
-            servoD = hardwareMap.get(Servo.class, "servoD");
+            try {
+                servoA = hardwareMap.get(Servo.class, "servoA");
+            } catch (Exception e) {
+                except("servoA disconnected");
+            }
+            try {
+                servoB = hardwareMap.get(Servo.class, "servoB");
+            } catch (Exception e) {
+                except("servoB disconnected");
+            }
+            try {
+                servoC = hardwareMap.get(Servo.class, "servoC");
+            } catch (Exception e) {
+                except("servoC disconnected");
+            }
+            try {
+                servoD = hardwareMap.get(Servo.class, "servoD");
+            } catch (Exception e) {
+                except("servoD disconnected");
+            }
         } else {
             servoA = droneServo;
             servoB = pixelLockingServo;

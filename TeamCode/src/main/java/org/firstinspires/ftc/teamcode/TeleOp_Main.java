@@ -28,6 +28,8 @@ public class TeleOp_Main extends Base {
 
     double intakeServoGoal = 0;
     double wristServoGoal = 0;
+    double nextWristServoGoal = 0.5;
+    double newNextWristServoGoal;
 
     boolean wasIntakeServoButtonPressed = false;
     boolean wasWristServoButtonPressed = false;
@@ -95,13 +97,13 @@ public class TeleOp_Main extends Base {
             // Logic for the wrist servo
             if (wristServo != null) {
                 if (gamepad2.a && !wasWristServoButtonPressed) {
-                    if (wristServoGoal == 0) {
-                        wristServoGoal = 1;
-                        wristServo.setPosition(wristServoGoal);
-                    } else {
-                        wristServoGoal = 0;
-                        wristServo.setPosition(wristServoGoal);
+                    if (nextWristServoGoal == 0 || nextWristServoGoal == 1) {
+                        newNextWristServoGoal = 0.5;
+                    } else if (nextWristServoGoal == 0.5) {
+                        newNextWristServoGoal = 1 - wristServoGoal;
                     }
+                    wristServoGoal = nextWristServoGoal;
+                    nextWristServoGoal = newNextWristServoGoal;
                 }
                 wasWristServoButtonPressed = gamepad2.a;
                 print("Wrist Servo Goal", wristServoGoal);

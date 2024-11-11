@@ -456,10 +456,10 @@ public abstract class Base extends LinearOpMode {
     /**
      * Changes the velocity.
      *
-     * @param speed New velocity value.
+     * @param velocity New velocity value.
      */
-    public void setSpeed(double speed) {
-        velocity = speed;
+    public void setVelocity(double velocity) {
+        this.velocity = velocity;
     }
 
     /**

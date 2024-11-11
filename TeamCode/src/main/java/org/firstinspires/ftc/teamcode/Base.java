@@ -85,7 +85,12 @@ public abstract class Base extends LinearOpMode {
     /** Initializes all hardware devices on the robot. */
     public void setup() {
         if (useOdometry) {
-            mecDrive = new SampleMecanumDrive(hardwareMap);
+            try {
+                mecDrive = new SampleMecanumDrive(hardwareMap);
+            } catch (IllegalArgumentException e) {
+                except("SparkFun Sensor not connected");
+                useOdometry = false;
+            }
         }
         imu = hardwareMap.get(IMU.class, "imu");
         if (!imu.initialize(IMU_PARAMETERS)) {

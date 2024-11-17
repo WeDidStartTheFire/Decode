@@ -10,7 +10,7 @@ public class Auto_NetZone extends Base {
         setup();
         strafe(3, RIGHT);
         drive(48, FORWARD);
-        strafe(12, LEFT);
+        strafe(11, LEFT);
         drive(47, BACKWARD);
         drive(45, FORWARD);
         strafe(13, LEFT);

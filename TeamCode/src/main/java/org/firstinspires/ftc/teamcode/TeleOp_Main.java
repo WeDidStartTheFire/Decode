@@ -116,6 +116,7 @@ public class TeleOp_Main extends Base {
                     }
                     wristServoGoal = nextWristServoGoal;
                     nextWristServoGoal = newNextWristServoGoal;
+                    wristServo.setPosition(wristServoGoal);
                 }
                 wasWristServoButtonPressed = gamepad2.a;
                 print("Wrist Servo Goal", wristServoGoal);

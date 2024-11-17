@@ -84,11 +84,11 @@ public class TeleOp_Main extends Base {
 
             // Logic for the wrist motor
             if (wristMotor != null) {
-                if (gamepad2.dpad_right
+                if (gamepad2.dpad_up
                         && wristMotor.getCurrentPosition() < WRIST_MOTOR_BOUNDARIES[1]) {
                     wristMotor.setPower(WRIST_MOTOR_POWER);
                     wristMotorTicksStopped = 0;
-                } else if (gamepad2.dpad_left
+                } else if (gamepad2.dpad_down
                         && wristMotor.getCurrentPosition() > WRIST_MOTOR_BOUNDARIES[0]) {
                     wristMotor.setPower(-WRIST_MOTOR_POWER);
                     wristMotorTicksStopped = 0;

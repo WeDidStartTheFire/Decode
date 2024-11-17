@@ -44,10 +44,10 @@ public class TeleOp_Main extends Base {
 
         while (opModeIsActive()) {
             slowdownMultiplier = 0.7;
-            if (gamepad2.left_bumper) {
+            if (gamepad1.left_bumper) {
                 slowdownMultiplier = 0.3;
             }
-            if (gamepad2.right_bumper) {
+            if (gamepad1.right_bumper) {
                 slowdownMultiplier = 1;
             }
             // Slows down movement for better handling the more the right trigger is held down
@@ -86,12 +86,12 @@ public class TeleOp_Main extends Base {
             // Logic for the wrist motor
             if (wristMotor != null) {
                 print("Wrist Motor position", wristMotor.getCurrentPosition());
-                if (gamepad2.dpad_up
+                if (gamepad2.dpad_down
                         && wristMotor.getCurrentPosition() < WRIST_MOTOR_BOUNDARIES[1]) {
                     wristMotor.setPower(WRIST_MOTOR_POWER);
                     wristMotorTicksStopped = 0;
                     addTelemetry("Wrist Motor now moving");
-                } else if (gamepad2.dpad_down
+                } else if (gamepad2.dpad_up
                         && (wristMotor.getCurrentPosition() > WRIST_MOTOR_BOUNDARIES[0]
                                 || gamepad2.right_bumper)) {
                     wristMotor.setPower(-WRIST_MOTOR_POWER);

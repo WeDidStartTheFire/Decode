@@ -549,6 +549,11 @@ public abstract class Base extends LinearOpMode {
         sleep(WAIT_TIME);
     }
 
+    /**
+     * Moves the intake servo to the specified position.
+     *
+     * @param position The position to move the intake servo to.
+     */
     public void moveIntake(double position) {
         if (wristServo == null) return;
         wristServo.setPosition(position);

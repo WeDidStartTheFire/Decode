@@ -28,7 +28,6 @@ import static org.firstinspires.ftc.teamcode.Base.Dir.*;
 /** Base class that contains common methods and other configuration. */
 public abstract class Base extends LinearOpMode {
     private static final double LIFT_VEL = 1500;
-    public static final double GOAL_ENCODERS = 2000;
     private final ElapsedTime runtime = new ElapsedTime();
     // All non-primitive data types initialize to null on default.
     public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor;
@@ -83,15 +82,7 @@ public abstract class Base extends LinearOpMode {
     }
 
     /** Initializes all hardware devices on the robot. */
-    public void setup() {
-        if (useOdometry) {
-            try {
-                mecDrive = new SampleMecanumDrive(hardwareMap);
-            } catch (IllegalArgumentException e) {
-                except("SparkFun Sensor not connected");
-                useOdometry = false;
-            }
-        }
+    public void setup(boolean useCam) {
         imu = hardwareMap.get(IMU.class, "imu");
         if (!imu.initialize(IMU_PARAMETERS)) {
             throw new RuntimeException("IMU initialization failed");
@@ -152,6 +143,23 @@ public abstract class Base extends LinearOpMode {
             except("touchSensor not connected");
         }
 
+        if (useCam) {
+            try {
+                WebcamName cam = hardwareMap.get(WebcamName.class, "Webcam 1");
+                initProcessors(cam);
+            } catch (IllegalArgumentException e) {
+                except("Webcam not connected");
+            }
+        }
+        if (useOdometry) {
+            try {
+                mecDrive = new SampleMecanumDrive(hardwareMap);
+            } catch (IllegalArgumentException e) {
+                except("SparkFun Sensor not connected");
+                useOdometry = false;
+            }
+        }
+
         if (lf != null) {
             lf.setDirection(DcMotorEx.Direction.REVERSE);
             lb.setDirection(DcMotorEx.Direction.REVERSE);
@@ -191,9 +199,8 @@ public abstract class Base extends LinearOpMode {
     }
 
     /** Initializes all hardware devices on the robot. * */
-    @Deprecated
-    public void setup(boolean useCam) {
-        setup();
+    public void setup() {
+        setup(false);
     }
 
     /**
@@ -547,6 +554,11 @@ public abstract class Base extends LinearOpMode {
         sleep(WAIT_TIME);
     }
 
+    /**
+     * Moves the intake servo to the specified position.
+     *
+     * @param position The position to move the intake servo to.
+     */
     public void moveIntake(double position) {
         if (wristServo == null) return;
         wristServo.setPosition(position);
@@ -715,7 +727,6 @@ public abstract class Base extends LinearOpMode {
      * @param camera The camera to use.
      */
     private void initProcessors(WebcamName camera) {
-
         tagProcessor =
                 new AprilTagProcessor.Builder()
                         .setDrawAxes(true)

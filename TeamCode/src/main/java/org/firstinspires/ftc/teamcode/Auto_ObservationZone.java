@@ -8,9 +8,9 @@ public class Auto_ObservationZone extends Base {
     @Override
     public void runOpMode() {
         setup();
-        strafe(22, RIGHT);
+        strafe(20, RIGHT);
         drive(48, FORWARD);
-        strafe(14, RIGHT);
+        strafe(12, RIGHT);
         drive(40, BACKWARD);
         turn(0); // Re-align
         drive(40, FORWARD);

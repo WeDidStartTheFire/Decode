@@ -8,7 +8,7 @@ public class Auto_NetZone extends Base {
     @Override
     public void runOpMode() {
         setup();
-        strafe(5, LEFT);
+        strafe(6, LEFT);
         strafe(5 + 3, RIGHT);
         drive(48, FORWARD);
         strafe(11, LEFT);
@@ -16,9 +16,9 @@ public class Auto_NetZone extends Base {
         turn(0); // Re-align
         drive(45, FORWARD);
         strafe(13, LEFT);
-        drive(40, BACKWARD);
+        drive(43, BACKWARD);
         turn(0); // Re-align
-        drive(40, FORWARD);
+        drive(43, FORWARD);
         strafe(11, LEFT);
         drive(36, BACKWARD);
         turn(0); // Re-align

@@ -12,14 +12,18 @@ public class Auto_NetZone extends Base {
         drive(48, FORWARD);
         strafe(11, LEFT);
         drive(47, BACKWARD);
+        turn(0); // Re-align
         drive(45, FORWARD);
         strafe(13, LEFT);
         drive(40, BACKWARD);
+        turn(0); // Re-align
         drive(40, FORWARD);
         strafe(11, LEFT);
         drive(36, BACKWARD);
+        turn(0); // Re-align
         strafe(24, RIGHT);
         drive(10, BACKWARD);
+        turn(0); // Re-align
         strafe(72, RIGHT);
     }
 }

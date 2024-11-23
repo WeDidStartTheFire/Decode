@@ -318,6 +318,21 @@ public abstract class Base extends LinearOpMode {
     }
 
     /**
+     * Turns the robot a specified number of degrees. Positive values turn right, negative values
+     * turn left. A degrees value of zero will cause the robot to turn until manually stopped.
+     *
+     * @param degrees The amount of degrees to turn.
+     */
+    public void turn(double degrees) {
+        turn(degrees, RIGHT);
+    }
+
+    /** Corrects the robot's angle to the angle it previously turned */
+    public void correctAngle() {
+        turn(-imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
+    }
+
+    /**
      * Sets the mode of all drive train motors to the same mode.
      *
      * @param mode The mode to set the motors to.
@@ -360,16 +375,6 @@ public abstract class Base extends LinearOpMode {
             rf.setVelocity(velocity);
             rb.setVelocity(velocity);
         }
-    }
-
-    /**
-     * Turns the robot a specified number of degrees. Positive values turn right, negative values
-     * turn left. A degrees value of zero will cause the robot to turn until manually stopped.
-     *
-     * @param degrees The amount of degrees to turn.
-     */
-    public void turn(double degrees) {
-        turn(degrees, RIGHT);
     }
 
     /**

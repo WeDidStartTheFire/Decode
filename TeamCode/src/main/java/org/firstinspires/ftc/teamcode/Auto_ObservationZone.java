@@ -12,9 +12,11 @@ public class Auto_ObservationZone extends Base {
         drive(48, FORWARD);
         strafe(14, RIGHT);
         drive(40, BACKWARD);
+        turn(0); // Re-align
         drive(40, FORWARD);
         strafe(12, RIGHT);
         drive(40, BACKWARD);
+        turn(0); // Re-align
         drive(40, FORWARD);
         strafe(12, RIGHT);
         drive(46, BACKWARD);

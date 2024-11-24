@@ -15,6 +15,7 @@ import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -50,6 +51,7 @@ import java.util.List;
  */
 @Config
 @Autonomous(group = "org/firstinspires/ftc/teamcode/drive")
+@Disabled
 public class DriveVelocityPIDTuner extends LinearOpMode {
     public static double DISTANCE = 72; // in
 
@@ -67,11 +69,14 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
     @Override
     public void runOpMode() {
         if (!RUN_USING_ENCODER) {
-            RobotLog.setGlobalErrorMsg("%s does not need to be run if the built-in motor velocity" +
-                    "PID is not in use", getClass().getSimpleName());
+            RobotLog.setGlobalErrorMsg(
+                    "%s does not need to be run if the built-in motor velocity"
+                            + "PID is not in use",
+                    getClass().getSimpleName());
         }
 
-        Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
+        Telemetry telemetry =
+                new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
@@ -97,7 +102,6 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
         boolean movingForwards = true;
         MotionProfile activeProfile = generateProfile(true);
         double profileStart = clock.seconds();
-
 
         while (!isStopRequested()) {
             telemetry.addData("mode", mode);
@@ -129,10 +133,7 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
                     telemetry.addData("targetVelocity", motionState.getV());
                     for (int i = 0; i < velocities.size(); i++) {
                         telemetry.addData("measuredVelocity" + i, velocities.get(i));
-                        telemetry.addData(
-                                "error" + i,
-                                motionState.getV() - velocities.get(i)
-                        );
+                        telemetry.addData("error" + i, motionState.getV() - velocities.get(i));
                     }
                     break;
                 case DRIVER_MODE:
@@ -149,14 +150,14 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
                             new Pose2d(
                                     -gamepad1.left_stick_y,
                                     -gamepad1.left_stick_x,
-                                    -gamepad1.right_stick_x
-                            )
-                    );
+                                    -gamepad1.right_stick_x));
                     break;
             }
 
-            if (lastKp != MOTOR_VELO_PID.p || lastKd != MOTOR_VELO_PID.d
-                    || lastKi != MOTOR_VELO_PID.i || lastKf != MOTOR_VELO_PID.f) {
+            if (lastKp != MOTOR_VELO_PID.p
+                    || lastKd != MOTOR_VELO_PID.d
+                    || lastKi != MOTOR_VELO_PID.i
+                    || lastKf != MOTOR_VELO_PID.f) {
                 drive.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
 
                 lastKp = MOTOR_VELO_PID.p;

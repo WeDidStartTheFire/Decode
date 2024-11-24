@@ -766,7 +766,7 @@ public abstract class Base extends LinearOpMode {
      *
      * @param message Message to be sent
      */
-    public void addTelemetry(String message) {
+    public void addLastActionTelemetry(String message) {
         telemetry.addData("Last Action", message);
     }
 

@@ -66,60 +66,60 @@ public class TeleOp_Debug_No_Driving extends Base {
                 if (gamepad1.a && !wasDownA) {
                     if (servoA.getPosition() > 0.95) {
                         servoA.setPosition(0);
-                        addTelemetry("Set servoA to 0");
+                        addLastActionTelemetry("Set servoA to 0");
                     } else {
                         servoA.setPosition(1);
-                        addTelemetry("Set servoA to 1");
+                        addLastActionTelemetry("Set servoA to 1");
                     }
                 }
                 wasDownA = gamepad1.a;
             } else {
-                addTelemetry("servoA disconnected");
+                addLastActionTelemetry("servoA disconnected");
             }
 
             if (servoB != null) {
                 if (gamepad1.b && !wasDownB) {
                     if (servoB.getPosition() > 0.95) {
                         servoB.setPosition(0);
-                        addTelemetry("Set servoB to 0");
+                        addLastActionTelemetry("Set servoB to 0");
                     } else {
                         servoB.setPosition(1);
-                        addTelemetry("Set servoB to 1");
+                        addLastActionTelemetry("Set servoB to 1");
                     }
                 }
                 wasDownB = gamepad1.b;
             } else {
-                addTelemetry("servoB diconnected");
+                addLastActionTelemetry("servoB diconnected");
             }
 
             if (servoC != null) {
                 if (gamepad1.x) {
                     servoC.setPosition(1);
-                    addTelemetry("Set servoC to 1");
+                    addLastActionTelemetry("Set servoC to 1");
                 } else if (gamepad1.y) {
                     servoC.setPosition(0);
-                    addTelemetry("Set servoC to 0");
+                    addLastActionTelemetry("Set servoC to 0");
                 } else {
                     servoC.setPosition(0.5);
-                    addTelemetry("Set servoC to 0.5");
+                    addLastActionTelemetry("Set servoC to 0.5");
                 }
             } else {
-                addTelemetry("servoC disconnected");
+                addLastActionTelemetry("servoC disconnected");
             }
 
             if (servoD != null) {
                 if (gamepad1.left_bumper) {
                     servoD.setPosition(0);
-                    addTelemetry("Set servoD to 0");
+                    addLastActionTelemetry("Set servoD to 0");
                 } else if (gamepad1.right_bumper) {
                     servoD.setPosition(1);
-                    addTelemetry("Set servoD to 1");
+                    addLastActionTelemetry("Set servoD to 1");
                 } else {
                     servoD.setPosition(0.5);
-                    addTelemetry("Set servoD to 0.5");
+                    addLastActionTelemetry("Set servoD to 0.5");
                 }
             } else {
-                addTelemetry("servoD disconnected");
+                addLastActionTelemetry("servoD disconnected");
             }
 
             if (motorA != null) {
@@ -131,7 +131,7 @@ public class TeleOp_Debug_No_Driving extends Base {
                     motorA.setPower(0);
                 }
             } else {
-                addTelemetry("motorA disconnected");
+                addLastActionTelemetry("motorA disconnected");
             }
 
             if (motorB != null) {
@@ -143,7 +143,7 @@ public class TeleOp_Debug_No_Driving extends Base {
                     motorB.setPower(0);
                 }
             } else {
-                addTelemetry("motorB disconnected");
+                addLastActionTelemetry("motorB disconnected");
             }
 
             updateAll();

@@ -14,6 +14,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.rev.*;
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.*;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.*;
@@ -81,8 +82,14 @@ public abstract class Base extends LinearOpMode {
         BACKWARD
     }
 
-    /** Initializes all hardware devices on the robot. */
-    public void setup(boolean useCam) {
+    /**
+     * Initializes all hardware devices on the robot.
+     *
+     * @param useCam Whether to use the camera.
+     * @param useOdom Whether to use odometry.
+     */
+    public void setup(boolean useCam, boolean useOdom) {
+        useOdometry = useOdom;
         imu = hardwareMap.get(IMU.class, "imu");
         if (!imu.initialize(IMU_PARAMETERS)) {
             throw new RuntimeException("IMU initialization failed");
@@ -200,7 +207,16 @@ public abstract class Base extends LinearOpMode {
 
     /** Initializes all hardware devices on the robot. * */
     public void setup() {
-        setup(false);
+        setup(false, false);
+    }
+
+    /**
+     * Initializes all hardware devices on the robot.
+     *
+     * @param useOdom Whether to use odometry.
+     */
+    public void setup(boolean useOdom) {
+        setup(false, useOdom);
     }
 
     /**
@@ -744,14 +760,12 @@ public abstract class Base extends LinearOpMode {
         visionPortal = builder.build();
     }
 
-    /** A less space consuming way to add telemetry.
-     * "caption: content" */
+    /** A less space consuming way to add telemetry. "caption: content" */
     public void print(String caption, Object content) {
         telemetry.addData(caption, content);
     }
 
-    /** A less space consuming way to add telemetry.
-     * "content" */
+    /** A less space consuming way to add telemetry. "content" */
     public void print(String content) {
         telemetry.addLine(content);
     }
@@ -794,6 +808,13 @@ public abstract class Base extends LinearOpMode {
         }
         if (wristServo == null) {
             telemetry.addData("Intake Servo", "Disconnected");
+        }
+        if (useOdometry) {
+            Pose2d pos = mecDrive.getPoseEstimate();
+            // Log the position to the telemetry
+            telemetry.addData("X coordinate", pos.getX());
+            telemetry.addData("Y coordinate", pos.getY());
+            telemetry.addData("Heading angle", pos.getHeading());
         }
         telemetry.update();
     }

@@ -55,8 +55,11 @@ public class SparkFunLocalizer implements Localizer {
         SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(0, 0, 0);
         otosSensor.setOffset(offset);
 
-        otosSensor.setLinearScalar(1.0);
-        otosSensor.setAngularScalar(1.0);
+        // 1.0: 1.0070786062901793726582210425863
+        // 0.7: 1.2227808267966358287502051967825
+        // 0.3: 1.3569066682574921488501314561593
+        otosSensor.setLinearScalar(1.1955887004481024500861858985094);
+        otosSensor.setAngularScalar(0.99372024014905803602235870540335);
 
         otosSensor.calibrateImu();
 

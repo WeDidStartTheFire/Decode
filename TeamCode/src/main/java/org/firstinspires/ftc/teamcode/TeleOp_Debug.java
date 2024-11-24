@@ -26,7 +26,7 @@ public class TeleOp_Debug extends Base {
     public final boolean controlHub = true;
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
         setup();
 
         if (controlHub) {

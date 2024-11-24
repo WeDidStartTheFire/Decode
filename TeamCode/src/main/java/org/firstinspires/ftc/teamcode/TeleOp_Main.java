@@ -39,7 +39,7 @@ public class TeleOp_Main extends Base {
     double error;
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
         setup();
 
         while (opModeIsActive()) {

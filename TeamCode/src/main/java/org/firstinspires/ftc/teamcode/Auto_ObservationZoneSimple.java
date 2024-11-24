@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 @Autonomous(name = "Observation Zone Simple", group = "IntoTheDeep", preselectTeleOp = "Main")
 public class Auto_ObservationZoneSimple extends Base {
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
         setup();
         strafe(48, RIGHT);
     }

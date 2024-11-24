@@ -6,7 +6,7 @@ import static org.firstinspires.ftc.teamcode.Base.Dir.*;
 @Autonomous(name = "Observation Zone", group = "IntoTheDeep", preselectTeleOp = "Main")
 public class Auto_ObservationZone extends Base {
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
         setup();
         strafe(20, RIGHT);
         drive(48, FORWARD);

@@ -82,7 +82,7 @@ public class TeleOp_CS extends Base {
             }
 
             if (wristMotor != null) {
-                addTelemetry("Current position: " + wristMotor.getCurrentPosition());
+                addLastActionTelemetry("Current position: " + wristMotor.getCurrentPosition());
                 if (!gamepad2.dpad_up && !gamepad2.dpad_down
                         || gamepad2.dpad_down && gamepad2.dpad_up) {
                     wristMotor.setPower(0);
@@ -91,23 +91,23 @@ public class TeleOp_CS extends Base {
                         TS = touchSensor.isPressed();
                     } else {
                         TS = false;
-                        addTelemetry("Touch sensor not connected");
+                        addLastActionTelemetry("Touch sensor not connected");
                     }
                     if (gamepad2.dpad_up && !gamepad2.dpad_down) {
                         if (wristMotor.getCurrentPosition() < 5500) {
                             wristMotor.setPower(1);
-                            addTelemetry("pixelLiftingMotor now moving");
+                            addLastActionTelemetry("pixelLiftingMotor now moving");
                         } else {
                             wristMotor.setPower(0);
-                            addTelemetry("pixelLiftingMotor no longer moving");
+                            addLastActionTelemetry("pixelLiftingMotor no longer moving");
                         }
                     } else if (gamepad2.dpad_down && !gamepad2.dpad_up && !TS) {
                         if (wristMotor.getCurrentPosition() > 0) {
                             wristMotor.setPower(-1);
-                            addTelemetry("pixelLiftingMotor now moving");
+                            addLastActionTelemetry("pixelLiftingMotor now moving");
                         } else {
                             wristMotor.setPower(0);
-                            addTelemetry("pixelLiftingMotor no longer moving");
+                            addLastActionTelemetry("pixelLiftingMotor no longer moving");
                         }
                     }
                 }
@@ -119,10 +119,10 @@ public class TeleOp_CS extends Base {
                 } else {
                     if (gamepad2.b) {
                         liftMotor.setPower(CAR_WASH_POWER);
-                        addTelemetry("carWashMotor now moving forward");
+                        addLastActionTelemetry("carWashMotor now moving forward");
                     } else if (gamepad2.a) {
                         liftMotor.setPower(-CAR_WASH_POWER);
-                        addTelemetry("carWashMotor now moving backward");
+                        addLastActionTelemetry("carWashMotor now moving backward");
                     }
                 }
             }
@@ -132,10 +132,10 @@ public class TeleOp_CS extends Base {
                 if (isLT && !wasLT) {
                     if (intakeServo.getPosition() != 0) {
                         intakeServo.setPosition(0);
-                        addTelemetry("Set trayTiltingServo to 0");
+                        addLastActionTelemetry("Set trayTiltingServo to 0");
                     } else {
                         intakeServo.setPosition(0.5);
-                        addTelemetry("Set trayTiltingServo to 0.5");
+                        addLastActionTelemetry("Set trayTiltingServo to 0.5");
                     }
                 }
                 wasLT = isLT;
@@ -153,7 +153,7 @@ public class TeleOp_CS extends Base {
             if (droneServo != null) {
                 if (gamepad2.left_bumper && gamepad2.right_bumper) {
                     droneServo.setPosition(0);
-                    addTelemetry("Set droneServo to 0");
+                    addLastActionTelemetry("Set droneServo to 0");
                 }
             }
 
@@ -173,7 +173,7 @@ public class TeleOp_CS extends Base {
         }
     }
 
-    public void addTelemetry(String message) {
+    public void addLastActionTelemetry(String message) {
         telemetry.addData("Last Action", message);
         if (wristMotor != null) {
             telemetry.addData("Pixel Lifting Motor Position", wristMotor.getCurrentPosition());

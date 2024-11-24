@@ -6,7 +6,7 @@ import static org.firstinspires.ftc.teamcode.Base.Dir.*;
 @Autonomous(name = "Net Zone", group = "IntoTheDeep", preselectTeleOp = "Main")
 public class Auto_NetZone extends Base {
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
         setup();
         strafe(6, LEFT);
         strafe(5 + 3, RIGHT);

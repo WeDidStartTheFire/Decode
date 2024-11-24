@@ -744,21 +744,16 @@ public abstract class Base extends LinearOpMode {
         visionPortal = builder.build();
     }
 
-    /**
-     * A less space consuming way to add telemetry. Format: "(caption): (content)"
-     *
-     * @param quick If true, instantly update the telemetry.
-     */
-    public void print(String caption, Object content, boolean quick) {
+    /** A less space consuming way to add telemetry.
+     * "caption: content" */
+    public void print(String caption, Object content) {
         telemetry.addData(caption, content);
-        if (quick) {
-            update();
-        }
     }
 
-    /** A less space consuming way to add telemetry. * */
-    public void print(String caption, Object content) {
-        print(caption, content, false);
+    /** A less space consuming way to add telemetry.
+     * "content" */
+    public void print(String content) {
+        telemetry.addLine(content);
     }
 
     /** A less space consuming way to update the displayed telemetry. * */
@@ -771,7 +766,7 @@ public abstract class Base extends LinearOpMode {
      *
      * @param message Message to be sent
      */
-    public void addTelemetry(String message) {
+    public void addLastActionTelemetry(String message) {
         telemetry.addData("Last Action", message);
     }
 

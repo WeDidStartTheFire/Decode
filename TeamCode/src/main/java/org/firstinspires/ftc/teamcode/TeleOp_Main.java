@@ -39,7 +39,7 @@ public class TeleOp_Main extends Base {
     double error;
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
         setup();
 
         while (opModeIsActive()) {
@@ -90,18 +90,18 @@ public class TeleOp_Main extends Base {
                         && wristMotor.getCurrentPosition() < WRIST_MOTOR_BOUNDARIES[1]) {
                     wristMotor.setPower(WRIST_MOTOR_POWER);
                     wristMotorTicksStopped = 0;
-                    addTelemetry("Wrist Motor now moving");
+                    addLastActionTelemetry("Wrist Motor now moving");
                 } else if (gamepad2.dpad_up
                         && (wristMotor.getCurrentPosition() > WRIST_MOTOR_BOUNDARIES[0]
                                 || gamepad2.right_bumper)) {
                     wristMotor.setPower(-WRIST_MOTOR_POWER);
                     wristMotorTicksStopped = 0;
-                    addTelemetry("Wrist Motor now moving");
+                    addLastActionTelemetry("Wrist Motor now moving");
                     if (gamepad2.right_bumper) {
                         WRIST_MOTOR_BOUNDARIES[1] +=
                                 wristMotor.getCurrentPosition() - WRIST_MOTOR_BOUNDARIES[0];
                         WRIST_MOTOR_BOUNDARIES[0] = wristMotor.getCurrentPosition();
-                        addTelemetry("Wrist Motor boundaries overriden");
+                        addLastActionTelemetry("Wrist Motor boundaries overriden");
                     }
                 } else {
                     error = wristMotorPosition - wristMotor.getCurrentPosition();
@@ -150,7 +150,7 @@ public class TeleOp_Main extends Base {
 
             // Logic to raise or lower the lift
             if (liftMotor != null) {
-                addTelemetry("Current lift position: " + liftMotor.getCurrentPosition());
+                addLastActionTelemetry("Current lift position: " + liftMotor.getCurrentPosition());
                 if (!gamepad1.dpad_up && !gamepad1.dpad_down
                         || gamepad1.dpad_down && gamepad1.dpad_up) {
                     liftMotor.setPower(0);
@@ -159,23 +159,23 @@ public class TeleOp_Main extends Base {
                         touchSensorPressed = touchSensor.isPressed();
                     } else {
                         touchSensorPressed = false;
-                        addTelemetry("Touch sensor not connected");
+                        addLastActionTelemetry("Touch sensor not connected");
                     }
                     if (gamepad1.dpad_up && !gamepad1.dpad_down) {
                         if (liftMotor.getCurrentPosition() > LIFT_BOUNDARIES[1]) {
                             liftMotor.setPower(-1);
-                            addTelemetry("Lift Motor now moving");
+                            addLastActionTelemetry("Lift Motor now moving");
                         } else {
                             liftMotor.setPower(0);
-                            addTelemetry("Lift Motor no longer moving");
+                            addLastActionTelemetry("Lift Motor no longer moving");
                         }
                     } else if (gamepad1.dpad_down && !gamepad1.dpad_up && !touchSensorPressed) {
                         if (liftMotor.getCurrentPosition() < LIFT_BOUNDARIES[0]) {
                             liftMotor.setPower(1);
-                            addTelemetry("Lift Motor now moving");
+                            addLastActionTelemetry("Lift Motor now moving");
                         } else {
                             liftMotor.setPower(0);
-                            addTelemetry("Lift Motor no longer moving");
+                            addLastActionTelemetry("Lift Motor no longer moving");
                         }
                     }
                 }

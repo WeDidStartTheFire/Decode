@@ -195,7 +195,7 @@ public class TeleOp_Main extends Base {
                     touchSensorWasPressed = false;
                 }
             }
-
+            print("Speed Multiplier", slowdownMultiplier);
             updateAll();
         }
     }

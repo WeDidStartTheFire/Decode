@@ -66,7 +66,7 @@ public abstract class Base extends LinearOpMode {
     double velocity = 2000;
     public VisionPortal visionPortal;
     private AprilTagProcessor tagProcessor;
-    private SampleMecanumDrive mecDrive;
+    public SampleMecanumDrive mecDrive;
     public boolean useCam = false;
 
     private static final IMU.Parameters IMU_PARAMETERS =
@@ -83,9 +83,7 @@ public abstract class Base extends LinearOpMode {
         BACKWARD
     }
 
-    /**
-     * Initializes all hardware devices on the robot.
-     */
+    /** Initializes all hardware devices on the robot. */
     public void setup() {
         imu = hardwareMap.get(IMU.class, "imu");
         if (!imu.initialize(IMU_PARAMETERS)) {
@@ -211,10 +209,12 @@ public abstract class Base extends LinearOpMode {
         runtime.reset();
     }
 
-    /** Initializes all hardware devices on the robot.
+    /**
+     * Initializes all hardware devices on the robot.
+     *
      * @param useOdom Whether to use odometry.
      * @deprecated
-     **/
+     */
     @Deprecated
     public void setup(boolean useOdom) {
         useOdometry = useOdom;

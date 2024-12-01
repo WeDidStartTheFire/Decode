@@ -62,11 +62,12 @@ public abstract class Base extends LinearOpMode {
     static final double M = 0.889;
     static final double TURN_SPEED = 0.5;
     private static final int WAIT_TIME = 100;
-    public boolean useOdometry = false;
+    public boolean useOdometry = true;
     double velocity = 2000;
     public VisionPortal visionPortal;
     private AprilTagProcessor tagProcessor;
     private SampleMecanumDrive mecDrive;
+    public boolean useCam = false;
 
     private static final IMU.Parameters IMU_PARAMETERS =
             new IMU.Parameters(
@@ -84,12 +85,8 @@ public abstract class Base extends LinearOpMode {
 
     /**
      * Initializes all hardware devices on the robot.
-     *
-     * @param useCam Whether to use the camera.
-     * @param useOdom Whether to use odometry.
      */
-    public void setup(boolean useCam, boolean useOdom) {
-        useOdometry = useOdom;
+    public void setup() {
         imu = hardwareMap.get(IMU.class, "imu");
         if (!imu.initialize(IMU_PARAMETERS)) {
             throw new RuntimeException("IMU initialization failed");
@@ -214,18 +211,28 @@ public abstract class Base extends LinearOpMode {
         runtime.reset();
     }
 
-    /** Initializes all hardware devices on the robot. * */
-    public void setup() {
-        setup(false, false);
+    /** Initializes all hardware devices on the robot.
+     * @param useOdom Whether to use odometry.
+     * @deprecated
+     **/
+    @Deprecated
+    public void setup(boolean useOdom) {
+        useOdometry = useOdom;
+        setup();
     }
 
     /**
      * Initializes all hardware devices on the robot.
      *
+     * @param useCamera Whether to use the camera.
      * @param useOdom Whether to use odometry.
+     * @deprecated
      */
-    public void setup(boolean useOdom) {
-        setup(false, useOdom);
+    @Deprecated
+    public void setup(boolean useCamera, boolean useOdom) {
+        useOdometry = useOdom;
+        useCam = useCamera;
+        setup();
     }
 
     /**

@@ -239,7 +239,7 @@ public abstract class Base extends LinearOpMode {
         }
 
         // Ensure that the OpMode is still active
-        if (opModeIsActive() && lf != null) {
+        if (!isStopRequested() || opModeIsActive() && lf != null) {
             setMotorModes(STOP_AND_RESET_ENCODER);
             setMotorModes(RUN_USING_ENCODER);
 
@@ -257,7 +257,7 @@ public abstract class Base extends LinearOpMode {
 
             double duration = abs(inches * COUNTS_PER_INCH / velocity);
 
-            while (opModeIsActive() && (runtime.seconds() < duration) && inches != 0) {
+            while (!isStopRequested() && opModeIsActive() && (runtime.seconds() < duration) && inches != 0) {
                 // Display it for the driver.
                 print("Angle", imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
                 print("Running to", " " + lfTarget + ":" + rfTarget);
@@ -299,7 +299,7 @@ public abstract class Base extends LinearOpMode {
         if (abs(initialGoalAngle) > 180) {
             correctedGoalAngle -= abs(initialGoalAngle) / initialGoalAngle * 360;
         }
-        while (opModeIsActive() && (difference > tolerance) && degrees != 0) {
+        while (!isStopRequested() && opModeIsActive() && (difference > tolerance) && degrees != 0) {
             angle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
             difference = min(abs(initialGoalAngle - angle), abs(correctedGoalAngle - angle));
             turnModifier = min(1, (difference + 3) / 30);
@@ -408,7 +408,7 @@ public abstract class Base extends LinearOpMode {
      * @param direction Direction to strafe in.*
      */
     public void velocityStrafe(double inches, Dir direction) {
-        if (!opModeIsActive() || lf == null) {
+        if (isStopRequested() || !opModeIsActive() || lf == null) {
             return;
         }
         setMotorModes(STOP_AND_RESET_ENCODER);
@@ -435,7 +435,7 @@ public abstract class Base extends LinearOpMode {
         double duration = abs(inches * COUNTS_PER_INCH / velocity);
 
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < duration) && inches != 0) {
+        while (!isStopRequested() && opModeIsActive() && (runtime.seconds() < duration) && inches != 0) {
             print("Strafing until", duration + " seconds");
             print("Currently at", runtime.seconds() + " seconds");
             update();
@@ -640,7 +640,7 @@ public abstract class Base extends LinearOpMode {
     public AprilTagDetection tagDetections(int id, double timeout) {
         AprilTagDetection a;
         double t = runtime.milliseconds() + timeout;
-        while (opModeIsActive() && (runtime.milliseconds() < t)) {
+        while (!isStopRequested() && opModeIsActive() && (runtime.milliseconds() < t)) {
             a = tagDetections(id);
             if (a != null) {
                 return a;
@@ -657,8 +657,7 @@ public abstract class Base extends LinearOpMode {
     public void align(int id) {
         AprilTagDetection a = tagDetections(id, 1);
         turn(0);
-        while (opModeIsActive()
-                && (a != null && (abs(a.ftcPose.x) > 0.5 || abs(a.ftcPose.yaw) > 0.5))) {
+        while (!isStopRequested() && opModeIsActive() && (a != null && (abs(a.ftcPose.x) > 0.5 || abs(a.ftcPose.yaw) > 0.5))) {
             a = tagDetections(id, 1);
             if (a == null) {
                 return;
@@ -709,7 +708,7 @@ public abstract class Base extends LinearOpMode {
             wristMotor.setVelocity(LIFT_VEL * signum(encoders));
 
             runtime.reset();
-            while (opModeIsActive() && wristMotor.getCurrentPosition() < encoders) {
+            while (!isStopRequested() && opModeIsActive() && wristMotor.getCurrentPosition() < encoders) {
                 // Display it for the driver.
                 print("Angle", imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
                 print("Currently at", " at " + wristMotor.getCurrentPosition());
@@ -725,7 +724,7 @@ public abstract class Base extends LinearOpMode {
         if (wristMotor != null) {
             float angle;
             wristMotor.setVelocity(-LIFT_VEL);
-            while (opModeIsActive() && wristMotor.getCurrentPosition() > 0) {
+            while (!isStopRequested() && opModeIsActive() && wristMotor.getCurrentPosition() > 0) {
                 // Display it for the driver.
                 angle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
                 print("Angle", angle);
@@ -781,7 +780,7 @@ public abstract class Base extends LinearOpMode {
      * @param message Message to be sent
      */
     public void addLastActionTelemetry(String message) {
-        telemetry.addData("Last Action", message);
+        print("Last Action", message);
     }
 
     /** Adds information messages to telemetry and updates it */

@@ -8,6 +8,6 @@ public class Auto_Nothing extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         waitForStart();
-        while (opModeIsActive());
+        while (!isStopRequested() && opModeIsActive());
     }
 }

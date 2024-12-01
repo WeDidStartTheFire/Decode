@@ -42,7 +42,7 @@ public class TeleOp_Main extends Base {
     public void runOpMode() throws InterruptedException {
         setup(true);
 
-        while (opModeIsActive()) {
+        while (opModeIsActive() && !isStopRequested()) {
             slowdownMultiplier = 0.7;
             if (gamepad1.left_bumper) {
                 slowdownMultiplier = 0.3;

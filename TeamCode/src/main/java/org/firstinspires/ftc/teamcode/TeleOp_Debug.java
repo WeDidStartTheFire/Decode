@@ -60,7 +60,7 @@ public class TeleOp_Debug extends Base {
         motorA = wristMotor;
         motorB = liftMotor;
 
-        while (opModeIsActive()) {
+        while (opModeIsActive() && !isStopRequested()) {
             // Slows down movement for better handling the more the right trigger is held down
             slowdownMultiplier = (1.0 - gamepad1.right_trigger) * 0.7 + 0.3;
             // f (gamepad1.left_stick_button || gamepad1.right_stick_button) {

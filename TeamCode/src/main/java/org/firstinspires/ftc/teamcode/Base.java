@@ -158,13 +158,11 @@ public abstract class Base extends LinearOpMode {
                 except("Webcam not connected");
             }
         }
-        if (useOdometry) {
-            try {
-                mecDrive = new SampleMecanumDrive(hardwareMap);
-            } catch (IllegalArgumentException e) {
-                except("SparkFun Sensor not connected");
-                useOdometry = false;
-            }
+        try {
+            mecDrive = new SampleMecanumDrive(hardwareMap);
+        } catch (IllegalArgumentException e) {
+            except("SparkFun Sensor not connected");
+            useOdometry = false;
         }
 
         if (lf != null) {
@@ -201,7 +199,18 @@ public abstract class Base extends LinearOpMode {
         if (pixelLockingServo != null) {
             pixelLockingServo.setPosition(0);
         }
-        waitForStart();
+        while (!isStarted()) {
+            if (gamepad1.a) {
+                useOdometry = false;
+            }
+            if (gamepad1.b) {
+                useOdometry = true;
+            }
+            print("useOdometry", useOdometry);
+            print("Status", "Initialized");
+            print("Hub Name", hubName);
+            update();
+        }
         runtime.reset();
     }
 
@@ -257,7 +266,10 @@ public abstract class Base extends LinearOpMode {
 
             double duration = abs(inches * COUNTS_PER_INCH / velocity);
 
-            while (!isStopRequested() && opModeIsActive() && (runtime.seconds() < duration) && inches != 0) {
+            while (!isStopRequested()
+                    && opModeIsActive()
+                    && (runtime.seconds() < duration)
+                    && inches != 0) {
                 // Display it for the driver.
                 print("Angle", imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
                 print("Running to", " " + lfTarget + ":" + rfTarget);
@@ -435,7 +447,10 @@ public abstract class Base extends LinearOpMode {
         double duration = abs(inches * COUNTS_PER_INCH / velocity);
 
         runtime.reset();
-        while (!isStopRequested() && opModeIsActive() && (runtime.seconds() < duration) && inches != 0) {
+        while (!isStopRequested()
+                && opModeIsActive()
+                && (runtime.seconds() < duration)
+                && inches != 0) {
             print("Strafing until", duration + " seconds");
             print("Currently at", runtime.seconds() + " seconds");
             update();
@@ -500,7 +515,7 @@ public abstract class Base extends LinearOpMode {
     public void drive(double inches, Dir direction) {
         if (useOdometry) {
             Trajectory strafeTrajectory;
-            if (direction == BACKWARD) {
+            if (direction == FORWARD) {
                 strafeTrajectory = mecDrive.trajectoryBuilder(new Pose2d()).forward(inches).build();
             } else {
                 strafeTrajectory = mecDrive.trajectoryBuilder(new Pose2d()).back(inches).build();
@@ -657,7 +672,9 @@ public abstract class Base extends LinearOpMode {
     public void align(int id) {
         AprilTagDetection a = tagDetections(id, 1);
         turn(0);
-        while (!isStopRequested() && opModeIsActive() && (a != null && (abs(a.ftcPose.x) > 0.5 || abs(a.ftcPose.yaw) > 0.5))) {
+        while (!isStopRequested()
+                && opModeIsActive()
+                && (a != null && (abs(a.ftcPose.x) > 0.5 || abs(a.ftcPose.yaw) > 0.5))) {
             a = tagDetections(id, 1);
             if (a == null) {
                 return;
@@ -708,7 +725,9 @@ public abstract class Base extends LinearOpMode {
             wristMotor.setVelocity(LIFT_VEL * signum(encoders));
 
             runtime.reset();
-            while (!isStopRequested() && opModeIsActive() && wristMotor.getCurrentPosition() < encoders) {
+            while (!isStopRequested()
+                    && opModeIsActive()
+                    && wristMotor.getCurrentPosition() < encoders) {
                 // Display it for the driver.
                 print("Angle", imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
                 print("Currently at", " at " + wristMotor.getCurrentPosition());

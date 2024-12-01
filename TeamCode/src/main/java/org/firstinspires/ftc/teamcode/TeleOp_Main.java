@@ -75,10 +75,10 @@ public class TeleOp_Main extends Base {
 
             // Send calculated power to wheels
             if (lf != null) {
-                lf.setPower(leftFrontPower);
-                rf.setPower(rightFrontPower);
-                lb.setPower(leftBackPower);
-                rb.setPower(rightBackPower);
+                lf.setVelocity(leftFrontPower * 5000);
+                rf.setVelocity(rightFrontPower * 5000);
+                lb.setVelocity(leftBackPower * 5000);
+                rb.setVelocity(rightBackPower * 5000);
             } else {
                 print("WARNING:", "At least one drivetrain motor disconnected");
             }

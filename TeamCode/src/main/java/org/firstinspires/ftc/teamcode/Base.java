@@ -66,7 +66,7 @@ public abstract class Base extends LinearOpMode {
     double velocity = 2000;
     public VisionPortal visionPortal;
     private AprilTagProcessor tagProcessor;
-    private SampleMecanumDrive mecDrive;
+    public SampleMecanumDrive mecDrive;
 
     private static final IMU.Parameters IMU_PARAMETERS =
             new IMU.Parameters(

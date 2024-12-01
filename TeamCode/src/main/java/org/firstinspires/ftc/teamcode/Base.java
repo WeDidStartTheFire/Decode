@@ -239,7 +239,7 @@ public abstract class Base extends LinearOpMode {
         }
 
         // Ensure that the OpMode is still active
-        if (!isStopRequested() || opModeIsActive() && lf != null) {
+        if (!isStopRequested() && opModeIsActive() && lf != null) {
             setMotorModes(STOP_AND_RESET_ENCODER);
             setMotorModes(RUN_USING_ENCODER);
 

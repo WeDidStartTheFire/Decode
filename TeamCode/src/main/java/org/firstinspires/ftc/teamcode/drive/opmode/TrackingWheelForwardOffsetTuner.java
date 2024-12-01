@@ -35,7 +35,7 @@ import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
  */
 @Config
 @Autonomous(group = "org/firstinspires/ftc/teamcode/drive")
-@Disabled
+// @Disabled
 public class TrackingWheelForwardOffsetTuner extends LinearOpMode {
     public static double ANGLE = 180; // deg
     public static int NUM_TRIALS = 5;

@@ -45,11 +45,11 @@ public class DriveConstants {
      * angular distances although most angular parameters are wrapped in Math.toRadians() for
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
-    public static double WHEEL_RADIUS = 1.88976; // in, for larger wheels
+    public static double WHEEL_RADIUS = 1.88976; // in, for smaller wheels
     public static double GEAR_RATIO =
             1; // 1.0041505558356485; <-- from calibration we weren't supposed to do
     // ^^ output (wheel) speed / input (motor) speed ^^
-    public static double TRACK_WIDTH = 16.15; // in, not filled out
+    public static double TRACK_WIDTH = 15.73; // in, effective
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -60,7 +60,7 @@ public class DriveConstants {
      */
     public static double kV = 0.018;
     public static double kA = 0.0026;
-    public static double kStatic = 0.003;
+    public static double kStatic = 0.00;
 
     /*
      * These values are used to generate the trajectories for you robot. To ensure proper operation,
@@ -71,8 +71,8 @@ public class DriveConstants {
      */
     public static double MAX_VEL = 30;
     public static double MAX_ACCEL = 30;
-    public static double MAX_ANG_VEL = 3.1181495911498684;
-    public static double MAX_ANG_ACCEL = Math.toRadians(60);
+    public static double MAX_ANG_VEL = 2.3955666637480766;
+    public static double MAX_ANG_ACCEL = Math.toRadians(180);
 
     /*
      * Adjust the orientations here to match your robot. See the FTC SDK documentation for details.

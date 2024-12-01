@@ -31,35 +31,39 @@ public class SparkFunLocalizer implements Localizer {
     @Override
     public Pose2d getPoseEstimate() {
         return new Pose2d(
-                otosSensor.getPosition().x, otosSensor.getPosition().y, otosSensor.getPosition().h);
+                -otosSensor.getPosition().y,
+                otosSensor.getPosition().x,
+                otosSensor.getPosition().h);
     }
 
     @Override
     public void setPoseEstimate(Pose2d pose) {
         otosSensor.setPosition(
-                new SparkFunOTOS.Pose2D(pose.getX(), pose.getY(), pose.getHeading()));
+                new SparkFunOTOS.Pose2D(-pose.getY(), pose.getX(), pose.getHeading()));
     }
 
     @Override
     public Pose2d getPoseVelocity() {
         return new Pose2d(
-                otosSensor.getVelocity().x, otosSensor.getVelocity().y, otosSensor.getVelocity().h);
+                -otosSensor.getVelocity().y,
+                otosSensor.getVelocity().x,
+                otosSensor.getVelocity().h);
     }
 
     private void configureOtos() {
         // otosSensor.setLinearUnit(DistanceUnit.METER);
         otosSensor.setLinearUnit(DistanceUnit.INCH);
-        // otosSensor.setAngularUnit(AnguleUnit.RADIANS);
-        otosSensor.setAngularUnit(AngleUnit.DEGREES);
+        otosSensor.setAngularUnit(AngleUnit.RADIANS);
+        //        otosSensor.setAngularUnit(AngleUnit.DEGREES);
 
         SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(0, 0, 0);
         otosSensor.setOffset(offset);
 
-        // 1.0: 1.0070786062901793726582210425863
-        // 0.7: 1.2227808267966358287502051967825
-        // 0.3: 1.3569066682574921488501314561593
-        otosSensor.setLinearScalar(1.1955887004481024500861858985094);
-        otosSensor.setAngularScalar(0.99372024014905803602235870540335);
+        // 1.0: 1.0405900165999864826326556516607
+        // 0.7: 1.0795027019631985771940625213763
+        // 0.3: 1.1030738408550591553381347261625
+        otosSensor.setLinearScalar(1.0795027019631985771940625213763);
+        otosSensor.setAngularScalar(0.99015462564184666344627699951694);
 
         otosSensor.calibrateImu();
 

@@ -83,6 +83,7 @@ public abstract class Base extends LinearOpMode {
         BACKWARD
     }
 
+    public Pose2d currentTraj = new Pose2d();
     /** Initializes all hardware devices on the robot. */
     public void setup() {
         imu = hardwareMap.get(IMU.class, "imu");
@@ -482,12 +483,13 @@ public abstract class Base extends LinearOpMode {
             Trajectory strafeTrajectory;
             if (direction == LEFT) {
                 strafeTrajectory =
-                        mecDrive.trajectoryBuilder(new Pose2d()).strafeLeft(inches).build();
+                        mecDrive.trajectoryBuilder(currentTraj).strafeLeft(inches).build();
             } else {
                 strafeTrajectory =
-                        mecDrive.trajectoryBuilder(new Pose2d()).strafeRight(inches).build();
+                        mecDrive.trajectoryBuilder(currentTraj).strafeRight(inches).build();
             }
             mecDrive.followTrajectory(strafeTrajectory);
+            currentTraj = strafeTrajectory.end();
             return; // Early return
         }
         velocityStrafe(inches, direction);
@@ -523,11 +525,12 @@ public abstract class Base extends LinearOpMode {
         if (useOdometry) {
             Trajectory strafeTrajectory;
             if (direction == FORWARD) {
-                strafeTrajectory = mecDrive.trajectoryBuilder(new Pose2d()).forward(inches).build();
+                strafeTrajectory = mecDrive.trajectoryBuilder(currentTraj).forward(inches).build();
             } else {
-                strafeTrajectory = mecDrive.trajectoryBuilder(new Pose2d()).back(inches).build();
+                strafeTrajectory = mecDrive.trajectoryBuilder(currentTraj).back(inches).build();
             }
             mecDrive.followTrajectory(strafeTrajectory);
+            currentTraj = strafeTrajectory.end();
             return; // Early return
         }
 

@@ -10,7 +10,7 @@ public class Auto_ObservationZone extends Base {
         setup();
         strafe(20, RIGHT);
         drive(48, FORWARD);
-        strafe(7, RIGHT);
+        strafe(6, RIGHT);
         drive(40, BACKWARD);
         turn(0); // Re-align
         drive(40, FORWARD);

@@ -27,7 +27,7 @@ import org.firstinspires.ftc.vision.apriltag.*;
  * @deprecated Use {@link Base} instead.
  **/
 @Deprecated
-public abstract class Base_CS extends LinearOpMode {
+public abstract class Legacy_CS_Base extends LinearOpMode {
     private static final double LIFT_VEL = 1500;
     public static final double GOAL_ENCODERS = 2000;
     private static final ElapsedTime runtime = new ElapsedTime();

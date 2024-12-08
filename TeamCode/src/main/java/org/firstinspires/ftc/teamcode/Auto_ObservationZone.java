@@ -9,16 +9,16 @@ public class Auto_ObservationZone extends Base {
     public void runOpMode() throws InterruptedException {
         setup();
         strafe(20, RIGHT);
-        drive(48, FORWARD);
-        strafe(6, RIGHT);
-        drive(40, BACKWARD);
+        drive(52, FORWARD);
+        strafe(9, RIGHT);
+        drive(44, BACKWARD);
         turn(0); // Re-align
-        drive(40, FORWARD);
+        drive(44, FORWARD);
         strafe(12, RIGHT);
-        drive(40, BACKWARD);
+        drive(44, BACKWARD);
         turn(0); // Re-align
-        drive(40, FORWARD);
-        strafe(6, RIGHT);
-        drive(46, BACKWARD);
+        drive(44, FORWARD);
+        strafe(7, RIGHT);
+        drive(48, BACKWARD);
     }
 }

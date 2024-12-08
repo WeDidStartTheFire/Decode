@@ -14,7 +14,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.rev.*;
-import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.*;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.*;
@@ -83,7 +82,7 @@ public abstract class Base extends LinearOpMode {
         BACKWARD
     }
 
-    public Pose2d currentTraj = new Pose2d();
+    public Pose2d currentPose = new Pose2d();
     /** Initializes all hardware devices on the robot. */
     public void setup() {
         imu = hardwareMap.get(IMU.class, "imu");
@@ -483,13 +482,13 @@ public abstract class Base extends LinearOpMode {
             Trajectory strafeTrajectory;
             if (direction == LEFT) {
                 strafeTrajectory =
-                        mecDrive.trajectoryBuilder(currentTraj).strafeLeft(inches).build();
+                        mecDrive.trajectoryBuilder(currentPose).strafeLeft(inches).build();
             } else {
                 strafeTrajectory =
-                        mecDrive.trajectoryBuilder(currentTraj).strafeRight(inches).build();
+                        mecDrive.trajectoryBuilder(currentPose).strafeRight(inches).build();
             }
             mecDrive.followTrajectory(strafeTrajectory);
-            currentTraj = strafeTrajectory.end();
+            currentPose = strafeTrajectory.end();
             return; // Early return
         }
         velocityStrafe(inches, direction);
@@ -525,12 +524,12 @@ public abstract class Base extends LinearOpMode {
         if (useOdometry) {
             Trajectory strafeTrajectory;
             if (direction == FORWARD) {
-                strafeTrajectory = mecDrive.trajectoryBuilder(currentTraj).forward(inches).build();
+                strafeTrajectory = mecDrive.trajectoryBuilder(currentPose).forward(inches).build();
             } else {
-                strafeTrajectory = mecDrive.trajectoryBuilder(currentTraj).back(inches).build();
+                strafeTrajectory = mecDrive.trajectoryBuilder(currentPose).back(inches).build();
             }
             mecDrive.followTrajectory(strafeTrajectory);
-            currentTraj = strafeTrajectory.end();
+            currentPose = strafeTrajectory.end();
             return; // Early return
         }
 

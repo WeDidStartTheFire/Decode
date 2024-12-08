@@ -7,24 +7,18 @@ import static org.firstinspires.ftc.teamcode.Base.Dir.*;
 public class Auto_NetZone extends Base {
     @Override
     public void runOpMode() throws InterruptedException {
-        setup(true);
+        setup();
         strafe(6, LEFT);
-        strafe(5 + 3, RIGHT);
+        strafe(8, RIGHT);
         drive(48, FORWARD);
         strafe(11, LEFT);
         drive(47, BACKWARD);
-        turn(0); // Re-align
         drive(45, FORWARD);
         strafe(13, LEFT);
         drive(43, BACKWARD);
-        turn(0); // Re-align
         drive(43, FORWARD);
         strafe(11, LEFT);
         drive(36, BACKWARD);
-        turn(0); // Re-align
-        strafe(24, RIGHT);
-        drive(10, BACKWARD);
-        turn(0); // Re-align
-        strafe(72 + 24, RIGHT);
+        strafe(96, RIGHT);
     }
 }

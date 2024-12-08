@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.archive;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -16,8 +17,10 @@ import org.firstinspires.ftc.teamcode.TeleOp_Main;
  *
  * @deprecated Use {@link TeleOp_Main} instead.
  */
-@TeleOp(name = "Old", group = "Center Stage")
+//@TeleOp(name = "Old", group = "Center Stage")
+
 @Deprecated
+@Disabled
 public class TeleOp_CS extends Base {
     // Declare OpMode members for each of the 4 motors.
     boolean wasX = false;

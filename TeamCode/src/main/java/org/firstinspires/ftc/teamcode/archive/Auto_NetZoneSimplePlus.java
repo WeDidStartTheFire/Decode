@@ -1,11 +1,16 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.archive;
 
 import static org.firstinspires.ftc.teamcode.Base.Dir.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-@Autonomous(name = "Net Zone Simple + Away", group = "IntoTheDeep", preselectTeleOp = "Main")
-public class Auto_NetZoneSimplePlusAway extends Base {
+import org.firstinspires.ftc.teamcode.Base;
+
+//@Autonomous(name = "Net Zone Simple +", group = "IntoTheDeep", preselectTeleOp = "Main")
+@Disabled
+@Deprecated
+public class Auto_NetZoneSimplePlus extends Base {
     @Override
     public void runOpMode() throws InterruptedException {
         setup();
@@ -15,6 +20,6 @@ public class Auto_NetZoneSimplePlusAway extends Base {
         sleep(250);
         openIntake();
         sleep(250);
-        strafe(36, RIGHT);
+        drive(76, BACKWARD);
     }
 }

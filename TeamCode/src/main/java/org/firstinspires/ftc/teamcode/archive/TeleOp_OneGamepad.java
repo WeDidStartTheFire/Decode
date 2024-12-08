@@ -7,6 +7,7 @@ import org.firstinspires.ftc.teamcode.Base;
 
 // @TeleOp(name = "One Gamepad", group = "CenterStage")
 @Disabled
+@Deprecated
 public class TeleOp_OneGamepad extends Base {
 
     // Declare OpMode members for each of the 4 motors.

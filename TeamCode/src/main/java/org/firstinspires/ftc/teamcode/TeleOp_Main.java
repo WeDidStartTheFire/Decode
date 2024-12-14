@@ -24,19 +24,22 @@ public class TeleOp_Main extends Base {
     static final double SPEED_MULTIPLIER = 0.75;
     static final double BASE_TURN_SPEED = 2.5;
     static final double WRIST_MOTOR_POWER = 0.1;
-    static final double[] WRIST_MOTOR_BOUNDARIES = {0, 140};
-    static final double[] LIFT_BOUNDARIES = {0, -1200};
-
+    static final int[] WRIST_MOTOR_BOUNDARIES = {0, 140};
+    static final int[] LIFT_BOUNDARIES = {0, -1200};
+    static final int[] V_LIFT_BOUNDARIES = {0, 1000}; // Temporary, need to change
     double intakeServoGoal = 0;
     double wristServoGoal = 0;
     double nextWristServoGoal = 0.5;
     double newNextWristServoGoal;
 
+    int vertA, vertB, vertAvg;
+    int vertGoal = 0;
+
     boolean wasIntakeServoButtonPressed = false;
     boolean wasWristServoButtonPressed = false;
     int wristMotorTicksStopped = 0;
-    double wristMotorPosition = 0;
-    double error;
+    int wristMotorPosition = 0;
+    int error;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -148,7 +151,7 @@ public class TeleOp_Main extends Base {
                 print("Intake Servo Goal", intakeServoGoal);
             }
 
-            // Logic to raise or lower the lift
+            // Logic to extend or retract the horizontal lift
             if (liftMotor != null) {
                 addLastActionTelemetry("Current lift position: " + liftMotor.getCurrentPosition());
                 if (!gamepad1.dpad_up && !gamepad1.dpad_down
@@ -175,6 +178,42 @@ public class TeleOp_Main extends Base {
                             addLastActionTelemetry("Lift Motor now moving");
                         } else {
                             liftMotor.setPower(0);
+                            addLastActionTelemetry("Lift Motor no longer moving");
+                        }
+                    }
+                }
+            }
+
+            // Logic to raise or lower the vertical lift
+            if (verticalMotorA != null) {
+                vertA = verticalMotorA.getCurrentPosition();
+                vertB = verticalMotorB.getCurrentPosition();
+                vertAvg = (vertA + vertB) / 2;
+//                addLastActionTelemetry("Current lift position: " + liftMotor.getCurrentPosition());
+                if (!gamepad1.dpad_up && !gamepad1.dpad_down
+                        || gamepad1.dpad_down && gamepad1.dpad_up) {
+                    vertGoal = vertAvg;
+                } else {
+                    if (touchSensor != null) {
+                        touchSensorPressed = touchSensor.isPressed();
+                    } else {
+                        touchSensorPressed = false;
+                        addLastActionTelemetry("Touch sensor not connected");
+                    }
+                    if (gamepad1.dpad_up && !gamepad1.dpad_down) {
+                        if (liftMotor.getCurrentPosition() < V_LIFT_BOUNDARIES[1]) {
+                            vertGoal = vertAvg - 10;
+                            addLastActionTelemetry("Lift Motor now moving");
+                        } else {
+                            vertGoal = vertAvg;
+                            addLastActionTelemetry("Lift Motor no longer moving");
+                        }
+                    } else if (gamepad1.dpad_down && !gamepad1.dpad_up && !touchSensorPressed) {
+                        if (liftMotor.getCurrentPosition() > V_LIFT_BOUNDARIES[0]) {
+                            vertGoal = vertAvg + 10;
+                            addLastActionTelemetry("Lift Motor now moving");
+                        } else {
+                            vertGoal = vertAvg;
                             addLastActionTelemetry("Lift Motor no longer moving");
                         }
                     }

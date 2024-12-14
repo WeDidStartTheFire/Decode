@@ -30,7 +30,7 @@ public abstract class Base extends LinearOpMode {
     private static final double LIFT_VEL = 1500;
     private final ElapsedTime runtime = new ElapsedTime();
     // All non-primitive data types initialize to null on default.
-    public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor;
+    public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor, verticalMotorA, verticalMotorB;
     public Servo wristServo, droneServo, pixelLockingServo, intakeServo;
     public TouchSensor touchSensor;
     private IMU imu;
@@ -109,6 +109,13 @@ public abstract class Base extends LinearOpMode {
             liftMotor = hardwareMap.get(DcMotorEx.class, "liftMotor"); // Port 0
         } catch (IllegalArgumentException e) {
             except("liftMotor (previously used as carWashMotor) not connected");
+        }
+        try {
+            verticalMotorA = hardwareMap.get(DcMotorEx.class, "verticalMotorA");
+            verticalMotorB = hardwareMap.get(DcMotorEx.class, "verticalMotorB");
+        } catch (IllegalArgumentException e) {
+            verticalMotorA = verticalMotorB = null;
+            except(">= 1 verticalMotor connected; All vertical lift motors disabled");
         }
         try {
             wristMotor = hardwareMap.get(DcMotorEx.class, "pixelLiftingMotor"); // Port 1
@@ -204,7 +211,9 @@ public abstract class Base extends LinearOpMode {
             print("useOdometry", useOdometry);
             print("Status", "Initialized");
             print("Hub Name", hubName);
-            update();
+            print(":::", ":::");
+            print(":::", ":::");
+            updateAll();
         }
         runtime.reset();
     }
@@ -813,6 +822,15 @@ public abstract class Base extends LinearOpMode {
 
     /** Adds information messages to telemetry and updates it */
     public void updateAll() {
+        if (lf == null) {
+            telemetry.addData("Drive Train", "Disconnected");
+        }
+        if (verticalMotorA == null) {
+            telemetry.addData("Vertical Lift Motors", "Disconnected");
+        } else {
+            print("Vertical Motor A Position", verticalMotorA.getCurrentPosition());
+            print("Vertical Motor B Position", verticalMotorB.getCurrentPosition());
+        }
         if (liftMotor == null) {
             telemetry.addData("Lift Motor", "Disconnected");
         } else {
@@ -842,6 +860,8 @@ public abstract class Base extends LinearOpMode {
             telemetry.addData("X coordinate", pos.getX());
             telemetry.addData("Y coordinate", pos.getY());
             telemetry.addData("Heading angle", pos.getHeading());
+        } else {
+            print("Odometry disabled");
         }
         telemetry.update();
     }

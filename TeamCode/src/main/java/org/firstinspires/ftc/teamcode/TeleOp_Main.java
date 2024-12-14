@@ -43,7 +43,7 @@ public class TeleOp_Main extends Base {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        setup(true);
+        setup();
 
         while (opModeIsActive() && !isStopRequested()) {
             slowdownMultiplier = 0.7;

@@ -25,7 +25,7 @@ public class TeleOp_Main extends Base {
     static final double BASE_TURN_SPEED = 2.5;
     static final double WRIST_MOTOR_POWER = 0.1;
     static final int[] WRIST_MOTOR_BOUNDARIES = {0, 140};
-    static final int[] LIFT_BOUNDARIES = {0, -1200};
+    static final int[] LIFT_BOUNDARIES = {0, 1200};
     static final int[] V_LIFT_BOUNDARIES = {0, 1000}; // Temporary, need to change
     double intakeServoGoal = 0;
     double wristServoGoal = 0;
@@ -56,9 +56,9 @@ public class TeleOp_Main extends Base {
             // Slows down movement for better handling the more the right trigger is held down
             // slowdownMultiplier = (1.0 - gamepad1.right_trigger) * 0.7 + 0.3;
 
-            axial = ((-gamepad1.left_stick_y * SPEED_MULTIPLIER) * slowdownMultiplier);
-            lateral = ((gamepad1.left_stick_x * SPEED_MULTIPLIER) * slowdownMultiplier);
-            yaw = ((gamepad1.right_stick_x * BASE_TURN_SPEED) * slowdownMultiplier);
+            axial = ((-gamepad1.left_stick_y * SPEED_MULTIPLIER));
+            lateral = ((gamepad1.left_stick_x * SPEED_MULTIPLIER));
+            yaw = ((gamepad1.right_stick_x * BASE_TURN_SPEED));
 
             leftFrontPower = axial + lateral + yaw;
             rightFrontPower = axial - lateral - yaw;
@@ -78,10 +78,10 @@ public class TeleOp_Main extends Base {
 
             // Send calculated power to wheels
             if (lf != null) {
-                lf.setVelocity(leftFrontPower * 5000);
-                rf.setVelocity(rightFrontPower * 5000);
-                lb.setVelocity(leftBackPower * 5000);
-                rb.setVelocity(rightBackPower * 5000);
+                lf.setVelocity(leftFrontPower * 5000 * slowdownMultiplier);
+                rf.setVelocity(rightFrontPower * 5000 * slowdownMultiplier);
+                lb.setVelocity(leftBackPower * 5000 * slowdownMultiplier);
+                rb.setVelocity(rightBackPower * 5000 * slowdownMultiplier);
             } else {
                 print("WARNING:", "At least one drivetrain motor disconnected");
             }
@@ -165,16 +165,16 @@ public class TeleOp_Main extends Base {
                         addLastActionTelemetry("Touch sensor not connected");
                     }
                     if (gamepad1.dpad_up && !gamepad1.dpad_down) {
-                        if (liftMotor.getCurrentPosition() > LIFT_BOUNDARIES[1]) {
-                            liftMotor.setPower(-1);
+                        if (liftMotor.getCurrentPosition() < LIFT_BOUNDARIES[1]) {
+                            liftMotor.setPower(1 * slowdownMultiplier);
                             addLastActionTelemetry("Lift Motor now moving");
                         } else {
                             liftMotor.setPower(0);
                             addLastActionTelemetry("Lift Motor no longer moving");
                         }
                     } else if (gamepad1.dpad_down && !gamepad1.dpad_up && !touchSensorPressed) {
-                        if (liftMotor.getCurrentPosition() < LIFT_BOUNDARIES[0]) {
-                            liftMotor.setPower(1);
+                        if (liftMotor.getCurrentPosition() > LIFT_BOUNDARIES[0]) {
+                            liftMotor.setPower(-1 * slowdownMultiplier);
                             addLastActionTelemetry("Lift Motor now moving");
                         } else {
                             liftMotor.setPower(0);
@@ -234,6 +234,7 @@ public class TeleOp_Main extends Base {
                     touchSensorWasPressed = false;
                 }
             }
+
             print("Speed Multiplier", slowdownMultiplier);
             updateAll();
         }

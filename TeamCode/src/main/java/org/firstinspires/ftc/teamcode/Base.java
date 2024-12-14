@@ -185,6 +185,11 @@ public abstract class Base extends LinearOpMode {
             rf.setTargetPosition(rf.getCurrentPosition());
         }
 
+        if (liftMotor != null) {
+            liftMotor.setDirection(DcMotorEx.Direction.REVERSE);
+            liftMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        }
+
         if (verticalMotorA != null) {
             verticalMotorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             verticalMotorB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

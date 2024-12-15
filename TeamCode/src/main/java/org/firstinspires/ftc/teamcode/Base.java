@@ -84,6 +84,7 @@ public abstract class Base extends LinearOpMode {
     }
 
     public Pose2d currentPose = new Pose2d();
+
     /** Initializes all hardware devices on the robot. */
     public void setup() {
         imu = hardwareMap.get(IMU.class, "imu");
@@ -191,6 +192,8 @@ public abstract class Base extends LinearOpMode {
         }
 
         if (verticalMotorA != null) {
+            verticalMotorB.setDirection(DcMotorSimple.Direction.REVERSE);
+
             verticalMotorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             verticalMotorB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 

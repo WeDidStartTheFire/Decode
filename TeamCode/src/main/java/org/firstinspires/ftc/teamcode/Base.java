@@ -50,8 +50,7 @@ public abstract class Base extends LinearOpMode {
     public static final double LARGE_WHEEL_DIAMETER = 5.511811;
     static double WHEEL_DIAMETER_INCHES = SMALL_WHEEL_DIAMETER;
 
-    static final double COUNTS_PER_MOTOR_REV =
-            ((((1.0 + (46.0 / 17.0))) * (1.0 + (46.0 / 11.0))) * 28.0);
+    static final double COUNTS_PER_MOTOR_REV = 537.6898395722;  // ((((1.0 + (46.0 / 17.0))) * (1.0 + (46.0 / 11.0))) * 28.0);
     static final double DRIVE_GEAR_REDUCTION = 1.0; // No External Gearing
     static final double COUNTS_PER_INCH =
             (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * PI);

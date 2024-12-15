@@ -26,14 +26,14 @@ public class TeleOp_Main extends Base {
     static final double WRIST_MOTOR_POWER = 0.1;
     static final int[] WRIST_MOTOR_BOUNDARIES = {0, 140};
     static final int[] LIFT_BOUNDARIES = {0, 1200};
-    static final int[] V_LIFT_BOUNDARIES = {0, 1000}; // Temporary, need to change
+    static final int[] V_LIFT_BOUNDARIES = {0, 10000}; // Temporary, need to change
     double intakeServoGoal = 0;
     double wristServoGoal = 0;
     double nextWristServoGoal = 0.5;
     double newNextWristServoGoal;
 
     int vertA, vertB, vertAvg;
-    int vertGoal = 0;
+    double power = 0;
 
     boolean wasIntakeServoButtonPressed = false;
     boolean wasWristServoButtonPressed = false;
@@ -154,8 +154,8 @@ public class TeleOp_Main extends Base {
             // Logic to extend or retract the horizontal lift
             if (liftMotor != null) {
                 addLastActionTelemetry("Current lift position: " + liftMotor.getCurrentPosition());
-                if (!gamepad1.dpad_up && !gamepad1.dpad_down
-                        || gamepad1.dpad_down && gamepad1.dpad_up) {
+                if (!gamepad1.dpad_right && !gamepad1.dpad_left
+                        || gamepad1.dpad_left && gamepad1.dpad_right) {
                     liftMotor.setPower(0);
                 } else {
                     if (touchSensor != null) {
@@ -164,7 +164,7 @@ public class TeleOp_Main extends Base {
                         touchSensorPressed = false;
                         addLastActionTelemetry("Touch sensor not connected");
                     }
-                    if (gamepad1.dpad_up && !gamepad1.dpad_down) {
+                    if (gamepad1.dpad_right && !gamepad1.dpad_left) {
                         if (liftMotor.getCurrentPosition() < LIFT_BOUNDARIES[1]) {
                             liftMotor.setPower(1 * slowdownMultiplier);
                             addLastActionTelemetry("Lift Motor now moving");
@@ -172,7 +172,7 @@ public class TeleOp_Main extends Base {
                             liftMotor.setPower(0);
                             addLastActionTelemetry("Lift Motor no longer moving");
                         }
-                    } else if (gamepad1.dpad_down && !gamepad1.dpad_up && !touchSensorPressed) {
+                    } else if (gamepad1.dpad_left && !gamepad1.dpad_right && !touchSensorPressed) {
                         if (liftMotor.getCurrentPosition() > LIFT_BOUNDARIES[0]) {
                             liftMotor.setPower(-1 * slowdownMultiplier);
                             addLastActionTelemetry("Lift Motor now moving");
@@ -192,7 +192,7 @@ public class TeleOp_Main extends Base {
 //                addLastActionTelemetry("Current lift position: " + liftMotor.getCurrentPosition());
                 if (!gamepad1.dpad_up && !gamepad1.dpad_down
                         || gamepad1.dpad_down && gamepad1.dpad_up) {
-                    vertGoal = vertAvg;
+                    power = 0;
                 } else {
                     if (touchSensor != null) {
                         touchSensorPressed = touchSensor.isPressed();
@@ -201,23 +201,26 @@ public class TeleOp_Main extends Base {
                         addLastActionTelemetry("Touch sensor not connected");
                     }
                     if (gamepad1.dpad_up && !gamepad1.dpad_down) {
-                        if (liftMotor.getCurrentPosition() < V_LIFT_BOUNDARIES[1]) {
-                            vertGoal = vertAvg - 10;
-                            addLastActionTelemetry("Lift Motor now moving");
+                        if (vertAvg < V_LIFT_BOUNDARIES[1]) {
+                            power = 1;
+                            addLastActionTelemetry("Vertical Motors now moving");
                         } else {
-                            vertGoal = vertAvg;
-                            addLastActionTelemetry("Lift Motor no longer moving");
+                            power = 0;
+                            addLastActionTelemetry("Vertical Motors no longer moving");
                         }
                     } else if (gamepad1.dpad_down && !gamepad1.dpad_up && !touchSensorPressed) {
-                        if (liftMotor.getCurrentPosition() > V_LIFT_BOUNDARIES[0]) {
-                            vertGoal = vertAvg + 10;
-                            addLastActionTelemetry("Lift Motor now moving");
+                        if (vertAvg > V_LIFT_BOUNDARIES[0]) {
+                            power = -1;
+                            addLastActionTelemetry("Vertical Motors now moving");
                         } else {
-                            vertGoal = vertAvg;
-                            addLastActionTelemetry("Lift Motor no longer moving");
+                            power = 0;
+                            addLastActionTelemetry("Vertical Motors no longer moving");
                         }
                     }
                 }
+                verticalMotorA.setPower(power);
+                verticalMotorB.setPower(power);
+                print("Vertical Motor Power", power);
             }
 
             // Logic to stop lift when it hits touch sensor

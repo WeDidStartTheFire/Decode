@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
@@ -199,8 +200,8 @@ public abstract class Base extends LinearOpMode {
             verticalMotorA.setTargetPosition(verticalMotorA.getCurrentPosition());
             verticalMotorB.setTargetPosition(verticalMotorB.getCurrentPosition());
 
-            verticalMotorA.setMode(RUN_TO_POSITION);
-            verticalMotorB.setMode(RUN_TO_POSITION);
+            verticalMotorA.setMode(RUN_USING_ENCODER);
+            verticalMotorB.setMode(RUN_USING_ENCODER);
         }
 
         if (wristMotor != null) {

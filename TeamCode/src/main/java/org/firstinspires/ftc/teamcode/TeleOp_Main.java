@@ -104,7 +104,7 @@ public class TeleOp_Main extends Base {
                         WRIST_MOTOR_BOUNDARIES[1] +=
                                 wristMotor.getCurrentPosition() - WRIST_MOTOR_BOUNDARIES[0];
                         WRIST_MOTOR_BOUNDARIES[0] = wristMotor.getCurrentPosition();
-                        addLastActionTelemetry("Wrist Motor boundaries overriden");
+                        addLastActionTelemetry("Wrist Motor boundaries overridden");
                     }
                 } else {
                     error = wristMotorPosition - wristMotor.getCurrentPosition();

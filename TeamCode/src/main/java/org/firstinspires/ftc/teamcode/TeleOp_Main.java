@@ -210,7 +210,7 @@ public class TeleOp_Main extends Base {
                         }
                     } else if (gamepad1.dpad_down && !gamepad1.dpad_up && !touchSensorPressed) {
                         if (vertAvg > V_LIFT_BOUNDARIES[0]) {
-                            power = -1;
+                            power = -slowdownMultiplier;
                             addLastActionTelemetry("Vertical Motors now moving");
                         } else {
                             power = 0;

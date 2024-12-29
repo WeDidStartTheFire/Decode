@@ -26,15 +26,17 @@ public class TeleOp_Main extends Base {
     static final double WRIST_MOTOR_POWER = 0.1;
     static final int[] WRIST_MOTOR_BOUNDARIES = {0, 140};
     static final int[] LIFT_BOUNDARIES = {0, 1200};
-    static final int[] V_LIFT_BOUNDARIES = {0, 10000}; // Temporary, need to change
+    static final int[] V_LIFT_BOUNDARIES = {0, 1500}; // Temporary, need to change
     double intakeServoGoal = 0;
     double wristServoGoal = 0;
     double nextWristServoGoal = 0.5;
     double newNextWristServoGoal;
 
-    int vertA, vertB, vertAvg;
+    int vertA, vertB, vertAvg, vertGoal;
+    boolean vertUp, vertDown, vertRunToPos = false;
     double power = 0;
 
+    boolean vertStopped = false;
     boolean wasIntakeServoButtonPressed = false;
     boolean wasWristServoButtonPressed = false;
     int wristMotorTicksStopped = 0;
@@ -189,37 +191,85 @@ public class TeleOp_Main extends Base {
                 vertA = verticalMotorA.getCurrentPosition();
                 vertB = verticalMotorB.getCurrentPosition();
                 vertAvg = (vertA + vertB) / 2;
-//                addLastActionTelemetry("Current lift position: " + liftMotor.getCurrentPosition());
-                if (!gamepad1.dpad_up && !gamepad1.dpad_down
-                        || gamepad1.dpad_down && gamepad1.dpad_up) {
-                    power = 0;
+                if (gamepad1.dpad_up || gamepad1.dpad_down) {
+                    vertRunToPos = false;
                 } else {
+                    if (!vertRunToPos) {
+                        if (gamepad1.x) {
+                            vertGoal = 1500;
+                        } else if (gamepad1.y) {
+                            vertGoal = 1000;
+                        }
+                    }
+                    vertRunToPos = gamepad1.x || gamepad1.y || vertRunToPos;
+                    if (vertAvg - 20 < vertGoal && vertGoal < vertAvg + 20) {
+                        vertRunToPos = false;
+                    }
+                }
+                if (vertRunToPos) {
+                    if (vertGoal < vertAvg) {
+                        vertUp = true;
+                        if (vertGoal > vertAvg - 50) {
+                            slowdownMultiplier = 0.3;
+                        }
+                    } else if (vertGoal > vertAvg) {
+                        vertDown = true;
+                        if (vertGoal < vertAvg + 50) {
+                            slowdownMultiplier = 0.3;
+                        }
+                    }
+                }
+                vertUp = gamepad1.dpad_up || vertUp;
+                vertDown = gamepad1.dpad_down || vertDown;
+//                addLastActionTelemetry("Current lift position: " + liftMotor.getCurrentPosition());
+                if ((!vertUp && !vertDown || vertDown && vertUp) || !vertRunToPos) {
+                    power = 0;
+                    if (!vertStopped) {
+                        vertStopped = true;
+                        vertGoal = vertAvg;
+                    }
+                    if (vertAvg < vertGoal - 20) {
+                        power = 0.1;
+                    }
+                } else {
+                    vertStopped = false;
                     if (touchSensor != null) {
                         touchSensorPressed = touchSensor.isPressed();
                     } else {
                         touchSensorPressed = false;
                         addLastActionTelemetry("Touch sensor not connected");
                     }
-                    if (gamepad1.dpad_up && !gamepad1.dpad_down) {
+                    if (vertUp && !vertDown) {
                         if (vertAvg < V_LIFT_BOUNDARIES[1]) {
                             power = 1;
+                            if (slowdownMultiplier == 0.3) { power = 0.7; }
                             addLastActionTelemetry("Vertical Motors now moving");
                         } else {
                             power = 0;
                             addLastActionTelemetry("Vertical Motors no longer moving");
                         }
-                    } else if (gamepad1.dpad_down && !gamepad1.dpad_up && !touchSensorPressed) {
+                    } else if (vertDown && !vertUp && !touchSensorPressed) {
                         if (vertAvg > V_LIFT_BOUNDARIES[0]) {
                             power = -slowdownMultiplier;
+                            if (slowdownMultiplier == 0.3) { power = -0.7; }
                             addLastActionTelemetry("Vertical Motors now moving");
                         } else {
                             power = 0;
                             addLastActionTelemetry("Vertical Motors no longer moving");
                         }
                     }
+                    vertUp = vertDown = false;
                 }
-                verticalMotorA.setPower(power);
-                verticalMotorB.setPower(power);
+                if (vertA > vertB + 5) {
+                    verticalMotorA.setPower(power - .05);
+                    verticalMotorB.setPower(power + .05);
+                } else if (vertB > vertA + 5) {
+                    verticalMotorA.setPower(power + .05);
+                    verticalMotorB.setPower(power - .05);
+                } else {
+                    verticalMotorA.setPower(power);
+                    verticalMotorB.setPower(power);
+                }
                 print("Vertical Motor Power", power);
             }
 

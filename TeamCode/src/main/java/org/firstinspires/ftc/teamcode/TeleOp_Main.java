@@ -32,7 +32,6 @@ public class TeleOp_Main extends Base {
     double wristServoGoal = 0;
     double nextWristServoGoal = 0.5;
     double newNextWristServoGoal;
-
     int vertA, vertB, vertAvg, vertGoal;
     boolean vertUp, vertDown, vertRunToPos = false;
     double power = 0;
@@ -187,14 +186,28 @@ public class TeleOp_Main extends Base {
                 vertA = verticalMotorA.getCurrentPosition();
                 vertB = verticalMotorB.getCurrentPosition();
                 vertAvg = (vertA + vertB) / 2;
-                if (gamepad1.dpad_up || gamepad1.dpad_down) {
+                if (gamepad1.dpad_up || gamepad1.dpad_down && !gamepad1.a) {
                     vertRunToPos = false;
                 } else {
-                    if (gamepad1.x || gamepad1.y) {
-                        if (gamepad1.x) {
-                            vertGoal = 1500;
-                        } else if (gamepad1.y) {
-                            vertGoal = 1000;
+                    if (gamepad1.a) {
+                        if (!vertRunToPos) {
+                            vertGoal = vertAvg;
+                        }
+                        if (gamepad1.dpad_up && !gamepad1.dpad_down) {
+                            for (int goal : V_LIFT_GOALS) {
+                                if (goal > vertGoal) {
+                                    vertGoal = goal;
+                                    break;
+                                }
+                            }
+                        } else if (gamepad1.dpad_down && !gamepad1.dpad_up) {
+                            for (int goal : V_LIFT_GOALS) {
+                                if (goal < vertGoal) {
+                                    vertGoal = goal;
+                                } else {
+                                    break;
+                                }
+                            }
                         }
                         vertRunToPos = true; // Ensure the flag is set
                     }
@@ -216,11 +229,12 @@ public class TeleOp_Main extends Base {
                         }
                     }
                 }
-                vertUp = gamepad1.dpad_up || vertUp;
-                vertDown = gamepad1.dpad_down || vertDown;
+                if (!gamepad1.a) {
+                    vertUp = gamepad1.dpad_up || vertUp;
+                    vertDown = gamepad1.dpad_down || vertDown;
+                }
 //                addLastActionTelemetry("Current lift position: " + liftMotor.getCurrentPosition()
                 if (!vertUp && !vertDown || vertDown && vertUp) {
-                    power = 0;
                     if (!vertStopped) {
                         vertStopped = true;
                         vertGoal = vertAvg;

@@ -873,6 +873,8 @@ public abstract class Base extends LinearOpMode {
         }
         if (touchSensor == null) {
             telemetry.addData("Touch Sensor", "Disconnected");
+        } else {
+            telemetry.addData("Touch Sensor Pressed", touchSensor.isPressed());
         }
         if (wristServo == null) {
             telemetry.addData("Intake Servo", "Disconnected");

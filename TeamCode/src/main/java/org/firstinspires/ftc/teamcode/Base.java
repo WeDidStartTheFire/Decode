@@ -197,6 +197,9 @@ public abstract class Base extends LinearOpMode {
             verticalMotorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             verticalMotorB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+            verticalMotorA.setMode(STOP_AND_RESET_ENCODER);
+            verticalMotorB.setMode(STOP_AND_RESET_ENCODER);
+
             verticalMotorA.setTargetPosition(verticalMotorA.getCurrentPosition());
             verticalMotorB.setTargetPosition(verticalMotorB.getCurrentPosition());
 

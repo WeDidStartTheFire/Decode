@@ -76,4 +76,8 @@ public class SparkFunLocalizer implements Localizer {
         SparkFunOTOS.Version fwVersion = new SparkFunOTOS.Version();
         otosSensor.getVersionInfo(hwVersion, fwVersion);
     }
+
+    private boolean isSensorReliable() {
+        return true;
+    }
 }

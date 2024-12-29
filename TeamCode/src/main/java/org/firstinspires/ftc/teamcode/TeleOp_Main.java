@@ -26,7 +26,8 @@ public class TeleOp_Main extends Base {
     static final double WRIST_MOTOR_POWER = 0.1;
     static final int[] WRIST_MOTOR_BOUNDARIES = {0, 140};
     static final int[] LIFT_BOUNDARIES = {0, 1200};
-    static final int[] V_LIFT_BOUNDARIES = {0, 1500}; // Temporary, need to change
+    static final int[] V_LIFT_BOUNDARIES = {0, 1900}; // Temporary, need to change
+    static final int[] V_LIFT_GOALS = {0, 500, 1000, 1500};
     double intakeServoGoal = 0;
     double wristServoGoal = 0;
     double nextWristServoGoal = 0.5;
@@ -91,20 +92,16 @@ public class TeleOp_Main extends Base {
             // Logic for the wrist motor
             if (wristMotor != null) {
                 print("Wrist Motor position", wristMotor.getCurrentPosition());
-                if (gamepad2.dpad_down
-                        && wristMotor.getCurrentPosition() < WRIST_MOTOR_BOUNDARIES[1]) {
+                if (gamepad2.dpad_down && wristMotor.getCurrentPosition() < WRIST_MOTOR_BOUNDARIES[1]) {
                     wristMotor.setPower(WRIST_MOTOR_POWER);
                     wristMotorTicksStopped = 0;
                     addLastActionTelemetry("Wrist Motor now moving");
-                } else if (gamepad2.dpad_up
-                        && (wristMotor.getCurrentPosition() > WRIST_MOTOR_BOUNDARIES[0]
-                                || gamepad2.right_bumper)) {
+                } else if (gamepad2.dpad_up && (wristMotor.getCurrentPosition() > WRIST_MOTOR_BOUNDARIES[0] || gamepad2.right_bumper)) {
                     wristMotor.setPower(-WRIST_MOTOR_POWER);
                     wristMotorTicksStopped = 0;
                     addLastActionTelemetry("Wrist Motor now moving");
                     if (gamepad2.right_bumper) {
-                        WRIST_MOTOR_BOUNDARIES[1] +=
-                                wristMotor.getCurrentPosition() - WRIST_MOTOR_BOUNDARIES[0];
+                        WRIST_MOTOR_BOUNDARIES[1] += wristMotor.getCurrentPosition() - WRIST_MOTOR_BOUNDARIES[0];
                         WRIST_MOTOR_BOUNDARIES[0] = wristMotor.getCurrentPosition();
                         addLastActionTelemetry("Wrist Motor boundaries overridden");
                     }
@@ -156,8 +153,7 @@ public class TeleOp_Main extends Base {
             // Logic to extend or retract the horizontal lift
             if (liftMotor != null) {
                 addLastActionTelemetry("Current lift position: " + liftMotor.getCurrentPosition());
-                if (!gamepad1.dpad_right && !gamepad1.dpad_left
-                        || gamepad1.dpad_left && gamepad1.dpad_right) {
+                if (!gamepad1.dpad_right && !gamepad1.dpad_left || gamepad1.dpad_left && gamepad1.dpad_right) {
                     liftMotor.setPower(0);
                 } else {
                     if (touchSensor != null) {
@@ -194,35 +190,36 @@ public class TeleOp_Main extends Base {
                 if (gamepad1.dpad_up || gamepad1.dpad_down) {
                     vertRunToPos = false;
                 } else {
-                    if (!vertRunToPos) {
+                    if (gamepad1.x || gamepad1.y) {
                         if (gamepad1.x) {
                             vertGoal = 1500;
                         } else if (gamepad1.y) {
                             vertGoal = 1000;
                         }
+                        vertRunToPos = true; // Ensure the flag is set
                     }
-                    vertRunToPos = gamepad1.x || gamepad1.y || vertRunToPos;
                     if (vertAvg - 20 < vertGoal && vertGoal < vertAvg + 20) {
                         vertRunToPos = false;
+                        vertStopped = true;
                     }
                 }
                 if (vertRunToPos) {
-                    if (vertGoal < vertAvg) {
+                    if (vertAvg < vertGoal) {
                         vertUp = true;
-                        if (vertGoal > vertAvg - 50) {
+                        if (vertAvg > vertGoal - 50) {
                             slowdownMultiplier = 0.3;
                         }
-                    } else if (vertGoal > vertAvg) {
+                    } else if (vertAvg > vertGoal) {
                         vertDown = true;
-                        if (vertGoal < vertAvg + 50) {
+                        if (vertAvg < vertGoal + 50) {
                             slowdownMultiplier = 0.3;
                         }
                     }
                 }
                 vertUp = gamepad1.dpad_up || vertUp;
                 vertDown = gamepad1.dpad_down || vertDown;
-//                addLastActionTelemetry("Current lift position: " + liftMotor.getCurrentPosition());
-                if ((!vertUp && !vertDown || vertDown && vertUp) || !vertRunToPos) {
+//                addLastActionTelemetry("Current lift position: " + liftMotor.getCurrentPosition()
+                if (!vertUp && !vertDown || vertDown && vertUp) {
                     power = 0;
                     if (!vertStopped) {
                         vertStopped = true;
@@ -230,6 +227,8 @@ public class TeleOp_Main extends Base {
                     }
                     if (vertAvg < vertGoal - 20) {
                         power = 0.1;
+                    } else {
+                        power = ((double) vertGoal - vertAvg) / 20.0 * .1;
                     }
                 } else {
                     vertStopped = false;
@@ -237,21 +236,22 @@ public class TeleOp_Main extends Base {
                         touchSensorPressed = touchSensor.isPressed();
                     } else {
                         touchSensorPressed = false;
-                        addLastActionTelemetry("Touch sensor not connected");
                     }
                     if (vertUp && !vertDown) {
                         if (vertAvg < V_LIFT_BOUNDARIES[1]) {
                             power = 1;
-                            if (slowdownMultiplier == 0.3) { power = 0.7; }
-                            addLastActionTelemetry("Vertical Motors now moving");
+                            if (slowdownMultiplier == 0.3) {
+                                power = 0.7;
+                            }
                         } else {
                             power = 0;
-                            addLastActionTelemetry("Vertical Motors no longer moving");
                         }
                     } else if (vertDown && !vertUp && !touchSensorPressed) {
                         if (vertAvg > V_LIFT_BOUNDARIES[0]) {
                             power = -slowdownMultiplier;
-                            if (slowdownMultiplier == 0.3) { power = -0.7; }
+                            if (slowdownMultiplier == 0.3) {
+                                power = -0.7;
+                            }
                             addLastActionTelemetry("Vertical Motors now moving");
                         } else {
                             power = 0;
@@ -260,10 +260,10 @@ public class TeleOp_Main extends Base {
                     }
                     vertUp = vertDown = false;
                 }
-                if (vertA > vertB + 5) {
+                if (vertA > vertB + 5 && power != 0) {
                     verticalMotorA.setPower(power - .05);
                     verticalMotorB.setPower(power + .05);
-                } else if (vertB > vertA + 5) {
+                } else if (vertB > vertA + 5 && power != 0) {
                     verticalMotorA.setPower(power + .05);
                     verticalMotorB.setPower(power - .05);
                 } else {

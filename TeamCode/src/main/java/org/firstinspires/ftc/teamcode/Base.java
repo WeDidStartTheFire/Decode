@@ -43,7 +43,7 @@ public abstract class Base extends LinearOpMode {
      - For example, use a value of 2.0 for a 12-tooth spur gear driving a 24-tooth spur gear.
      - This is gearing DOWN for less speed and more torque.
      - For gearing UP, use a gear ratio less than 1.0. Note this will affect the direction of wheel rotation.
-    //*/
+    */
     public String hubName;
     public static final String SMALL_WHEEL_ROBOT_NAME = "Expansion Hub 2";
     public static final String LARGE_WHEEL_ROBOT_NAME = "Control Hub";

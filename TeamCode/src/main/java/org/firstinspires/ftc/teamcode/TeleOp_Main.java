@@ -46,6 +46,7 @@ public class TeleOp_Main extends Base {
     boolean wasDpu, isDpu, isDpd, wasDpd;
 
     int newGoal;
+
     @Override
     public void runOpMode() throws InterruptedException {
         setup();
@@ -154,7 +155,6 @@ public class TeleOp_Main extends Base {
 
             // Logic to extend or retract the horizontal lift
             if (liftMotor != null) {
-                addLastActionTelemetry("Current lift position: " + liftMotor.getCurrentPosition());
                 if (!gamepad1.dpad_right && !gamepad1.dpad_left || gamepad1.dpad_left && gamepad1.dpad_right) {
                     liftMotor.setPower(0);
                 } else {
@@ -162,23 +162,18 @@ public class TeleOp_Main extends Base {
                         touchSensorPressed = touchSensor.isPressed();
                     } else {
                         touchSensorPressed = false;
-                        addLastActionTelemetry("Touch sensor not connected");
                     }
                     if (gamepad1.dpad_right && !gamepad1.dpad_left) {
                         if (liftMotor.getCurrentPosition() < LIFT_BOUNDARIES[1]) {
                             liftMotor.setPower(1 * slowdownMultiplier);
-                            addLastActionTelemetry("Lift Motor now moving");
                         } else {
                             liftMotor.setPower(0);
-                            addLastActionTelemetry("Lift Motor no longer moving");
                         }
                     } else if (gamepad1.dpad_left && !gamepad1.dpad_right && !touchSensorPressed) {
                         if (liftMotor.getCurrentPosition() > LIFT_BOUNDARIES[0]) {
                             liftMotor.setPower(-1 * slowdownMultiplier);
-                            addLastActionTelemetry("Lift Motor now moving");
                         } else {
                             liftMotor.setPower(0);
-                            addLastActionTelemetry("Lift Motor no longer moving");
                         }
                     }
                 }
@@ -271,10 +266,8 @@ public class TeleOp_Main extends Base {
                             if (slowdownMultiplier == 0.3) {
                                 power = -0.7;
                             }
-                            addLastActionTelemetry("Vertical Motors now moving");
                         } else {
                             power = 0;
-                            addLastActionTelemetry("Vertical Motors no longer moving");
                         }
                     }
                     vertUp = vertDown = false;
@@ -311,26 +304,25 @@ public class TeleOp_Main extends Base {
 
 
             if (gamepad1.dpad_up && !isDpu && !wasDpu) {
-                isDpu = true;
-                wasDpu = true;
+                isDpu = wasDpu = true;
             } else if (gamepad1.dpad_up && isDpu && wasDpu) {
                 isDpu = false;
             } else if (!gamepad1.dpad_up && wasDpu) {
                 wasDpu = false;
-            } else if (!gamepad1.dpad_down && isDpu){
+            } else if (!gamepad1.dpad_down && isDpu) {
                 isDpu = wasDpu = false;
             }
 
             if (gamepad1.dpad_down && !isDpd && !wasDpd) {
-                isDpd = true;
-                wasDpd = true;
+                isDpd = wasDpd = true;
             } else if (gamepad1.dpad_down && isDpd && wasDpd) {
                 isDpd = false;
             } else if (!gamepad1.dpad_down && wasDpd) {
                 wasDpd = false;
-            } else if (!gamepad1.dpad_down && isDpd){
+            } else if (!gamepad1.dpad_down && isDpd) {
                 isDpd = wasDpd = false;
             }
+
             print("Speed Multiplier", slowdownMultiplier);
             updateAll();
         }

@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
-import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
@@ -24,6 +22,8 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.*;
 import org.firstinspires.ftc.vision.apriltag.*;
 import static org.firstinspires.ftc.teamcode.Base.Dir.*;
+
+import java.util.Locale;
 
 // Connect to robot: adb connect 192.168.43.1:5555 OR rc
 
@@ -849,42 +849,42 @@ public abstract class Base extends LinearOpMode {
             telemetry.addData("Drive Train", "Disconnected");
         }
         if (verticalMotorA == null) {
-            telemetry.addData("Vertical Lift Motors", "Disconnected");
+            print("Vertical Lift Motors", "Disconnected");
         } else {
             print("Vertical Motor A Position", verticalMotorA.getCurrentPosition());
             print("Vertical Motor B Position", verticalMotorB.getCurrentPosition());
+            print("Vertical Motor Power", (verticalMotorA.getPower() + verticalMotorB.getPower()) / 2.0);
         }
         if (liftMotor == null) {
-            telemetry.addData("Lift Motor", "Disconnected");
+            print("Lift Motor", "Disconnected");
         } else {
-            telemetry.addData("Lift Motor Position", liftMotor.getCurrentPosition());
+            print("Lift Motor Position", liftMotor.getCurrentPosition());
+            print("Lift Motor Power", liftMotor.getPower());
         }
         if (wristMotor == null) {
-            telemetry.addData("Wrist Motor", "Disconnected");
+            print("Wrist Motor", "Disconnected");
         } else {
-            telemetry.addData("Wrist Motor Position", wristMotor.getCurrentPosition());
+            print("Wrist Motor Position", wristMotor.getCurrentPosition());
         }
 
         if (intakeServo == null) {
-            telemetry.addData("Tray Tilting Servo", "Disconnected");
+            print("Tray Tilting Servo", "Disconnected");
         }
         if (pixelLockingServo == null) {
-            telemetry.addData("Pixel Locking Servo", "Disconnected");
+            print("Pixel Locking Servo", "Disconnected");
         }
         if (touchSensor == null) {
-            telemetry.addData("Touch Sensor", "Disconnected");
+            print("Touch Sensor", "Disconnected");
         } else {
-            telemetry.addData("Touch Sensor Pressed", touchSensor.isPressed());
+            print("Touch Sensor Pressed", touchSensor.isPressed());
         }
         if (wristServo == null) {
-            telemetry.addData("Intake Servo", "Disconnected");
+            print("Intake Servo", "Disconnected");
         }
         if (useOdometry) {
             Pose2d pos = mecDrive.getPoseEstimate();
             // Log the position to the telemetry
-            telemetry.addData("X coordinate", pos.getX());
-            telemetry.addData("Y coordinate", pos.getY());
-            telemetry.addData("Heading angle", pos.getHeading());
+            print(String.format(Locale.US, "X: %.2f, Y: %.2f, θ: %.2f", pos.getX(), pos.getY(), pos.getHeading()));
         } else {
             print("Odometry disabled");
         }

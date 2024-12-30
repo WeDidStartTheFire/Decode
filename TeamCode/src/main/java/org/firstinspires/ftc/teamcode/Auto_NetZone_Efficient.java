@@ -12,12 +12,12 @@ public class Auto_NetZone_Efficient extends Base {
     public void runOpMode() throws InterruptedException {
         setup();
         strafe(6, LEFT);
-        traj = mecDrive.trajectoryBuilder(currentPose)
+        traj = drive.trajectoryBuilder(currentPose)
                 .splineTo(new Vector2d(2, 52), 0)
                 .splineTo(new Vector2d(-6, 52), 0)
                 .splineTo(new Vector2d(-6, 1), 0)
                 .build();
-        mecDrive.followTrajectory(traj);
+        drive.followTrajectory(traj);
         currentPose = traj.end();
 //        strafe(8, RIGHT);
 //        drive(52, FORWARD);

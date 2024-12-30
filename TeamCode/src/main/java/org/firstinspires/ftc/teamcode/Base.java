@@ -66,7 +66,7 @@ public abstract class Base extends LinearOpMode {
     double velocity = 2000;
     public VisionPortal visionPortal;
     private AprilTagProcessor tagProcessor;
-    public SampleMecanumDrive mecDrive;
+    public SampleMecanumDrive drive;
     public boolean useCam = false;
 
     private static final IMU.Parameters IMU_PARAMETERS =
@@ -163,7 +163,7 @@ public abstract class Base extends LinearOpMode {
             }
         }
         try {
-            mecDrive = new SampleMecanumDrive(hardwareMap);
+            drive = new SampleMecanumDrive(hardwareMap);
         } catch (IllegalArgumentException e) {
             except("SparkFun Sensor not connected");
             useOdometry = false;
@@ -385,7 +385,7 @@ public abstract class Base extends LinearOpMode {
             if (direction == LEFT) {
                 dir = -1;
             }
-            mecDrive.turn(Math.toRadians(degrees * dir));
+            drive.turn(Math.toRadians(degrees * dir));
             return; // Early return
         }
         IMUTurn(degrees, direction);
@@ -514,12 +514,12 @@ public abstract class Base extends LinearOpMode {
             Trajectory strafeTrajectory;
             if (direction == LEFT) {
                 strafeTrajectory =
-                        mecDrive.trajectoryBuilder(currentPose).strafeLeft(inches).build();
+                        drive.trajectoryBuilder(currentPose).strafeLeft(inches).build();
             } else {
                 strafeTrajectory =
-                        mecDrive.trajectoryBuilder(currentPose).strafeRight(inches).build();
+                        drive.trajectoryBuilder(currentPose).strafeRight(inches).build();
             }
-            mecDrive.followTrajectory(strafeTrajectory);
+            drive.followTrajectory(strafeTrajectory);
             currentPose = strafeTrajectory.end();
             return; // Early return
         }
@@ -556,11 +556,11 @@ public abstract class Base extends LinearOpMode {
         if (useOdometry) {
             Trajectory strafeTrajectory;
             if (direction == FORWARD) {
-                strafeTrajectory = mecDrive.trajectoryBuilder(currentPose).forward(inches).build();
+                strafeTrajectory = drive.trajectoryBuilder(currentPose).forward(inches).build();
             } else {
-                strafeTrajectory = mecDrive.trajectoryBuilder(currentPose).back(inches).build();
+                strafeTrajectory = drive.trajectoryBuilder(currentPose).back(inches).build();
             }
-            mecDrive.followTrajectory(strafeTrajectory);
+            drive.followTrajectory(strafeTrajectory);
             currentPose = strafeTrajectory.end();
             return; // Early return
         }
@@ -759,23 +759,24 @@ public abstract class Base extends LinearOpMode {
     /**
      * Moves the lift motor a specified number of inches.
      *
-     * @param encoders Number of encoders to turn the motor.
+     * @param encoders Number of encoders from zero position to turn the motor to
      */
     public void moveLift(double encoders) {
-        if (wristMotor != null) {
-            wristMotor.setVelocity(LIFT_VEL * signum(encoders));
+        if (liftMotor != null) {
+            liftMotor.setVelocity(LIFT_VEL * signum(encoders));
 
             runtime.reset();
-            while (!isStopRequested()
-                    && opModeIsActive()
-                    && wristMotor.getCurrentPosition() < encoders) {
+            // The loop stops after being under the encoder goal when going down and when being
+            // above the encoder goal when going up
+            while (!isStopRequested() && opModeIsActive()
+                    && ((liftMotor.getCurrentPosition() < encoders && signum(encoders) == 1) ||
+                    (liftMotor.getCurrentPosition() > encoders && signum(encoders) == -1))) {
                 // Display it for the driver.
-                print("Angle", imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
-                print("Currently at", " at " + wristMotor.getCurrentPosition());
+                print("Position", wristMotor.getCurrentPosition());
                 print("Goal", encoders);
                 update();
             }
-            wristMotor.setVelocity(0);
+            liftMotor.setVelocity(0);
         }
     }
 
@@ -843,6 +844,14 @@ public abstract class Base extends LinearOpMode {
         print("Last Action", message);
     }
 
+    /** Asks the user to confirm whether something happened or whether they want something to happen
+     *
+     * @param message
+     */
+    public void confirm(String message) {
+
+    }
+
     /** Adds information messages to telemetry and updates it */
     public void updateAll() {
         if (lf == null) {
@@ -882,7 +891,7 @@ public abstract class Base extends LinearOpMode {
             print("Intake Servo", "Disconnected");
         }
         if (useOdometry) {
-            Pose2d pos = mecDrive.getPoseEstimate();
+            Pose2d pos = drive.getPoseEstimate();
             // Log the position to the telemetry
             print(String.format(Locale.US, "SparkFun Position :  X: %.2f, Y: %.2f, θ: %.2f", pos.getX(), pos.getY(), pos.getHeading()));
         } else {

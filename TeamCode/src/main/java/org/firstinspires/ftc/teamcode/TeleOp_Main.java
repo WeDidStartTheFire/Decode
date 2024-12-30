@@ -88,25 +88,19 @@ public class TeleOp_Main extends Base {
                 rf.setVelocity(rightFrontPower * 5000 * slowdownMultiplier);
                 lb.setVelocity(leftBackPower * 5000 * slowdownMultiplier);
                 rb.setVelocity(rightBackPower * 5000 * slowdownMultiplier);
-            } else {
-                print("WARNING:", "At least one drivetrain motor disconnected");
             }
 
             // Logic for the wrist motor
             if (wristMotor != null) {
-                print("Wrist Motor position", wristMotor.getCurrentPosition());
                 if (gamepad2.dpad_down && wristMotor.getCurrentPosition() < WRIST_MOTOR_BOUNDARIES[1]) {
                     wristMotor.setPower(WRIST_MOTOR_POWER);
                     wristMotorTicksStopped = 0;
-                    addLastActionTelemetry("Wrist Motor now moving");
                 } else if (gamepad2.dpad_up && (wristMotor.getCurrentPosition() > WRIST_MOTOR_BOUNDARIES[0] || gamepad2.right_bumper)) {
                     wristMotor.setPower(-WRIST_MOTOR_POWER);
                     wristMotorTicksStopped = 0;
-                    addLastActionTelemetry("Wrist Motor now moving");
                     if (gamepad2.right_bumper) {
                         WRIST_MOTOR_BOUNDARIES[1] += wristMotor.getCurrentPosition() - WRIST_MOTOR_BOUNDARIES[0];
                         WRIST_MOTOR_BOUNDARIES[0] = wristMotor.getCurrentPosition();
-                        addLastActionTelemetry("Wrist Motor boundaries overridden");
                     }
                 } else {
                     error = wristMotorPosition - wristMotor.getCurrentPosition();
@@ -282,9 +276,7 @@ public class TeleOp_Main extends Base {
                     verticalMotorA.setPower(power);
                     verticalMotorB.setPower(power);
                 }
-                print("Vertical Motor Power", power);
                 print("Vertical Lift Goal", vertGoal);
-                print("vertRunToPos", vertRunToPos);
             }
 
             // Logic to stop lift when it hits touch sensor

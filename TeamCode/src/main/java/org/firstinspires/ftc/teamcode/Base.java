@@ -856,10 +856,10 @@ public abstract class Base extends LinearOpMode {
             print("Vertical Motor Power", (verticalMotorA.getPower() + verticalMotorB.getPower()) / 2.0);
         }
         if (liftMotor == null) {
-            print("Lift Motor", "Disconnected");
+            print("Horizontal Lift Motor", "Disconnected");
         } else {
-            print("Lift Motor Position", liftMotor.getCurrentPosition());
-            print("Lift Motor Power", liftMotor.getPower());
+            print("Horizontal Lift Motor Position", liftMotor.getCurrentPosition());
+            print("Horizontal Lift Motor Power", liftMotor.getPower());
         }
         if (wristMotor == null) {
             print("Wrist Motor", "Disconnected");
@@ -884,7 +884,7 @@ public abstract class Base extends LinearOpMode {
         if (useOdometry) {
             Pose2d pos = mecDrive.getPoseEstimate();
             // Log the position to the telemetry
-            print(String.format(Locale.US, "X: %.2f, Y: %.2f, θ: %.2f", pos.getX(), pos.getY(), pos.getHeading()));
+            print(String.format(Locale.US, "SparkFun Position :  X: %.2f, Y: %.2f, θ: %.2f", pos.getX(), pos.getY(), pos.getHeading()));
         } else {
             print("Odometry disabled");
         }

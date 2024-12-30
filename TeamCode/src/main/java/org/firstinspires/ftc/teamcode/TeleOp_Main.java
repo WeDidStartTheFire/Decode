@@ -196,14 +196,14 @@ public class TeleOp_Main extends Base {
                         if (!vertRunToPos) {
                             vertGoal = vertAvg;
                         }
-                        if (isDpu && !isDpd) {
+                        if (isDpu) {
                             for (int goal : V_LIFT_GOALS) {
                                 if (goal > vertGoal + 50) {
                                     vertGoal = goal;
                                     break;
                                 }
                             }
-                        } else if (isDpd && !isDpu) {
+                        } else { // isDpd is always true because of the conditions to enter the if
                             newGoal = vertGoal;
                             for (int goal : V_LIFT_GOALS) {
                                 if (goal < vertGoal - 50) {

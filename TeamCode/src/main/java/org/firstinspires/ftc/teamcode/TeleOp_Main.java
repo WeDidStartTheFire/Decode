@@ -192,7 +192,7 @@ public class TeleOp_Main extends Base {
                 if ((gamepad1.dpad_up || gamepad1.dpad_down) && !gamepad1.a) {
                     vertRunToPos = false;
                 } else {
-                    if (gamepad1.a) {
+                    if (gamepad1.a && (isDpd || isDpu) && !(isDpd && isDpu)) {
                         if (!vertRunToPos) {
                             vertGoal = vertAvg;
                         }

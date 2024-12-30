@@ -43,6 +43,7 @@ public class TeleOp_Main extends Base {
     int wristMotorPosition = 0;
     int error;
 
+    boolean wasDpu, isDpu, isDpd, wasDpd;
     @Override
     public void runOpMode() throws InterruptedException {
         setup();
@@ -193,14 +194,14 @@ public class TeleOp_Main extends Base {
                         if (!vertRunToPos) {
                             vertGoal = vertAvg;
                         }
-                        if (gamepad1.dpad_up && !gamepad1.dpad_down) {
+                        if (isDpu && !isDpd) {
                             for (int goal : V_LIFT_GOALS) {
                                 if (goal > vertGoal) {
                                     vertGoal = goal;
                                     break;
                                 }
                             }
-                        } else if (gamepad1.dpad_down && !gamepad1.dpad_up) {
+                        } else if (isDpd && !isDpu) {
                             for (int goal : V_LIFT_GOALS) {
                                 if (goal < vertGoal) {
                                     vertGoal = goal;
@@ -303,7 +304,23 @@ public class TeleOp_Main extends Base {
                     touchSensorWasPressed = false;
                 }
             }
+            if (gamepad1.dpad_up && !isDpu && !wasDpu){
+                isDpu = true;
+                wasDpu = true;
+            } else if (gamepad1.dpad_up && isDpu && wasDpu){
+                isDpu = false;
+            } else if (!gamepad1.dpad_up && wasDpu) {
+                wasDpu = false;
+            }
 
+            if (gamepad1.dpad_down && !isDpd && !wasDpd){
+                isDpd = true;
+                wasDpd = true;
+            } else if (gamepad1.dpad_down && isDpd && wasDpd){
+                isDpd = false;
+            } else if (!gamepad1.dpad_down && wasDpd) {
+                wasDpd = false;
+            }
             print("Speed Multiplier", slowdownMultiplier);
             updateAll();
         }

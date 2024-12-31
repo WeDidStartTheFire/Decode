@@ -8,6 +8,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 import static java.lang.Math.*;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LifecycleRegistryOwner;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
@@ -21,13 +22,16 @@ import com.qualcomm.robotcore.util.*;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.*;
 import org.firstinspires.ftc.vision.apriltag.*;
+
 import static org.firstinspires.ftc.teamcode.Base.Dir.*;
 
 import java.util.Locale;
 
 // Connect to robot: adb connect 192.168.43.1:5555 OR rc
 
-/** Base class that contains common methods and other configuration. */
+/**
+ * Base class that contains common methods and other configuration.
+ */
 public abstract class Base extends LinearOpMode {
     private static final double LIFT_VEL = 1500;
     private final ElapsedTime runtime = new ElapsedTime();
@@ -62,6 +66,9 @@ public abstract class Base extends LinearOpMode {
     static final double M = 0.889;
     static final double TURN_SPEED = 0.5;
     private static final int WAIT_TIME = 100;
+    static final int[] LIFT_BOUNDARIES = {0, 1200};
+    static final int[] V_LIFT_BOUNDARIES = {0, 1900};
+
     public boolean useOdometry = true;
     double velocity = 2000;
     public VisionPortal visionPortal;
@@ -70,12 +77,13 @@ public abstract class Base extends LinearOpMode {
     public boolean useCam = false;
 
     private static final IMU.Parameters IMU_PARAMETERS =
-            new IMU.Parameters(
-                    new RevHubOrientationOnRobot(
-                            RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                            RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
+            new IMU.Parameters(new RevHubOrientationOnRobot(
+                    RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                    RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
 
-    /** Directions. Options: LEFT, RIGHT, FORWARD, BACKWARD * */
+    /**
+     * Directions. Options: LEFT, RIGHT, FORWARD, BACKWARD *
+     */
     public enum Dir {
         LEFT,
         RIGHT,
@@ -85,7 +93,9 @@ public abstract class Base extends LinearOpMode {
 
     public Pose2d currentPose = new Pose2d();
 
-    /** Initializes all hardware devices on the robot. */
+    /**
+     * Initializes all hardware devices on the robot.
+     */
     public void setup() {
         imu = hardwareMap.get(IMU.class, "imu");
         if (!imu.initialize(IMU_PARAMETERS)) {
@@ -96,6 +106,7 @@ public abstract class Base extends LinearOpMode {
         // The following try catch statements "check" if a motor is connected. If it isn't, it sets
         // that motor's value to null. Later, we check if that value is null. If it is, we don't
         // run the motor.
+        // Drive train
         try {
             lf = hardwareMap.get(DcMotorEx.class, "leftFront");
             lb = hardwareMap.get(DcMotorEx.class, "leftBack");
@@ -257,7 +268,7 @@ public abstract class Base extends LinearOpMode {
      * Initializes all hardware devices on the robot.
      *
      * @param useCamera Whether to use the camera.
-     * @param useOdom Whether to use odometry.
+     * @param useOdom   Whether to use odometry.
      * @deprecated
      */
     @Deprecated
@@ -271,7 +282,7 @@ public abstract class Base extends LinearOpMode {
      * Drives using encoder velocity. An inches value of zero will cause the robot to drive until
      * manually stopped.
      *
-     * @param inches Amount of inches to drive.
+     * @param inches    Amount of inches to drive.
      * @param direction (opt.) Direction to drive if inches is zero.*
      */
     private void velocityDrive(double inches, Dir direction) {
@@ -325,7 +336,7 @@ public abstract class Base extends LinearOpMode {
      * Turns the robot a specified number of degrees. Positive values turn right, negative values
      * turn left.
      *
-     * @param degrees The amount of degrees to turn.
+     * @param degrees   The amount of degrees to turn.
      * @param direction (opt.) Direction to turn if degrees is zero.
      */
     public void IMUTurn(double degrees, Dir direction) {
@@ -376,7 +387,7 @@ public abstract class Base extends LinearOpMode {
      * Turns the robot a specified number of degrees. Positive values turn right, negative values
      * turn left.
      *
-     * @param degrees The amount of degrees to turn.
+     * @param degrees   The amount of degrees to turn.
      * @param direction (opt.) Direction to turn if degrees is zero.
      */
     public void turn(double degrees, Dir direction) {
@@ -401,7 +412,9 @@ public abstract class Base extends LinearOpMode {
         turn(degrees, RIGHT);
     }
 
-    /** Corrects the robot's angle to the angle it previously turned */
+    /**
+     * Corrects the robot's angle to the angle it previously turned
+     */
     public void correctAngle() {
         turn(-imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
     }
@@ -455,7 +468,7 @@ public abstract class Base extends LinearOpMode {
      * Strafes left or right for a specified number of inches. An inches value of zero will cause
      * the robot to strafe until manually stopped.
      *
-     * @param inches Amount of inches to strafe.
+     * @param inches    Amount of inches to strafe.
      * @param direction Direction to strafe in.*
      */
     public void velocityStrafe(double inches, Dir direction) {
@@ -506,7 +519,7 @@ public abstract class Base extends LinearOpMode {
      * Strafes left or right for a specified number of inches. An inches value of zero will cause
      * the robot to strafe until manually stopped.
      *
-     * @param inches Amount of inches to strafe.
+     * @param inches    Amount of inches to strafe.
      * @param direction Direction to strafe in.*
      */
     public void strafe(double inches, Dir direction) {
@@ -549,7 +562,7 @@ public abstract class Base extends LinearOpMode {
      * Drives the specified number of inches. Negative values will drive backwards. An inches value
      * of zero will cause the robot to drive until manually stopped.
      *
-     * @param inches Amount of inches to drive.
+     * @param inches    Amount of inches to drive.
      * @param direction (opt.) Direction to drive if inches is zero.*
      */
     public void drive(double inches, Dir direction) {
@@ -596,7 +609,9 @@ public abstract class Base extends LinearOpMode {
         return tiles * TILE_LENGTH;
     }
 
-    /** Stops all drive train motors on the robot. * */
+    /**
+     * Stops all drive train motors on the robot. *
+     */
     public void stopRobot() {
         if (lb == null) return;
         setMotorPowers(0, 0, 0, 0);
@@ -627,21 +642,35 @@ public abstract class Base extends LinearOpMode {
     }
 
     /**
+     * Moves the wrist servo to the specified position.
+     *
+     * @param position The position to move the intake servo to.
+     */
+    public void moveWristServo(double position) {
+        if (wristServo == null) return;
+        wristServo.setPosition(position);
+    }
+
+    /**
      * Moves the intake servo to the specified position.
      *
      * @param position The position to move the intake servo to.
      */
     public void moveIntake(double position) {
-        if (wristServo == null) return;
-        wristServo.setPosition(position);
+        if (intakeServo == null) return;
+        intakeServo.setPosition(position);
     }
 
-    /** Opens the intake servo. * */
+    /**
+     * Opens the intake servo. *
+     */
     public void openIntake() {
         moveIntake(1);
     }
 
-    /** Closes the intake servo. * */
+    /**
+     * Closes the intake servo. *
+     */
     public void closeIntake() {
         moveIntake(0);
     }
@@ -657,12 +686,16 @@ public abstract class Base extends LinearOpMode {
         wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
-    /** Extends the wrist. * */
+    /**
+     * Extends the wrist. *
+     */
     public void extendWrist() {
         moveWrist(50);
     }
 
-    /** Retracts the wrist. * */
+    /**
+     * Retracts the wrist. *
+     */
     public void retractWrist() {
         moveWrist(0);
     }
@@ -688,7 +721,7 @@ public abstract class Base extends LinearOpMode {
      * Returns information about a tag with the specified ID if it is detected within a designated
      * timeout period.
      *
-     * @param id ID of tag to detect.
+     * @param id      ID of tag to detect.
      * @param timeout Detection timeout (seconds).
      * @return Information about the tag detected.
      */
@@ -757,13 +790,14 @@ public abstract class Base extends LinearOpMode {
     }
 
     /**
-     * Moves the lift motor a specified number of inches.
+     * Moves the horizontal lift motor a to a specified encoder mark
      *
      * @param encoders Number of encoders from zero position to turn the motor to
      */
-    public void moveLift(double encoders) {
+    public void moveHorizontalLift(double encoders) {
         if (liftMotor != null) {
-            liftMotor.setVelocity(LIFT_VEL * signum(encoders));
+            int direction = (int) signum(encoders - liftMotor.getCurrentPosition());
+            liftMotor.setVelocity(LIFT_VEL * direction);
 
             runtime.reset();
             // The loop stops after being under the encoder goal when going down and when being
@@ -772,7 +806,7 @@ public abstract class Base extends LinearOpMode {
                     && ((liftMotor.getCurrentPosition() < encoders && signum(encoders) == 1) ||
                     (liftMotor.getCurrentPosition() > encoders && signum(encoders) == -1))) {
                 // Display it for the driver.
-                print("Position", wristMotor.getCurrentPosition());
+                print("Position", liftMotor.getCurrentPosition());
                 print("Goal", encoders);
                 update();
             }
@@ -780,21 +814,73 @@ public abstract class Base extends LinearOpMode {
         }
     }
 
-    /** Retracts the lift motor. */
-    public void retractLift() {
-        if (wristMotor != null) {
-            float angle;
-            wristMotor.setVelocity(-LIFT_VEL);
-            while (!isStopRequested() && opModeIsActive() && wristMotor.getCurrentPosition() > 0) {
+    /**
+     * Retracts the horizontal lift motor.
+     */
+    public void retractHorizontalLift() {
+        moveHorizontalLift(LIFT_BOUNDARIES[0]);
+    }
+
+    /**
+     * Retracts the horizontal lift motor.
+     */
+    public void extendHorizontalLift() {
+        moveHorizontalLift(LIFT_BOUNDARIES[1]);
+    }
+
+    /**
+     * Moves the vertical lift motor a to a specified encoder mark
+     *
+     * @param encoders Number of encoders from zero position to turn the motor to
+     */
+    public void moveVerticalLift(double encoders) {
+        if (verticalMotorA != null) {
+            int vertAvg = (verticalMotorA.getCurrentPosition() + verticalMotorB.getCurrentPosition()) / 2;
+            int direction = (int) signum(encoders - vertAvg);
+            verticalMotorA.setPower(direction);
+            verticalMotorB.setPower(direction);
+
+            runtime.reset();
+            // The loop stops after being under the encoder goal when going down and when being
+            // above the encoder goal when going up
+            while (!isStopRequested() && opModeIsActive()
+                    && ((vertAvg < encoders && direction == 1) ||
+                    (vertAvg > encoders && direction == -1))) {
+                vertAvg = (verticalMotorA.getCurrentPosition() + verticalMotorB.getCurrentPosition()) / 2;
+
+                // Corrects for smaller amounts of slippage and drift while moving
+                if (verticalMotorA.getCurrentPosition() - vertAvg > 10) {
+                    verticalMotorA.setPower(direction * 0.95);
+                } else {
+                    verticalMotorA.setPower(direction);
+                }
+                if (verticalMotorB.getCurrentPosition() - vertAvg > 10) {
+                    verticalMotorB.setPower(direction * 0.95);
+                } else {
+                    verticalMotorB.setPower(direction);
+                }
+
                 // Display it for the driver.
-                angle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
-                print("Angle", angle);
-                print("Currently at", " at " + wristMotor.getCurrentPosition());
-                print("Goal", 0);
+                print("Position", vertAvg);
+                print("Goal", encoders);
                 update();
             }
-            wristMotor.setVelocity(0);
+            liftMotor.setVelocity(0);
         }
+    }
+
+    /**
+     * Retracts the horizontal lift motor.
+     */
+    public void retractVerticalLift() {
+        moveVerticalLift(V_LIFT_BOUNDARIES[0]);
+    }
+
+    /**
+     * Retracts the horizontal lift motor.
+     */
+    public void extendVerticalLift() {
+        moveVerticalLift(V_LIFT_BOUNDARIES[1]);
     }
 
     /**
@@ -820,17 +906,35 @@ public abstract class Base extends LinearOpMode {
         visionPortal = builder.build();
     }
 
-    /** A less space consuming way to add telemetry. "caption: content" */
+    /**
+     * A less space consuming way to add telemetry. "caption: content"
+     */
     public void print(String caption, Object content) {
         telemetry.addData(caption, content);
     }
 
-    /** A less space consuming way to add telemetry. "content" */
+    /**
+     * A less space consuming way to add telemetry. "content"
+     */
     public void print(String content) {
         telemetry.addLine(content);
     }
 
-    /** A less space consuming way to update the displayed telemetry. * */
+    /**
+     * Show something via telemetry and wait a specified number of seconds
+     *
+     * @param content Content to be shown to the user
+     * @param seconds Seconds to wait after message is shown
+     */
+    public void print(String content, double seconds) {
+        print(content);
+        update();
+        s(seconds);
+    }
+
+    /**
+     * A less space consuming way to update the displayed telemetry. *
+     */
     public void update() {
         telemetry.update();
     }
@@ -844,7 +948,8 @@ public abstract class Base extends LinearOpMode {
         print("Last Action", message);
     }
 
-    /** Asks the user to confirm whether something happened or whether they want something to happen
+    /**
+     * Asks the user to confirm whether something happened or whether they want something to happen
      *
      * @param message Message the user will see before confirming
      */
@@ -852,20 +957,19 @@ public abstract class Base extends LinearOpMode {
         print(message);
         print("Press A to confirm and B to cancel (Gamepad 1)");
         update();
-        while (opModeIsActive() && !isStopRequested() && !(gamepad1.a || gamepad1.b)) { }
+        while (opModeIsActive() && !isStopRequested() && !(gamepad1.a || gamepad1.b)) {
+        }
         if (gamepad1.a) {
-            print("Confirmed.");
-            update();
-            sleep(500);
+            print("Confirmed.", .5);
             return true;
         }
-        print("Canceled.");
-        update();
-        sleep(500);
+        print("Canceled.", .5);
         return false;
     }
 
-    /** Adds information messages to telemetry and updates it */
+    /**
+     * Adds information messages to telemetry and updates it
+     */
     public void updateAll() {
         if (lf == null) {
             telemetry.addData("Drive Train", "Disconnected");

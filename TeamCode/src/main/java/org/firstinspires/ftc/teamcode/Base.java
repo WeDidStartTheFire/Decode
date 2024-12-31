@@ -846,10 +846,23 @@ public abstract class Base extends LinearOpMode {
 
     /** Asks the user to confirm whether something happened or whether they want something to happen
      *
-     * @param message
+     * @param message Message the user will see before confirming
      */
-    public void confirm(String message) {
-
+    public boolean confirm(String message) {
+        print(message);
+        print("Press A to confirm and B to cancel (Gamepad 1)");
+        update();
+        while (opModeIsActive() && !isStopRequested() && !(gamepad1.a || gamepad1.b)) { }
+        if (gamepad1.a) {
+            print("Confirmed.");
+            update();
+            sleep(500);
+            return true;
+        }
+        print("Canceled.");
+        update();
+        sleep(500);
+        return false;
     }
 
     /** Adds information messages to telemetry and updates it */

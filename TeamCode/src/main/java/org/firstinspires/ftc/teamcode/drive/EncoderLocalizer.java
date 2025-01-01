@@ -4,18 +4,17 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.localization.Localizer;
-
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-public class SparkFunLocalizer implements Localizer {
+public class EncoderLocalizer implements Localizer {
 
     private final SparkFunOTOS otosSensor;
 
-    public SparkFunLocalizer(@NonNull HardwareMap hardwareMap) {
+    public EncoderLocalizer(@NonNull HardwareMap hardwareMap) {
         // Initialize the OTOS sensor from the hardware map
         otosSensor = hardwareMap.get(SparkFunOTOS.class, "sensorOtos");
         configureOtos();

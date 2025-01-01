@@ -58,8 +58,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
 
-    public static double LATERAL_MULTIPLIER =
-            1.3227777777777776455; // Was falsely tuning at 1.2139272013457741473952611833662
+    public static double LATERAL_MULTIPLIER = 1.3227777777777776455; // Was falsely tuning at 1.2139272013457741473952611833662
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -249,8 +248,8 @@ public class SampleMecanumDrive extends MecanumDrive {
         Pose2d vel = drivePower;
 
         if (Math.abs(drivePower.getX())
-                        + Math.abs(drivePower.getY())
-                        + Math.abs(drivePower.getHeading())
+                + Math.abs(drivePower.getY())
+                + Math.abs(drivePower.getHeading())
                 > 1) {
             // re-normalize the powers according to the weights
             double denom =
@@ -260,9 +259,9 @@ public class SampleMecanumDrive extends MecanumDrive {
 
             vel =
                     new Pose2d(
-                                    VX_WEIGHT * drivePower.getX(),
-                                    VY_WEIGHT * drivePower.getY(),
-                                    OMEGA_WEIGHT * drivePower.getHeading())
+                            VX_WEIGHT * drivePower.getX(),
+                            VY_WEIGHT * drivePower.getY(),
+                            OMEGA_WEIGHT * drivePower.getHeading())
                             .div(denom);
         }
 

@@ -229,19 +229,11 @@ public abstract class Base extends LinearOpMode {
         print("Hub Name", hubName);
         update();
 
-        if (droneServo != null) {
-            droneServo.setPosition(1);
-        }
-        if (pixelLockingServo != null) {
-            pixelLockingServo.setPosition(0);
-        }
+        if (droneServo != null) droneServo.setPosition(1);
+        if (pixelLockingServo != null) pixelLockingServo.setPosition(0);
         while (!isStarted()) {
-            if (gamepad1.a) {
-                useOdometry = false;
-            }
-            if (gamepad1.b) {
-                useOdometry = true;
-            }
+            if (gamepad1.a) useOdometry = false;
+            if (gamepad1.b) useOdometry = true;
             print("useOdometry", useOdometry);
             print("Status", "Initialized");
             print("Hub Name", hubName);
@@ -286,49 +278,35 @@ public abstract class Base extends LinearOpMode {
      * @param direction (opt.) Direction to drive if inches is zero.*
      */
     private void velocityDrive(double inches, Dir direction) {
+        if (isStopRequested() || !opModeIsActive() || lf == null) return;
+
         int lfTarget = 0;
         int rfTarget = 0;
-        int dir;
-        if (direction == FORWARD) {
-            dir = 1;
-        } else if (direction == BACKWARD) {
-            dir = -1;
+        int dir = direction == FORWARD ? 1 : direction == BACKWARD ? -1 : 0;
+
+        setMotorModes(STOP_AND_RESET_ENCODER);
+        setMotorModes(RUN_USING_ENCODER);
+
+        // reset the timeout time and start motion.
+        if (inches != 0) {
+            runtime.reset();
+            setMotorVelocities(velocity * signum(inches) * dir);
+            inches = signum(inches) * (abs(inches) + B) / M;
         } else {
-            dir = 0;
+            setMotorVelocities(velocity * dir);
         }
 
-        // Ensure that the OpMode is still active
-        if (!isStopRequested() && opModeIsActive() && lf != null) {
-            setMotorModes(STOP_AND_RESET_ENCODER);
-            setMotorModes(RUN_USING_ENCODER);
+        double duration = abs(inches * COUNTS_PER_INCH / velocity);
 
-            // reset the timeout time and start motion.
-            if (inches != 0) {
-                runtime.reset();
-                setMotorVelocities(velocity * signum(inches) * dir);
-            } else {
-                setMotorVelocities(velocity * dir);
-            }
-
-            if (inches != 0) {
-                inches = signum(inches) * (abs(inches) + B) / M;
-            }
-
-            double duration = abs(inches * COUNTS_PER_INCH / velocity);
-
-            while (!isStopRequested()
-                    && opModeIsActive()
-                    && (runtime.seconds() < duration)
-                    && inches != 0) {
-                // Display it for the driver.
-                print("Angle", imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
-                print("Running to", " " + lfTarget + ":" + rfTarget);
-                print("Currently at", lf.getCurrentPosition() + ":" + rf.getCurrentPosition());
-                update();
-            }
-            if (inches != 0) {
-                stopRobot();
-            }
+        while (!isStopRequested() && opModeIsActive() && (runtime.seconds() < duration) && inches != 0) {
+            // Display it for the driver.
+            print("Angle", imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
+            print("Running to", " " + lfTarget + ":" + rfTarget);
+            print("Currently at", lf.getCurrentPosition() + ":" + rf.getCurrentPosition());
+            update();
+        }
+        if (inches != 0) {
+            stopRobot();
         }
     }
 
@@ -340,12 +318,7 @@ public abstract class Base extends LinearOpMode {
      * @param direction (opt.) Direction to turn if degrees is zero.
      */
     public void IMUTurn(double degrees, Dir direction) {
-        double direct = 0;
-        if (direction == LEFT) {
-            direct = -1;
-        } else if (direction == RIGHT) {
-            direct = 1;
-        }
+        double direct = direction == LEFT ? -1 : direction == RIGHT ? 1 : 0;
         sleep(100);
         degrees *= -1;
         degrees -= imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
@@ -358,9 +331,8 @@ public abstract class Base extends LinearOpMode {
         double difference = 999;
         double turnModifier;
         double turnPower;
-        if (abs(initialGoalAngle) > 180) {
+        if (abs(initialGoalAngle) > 180)
             correctedGoalAngle -= abs(initialGoalAngle) / initialGoalAngle * 360;
-        }
         while (!isStopRequested() && opModeIsActive() && (difference > tolerance) && degrees != 0) {
             angle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
             difference = min(abs(initialGoalAngle - angle), abs(correctedGoalAngle - angle));
@@ -392,10 +364,7 @@ public abstract class Base extends LinearOpMode {
      */
     public void turn(double degrees, Dir direction) {
         if (useOdometry) {
-            int dir = 1;
-            if (direction == LEFT) {
-                dir = -1;
-            }
+            int dir = direction == LEFT ? -1 : 1;
             drive.turn(Math.toRadians(degrees * dir));
             return; // Early return
         }
@@ -425,12 +394,11 @@ public abstract class Base extends LinearOpMode {
      * @param mode The mode to set the motors to.
      */
     private void setMotorModes(DcMotor.RunMode mode) {
-        if (lb != null) {
-            lf.setMode(mode);
-            lb.setMode(mode);
-            rf.setMode(mode);
-            rb.setMode(mode);
-        }
+        if (lb == null) return;
+        lf.setMode(mode);
+        lb.setMode(mode);
+        rf.setMode(mode);
+        rb.setMode(mode);
     }
 
     /**
@@ -442,12 +410,11 @@ public abstract class Base extends LinearOpMode {
      * @param rfPower Right front motor power.
      */
     private void setMotorPowers(double lbPower, double rbPower, double lfPower, double rfPower) {
-        if (lb != null) {
-            lb.setPower(lbPower);
-            rb.setPower(rbPower);
-            lf.setPower(lfPower);
-            rf.setPower(rfPower);
-        }
+        if (lb == null) return;
+        lb.setPower(lbPower);
+        rb.setPower(rbPower);
+        lf.setPower(lfPower);
+        rf.setPower(rfPower);
     }
 
     /**
@@ -456,12 +423,11 @@ public abstract class Base extends LinearOpMode {
      * @param velocity Velocity of the motors.
      */
     private void setMotorVelocities(double velocity) {
-        if (lb != null) {
-            lf.setVelocity(velocity);
-            lb.setVelocity(velocity);
-            rf.setVelocity(velocity);
-            rb.setVelocity(velocity);
-        }
+        if (lb == null) return;
+        lf.setVelocity(velocity);
+        lb.setVelocity(velocity);
+        rf.setVelocity(velocity);
+        rb.setVelocity(velocity);
     }
 
     /**
@@ -472,44 +438,31 @@ public abstract class Base extends LinearOpMode {
      * @param direction Direction to strafe in.*
      */
     public void velocityStrafe(double inches, Dir direction) {
-        if (isStopRequested() || !opModeIsActive() || lf == null) {
-            return;
-        }
+        if (isStopRequested() || !opModeIsActive() || lf == null) return;
         setMotorModes(STOP_AND_RESET_ENCODER);
 
         setMotorModes(RUN_USING_ENCODER);
 
-        double d = 0;
-
-        if (direction == RIGHT) {
-            d = -1;
-        } else if (direction == LEFT) {
-            d = 1;
-        }
+        double dir = direction == RIGHT ? -1 : direction == LEFT ? 1 : 0;
 
         runtime.reset();
-        lb.setVelocity(velocity * d);
-        rb.setVelocity(-velocity * d);
-        lf.setVelocity(-velocity * STRAFE_FRONT_MODIFIER * d);
-        rf.setVelocity(velocity * STRAFE_FRONT_MODIFIER * d);
-        if (inches != 0) {
-            inches = (abs(inches) + 1.0125) / 0.7155; // Linear regression
-        }
+        lb.setVelocity(velocity * dir);
+        rb.setVelocity(-velocity * dir);
+        lf.setVelocity(-velocity * STRAFE_FRONT_MODIFIER * dir);
+        rf.setVelocity(velocity * STRAFE_FRONT_MODIFIER * dir);
+
+        if (inches != 0) inches = (abs(inches) + 1.0125) / 0.7155; // Linear regression
 
         double duration = abs(inches * COUNTS_PER_INCH / velocity);
 
         runtime.reset();
-        while (!isStopRequested()
-                && opModeIsActive()
-                && (runtime.seconds() < duration)
+        while (!isStopRequested() && opModeIsActive() && (runtime.seconds() < duration)
                 && inches != 0) {
             print("Strafing until", duration + " seconds");
             print("Currently at", runtime.seconds() + " seconds");
             update();
         }
-        if (inches != 0) {
-            stopRobot();
-        }
+        if (inches != 0) stopRobot();
         print("Strafing", "Complete");
         update();
         sleep(WAIT_TIME);
@@ -525,13 +478,11 @@ public abstract class Base extends LinearOpMode {
     public void strafe(double inches, Dir direction) {
         if (useOdometry) {
             Trajectory strafeTrajectory;
-            if (direction == LEFT) {
-                strafeTrajectory =
-                        drive.trajectoryBuilder(currentPose).strafeLeft(inches).build();
-            } else {
-                strafeTrajectory =
-                        drive.trajectoryBuilder(currentPose).strafeRight(inches).build();
-            }
+            if (direction == LEFT)
+                strafeTrajectory = drive.trajectoryBuilder(currentPose).strafeLeft(inches).build();
+            else
+                strafeTrajectory = drive.trajectoryBuilder(currentPose).strafeRight(inches).build();
+
             drive.followTrajectory(strafeTrajectory);
             currentPose = strafeTrajectory.end();
             return; // Early return
@@ -568,11 +519,10 @@ public abstract class Base extends LinearOpMode {
     public void drive(double inches, Dir direction) {
         if (useOdometry) {
             Trajectory strafeTrajectory;
-            if (direction == FORWARD) {
+            if (direction == FORWARD)
                 strafeTrajectory = drive.trajectoryBuilder(currentPose).forward(inches).build();
-            } else {
-                strafeTrajectory = drive.trajectoryBuilder(currentPose).back(inches).build();
-            }
+            else strafeTrajectory = drive.trajectoryBuilder(currentPose).back(inches).build();
+
             drive.followTrajectory(strafeTrajectory);
             currentPose = strafeTrajectory.end();
             return; // Early return
@@ -584,9 +534,7 @@ public abstract class Base extends LinearOpMode {
             return;
         }
 
-        for (int i = 0; i < checks; i++) {
-            velocityDrive(inches / checks, direction);
-        }
+        for (int i = 0; i < checks; i++) velocityDrive(inches / checks, direction);
         stopRobot();
     }
 
@@ -626,14 +574,14 @@ public abstract class Base extends LinearOpMode {
         lf.setTargetPosition(lf.getCurrentPosition());
         rf.setTargetPosition(rf.getCurrentPosition());
 
-        // Turn On RUN_TO_POSITION
-        setMotorModes(DcMotorEx.RunMode.RUN_TO_POSITION);
-
         // Stop all motion
         lb.setTargetPosition(lb.getCurrentPosition());
         rb.setTargetPosition(rb.getCurrentPosition());
         lf.setTargetPosition(lf.getCurrentPosition());
         rf.setTargetPosition(rf.getCurrentPosition());
+
+        // Turn On RUN_TO_POSITION
+        setMotorModes(DcMotorEx.RunMode.RUN_TO_POSITION);
 
         // Turn off RUN_TO_POSITION
         setMotorModes(RUN_USING_ENCODER);
@@ -710,9 +658,8 @@ public abstract class Base extends LinearOpMode {
     public AprilTagDetection tagDetections(int id) {
         int i;
         for (i = 0; i < tagProcessor.getDetections().size(); i++) {
-            if (tagProcessor.getDetections().get(i).id == id) {
+            if (tagProcessor.getDetections().get(i).id == id)
                 return tagProcessor.getDetections().get(i);
-            }
         }
         return null;
     }
@@ -731,9 +678,7 @@ public abstract class Base extends LinearOpMode {
         double t = runtime.milliseconds() + timeout;
         while (!isStopRequested() && opModeIsActive() && (runtime.milliseconds() < t)) {
             a = tagDetections(id);
-            if (a != null) {
-                return a;
-            }
+            if (a != null) return a;
         }
         return null;
     }
@@ -746,25 +691,18 @@ public abstract class Base extends LinearOpMode {
     public void align(int id) {
         AprilTagDetection a = tagDetections(id, 1);
         turn(0);
-        while (!isStopRequested()
-                && opModeIsActive()
+        while (!isStopRequested() && opModeIsActive()
                 && (a != null && (abs(a.ftcPose.x) > 0.5 || abs(a.ftcPose.yaw) > 0.5))) {
             a = tagDetections(id, 1);
-            if (a == null) {
-                return;
-            }
+            if (a == null) return;
             print("Strafe", a.ftcPose.x);
             strafe(a.ftcPose.x);
             a = tagDetections(id, 1);
-            if (a == null) {
-                return;
-            }
+            if (a == null) return;
             print("Drive", -a.ftcPose.y + 5);
             drive(-a.ftcPose.y + 2);
             a = tagDetections(id, 1);
-            if (a == null) {
-                return;
-            }
+            if (a == null) return;
             print("Turn", a.ftcPose.yaw / 2);
             turn(a.ftcPose.yaw / 2);
             update();
@@ -795,23 +733,22 @@ public abstract class Base extends LinearOpMode {
      * @param encoders Number of encoders from zero position to turn the motor to
      */
     public void moveHorizontalLift(double encoders) {
-        if (liftMotor != null) {
-            int direction = (int) signum(encoders - liftMotor.getCurrentPosition());
-            liftMotor.setVelocity(LIFT_VEL * direction);
+        if (liftMotor == null) return;
+        int direction = (int) signum(encoders - liftMotor.getCurrentPosition());
+        liftMotor.setVelocity(LIFT_VEL * direction);
 
-            runtime.reset();
-            // The loop stops after being under the encoder goal when going down and when being
-            // above the encoder goal when going up
-            while (!isStopRequested() && opModeIsActive()
-                    && ((liftMotor.getCurrentPosition() < encoders && signum(encoders) == 1) ||
-                    (liftMotor.getCurrentPosition() > encoders && signum(encoders) == -1))) {
-                // Display it for the driver.
-                print("Position", liftMotor.getCurrentPosition());
-                print("Goal", encoders);
-                update();
-            }
-            liftMotor.setVelocity(0);
+        runtime.reset();
+        // The loop stops after being under the encoder goal when going down and when being
+        // above the encoder goal when going up
+        while (!isStopRequested() && opModeIsActive()
+                && ((liftMotor.getCurrentPosition() < encoders && signum(encoders) == 1) ||
+                (liftMotor.getCurrentPosition() > encoders && signum(encoders) == -1))) {
+            // Display it for the driver.
+            print("Position", liftMotor.getCurrentPosition());
+            print("Goal", encoders);
+            update();
         }
+        liftMotor.setVelocity(0);
     }
 
     /**
@@ -834,39 +771,38 @@ public abstract class Base extends LinearOpMode {
      * @param encoders Number of encoders from zero position to turn the motor to
      */
     public void moveVerticalLift(double encoders) {
-        if (verticalMotorA != null) {
-            int vertAvg = (verticalMotorA.getCurrentPosition() + verticalMotorB.getCurrentPosition()) / 2;
-            int direction = (int) signum(encoders - vertAvg);
-            verticalMotorA.setPower(direction);
-            verticalMotorB.setPower(direction);
+        if (verticalMotorA == null) return;
+        int vertAvg = (verticalMotorA.getCurrentPosition() + verticalMotorB.getCurrentPosition()) / 2;
+        int direction = (int) signum(encoders - vertAvg);
+        verticalMotorA.setPower(direction);
+        verticalMotorB.setPower(direction);
 
-            runtime.reset();
-            // The loop stops after being under the encoder goal when going down and when being
-            // above the encoder goal when going up
-            while (!isStopRequested() && opModeIsActive()
-                    && ((vertAvg < encoders && direction == 1) ||
-                    (vertAvg > encoders && direction == -1))) {
-                vertAvg = (verticalMotorA.getCurrentPosition() + verticalMotorB.getCurrentPosition()) / 2;
+        runtime.reset();
+        // The loop stops after being under the encoder goal when going down and when being
+        // above the encoder goal when going up
+        while (!isStopRequested() && opModeIsActive()
+                && ((vertAvg < encoders && direction == 1) ||
+                (vertAvg > encoders && direction == -1))) {
+            vertAvg = (verticalMotorA.getCurrentPosition() + verticalMotorB.getCurrentPosition()) / 2;
 
-                // Corrects for smaller amounts of slippage and drift while moving
-                if (verticalMotorA.getCurrentPosition() - vertAvg > 10) {
-                    verticalMotorA.setPower(direction * 0.95);
-                } else {
-                    verticalMotorA.setPower(direction);
-                }
-                if (verticalMotorB.getCurrentPosition() - vertAvg > 10) {
-                    verticalMotorB.setPower(direction * 0.95);
-                } else {
-                    verticalMotorB.setPower(direction);
-                }
-
-                // Display it for the driver.
-                print("Position", vertAvg);
-                print("Goal", encoders);
-                update();
+            // Corrects for smaller amounts of slippage and drift while moving
+            if (verticalMotorA.getCurrentPosition() - vertAvg > 10) {
+                verticalMotorA.setPower(direction * 0.95);
+            } else {
+                verticalMotorA.setPower(direction);
             }
-            liftMotor.setVelocity(0);
+            if (verticalMotorB.getCurrentPosition() - vertAvg > 10) {
+                verticalMotorB.setPower(direction * 0.95);
+            } else {
+                verticalMotorB.setPower(direction);
+            }
+
+            // Display it for the driver.
+            print("Position", vertAvg);
+            print("Goal", encoders);
+            update();
         }
+        liftMotor.setVelocity(0);
     }
 
     /**

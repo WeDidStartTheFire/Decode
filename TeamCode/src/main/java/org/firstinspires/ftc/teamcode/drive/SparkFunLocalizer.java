@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.drive;
 
+import static org.firstinspires.ftc.teamcode.Base.IMU_PARAMETERS;
+
+import static java.lang.Math.abs;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -7,19 +11,27 @@ import com.acmerobotics.roadrunner.localization.Localizer;
 
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class SparkFunLocalizer implements Localizer {
 
     private final SparkFunOTOS otosSensor;
+    private final IMU imu;
 
-    public SparkFunLocalizer(HardwareMap hardwareMap) {
+    public SparkFunLocalizer(@NonNull HardwareMap hardwareMap) {
         // Initialize the OTOS sensor from the hardware map
         otosSensor = hardwareMap.get(SparkFunOTOS.class, "sensorOtos");
         configureOtos();
-        // Additional OTOS initialization (if needed)
+        imu = hardwareMap.get(IMU.class, "imu");
+        if (!imu.initialize(IMU_PARAMETERS)) {
+            throw new RuntimeException("IMU initialization failed");
+        }
+
     }
 
     @Override
@@ -37,7 +49,7 @@ public class SparkFunLocalizer implements Localizer {
     }
 
     @Override
-    public void setPoseEstimate(Pose2d pose) {
+    public void setPoseEstimate(@NonNull Pose2d pose) {
         otosSensor.setPosition(
                 new SparkFunOTOS.Pose2D(-pose.getY(), pose.getX(), pose.getHeading()));
     }
@@ -78,6 +90,7 @@ public class SparkFunLocalizer implements Localizer {
     }
 
     private boolean isSensorReliable() {
-        return true;
+        double IMUAngle = imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+        return !(abs(IMUAngle - this.getPoseEstimate().getHeading()) > 10);
     }
 }

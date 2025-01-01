@@ -75,8 +75,9 @@ public abstract class Base extends LinearOpMode {
     private AprilTagProcessor tagProcessor;
     public SampleMecanumDrive drive;
     public boolean useCam = false;
+    public Pose2d currentPose = new Pose2d();
 
-    private static final IMU.Parameters IMU_PARAMETERS =
+    public static final IMU.Parameters IMU_PARAMETERS =
             new IMU.Parameters(new RevHubOrientationOnRobot(
                     RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                     RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
@@ -91,7 +92,6 @@ public abstract class Base extends LinearOpMode {
         BACKWARD
     }
 
-    public Pose2d currentPose = new Pose2d();
 
     /**
      * Initializes all hardware devices on the robot.

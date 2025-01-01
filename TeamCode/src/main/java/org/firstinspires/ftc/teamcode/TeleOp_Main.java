@@ -148,7 +148,7 @@ public class TeleOp_Main extends Base {
                 power = 0;
                 if (gamepad1.dpad_right ^ gamepad1.dpad_left) {
                     // If the touch sensor isn't connected, assume it isn't pressed
-                    touchSensorPressed = touchSensor != null ? touchSensor.isPressed() : false;
+                    touchSensorPressed = touchSensor != null && touchSensor.isPressed();
                     if (gamepad1.dpad_right && !gamepad1.dpad_left) {
                         power = liftMotor.getCurrentPosition() < LIFT_BOUNDARIES[1] ? slowdownMultiplier : 0;
                     } else if (gamepad1.dpad_left && !gamepad1.dpad_right && !touchSensorPressed) {
@@ -216,7 +216,7 @@ public class TeleOp_Main extends Base {
                 } else {
                     vertStopped = false;
                     // If the touch sensor isn't connected, assume it isn't pressed
-                    touchSensorPressed = touchSensor != null ? touchSensor.isPressed() : false;
+                    touchSensorPressed = touchSensor != null && touchSensor.isPressed();
                     if (vertUp && !vertDown) {
                         power = 0;
                         if (vertAvg < V_LIFT_BOUNDARIES[1]) {

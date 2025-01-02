@@ -61,12 +61,11 @@ public abstract class Base extends LinearOpMode {
     static final int[] LIFT_BOUNDARIES = {0, 1200};
     static final int[] V_LIFT_BOUNDARIES = {0, 1950};
 
-    public boolean useOdometry = true;
+    public boolean useOdometry, useCam = true;
     double velocity = 2000;
     public VisionPortal visionPortal;
     private AprilTagProcessor tagProcessor;
     public SampleMecanumDrive drive;
-    public boolean useCam = false;
     public Pose2d currentPose = new Pose2d();
 
     public static final IMU.Parameters IMU_PARAMETERS = new IMU.Parameters(

@@ -215,8 +215,7 @@ public abstract class Base extends LinearOpMode {
         if (droneServo != null) droneServo.setPosition(1);
         if (pixelLockingServo != null) pixelLockingServo.setPosition(0);
         while (!isStarted()) {
-            if (gamepad1.a) useOdometry = false;
-            if (gamepad1.b) useOdometry = true;
+            useOdometry = ((useOdometry || gamepad1.b) && !gamepad1.a);
             print("useOdometry", useOdometry);
             print("Status", "Initialized");
             print("Hub Name", hubName);

@@ -46,17 +46,13 @@ public abstract class Base extends LinearOpMode {
      - For gearing UP, use a gear ratio less than 1.0. Note this will affect the direction of wheel rotation.
     */
     public String hubName;
-    public static final String SMALL_WHEEL_ROBOT_NAME = "Expansion Hub 2";
-    public static final String LARGE_WHEEL_ROBOT_NAME = "Control Hub";
     public static final double SMALL_WHEEL_DIAMETER = 3.77953;
-    public static final double LARGE_WHEEL_DIAMETER = 5.511811;
     static double WHEEL_DIAMETER_INCHES = SMALL_WHEEL_DIAMETER;
 
     static final double COUNTS_PER_MOTOR_REV = 537.6898395722;  // ((((1.0 + (46.0 / 17.0))) * (1.0 + (46.0 / 11.0))) * 28.0);
     static final double DRIVE_GEAR_REDUCTION = 1.0; // No External Gearing
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * PI);
 
-    static final double TILE_LENGTH = 23.25;
     static final double STRAFE_FRONT_MODIFIER = 1.3;
     static final double B = 1.1375;
     static final double M = 0.889;
@@ -369,11 +365,6 @@ public abstract class Base extends LinearOpMode {
         turn(degrees, RIGHT);
     }
 
-    /** Corrects the robot's angle to the angle it previously turned */
-    public void correctAngle() {
-        turn(-imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
-    }
-
     /**
      * Sets the mode of all drive train motors to the same mode.
      *
@@ -488,10 +479,10 @@ public abstract class Base extends LinearOpMode {
     /**
      * Changes the velocity.
      *
-     * @param velocity New velocity value.
+     * @param vel value.
      */
-    public void setVelocity(double velocity) {
-        this.velocity = velocity;
+    public void setVelocity(double vel) {
+        velocity = vel;
     }
 
     /**
@@ -531,15 +522,6 @@ public abstract class Base extends LinearOpMode {
      */
     public void drive(double inches) {
         drive(inches, FORWARD);
-    }
-
-    /**
-     * Converts an amount of tiles on the game board to an amount of inches.
-     *
-     * @param tiles The value of tiles to be converted.
-     */
-    public double tilesToInches(double tiles) {
-        return tiles * TILE_LENGTH;
     }
 
     /** Stops all drive train motors on the robot. */

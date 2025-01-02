@@ -24,7 +24,7 @@ import org.firstinspires.ftc.vision.apriltag.*;
 
 import static org.firstinspires.ftc.teamcode.Base.Dir.*;
 
-import java.util.Locale;
+import static java.util.Locale.US;
 
 // Connect to robot: adb connect 192.168.43.1:5555 OR rc
 
@@ -888,7 +888,7 @@ public abstract class Base extends LinearOpMode {
         if (useOdometry) {
             Pose2d pos = drive.getPoseEstimate();
             // Log the position to the telemetry
-            print(String.format(Locale.US, "SparkFun Position :  X: %.2f, Y: %.2f, θ: %.2f", pos.getX(), pos.getY(), pos.getHeading()));
+            print(String.format(US, "SparkFun Position :  X: %.2f, Y: %.2f, θ: %.2f", pos.getX(), pos.getY(), pos.getHeading()));
         } else print("Odometry disabled");
 
         telemetry.update();

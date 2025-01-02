@@ -73,7 +73,9 @@ public abstract class Base extends LinearOpMode {
     public boolean useCam = false;
     public Pose2d currentPose = new Pose2d();
 
-    public static final IMU.Parameters IMU_PARAMETERS = new IMU.Parameters(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT, RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
+    public static final IMU.Parameters IMU_PARAMETERS = new IMU.Parameters(
+            new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                    RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
 
     /** Directions. Options: LEFT, RIGHT, FORWARD, BACKWARD */
     public enum Dir {

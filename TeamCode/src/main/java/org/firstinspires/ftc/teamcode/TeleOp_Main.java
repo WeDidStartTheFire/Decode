@@ -232,7 +232,7 @@ public class TeleOp_Main extends Base {
                     verticalMotorA.setPower(power);
                     verticalMotorB.setPower(power);
                 }
-                print("Vertical Lift Goal", vertGoal);
+                print("Vertical Lift Goal", "" + vertGoal);
             }
 
             // Logic to stop lift when it hits touch sensor

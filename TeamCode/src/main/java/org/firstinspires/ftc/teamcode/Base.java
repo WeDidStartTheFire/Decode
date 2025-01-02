@@ -873,11 +873,11 @@ public abstract class Base extends LinearOpMode {
         }
         if (liftMotor == null) print("Horizontal Lift Motor", "Disconnected");
         else {
-            print("Horizontal Lift Motor Position", liftMotor.getCurrentPosition());
-            print("Horizontal Lift Motor Power", liftMotor.getPower());
+            print("Horizontal Lift Motor Position", "" + liftMotor.getCurrentPosition());
+            print("Horizontal Lift Motor Power", "" + liftMotor.getPower());
         }
         if (wristMotor == null) print("Wrist Motor", "Disconnected");
-        else print("Wrist Motor Position", wristMotor.getCurrentPosition());
+        else print("Wrist Motor Position", "" + wristMotor.getCurrentPosition());
 
         if (intakeServo == null) print("Tray Tilting Servo", "Disconnected");
         if (pixelLockingServo == null) print("Pixel Locking Servo", "Disconnected");

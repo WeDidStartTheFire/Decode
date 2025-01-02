@@ -155,6 +155,9 @@ public class TeleOp_Main extends Base {
                 vertA = verticalMotorA.getCurrentPosition();
                 vertB = verticalMotorB.getCurrentPosition();
                 vertAvg = (vertA + vertB) / 2;
+                // Relies on one encoder if one seems disconnected
+                if (vertB == 0 && vertA > 100) vertAvg = vertB = vertA;
+                if (vertA == 0 && vertB > 100) vertAvg = vertA = vertB;
                 if ((gamepad1.dpad_up || gamepad1.dpad_down) && !gamepad1.a) {
                     vertRunToPos = false;
                 } else {

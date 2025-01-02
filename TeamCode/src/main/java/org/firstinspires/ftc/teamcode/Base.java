@@ -8,7 +8,6 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 import static java.lang.Math.*;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.LifecycleRegistryOwner;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
@@ -29,9 +28,7 @@ import java.util.Locale;
 
 // Connect to robot: adb connect 192.168.43.1:5555 OR rc
 
-/**
- * Base class that contains common methods and other configuration.
- */
+/** Base class that contains common methods and other configuration. */
 public abstract class Base extends LinearOpMode {
     private static final double LIFT_VEL = 1500;
     private final ElapsedTime runtime = new ElapsedTime();
@@ -57,8 +54,7 @@ public abstract class Base extends LinearOpMode {
 
     static final double COUNTS_PER_MOTOR_REV = 537.6898395722;  // ((((1.0 + (46.0 / 17.0))) * (1.0 + (46.0 / 11.0))) * 28.0);
     static final double DRIVE_GEAR_REDUCTION = 1.0; // No External Gearing
-    static final double COUNTS_PER_INCH =
-            (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * PI);
+    static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * PI);
 
     static final double TILE_LENGTH = 23.25;
     static final double STRAFE_FRONT_MODIFIER = 1.3;
@@ -77,25 +73,15 @@ public abstract class Base extends LinearOpMode {
     public boolean useCam = false;
     public Pose2d currentPose = new Pose2d();
 
-    public static final IMU.Parameters IMU_PARAMETERS =
-            new IMU.Parameters(new RevHubOrientationOnRobot(
-                    RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                    RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
+    public static final IMU.Parameters IMU_PARAMETERS = new IMU.Parameters(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT, RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
 
-    /**
-     * Directions. Options: LEFT, RIGHT, FORWARD, BACKWARD *
-     */
+    /** Directions. Options: LEFT, RIGHT, FORWARD, BACKWARD */
     public enum Dir {
-        LEFT,
-        RIGHT,
-        FORWARD,
-        BACKWARD
+        LEFT, RIGHT, FORWARD, BACKWARD
     }
 
 
-    /**
-     * Initializes all hardware devices on the robot.
-     */
+    /** Initializes all hardware devices on the robot. */
     public void setup() {
         imu = hardwareMap.get(IMU.class, "imu");
         if (!imu.initialize(IMU_PARAMETERS)) {
@@ -381,9 +367,7 @@ public abstract class Base extends LinearOpMode {
         turn(degrees, RIGHT);
     }
 
-    /**
-     * Corrects the robot's angle to the angle it previously turned
-     */
+    /** Corrects the robot's angle to the angle it previously turned */
     public void correctAngle() {
         turn(-imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
     }
@@ -456,8 +440,7 @@ public abstract class Base extends LinearOpMode {
         double duration = abs(inches * COUNTS_PER_INCH / velocity);
 
         runtime.reset();
-        while (!isStopRequested() && opModeIsActive() && (runtime.seconds() < duration)
-                && inches != 0) {
+        while (!isStopRequested() && opModeIsActive() && (runtime.seconds() < duration) && inches != 0) {
             print("Strafing until", duration + " seconds");
             print("Currently at", runtime.seconds() + " seconds");
             update();
@@ -557,9 +540,7 @@ public abstract class Base extends LinearOpMode {
         return tiles * TILE_LENGTH;
     }
 
-    /**
-     * Stops all drive train motors on the robot. *
-     */
+    /** Stops all drive train motors on the robot. */
     public void stopRobot() {
         if (lb == null) return;
         setMotorPowers(0, 0, 0, 0);
@@ -609,16 +590,12 @@ public abstract class Base extends LinearOpMode {
         intakeServo.setPosition(position);
     }
 
-    /**
-     * Opens the intake servo. *
-     */
+    /** Opens the intake servo. */
     public void openIntake() {
         moveIntake(1);
     }
 
-    /**
-     * Closes the intake servo. *
-     */
+    /** Closes the intake servo. */
     public void closeIntake() {
         moveIntake(0);
     }
@@ -634,16 +611,12 @@ public abstract class Base extends LinearOpMode {
         wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
-    /**
-     * Extends the wrist. *
-     */
+    /** Extends the wrist. */
     public void extendWrist() {
         moveWrist(50);
     }
 
-    /**
-     * Retracts the wrist. *
-     */
+    /** Retracts the wrist. */
     public void retractWrist() {
         moveWrist(0);
     }
@@ -691,8 +664,7 @@ public abstract class Base extends LinearOpMode {
     public void align(int id) {
         AprilTagDetection a = tagDetections(id, 1);
         turn(0);
-        while (!isStopRequested() && opModeIsActive()
-                && (a != null && (abs(a.ftcPose.x) > 0.5 || abs(a.ftcPose.yaw) > 0.5))) {
+        while (!isStopRequested() && opModeIsActive() && (a != null && (abs(a.ftcPose.x) > 0.5 || abs(a.ftcPose.yaw) > 0.5))) {
             a = tagDetections(id, 1);
             if (a == null) return;
             print("Strafe", a.ftcPose.x);
@@ -740,9 +712,7 @@ public abstract class Base extends LinearOpMode {
         runtime.reset();
         // The loop stops after being under the encoder goal when going down and when being
         // above the encoder goal when going up
-        while (!isStopRequested() && opModeIsActive()
-                && ((liftMotor.getCurrentPosition() < encoders && signum(encoders) == 1) ||
-                (liftMotor.getCurrentPosition() > encoders && signum(encoders) == -1))) {
+        while (!isStopRequested() && opModeIsActive() && ((liftMotor.getCurrentPosition() < encoders && signum(encoders) == 1) || (liftMotor.getCurrentPosition() > encoders && signum(encoders) == -1))) {
             // Display it for the driver.
             print("Position", liftMotor.getCurrentPosition());
             print("Goal", encoders);
@@ -751,16 +721,12 @@ public abstract class Base extends LinearOpMode {
         liftMotor.setVelocity(0);
     }
 
-    /**
-     * Retracts the horizontal lift motor.
-     */
+    /** Retracts the horizontal lift motor. */
     public void retractHorizontalLift() {
         moveHorizontalLift(LIFT_BOUNDARIES[0]);
     }
 
-    /**
-     * Retracts the horizontal lift motor.
-     */
+    /** Retracts the horizontal lift motor. */
     public void extendHorizontalLift() {
         moveHorizontalLift(LIFT_BOUNDARIES[1]);
     }
@@ -780,9 +746,7 @@ public abstract class Base extends LinearOpMode {
         runtime.reset();
         // The loop stops after being under the encoder goal when going down and when being
         // above the encoder goal when going up
-        while (!isStopRequested() && opModeIsActive()
-                && ((vertAvg < encoders && direction == 1) ||
-                (vertAvg > encoders && direction == -1))) {
+        while (!isStopRequested() && opModeIsActive() && ((vertAvg < encoders && direction == 1) || (vertAvg > encoders && direction == -1))) {
             vertAvg = (verticalMotorA.getCurrentPosition() + verticalMotorB.getCurrentPosition()) / 2;
 
             // Corrects for smaller amounts of slippage and drift while moving
@@ -805,16 +769,12 @@ public abstract class Base extends LinearOpMode {
         liftMotor.setVelocity(0);
     }
 
-    /**
-     * Retracts the horizontal lift motor.
-     */
+    /** Retracts the horizontal lift motor. */
     public void retractVerticalLift() {
         moveVerticalLift(V_LIFT_BOUNDARIES[0]);
     }
 
-    /**
-     * Retracts the horizontal lift motor.
-     */
+    /** Retracts the horizontal lift motor. */
     public void extendVerticalLift() {
         moveVerticalLift(V_LIFT_BOUNDARIES[1]);
     }
@@ -825,13 +785,7 @@ public abstract class Base extends LinearOpMode {
      * @param camera The camera to use.
      */
     private void initProcessors(WebcamName camera) {
-        tagProcessor =
-                new AprilTagProcessor.Builder()
-                        .setDrawAxes(true)
-                        .setDrawCubeProjection(true)
-                        .setDrawTagID(true)
-                        .setDrawTagOutline(true)
-                        .build();
+        tagProcessor = new AprilTagProcessor.Builder().setDrawAxes(true).setDrawCubeProjection(true).setDrawTagID(true).setDrawTagOutline(true).build();
 
         VisionPortal.Builder builder = new VisionPortal.Builder();
 
@@ -843,14 +797,19 @@ public abstract class Base extends LinearOpMode {
     }
 
     /**
-     * A less space consuming way to add telemetry. "caption: content"
+     * A less space consuming way to add telemetry.
+     *
+     * @param caption String
+     * @param content Object
      */
     public void print(String caption, Object content) {
         telemetry.addData(caption, content);
     }
 
     /**
-     * A less space consuming way to add telemetry. "content"
+     * A less space consuming way to add telemetry.
+     *
+     * @param content Content to display in tlemetry
      */
     public void print(String content) {
         telemetry.addLine(content);
@@ -868,9 +827,7 @@ public abstract class Base extends LinearOpMode {
         s(seconds);
     }
 
-    /**
-     * A less space consuming way to update the displayed telemetry. *
-     */
+    /** A less space consuming way to update the displayed telemetry. */
     public void update() {
         telemetry.update();
     }
@@ -903,53 +860,35 @@ public abstract class Base extends LinearOpMode {
         return false;
     }
 
-    /**
-     * Adds information messages to telemetry and updates it
-     */
+    /** Adds information messages to telemetry and updates it */
     public void updateAll() {
-        if (lf == null) {
-            telemetry.addData("Drive Train", "Disconnected");
-        }
-        if (verticalMotorA == null) {
-            print("Vertical Lift Motors", "Disconnected");
-        } else {
+        if (lf == null) telemetry.addData("Drive Train", "Disconnected");
+        if (verticalMotorA == null) print("Vertical Lift Motors", "Disconnected");
+        else {
             print("Vertical Motor A Position", verticalMotorA.getCurrentPosition());
             print("Vertical Motor B Position", verticalMotorB.getCurrentPosition());
             print("Vertical Motor Power", (verticalMotorA.getPower() + verticalMotorB.getPower()) / 2.0);
         }
-        if (liftMotor == null) {
-            print("Horizontal Lift Motor", "Disconnected");
-        } else {
+        if (liftMotor == null) print("Horizontal Lift Motor", "Disconnected");
+        else {
             print("Horizontal Lift Motor Position", liftMotor.getCurrentPosition());
             print("Horizontal Lift Motor Power", liftMotor.getPower());
         }
-        if (wristMotor == null) {
-            print("Wrist Motor", "Disconnected");
-        } else {
-            print("Wrist Motor Position", wristMotor.getCurrentPosition());
-        }
+        if (wristMotor == null) print("Wrist Motor", "Disconnected");
+        else print("Wrist Motor Position", wristMotor.getCurrentPosition());
 
-        if (intakeServo == null) {
-            print("Tray Tilting Servo", "Disconnected");
-        }
-        if (pixelLockingServo == null) {
-            print("Pixel Locking Servo", "Disconnected");
-        }
-        if (touchSensor == null) {
-            print("Touch Sensor", "Disconnected");
-        } else {
-            print("Touch Sensor Pressed", touchSensor.isPressed());
-        }
-        if (wristServo == null) {
-            print("Intake Servo", "Disconnected");
-        }
+        if (intakeServo == null) print("Tray Tilting Servo", "Disconnected");
+        if (pixelLockingServo == null) print("Pixel Locking Servo", "Disconnected");
+
+        if (touchSensor == null) print("Touch Sensor", "Disconnected");
+        else print("Touch Sensor Pressed", touchSensor.isPressed());
+        if (wristServo == null) print("Intake Servo", "Disconnected");
         if (useOdometry) {
             Pose2d pos = drive.getPoseEstimate();
             // Log the position to the telemetry
             print(String.format(Locale.US, "SparkFun Position :  X: %.2f, Y: %.2f, θ: %.2f", pos.getX(), pos.getY(), pos.getHeading()));
-        } else {
-            print("Odometry disabled");
-        }
+        } else print("Odometry disabled");
+
         telemetry.update();
     }
 }

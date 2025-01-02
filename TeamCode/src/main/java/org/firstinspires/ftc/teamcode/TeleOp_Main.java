@@ -50,15 +50,7 @@ public class TeleOp_Main extends Base {
         setup();
 
         while (opModeIsActive() && !isStopRequested()) {
-            slowdownMultiplier = 0.7;
-            if (gamepad1.left_bumper) {
-                slowdownMultiplier = 0.3;
-            }
-            if (gamepad1.right_bumper) {
-                slowdownMultiplier = 1;
-            }
-            // Slows down movement for better handling the more the right trigger is held down
-            // slowdownMultiplier = (1.0 - gamepad1.right_trigger) * 0.7 + 0.3;
+            slowdownMultiplier = gamepad1.left_bumper ? 0.3 : gamepad1.right_bumper ? 1 : 0.7;
 
             axial = ((-gamepad1.left_stick_y * SPEED_MULTIPLIER));
             lateral = ((gamepad1.left_stick_x * SPEED_MULTIPLIER));
@@ -103,11 +95,10 @@ public class TeleOp_Main extends Base {
                 } else {
                     error = wristMotorPosition - wristMotor.getCurrentPosition();
                     wristMotor.setPower(0);
-                    if (wristMotorTicksStopped < 5) {
+                    if (wristMotorTicksStopped < 5)
                         wristMotorPosition = wristMotor.getCurrentPosition();
-                    } else if (Math.abs(error) > 3) {
+                    else if (Math.abs(error) > 3)
                         wristMotor.setPower(WRIST_MOTOR_POWER * error / 10.0);
-                    }
                     wristMotorTicksStopped++;
                 }
             }
@@ -115,11 +106,10 @@ public class TeleOp_Main extends Base {
             // Logic for the wrist servo
             if (wristServo != null) {
                 if (gamepad2.a && !wasWristServoButtonPressed) {
-                    if (nextWristServoGoal == 0 || nextWristServoGoal == 1) {
+                    if (nextWristServoGoal == 0 || nextWristServoGoal == 1)
                         newNextWristServoGoal = 0.5;
-                    } else if (nextWristServoGoal == 0.5) {
+                    else if (nextWristServoGoal == 0.5)
                         newNextWristServoGoal = 1 - wristServoGoal;
-                    }
                     wristServoGoal = nextWristServoGoal;
                     nextWristServoGoal = newNextWristServoGoal;
                     wristServo.setPosition(wristServoGoal);
@@ -166,7 +156,7 @@ public class TeleOp_Main extends Base {
                 if ((gamepad1.dpad_up || gamepad1.dpad_down) && !gamepad1.a) {
                     vertRunToPos = false;
                 } else {
-                    if (gamepad1.a && (isDpd || isDpu) && !(isDpd && isDpu)) {
+                    if (gamepad1.a && (isDpu ^ isDpd)) {
                         vertGoal = vertRunToPos ? vertGoal : vertAvg;
                         if (isDpu) {
                             for (int goal : V_LIFT_GOALS) {
@@ -178,8 +168,8 @@ public class TeleOp_Main extends Base {
                         } else { // isDpd is always true because of the conditions to enter the if
                             newGoal = vertGoal;
                             for (int goal : V_LIFT_GOALS) {
-                                newGoal = goal < vertGoal - 50 ? goal : newGoal;
-                                if (goal >= vertGoal - 50) break;
+                                if (goal < vertGoal - 50) newGoal = goal;
+                                else break;
                             }
                             vertGoal = newGoal;
                         }
@@ -193,10 +183,10 @@ public class TeleOp_Main extends Base {
                 if (vertRunToPos) {
                     if (vertAvg < vertGoal) {
                         vertUp = true;
-                        slowdownMultiplier = vertAvg >= vertGoal - 50 ? 0.3 : slowdownMultiplier;
+                        if (vertAvg >= vertGoal - 50) slowdownMultiplier = 0.3;
                     } else {
                         vertDown = true;
-                        slowdownMultiplier = vertAvg < vertGoal + 50 ? 0.3 : slowdownMultiplier;
+                        if (vertAvg < vertGoal + 50) slowdownMultiplier = 0.3;
                     }
                 }
                 if (!gamepad1.a) {
@@ -208,25 +198,19 @@ public class TeleOp_Main extends Base {
                         vertStopped = true;
                         vertGoal = vertAvg;
                     }
-                    if (vertAvg < vertGoal - 20) {
-                        power = 0.1;
-                    } else {
-                        power = ((double) vertGoal - vertAvg) / 20.0 * .1;
-                    }
+                    power = vertAvg < vertGoal - 20 ? 0.1 : (vertGoal - vertAvg) / 20.0 * .1;
                 } else {
                     vertStopped = false;
                     // If the touch sensor isn't connected, assume it isn't pressed
                     touchSensorPressed = touchSensor != null && touchSensor.isPressed();
                     if (vertUp && !vertDown) {
                         power = 0;
-                        if (vertAvg < V_LIFT_BOUNDARIES[1]) {
+                        if (vertAvg < V_LIFT_BOUNDARIES[1])
                             power = slowdownMultiplier == 0.3 ? 0.7 : 1;
-                        }
                     } else if (vertDown && !vertUp && !touchSensorPressed) {
                         power = 0;
-                        if (vertAvg > V_LIFT_BOUNDARIES[0]) {
+                        if (vertAvg > V_LIFT_BOUNDARIES[0])
                             power = slowdownMultiplier == 0.3 ? -0.7 : -slowdownMultiplier;
-                        }
                     }
                     vertUp = vertDown = false;
                 }
@@ -252,31 +236,19 @@ public class TeleOp_Main extends Base {
                         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                         touchSensorWasPressed = true;
                     }
-                } else if (!touchSensor.isPressed()) {
-                    touchSensorWasPressed = false;
-                }
+                } else if (!touchSensor.isPressed()) touchSensorWasPressed = false;
             }
 
 
-            if (gamepad1.dpad_up && !isDpu && !wasDpu) {
-                isDpu = wasDpu = true;
-            } else if (gamepad1.dpad_up && isDpu && wasDpu) {
-                isDpu = false;
-            } else if (!gamepad1.dpad_up && wasDpu) {
-                wasDpu = false;
-            } else if (!gamepad1.dpad_down && isDpu) {
-                isDpu = wasDpu = false;
-            }
+            if (gamepad1.dpad_up && !isDpu && !wasDpu) isDpu = wasDpu = true;
+            else if (gamepad1.dpad_up && isDpu && wasDpu) isDpu = false;
+            else if (!gamepad1.dpad_up && wasDpu) wasDpu = false;
+            else if (!gamepad1.dpad_down && isDpu) isDpu = wasDpu = false;
 
-            if (gamepad1.dpad_down && !isDpd && !wasDpd) {
-                isDpd = wasDpd = true;
-            } else if (gamepad1.dpad_down && isDpd && wasDpd) {
-                isDpd = false;
-            } else if (!gamepad1.dpad_down && wasDpd) {
-                wasDpd = false;
-            } else if (!gamepad1.dpad_down && isDpd) {
-                isDpd = wasDpd = false;
-            }
+            if (gamepad1.dpad_down && !isDpd && !wasDpd) isDpd = wasDpd = true;
+            else if (gamepad1.dpad_down && isDpd && wasDpd) isDpd = false;
+            else if (!gamepad1.dpad_down && wasDpd) wasDpd = false;
+            else if (!gamepad1.dpad_down && isDpd) isDpd = wasDpd = false;
 
             print("Speed Multiplier", slowdownMultiplier);
             updateAll();

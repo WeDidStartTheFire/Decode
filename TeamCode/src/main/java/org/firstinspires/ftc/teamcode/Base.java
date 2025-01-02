@@ -867,9 +867,9 @@ public abstract class Base extends LinearOpMode {
         if (lf == null) telemetry.addData("Drive Train", "Disconnected");
         if (verticalMotorA == null) print("Vertical Lift Motors", "Disconnected");
         else {
-            print("Vertical Motor A Position", verticalMotorA.getCurrentPosition());
-            print("Vertical Motor B Position", verticalMotorB.getCurrentPosition());
-            print("Vertical Motor Power", (verticalMotorA.getPower() + verticalMotorB.getPower()) / 2.0);
+            print("Vertical Motor A Position", "" + verticalMotorA.getCurrentPosition());
+            print("Vertical Motor B Position", "" + verticalMotorB.getCurrentPosition());
+            print("Vertical Motor Power", "" + (verticalMotorA.getPower() + verticalMotorB.getPower()) / 2.0);
         }
         if (liftMotor == null) print("Horizontal Lift Motor", "Disconnected");
         else {

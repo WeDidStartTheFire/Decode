@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODER;
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
+
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -203,6 +206,12 @@ public class TeleOp_Main extends Base {
                     vertStopped = false;
                     // If the touch sensor isn't connected, assume it isn't pressed
                     touchSensorPressed = touchSensor != null && touchSensor.isPressed();
+                    if (touchSensorPressed) {
+                        verticalMotorA.setMode(STOP_AND_RESET_ENCODER);
+                        verticalMotorB.setMode(STOP_AND_RESET_ENCODER);
+                        verticalMotorA.setMode(RUN_WITHOUT_ENCODER);
+                        verticalMotorB.setMode(RUN_WITHOUT_ENCODER);
+                    }
                     if (vertUp && !vertDown) {
                         power = 0;
                         if (vertAvg < V_LIFT_BOUNDARIES[1])
@@ -233,7 +242,7 @@ public class TeleOp_Main extends Base {
                     touchSensorPressed = false;
                     if (touchSensor.isPressed()) {
                         liftMotor.setPower(0);
-                        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        liftMotor.setMode(STOP_AND_RESET_ENCODER);
                         touchSensorWasPressed = true;
                     }
                 } else if (!touchSensor.isPressed()) touchSensorWasPressed = false;

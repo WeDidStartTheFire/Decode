@@ -117,7 +117,7 @@ public class TeleOp_Main extends Base {
                     wristServo.setPosition(wristServoGoal);
                 }
                 wasWristServoButtonPressed = gamepad2.a;
-                print("Wrist Servo Goal", wristServoGoal);
+                print("Wrist Servo Goal", "" + wristServoGoal);
             }
 
             // Logic for the intake servo
@@ -258,7 +258,7 @@ public class TeleOp_Main extends Base {
             else if (!gamepad1.dpad_down && wasDpd) wasDpd = false;
             else if (!gamepad1.dpad_down && isDpd) isDpd = wasDpd = false;
 
-            print("Speed Multiplier", slowdownMultiplier);
+            print("Speed Multiplier", "" + slowdownMultiplier);
             updateAll();
         }
     }

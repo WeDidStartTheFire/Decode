@@ -78,7 +78,6 @@ public abstract class Base extends LinearOpMode {
         LEFT, RIGHT, FORWARD, BACKWARD
     }
 
-
     /** Initializes all hardware devices on the robot. */
     public void setup() {
         imu = hardwareMap.get(IMU.class, "imu");
@@ -479,10 +478,10 @@ public abstract class Base extends LinearOpMode {
     /**
      * Changes the velocity.
      *
-     * @param vel value.
+     * @param velocity value.
      */
-    public void setVelocity(double vel) {
-        velocity = vel;
+    public void setVelocity(double velocity) {
+        this.velocity = velocity;
     }
 
     /**
@@ -834,7 +833,8 @@ public abstract class Base extends LinearOpMode {
         print(message);
         print("Press A to confirm and B to cancel (Gamepad 1)");
         update();
-        while (opModeIsActive() && !isStopRequested() && !(gamepad1.a || gamepad1.b)) {
+        while (opModeIsActive() && !isStopRequested()) {
+            if (gamepad1.a || gamepad1.b) break;
         }
         if (gamepad1.a) {
             print("Confirmed.", .5);

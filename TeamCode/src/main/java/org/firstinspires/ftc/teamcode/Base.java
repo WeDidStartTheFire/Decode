@@ -59,7 +59,7 @@ public abstract class Base extends LinearOpMode {
     static final double TURN_SPEED = 0.5;
     private static final int WAIT_TIME = 100;
     static final int[] LIFT_BOUNDARIES = {0, 1200};
-    static final int[] V_LIFT_BOUNDARIES = {0, 1900};
+    static final int[] V_LIFT_BOUNDARIES = {0, 1950};
 
     public boolean useOdometry = true;
     double velocity = 2000;

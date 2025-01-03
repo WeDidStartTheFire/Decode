@@ -28,7 +28,6 @@ public class TeleOp_Main extends Base {
     static final double WRIST_MOTOR_POWER = 0.1;
     static final int[] WRIST_MOTOR_BOUNDARIES = {0, 140};
     static final int[] V_LIFT_GOALS = {0, 500, 1000, 1500};
-    double intakeServoGoal = 0;
     double wristServoGoal = 0;
     double nextWristServoGoal = 0.5;
     double newNextWristServoGoal;

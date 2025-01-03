@@ -52,7 +52,7 @@ public class TeleOp_Debug extends Base {
             }
         } else {
             servoA = droneServo;
-            servoB = pixelLockingServo;
+            servoB = specimenServo;
             servoC = wristServo;
             servoD = intakeServo;
         }

@@ -34,7 +34,7 @@ public abstract class Base extends LinearOpMode {
     private final ElapsedTime runtime = new ElapsedTime();
     // All non-primitive data types initialize to null on default.
     public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor, verticalMotorA, verticalMotorB;
-    public Servo wristServo, droneServo, pixelLockingServo, intakeServo;
+    public Servo wristServo, droneServo, specimenServo, intakeServo;
     public TouchSensor touchSensor;
     private IMU imu;
     /*
@@ -68,7 +68,7 @@ public abstract class Base extends LinearOpMode {
     public SampleMecanumDrive drive;
     public Pose2d currentPose = new Pose2d();
 
-    public static final IMU.Parameters IMU_PARAMETERS = new IMU.Parameters(
+    public static final IMU.Parameters IMU_PARAMS = new IMU.Parameters(
             new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                     RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
 
@@ -80,9 +80,7 @@ public abstract class Base extends LinearOpMode {
     /** Initializes all hardware devices on the robot. */
     public void setup() {
         imu = hardwareMap.get(IMU.class, "imu");
-        if (!imu.initialize(IMU_PARAMETERS)) {
-            throw new RuntimeException("IMU initialization failed");
-        }
+        if (!imu.initialize(IMU_PARAMS)) throw new RuntimeException("IMU initialization failed");
         imu.resetYaw();
 
         // The following try catch statements "check" if a motor is connected. If it isn't, it sets
@@ -130,7 +128,7 @@ public abstract class Base extends LinearOpMode {
             except("trayTiltingServo not connected");
         }
         try {
-            pixelLockingServo = hardwareMap.get(Servo.class, "pixelFrontServo"); // Port 2
+            specimenServo = hardwareMap.get(Servo.class, "pixelFrontServo"); // Port 2
         } catch (IllegalArgumentException e) {
             except("pixelFrontServo not connected");
         }
@@ -211,8 +209,6 @@ public abstract class Base extends LinearOpMode {
         print("Hub Name", hubName);
         update();
 
-        if (droneServo != null) droneServo.setPosition(1);
-        if (pixelLockingServo != null) pixelLockingServo.setPosition(0);
         while (!isStarted()) {
             useOdometry = ((useOdometry || gamepad1.b) && !gamepad1.a);
             print("useOdometry", useOdometry);
@@ -273,9 +269,7 @@ public abstract class Base extends LinearOpMode {
             runtime.reset();
             setMotorVelocities(velocity * signum(inches) * dir);
             inches = signum(inches) * (abs(inches) + B) / M;
-        } else {
-            setMotorVelocities(velocity * dir);
-        }
+        } else setMotorVelocities(velocity * dir);
 
         double duration = abs(inches * COUNTS_PER_INCH / velocity);
 
@@ -286,9 +280,7 @@ public abstract class Base extends LinearOpMode {
             print("Currently at", lf.getCurrentPosition() + ":" + rf.getCurrentPosition());
             update();
         }
-        if (inches != 0) {
-            stopRobot();
-        }
+        if (inches != 0) stopRobot();
     }
 
     /**
@@ -347,9 +339,7 @@ public abstract class Base extends LinearOpMode {
         if (useOdometry) {
             int dir = direction == LEFT ? -1 : 1;
             drive.turn(Math.toRadians(degrees * dir));
-            return; // Early return
-        }
-        IMUTurn(degrees, direction);
+        } else IMUTurn(degrees, direction);
     }
 
     /**
@@ -450,14 +440,13 @@ public abstract class Base extends LinearOpMode {
      */
     public void strafe(double inches, Dir direction) {
         if (useOdometry) {
-            Trajectory strafeTrajectory;
+            Trajectory strafeTraj;
             if (direction == LEFT)
-                strafeTrajectory = drive.trajectoryBuilder(currentPose).strafeLeft(inches).build();
-            else
-                strafeTrajectory = drive.trajectoryBuilder(currentPose).strafeRight(inches).build();
+                strafeTraj = drive.trajectoryBuilder(currentPose).strafeLeft(inches).build();
+            else strafeTraj = drive.trajectoryBuilder(currentPose).strafeRight(inches).build();
 
-            drive.followTrajectory(strafeTrajectory);
-            currentPose = strafeTrajectory.end();
+            drive.followTrajectory(strafeTraj);
+            currentPose = strafeTraj.end();
             return; // Early return
         }
         velocityStrafe(inches, direction);
@@ -557,8 +546,7 @@ public abstract class Base extends LinearOpMode {
      * @param position The position to move the intake servo to.
      */
     public void moveWristServo(double position) {
-        if (wristServo == null) return;
-        wristServo.setPosition(position);
+        if (wristServo != null) wristServo.setPosition(position);
     }
 
     /**
@@ -567,8 +555,7 @@ public abstract class Base extends LinearOpMode {
      * @param position The position to move the intake servo to.
      */
     public void moveIntake(double position) {
-        if (intakeServo == null) return;
-        intakeServo.setPosition(position);
+        if (intakeServo != null) intakeServo.setPosition(position);
     }
 
     /** Opens the intake servo. */
@@ -731,16 +718,12 @@ public abstract class Base extends LinearOpMode {
             vertAvg = (verticalMotorA.getCurrentPosition() + verticalMotorB.getCurrentPosition()) / 2;
 
             // Corrects for smaller amounts of slippage and drift while moving
-            if (verticalMotorA.getCurrentPosition() - vertAvg > 10) {
+            if (verticalMotorA.getCurrentPosition() - vertAvg > 10)
                 verticalMotorA.setPower(direction * 0.95);
-            } else {
-                verticalMotorA.setPower(direction);
-            }
-            if (verticalMotorB.getCurrentPosition() - vertAvg > 10) {
+            else verticalMotorA.setPower(direction);
+            if (verticalMotorB.getCurrentPosition() - vertAvg > 10)
                 verticalMotorB.setPower(direction * 0.95);
-            } else {
-                verticalMotorB.setPower(direction);
-            }
+            else verticalMotorB.setPower(direction);
 
             // Display it for the driver.
             print("Position", vertAvg);
@@ -766,7 +749,12 @@ public abstract class Base extends LinearOpMode {
      * @param camera The camera to use.
      */
     private void initProcessors(WebcamName camera) {
-        tagProcessor = new AprilTagProcessor.Builder().setDrawAxes(true).setDrawCubeProjection(true).setDrawTagID(true).setDrawTagOutline(true).build();
+        tagProcessor = new AprilTagProcessor.Builder()
+                .setDrawAxes(true)
+                .setDrawCubeProjection(true)
+                .setDrawTagID(true)
+                .setDrawTagOutline(true)
+                .build();
 
         VisionPortal.Builder builder = new VisionPortal.Builder();
 
@@ -857,7 +845,7 @@ public abstract class Base extends LinearOpMode {
         else print("Wrist Motor Position", wristMotor.getCurrentPosition());
 
         if (intakeServo == null) print("Tray Tilting Servo", "Disconnected");
-        if (pixelLockingServo == null) print("Pixel Locking Servo", "Disconnected");
+        if (specimenServo == null) print("Pixel Locking Servo", "Disconnected");
 
         if (touchSensor == null) print("Touch Sensor", "Disconnected");
         else print("Touch Sensor Pressed", touchSensor.isPressed());
@@ -870,8 +858,8 @@ public abstract class Base extends LinearOpMode {
 
         telemetry.update();
     }
-    
-    public boolean active(){
+
+    public boolean active() {
         return opModeIsActive() && !isStopRequested();
     }
 }

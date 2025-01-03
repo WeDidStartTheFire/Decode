@@ -57,9 +57,9 @@ public class DriveConstants {
      * d not to use them for velocity control, these values should be
      * empirically tuned.
      */
-    public static double kV = 0.016; // Default is 1.0 / rpmToVelocity(MAX_RPM) (may need to revert)
-    public static double kA = 0.00;
-    public static double kStatic = 0.00;
+    public static double kV = 0.01730; //0.016; // Default is 1.0 / rpmToVelocity(MAX_RPM) (may need to revert)
+    public static double kA = 0.00023; //0.00;
+    public static double kStatic = 0.07835; //0.00;
 
     /*
      * These values are used to generate the trajectories for you robot. To ensure proper operation,

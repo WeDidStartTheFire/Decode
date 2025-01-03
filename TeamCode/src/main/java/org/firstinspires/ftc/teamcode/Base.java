@@ -34,7 +34,7 @@ public abstract class Base extends LinearOpMode {
     private final ElapsedTime runtime = new ElapsedTime();
     // All non-primitive data types initialize to null on default.
     public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor, verticalMotorA, verticalMotorB;
-    public Servo wristServo, droneServo, pixelLockingServo, intakeServo;
+    public Servo wristServo, droneServo, specimenServo, intakeServo;
     public TouchSensor touchSensor;
     private IMU imu;
     /*
@@ -68,7 +68,7 @@ public abstract class Base extends LinearOpMode {
     public SampleMecanumDrive drive;
     public Pose2d currentPose = new Pose2d();
 
-    public static final IMU.Parameters IMU_PARAMETERS = new IMU.Parameters(
+    public static final IMU.Parameters IMU_PARAMS = new IMU.Parameters(
             new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                     RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
 
@@ -80,9 +80,7 @@ public abstract class Base extends LinearOpMode {
     /** Initializes all hardware devices on the robot. */
     public void setup() {
         imu = hardwareMap.get(IMU.class, "imu");
-        if (!imu.initialize(IMU_PARAMETERS)) {
-            throw new RuntimeException("IMU initialization failed");
-        }
+        if (!imu.initialize(IMU_PARAMS)) throw new RuntimeException("IMU initialization failed");
         imu.resetYaw();
 
         // The following try catch statements "check" if a motor is connected. If it isn't, it sets
@@ -130,7 +128,7 @@ public abstract class Base extends LinearOpMode {
             except("trayTiltingServo not connected");
         }
         try {
-            pixelLockingServo = hardwareMap.get(Servo.class, "pixelFrontServo"); // Port 2
+            specimenServo = hardwareMap.get(Servo.class, "pixelFrontServo"); // Port 2
         } catch (IllegalArgumentException e) {
             except("pixelFrontServo not connected");
         }
@@ -211,8 +209,6 @@ public abstract class Base extends LinearOpMode {
         print("Hub Name", hubName);
         update();
 
-        if (droneServo != null) droneServo.setPosition(1);
-        if (pixelLockingServo != null) pixelLockingServo.setPosition(0);
         while (!isStarted()) {
             useOdometry = ((useOdometry || gamepad1.b) && !gamepad1.a);
             print("useOdometry", useOdometry);
@@ -849,7 +845,7 @@ public abstract class Base extends LinearOpMode {
         else print("Wrist Motor Position", wristMotor.getCurrentPosition());
 
         if (intakeServo == null) print("Tray Tilting Servo", "Disconnected");
-        if (pixelLockingServo == null) print("Pixel Locking Servo", "Disconnected");
+        if (specimenServo == null) print("Pixel Locking Servo", "Disconnected");
 
         if (touchSensor == null) print("Touch Sensor", "Disconnected");
         else print("Touch Sensor Pressed", touchSensor.isPressed());
@@ -862,8 +858,8 @@ public abstract class Base extends LinearOpMode {
 
         telemetry.update();
     }
-    
-    public boolean active(){
+
+    public boolean active() {
         return opModeIsActive() && !isStopRequested();
     }
 }

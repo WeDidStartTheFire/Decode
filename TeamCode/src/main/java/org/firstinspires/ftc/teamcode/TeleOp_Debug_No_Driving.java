@@ -54,7 +54,7 @@ public class TeleOp_Debug_No_Driving extends Base {
             motorB = lb;
         } else {
             servoA = droneServo;
-            servoB = pixelLockingServo;
+            servoB = specimenServo;
             servoC = wristServo;
             servoD = intakeServo;
             motorA = wristMotor;

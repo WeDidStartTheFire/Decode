@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive;
 
-import static org.firstinspires.ftc.teamcode.Base.IMU_PARAMETERS;
+import static org.firstinspires.ftc.teamcode.Base.IMU_PARAMS;
 
 import androidx.annotation.NonNull;
 
@@ -20,7 +20,7 @@ public class RedundantLocalizer implements Localizer {
         this.sparkFunLocalizer = new SparkFunLocalizer(hardwareMap);
         this.encoderLocalizer = new EncoderLocalizer(hardwareMap);
         imu = hardwareMap.get(IMU.class, "imu");
-        if (!imu.initialize(IMU_PARAMETERS)) {
+        if (!imu.initialize(IMU_PARAMS)) {
             throw new RuntimeException("IMU initialization failed");
         }
     }

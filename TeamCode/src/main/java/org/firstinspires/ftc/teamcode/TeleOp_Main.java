@@ -39,6 +39,7 @@ public class TeleOp_Main extends Base {
     boolean vertStopped = false;
     boolean wasIntakeServoButtonPressed = false;
     boolean wasWristServoButtonPressed = false;
+    boolean wasSpecimenServoButtonPressed = false;
     int wristMotorTicksStopped = 0;
     int wristMotorPosition = 0;
     int error;
@@ -121,19 +122,9 @@ public class TeleOp_Main extends Base {
             }
 
             // Logic for the intake servo
-            if (intakeServo != null) {
-                if (gamepad2.b && !wasIntakeServoButtonPressed) {
-                    if (intakeServoGoal == 0) {
-                        intakeServoGoal = 1;
-                        intakeServo.setPosition(intakeServoGoal);
-                    } else {
-                        intakeServoGoal = 0;
-                        intakeServo.setPosition(intakeServoGoal);
-                    }
-                }
-                wasIntakeServoButtonPressed = gamepad2.b;
-                print("Intake Servo Goal", intakeServoGoal);
-            }
+            if (intakeServo != null && gamepad1.b && !wasIntakeServoButtonPressed)
+                intakeServo.setPosition(intakeServo.getPosition() == 0 ? 1 : 0);
+            wasIntakeServoButtonPressed = gamepad2.b;
 
             // Logic to extend or retract the horizontal lift
             if (liftMotor != null) {
@@ -238,6 +229,11 @@ public class TeleOp_Main extends Base {
                 print("Vertical Lift Goal", vertGoal);
             }
 
+            // Logic to open and close the specimen servo
+            if (specimenServo != null && gamepad1.b && !wasSpecimenServoButtonPressed)
+                specimenServo.setPosition(specimenServo.getPosition() == 0 ? 1 : 0);
+            wasSpecimenServoButtonPressed = gamepad1.b;
+
             // Logic to stop lift when it hits touch sensor
             if (touchSensor != null && liftMotor != null) {
                 if (!touchSensorWasPressed) {
@@ -249,7 +245,6 @@ public class TeleOp_Main extends Base {
                     }
                 } else if (!touchSensor.isPressed()) touchSensorWasPressed = false;
             }
-
 
             if (gamepad1.dpad_up && !isDpu && !wasDpu) isDpu = wasDpu = true;
             else if (gamepad1.dpad_up && isDpu && wasDpu) isDpu = false;

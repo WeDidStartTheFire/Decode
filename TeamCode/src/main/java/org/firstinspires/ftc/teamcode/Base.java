@@ -834,12 +834,9 @@ public abstract class Base extends LinearOpMode {
         while (opModeIsActive() && !isStopRequested()) {
             if (gamepad1.a || gamepad1.b) break;
         }
-        if (gamepad1.a) {
-            printSeconds("Confirmed.", .5);
-            return true;
-        }
-        printSeconds("Canceled.", .5);
-        return false;
+        if (gamepad1.a) printSeconds("Confirmed.", .5);
+        else printSeconds("Canceled.", .5);
+        return gamepad1.a;
     }
 
     /** Adds information messages to telemetry and updates it */

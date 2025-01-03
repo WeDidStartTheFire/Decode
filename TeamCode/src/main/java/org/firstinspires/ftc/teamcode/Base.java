@@ -61,7 +61,7 @@ public abstract class Base extends LinearOpMode {
     static final int[] LIFT_BOUNDARIES = {0, 1200};
     static final int[] V_LIFT_BOUNDARIES = {0, 1950};
 
-    public boolean useOdometry, useCam = true;
+    public boolean useOdometry = true, useCam = true;
     double velocity = 2000;
     public VisionPortal visionPortal;
     private AprilTagProcessor tagProcessor;

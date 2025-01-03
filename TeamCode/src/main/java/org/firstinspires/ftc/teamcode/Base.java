@@ -279,7 +279,7 @@ public abstract class Base extends LinearOpMode {
 
         double duration = abs(inches * COUNTS_PER_INCH / velocity);
 
-        while (!isStopRequested() && opModeIsActive() && (runtime.seconds() < duration) && inches != 0) {
+        while (active() && (runtime.seconds() < duration) && inches != 0) {
             // Display it for the driver.
             print("Angle", imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
             print("Running to", " " + lfTarget + ":" + rfTarget);
@@ -314,7 +314,7 @@ public abstract class Base extends LinearOpMode {
         double turnPower;
         if (abs(initialGoalAngle) > 180)
             correctedGoalAngle -= abs(initialGoalAngle) / initialGoalAngle * 360;
-        while (!isStopRequested() && opModeIsActive() && (difference > tolerance) && degrees != 0) {
+        while (active() && (difference > tolerance) && degrees != 0) {
             angle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
             difference = min(abs(initialGoalAngle - angle), abs(correctedGoalAngle - angle));
             turnModifier = min(1, (difference + 3) / 30);
@@ -430,7 +430,7 @@ public abstract class Base extends LinearOpMode {
         double duration = abs(inches * COUNTS_PER_INCH / velocity);
 
         runtime.reset();
-        while (!isStopRequested() && opModeIsActive() && (runtime.seconds() < duration) && inches != 0) {
+        while (active() && (runtime.seconds() < duration) && inches != 0) {
             print("Strafing until", duration + " seconds");
             print("Currently at", runtime.seconds() + " seconds");
             update();
@@ -630,7 +630,7 @@ public abstract class Base extends LinearOpMode {
     public AprilTagDetection tagDetections(int id, double timeout) {
         AprilTagDetection a;
         double t = runtime.milliseconds() + timeout;
-        while (!isStopRequested() && opModeIsActive() && (runtime.milliseconds() < t)) {
+        while (active() && (runtime.milliseconds() < t)) {
             a = tagDetections(id);
             if (a != null) return a;
         }
@@ -645,7 +645,7 @@ public abstract class Base extends LinearOpMode {
     public void align(int id) {
         AprilTagDetection a = tagDetections(id, 1);
         turn(0);
-        while (!isStopRequested() && opModeIsActive() && (a != null && (abs(a.ftcPose.x) > 0.5 || abs(a.ftcPose.yaw) > 0.5))) {
+        while (active() && (a != null && (abs(a.ftcPose.x) > 0.5 || abs(a.ftcPose.yaw) > 0.5))) {
             a = tagDetections(id, 1);
             if (a == null) return;
             print("Strafe", a.ftcPose.x);
@@ -693,7 +693,7 @@ public abstract class Base extends LinearOpMode {
         runtime.reset();
         // The loop stops after being under the encoder goal when going down and when being
         // above the encoder goal when going up
-        while (!isStopRequested() && opModeIsActive() && ((liftMotor.getCurrentPosition() < encoders && signum(encoders) == 1) || (liftMotor.getCurrentPosition() > encoders && signum(encoders) == -1))) {
+        while (active() && ((liftMotor.getCurrentPosition() < encoders && signum(encoders) == 1) || (liftMotor.getCurrentPosition() > encoders && signum(encoders) == -1))) {
             // Display it for the driver.
             print("Position", liftMotor.getCurrentPosition());
             print("Goal", encoders);
@@ -727,7 +727,7 @@ public abstract class Base extends LinearOpMode {
         runtime.reset();
         // The loop stops after being under the encoder goal when going down and when being
         // above the encoder goal when going up
-        while (!isStopRequested() && opModeIsActive() && ((vertAvg < encoders && direction == 1) || (vertAvg > encoders && direction == -1))) {
+        while (active() && ((vertAvg < encoders && direction == 1) || (vertAvg > encoders && direction == -1))) {
             vertAvg = (verticalMotorA.getCurrentPosition() + verticalMotorB.getCurrentPosition()) / 2;
 
             // Corrects for smaller amounts of slippage and drift while moving
@@ -831,7 +831,7 @@ public abstract class Base extends LinearOpMode {
         print(message);
         print("Press A to confirm and B to cancel (Gamepad 1)");
         update();
-        while (opModeIsActive() && !isStopRequested()) {
+        while (active()) {
             if (gamepad1.a || gamepad1.b) break;
         }
         if (gamepad1.a) printSeconds("Confirmed.", .5);
@@ -869,5 +869,9 @@ public abstract class Base extends LinearOpMode {
         } else print("Odometry disabled");
 
         telemetry.update();
+    }
+    
+    public boolean active(){
+        return opModeIsActive() && !isStopRequested();
     }
 }

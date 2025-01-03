@@ -231,7 +231,7 @@ public class TeleOp_Main extends Base {
 
             // Logic to open and close the specimen servo
             if (specimenServo != null && gamepad1.b && !wasSpecimenServoButtonPressed)
-                specimenServo.setPosition(specimenServo.getPosition() == 0 ? 1 : 0);
+                specimenServo.setPosition(specimenServo.getPosition() == 0 ? 0.4 : 0);
             wasSpecimenServoButtonPressed = gamepad1.b;
 
             // Logic to stop lift when it hits touch sensor

@@ -778,7 +778,7 @@ public abstract class Base extends LinearOpMode {
     /**
      * A less space consuming way to add telemetry.
      *
-     * @param content Content to display in tlemetry
+     * @param content Content to display in telemetry
      */
     public void print(String content) {
         telemetry.addLine(content);

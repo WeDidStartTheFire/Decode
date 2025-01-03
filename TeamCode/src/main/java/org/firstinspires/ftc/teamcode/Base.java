@@ -273,9 +273,7 @@ public abstract class Base extends LinearOpMode {
             runtime.reset();
             setMotorVelocities(velocity * signum(inches) * dir);
             inches = signum(inches) * (abs(inches) + B) / M;
-        } else {
-            setMotorVelocities(velocity * dir);
-        }
+        } else setMotorVelocities(velocity * dir);
 
         double duration = abs(inches * COUNTS_PER_INCH / velocity);
 
@@ -286,9 +284,7 @@ public abstract class Base extends LinearOpMode {
             print("Currently at", lf.getCurrentPosition() + ":" + rf.getCurrentPosition());
             update();
         }
-        if (inches != 0) {
-            stopRobot();
-        }
+        if (inches != 0) stopRobot();
     }
 
     /**
@@ -347,9 +343,7 @@ public abstract class Base extends LinearOpMode {
         if (useOdometry) {
             int dir = direction == LEFT ? -1 : 1;
             drive.turn(Math.toRadians(degrees * dir));
-            return; // Early return
-        }
-        IMUTurn(degrees, direction);
+        } else IMUTurn(degrees, direction);
     }
 
     /**
@@ -450,14 +444,13 @@ public abstract class Base extends LinearOpMode {
      */
     public void strafe(double inches, Dir direction) {
         if (useOdometry) {
-            Trajectory strafeTrajectory;
+            Trajectory strafeTraj;
             if (direction == LEFT)
-                strafeTrajectory = drive.trajectoryBuilder(currentPose).strafeLeft(inches).build();
-            else
-                strafeTrajectory = drive.trajectoryBuilder(currentPose).strafeRight(inches).build();
+                strafeTraj = drive.trajectoryBuilder(currentPose).strafeLeft(inches).build();
+            else strafeTraj = drive.trajectoryBuilder(currentPose).strafeRight(inches).build();
 
-            drive.followTrajectory(strafeTrajectory);
-            currentPose = strafeTrajectory.end();
+            drive.followTrajectory(strafeTraj);
+            currentPose = strafeTraj.end();
             return; // Early return
         }
         velocityStrafe(inches, direction);
@@ -557,8 +550,7 @@ public abstract class Base extends LinearOpMode {
      * @param position The position to move the intake servo to.
      */
     public void moveWristServo(double position) {
-        if (wristServo == null) return;
-        wristServo.setPosition(position);
+        if (wristServo != null) wristServo.setPosition(position);
     }
 
     /**
@@ -567,8 +559,7 @@ public abstract class Base extends LinearOpMode {
      * @param position The position to move the intake servo to.
      */
     public void moveIntake(double position) {
-        if (intakeServo == null) return;
-        intakeServo.setPosition(position);
+        if (intakeServo != null) intakeServo.setPosition(position);
     }
 
     /** Opens the intake servo. */

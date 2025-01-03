@@ -128,7 +128,7 @@ public abstract class Base extends LinearOpMode {
             except("trayTiltingServo not connected");
         }
         try {
-            specimenServo = hardwareMap.get(Servo.class, "pixelFrontServo"); // Port 2
+            specimenServo = hardwareMap.get(Servo.class, "specimenServo"); // Port 2
         } catch (IllegalArgumentException e) {
             except("pixelFrontServo not connected");
         }
@@ -846,6 +846,8 @@ public abstract class Base extends LinearOpMode {
 
         if (intakeServo == null) print("Tray Tilting Servo", "Disconnected");
         if (specimenServo == null) print("Pixel Locking Servo", "Disconnected");
+        if (specimenServo == null) print("Specimen Servo", "Disconnected");
+        else print("Specimen Servo Position", specimenServo.getPosition());
 
         if (touchSensor == null) print("Touch Sensor", "Disconnected");
         else print("Touch Sensor Pressed", touchSensor.isPressed());

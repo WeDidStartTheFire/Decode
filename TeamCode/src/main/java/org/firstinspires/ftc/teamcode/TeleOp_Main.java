@@ -117,7 +117,7 @@ public class TeleOp_Main extends Base {
                     wristServo.setPosition(wristServoGoal);
                 }
                 wasWristServoButtonPressed = gamepad2.a;
-                print("Wrist Servo Goal", "" + wristServoGoal);
+                print("Wrist Servo Goal", wristServoGoal);
             }
 
             // Logic for the intake servo
@@ -235,7 +235,7 @@ public class TeleOp_Main extends Base {
                     verticalMotorA.setPower(power);
                     verticalMotorB.setPower(power);
                 }
-                print("Vertical Lift Goal", "" + vertGoal);
+                print("Vertical Lift Goal", vertGoal);
             }
 
             // Logic to stop lift when it hits touch sensor
@@ -261,7 +261,7 @@ public class TeleOp_Main extends Base {
             else if (!gamepad1.dpad_down && wasDpd) wasDpd = false;
             else if (!gamepad1.dpad_down && isDpd) isDpd = wasDpd = false;
 
-            print("Speed Multiplier", "" + slowdownMultiplier);
+            print("Speed Multiplier", slowdownMultiplier);
             updateAll();
         }
     }

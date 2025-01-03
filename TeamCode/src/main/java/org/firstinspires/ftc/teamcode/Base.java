@@ -802,7 +802,7 @@ public abstract class Base extends LinearOpMode {
      * @param content Content to be shown to the user
      * @param seconds Seconds to wait after message is shown
      */
-    public void print(String content, double seconds) {
+    public void printSeconds(String content, double seconds) {
         print(content);
         update();
         s(seconds);
@@ -838,7 +838,7 @@ public abstract class Base extends LinearOpMode {
             print("Confirmed.", .5);
             return true;
         }
-        print("Canceled.", .5);
+        printSeconds("Canceled.", .5);
         return false;
     }
 
@@ -847,17 +847,17 @@ public abstract class Base extends LinearOpMode {
         if (lf == null) telemetry.addData("Drive Train", "Disconnected");
         if (verticalMotorA == null) print("Vertical Lift Motors", "Disconnected");
         else {
-            print("Vertical Motor A Position", "" + verticalMotorA.getCurrentPosition());
-            print("Vertical Motor B Position", "" + verticalMotorB.getCurrentPosition());
-            print("Vertical Motor Power", "" + (verticalMotorA.getPower() + verticalMotorB.getPower()) / 2.0);
+            print("Vertical Motor A Position", verticalMotorA.getCurrentPosition());
+            print("Vertical Motor B Position", verticalMotorB.getCurrentPosition());
+            print("Vertical Motor Power", (verticalMotorA.getPower() + verticalMotorB.getPower()) / 2.0);
         }
         if (liftMotor == null) print("Horizontal Lift Motor", "Disconnected");
         else {
-            print("Horizontal Lift Motor Position", "" + liftMotor.getCurrentPosition());
-            print("Horizontal Lift Motor Power", "" + liftMotor.getPower());
+            print("Horizontal Lift Motor Position", liftMotor.getCurrentPosition());
+            print("Horizontal Lift Motor Power", liftMotor.getPower());
         }
         if (wristMotor == null) print("Wrist Motor", "Disconnected");
-        else print("Wrist Motor Position", "" + wristMotor.getCurrentPosition());
+        else print("Wrist Motor Position", wristMotor.getCurrentPosition());
 
         if (intakeServo == null) print("Tray Tilting Servo", "Disconnected");
         if (pixelLockingServo == null) print("Pixel Locking Servo", "Disconnected");

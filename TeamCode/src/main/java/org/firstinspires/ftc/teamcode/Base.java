@@ -731,16 +731,12 @@ public abstract class Base extends LinearOpMode {
             vertAvg = (verticalMotorA.getCurrentPosition() + verticalMotorB.getCurrentPosition()) / 2;
 
             // Corrects for smaller amounts of slippage and drift while moving
-            if (verticalMotorA.getCurrentPosition() - vertAvg > 10) {
+            if (verticalMotorA.getCurrentPosition() - vertAvg > 10)
                 verticalMotorA.setPower(direction * 0.95);
-            } else {
-                verticalMotorA.setPower(direction);
-            }
-            if (verticalMotorB.getCurrentPosition() - vertAvg > 10) {
+            else verticalMotorA.setPower(direction);
+            if (verticalMotorB.getCurrentPosition() - vertAvg > 10)
                 verticalMotorB.setPower(direction * 0.95);
-            } else {
-                verticalMotorB.setPower(direction);
-            }
+            else verticalMotorB.setPower(direction);
 
             // Display it for the driver.
             print("Position", vertAvg);
@@ -766,7 +762,12 @@ public abstract class Base extends LinearOpMode {
      * @param camera The camera to use.
      */
     private void initProcessors(WebcamName camera) {
-        tagProcessor = new AprilTagProcessor.Builder().setDrawAxes(true).setDrawCubeProjection(true).setDrawTagID(true).setDrawTagOutline(true).build();
+        tagProcessor = new AprilTagProcessor.Builder()
+                .setDrawAxes(true)
+                .setDrawCubeProjection(true)
+                .setDrawTagID(true)
+                .setDrawTagOutline(true)
+                .build();
 
         VisionPortal.Builder builder = new VisionPortal.Builder();
 

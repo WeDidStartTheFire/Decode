@@ -835,7 +835,7 @@ public abstract class Base extends LinearOpMode {
             if (gamepad1.a || gamepad1.b) break;
         }
         if (gamepad1.a) {
-            print("Confirmed.", .5);
+            printSeconds("Confirmed.", .5);
             return true;
         }
         printSeconds("Canceled.", .5);

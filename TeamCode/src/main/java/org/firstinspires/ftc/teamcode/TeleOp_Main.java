@@ -28,9 +28,8 @@ public class TeleOp_Main extends Base {
     static final double WRIST_MOTOR_POWER = 0.1;
     static final int[] WRIST_MOTOR_BOUNDARIES = {0, 140};
     static final int[] V_LIFT_GOALS = {0, 500, 1000, 1500};
-    double wristServoGoal = 0;
-    double nextWristServoGoal = 0.5;
-    double newNextWristServoGoal;
+    double wristPosition = 0.5;
+    double newWristPosition = 1;
     int vertA, vertB, vertAvg, vertGoal;
     boolean vertUp, vertDown, vertRunToPos = false;
     double power = 0;
@@ -106,20 +105,13 @@ public class TeleOp_Main extends Base {
             }
 
             // Logic for the wrist servo
-            if (wristServo != null) {
-                if (gamepad2.a && !wasWristServoButtonPressed) {
-                    if (nextWristServoGoal == 0 || nextWristServoGoal == 1)
-                        newNextWristServoGoal = 0.5;
-                    else if (nextWristServoGoal == 0.5)
-                        newNextWristServoGoal = 1 - wristServoGoal;
-                    wristServoGoal = nextWristServoGoal;
-                    nextWristServoGoal = newNextWristServoGoal;
-                    wristServo.setPosition(wristServoGoal);
-                }
-                wasWristServoButtonPressed = gamepad2.a;
-                print("Wrist Servo Goal", wristServoGoal);
+            if (wristServo != null && gamepad2.a && !wasWristServoButtonPressed) {
+                if (wristPosition == 0.0 || wristPosition == 1.0) newWristPosition = 0.5;
+                 else newWristPosition = 1.0 - wristServo.getPosition();
+                wristServo.setPosition(wristPosition = newWristPosition);
             }
 
+            wasWristServoButtonPressed = gamepad2.a;
             // Logic for the intake servo
             if (intakeServo != null && gamepad1.b && !wasIntakeServoButtonPressed)
                 intakeServo.setPosition(intakeServo.getPosition() == 0 ? 1 : 0);

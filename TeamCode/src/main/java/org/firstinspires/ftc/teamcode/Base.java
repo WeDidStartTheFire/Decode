@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
@@ -25,6 +26,8 @@ import org.firstinspires.ftc.vision.apriltag.*;
 import static org.firstinspires.ftc.teamcode.Base.Dir.*;
 
 import static java.util.Locale.US;
+
+import java.util.ArrayList;
 
 // Connect to robot: adb connect 192.168.43.1:5555 OR rc
 
@@ -57,7 +60,6 @@ public abstract class Base extends LinearOpMode {
     static final double B = 1.1375;
     static final double M = 0.889;
     static final double TURN_SPEED = 0.5;
-    private static final int WAIT_TIME = 100;
     static final int[] LIFT_BOUNDARIES = {0, 1200};
     static final int[] V_LIFT_BOUNDARIES = {0, 1950};
 
@@ -67,6 +69,8 @@ public abstract class Base extends LinearOpMode {
     private AprilTagProcessor tagProcessor;
     public SampleMecanumDrive drive;
     public Pose2d currentPose = new Pose2d();
+
+    double goalAngle;
 
     public static final IMU.Parameters IMU_PARAMS = new IMU.Parameters(
             new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
@@ -283,14 +287,7 @@ public abstract class Base extends LinearOpMode {
         if (inches != 0) stopRobot();
     }
 
-    /**
-     * Turns the robot a specified number of degrees. Positive values turn right, negative values
-     * turn left.
-     *
-     * @param degrees   The amount of degrees to turn.
-     * @param direction (opt.) Direction to turn if degrees is zero.
-     */
-    public void IMUTurn(double degrees, Dir direction) {
+    public void IMUTurn(double degrees, Dir direction){
         double direct = direction == LEFT ? -1 : direction == RIGHT ? 1 : 0;
         sleep(100);
         degrees *= -1;
@@ -325,7 +322,47 @@ public abstract class Base extends LinearOpMode {
         }
         stopRobot();
         imu.resetYaw();
-        sleep(WAIT_TIME);
+    }
+
+    /**
+     * Turns the robot a specified number of degrees. Positive values turn right, negative values
+     * turn left.
+     *
+     * @param degrees   The amount of degrees to turn.
+     * @param direction (opt.) Direction to turn if degrees is zero.
+     */
+    public void newIMUTurn(double degrees, Dir direction) {
+        double direct = direction == LEFT ? -1 : direction == RIGHT ? 1 : 0;
+        goalAngle += -degrees;
+        goalAngle = simplifyAngle(goalAngle);
+        degrees *= -1;
+        degrees -= imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
+        double tolerance = 1;
+        double startAngle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
+        double angle, turnModifier, turnPower;
+        double error = degrees != 0 ? 999 : 0;
+        while (active() && error > tolerance) {
+            angle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
+            error = abs(angleDifference(angle, goalAngle));
+            turnModifier = min(1, (error + 3) / 30);
+            turnPower = TURN_SPEED * turnModifier * direct * signum(degrees);
+            setMotorPowers(-turnPower, turnPower, -turnPower, turnPower);
+
+            print("Start Angle", startAngle);
+            print("Current Angle", angle);
+            print("Goal Angle", goalAngle);
+            print("Error", error);
+            update();
+        }
+        stopRobot();
+    }
+
+    public double simplifyAngle(double angle) {
+        return ((angle + 180) % 360 + 360) % 360 - 180;
+    }
+
+    public double angleDifference(double a, double b) {
+        return simplifyAngle(a - b);
     }
 
     /**
@@ -428,7 +465,6 @@ public abstract class Base extends LinearOpMode {
         if (inches != 0) stopRobot();
         print("Strafing", "Complete");
         update();
-        sleep(WAIT_TIME);
     }
 
     /**
@@ -525,19 +561,12 @@ public abstract class Base extends LinearOpMode {
         lf.setTargetPosition(lf.getCurrentPosition());
         rf.setTargetPosition(rf.getCurrentPosition());
 
-        // Stop all motion
-        lb.setTargetPosition(lb.getCurrentPosition());
-        rb.setTargetPosition(rb.getCurrentPosition());
-        lf.setTargetPosition(lf.getCurrentPosition());
-        rf.setTargetPosition(rf.getCurrentPosition());
-
         // Turn On RUN_TO_POSITION
-        setMotorModes(DcMotorEx.RunMode.RUN_TO_POSITION);
+        setMotorModes(RUN_TO_POSITION);
 
         // Turn off RUN_TO_POSITION
         setMotorModes(RUN_USING_ENCODER);
 
-        sleep(WAIT_TIME);
     }
 
     /**
@@ -576,7 +605,7 @@ public abstract class Base extends LinearOpMode {
     public void moveWrist(int encoderValue) {
         if (wristMotor == null) return;
         wristMotor.setTargetPosition(encoderValue);
-        wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        wristMotor.setMode(RUN_TO_POSITION);
     }
 
     /** Extends the wrist. */
@@ -597,11 +626,8 @@ public abstract class Base extends LinearOpMode {
      */
     @Nullable
     public AprilTagDetection tagDetections(int id) {
-        int i;
-        for (i = 0; i < tagProcessor.getDetections().size(); i++) {
-            if (tagProcessor.getDetections().get(i).id == id)
-                return tagProcessor.getDetections().get(i);
-        }
+        ArrayList<AprilTagDetection> t = tagProcessor.getDetections();
+        for (int i = 0; i < t.size(); i++) if (t.get(i).id == id) return t.get(i);
         return null;
     }
 
@@ -616,11 +642,8 @@ public abstract class Base extends LinearOpMode {
     @Nullable
     public AprilTagDetection tagDetections(int id, double timeout) {
         AprilTagDetection a;
-        double t = runtime.milliseconds() + timeout;
-        while (active() && (runtime.milliseconds() < t)) {
-            a = tagDetections(id);
-            if (a != null) return a;
-        }
+        while (active() && (runtime.milliseconds() < runtime.milliseconds() + timeout))
+            if ((a = tagDetections(id)) != null) return a;
         return null;
     }
 
@@ -633,16 +656,13 @@ public abstract class Base extends LinearOpMode {
         AprilTagDetection a = tagDetections(id, 1);
         turn(0);
         while (active() && (a != null && (abs(a.ftcPose.x) > 0.5 || abs(a.ftcPose.yaw) > 0.5))) {
-            a = tagDetections(id, 1);
-            if (a == null) return;
+            if ((a = tagDetections(id, 1)) == null) return;
             print("Strafe", a.ftcPose.x);
             strafe(a.ftcPose.x);
-            a = tagDetections(id, 1);
-            if (a == null) return;
+            if ((a = tagDetections(id, 1)) == null) return;
             print("Drive", -a.ftcPose.y + 5);
             drive(-a.ftcPose.y + 2);
-            a = tagDetections(id, 1);
-            if (a == null) return;
+            if ((a = tagDetections(id, 1)) == null) return;
             print("Turn", a.ftcPose.yaw / 2);
             turn(a.ftcPose.yaw / 2);
             update();
@@ -844,8 +864,10 @@ public abstract class Base extends LinearOpMode {
         if (wristMotor == null) print("Wrist Motor", "Disconnected");
         else print("Wrist Motor Position", wristMotor.getCurrentPosition());
 
-        if (intakeServo == null) print("Tray Tilting Servo", "Disconnected");
-        if (specimenServo == null) print("Pixel Locking Servo", "Disconnected");
+        if (wristServo == null) print("Wrist Servo", "Disconnected");
+        else print("Wrist Servo Position", wristServo.getPosition());
+        if (intakeServo == null) print("Intake Servo", "Disconnected");
+        else print("Intake Servo Position", intakeServo.getPosition());
         if (specimenServo == null) print("Specimen Servo", "Disconnected");
         else print("Specimen Servo Position", specimenServo.getPosition());
 
@@ -854,7 +876,6 @@ public abstract class Base extends LinearOpMode {
         if (wristServo == null) print("Intake Servo", "Disconnected");
         if (useOdometry) {
             Pose2d pos = drive.getPoseEstimate();
-            // Log the position to the telemetry
             print(String.format(US, "SparkFun Position :  X: %.2f, Y: %.2f, θ: %.2f", pos.getX(), pos.getY(), pos.getHeading()));
         } else print("Odometry disabled");
 

@@ -831,9 +831,7 @@ public abstract class Base extends LinearOpMode {
         print(message);
         print("Press A to confirm and B to cancel (Gamepad 1)");
         update();
-        while (opModeIsActive() && !isStopRequested()) {
-            if (gamepad1.a || gamepad1.b) break;
-        }
+        while (opModeIsActive() && !isStopRequested()) if (gamepad1.a || gamepad1.b) break;
         if (gamepad1.a) printSeconds("Confirmed.", .5);
         else printSeconds("Canceled.", .5);
         return gamepad1.a;

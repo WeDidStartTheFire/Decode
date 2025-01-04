@@ -70,7 +70,7 @@ public abstract class Base extends LinearOpMode {
     public SampleMecanumDrive drive;
     public Pose2d currentPose = new Pose2d();
 
-    double goalAngle;
+    double goalAngle = 0;
 
     public static final IMU.Parameters IMU_PARAMS = new IMU.Parameters(
             new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
@@ -295,12 +295,9 @@ public abstract class Base extends LinearOpMode {
         imu.resetYaw();
         double tolerance = 1;
         double startAngle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
-        double angle;
-        double initialGoalAngle = startAngle + degrees;
-        double correctedGoalAngle = initialGoalAngle;
+        double angle, turnModifier, turnPower, initialGoalAngle;
+        double correctedGoalAngle = initialGoalAngle = startAngle + degrees;
         double difference = 999;
-        double turnModifier;
-        double turnPower;
         if (abs(initialGoalAngle) > 180)
             correctedGoalAngle -= abs(initialGoalAngle) / initialGoalAngle * 360;
         while (active() && (difference > tolerance) && degrees != 0) {
@@ -333,10 +330,8 @@ public abstract class Base extends LinearOpMode {
      */
     public void newIMUTurn(double degrees, Dir direction) {
         double direct = direction == LEFT ? -1 : direction == RIGHT ? 1 : 0;
-        goalAngle -= degrees;
-        goalAngle = simplifyAngle(goalAngle);
-        degrees *= -1;
-        degrees -= imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
+        goalAngle = simplifyAngle(goalAngle - degrees);
+        degrees = simplifyAngle(-degrees - imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
         double tolerance = 1;
         double startAngle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
         double angle, turnModifier, turnPower;

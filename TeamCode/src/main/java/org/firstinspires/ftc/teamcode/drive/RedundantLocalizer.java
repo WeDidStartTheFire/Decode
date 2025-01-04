@@ -9,6 +9,9 @@ import com.acmerobotics.roadrunner.localization.Localizer;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RedundantLocalizer implements Localizer {
 
     private final Localizer sparkFunLocalizer;
@@ -18,7 +21,9 @@ public class RedundantLocalizer implements Localizer {
 
     public RedundantLocalizer(@NonNull HardwareMap hardwareMap) {
         this.sparkFunLocalizer = new SparkFunLocalizer(hardwareMap);
-        this.encoderLocalizer = new EncoderLocalizer(hardwareMap);
+        List<Integer> lastTrackingEncPositions = new ArrayList<>();
+        List<Integer> lastTrackingEncVels = new ArrayList<>();
+        this.encoderLocalizer = new StandardTrackingWheelLocalizer(hardwareMap, lastTrackingEncPositions, lastTrackingEncVels);
         imu = hardwareMap.get(IMU.class, "imu");
         if (!imu.initialize(IMU_PARAMS)) {
             throw new RuntimeException("IMU initialization failed");

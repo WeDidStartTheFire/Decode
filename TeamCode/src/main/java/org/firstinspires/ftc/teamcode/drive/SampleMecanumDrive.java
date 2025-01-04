@@ -58,7 +58,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
 
-    public static double LATERAL_MULTIPLIER = 1.3227777777777776455; // Was falsely tuning at 1.2139272013457741473952611833662
+    public static double LATERAL_MULTIPLIER = 1.0115608795; // Was falsely tuning at 1.2139272013457741473952611833662
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -141,7 +141,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         List<Integer> lastTrackingEncVels = new ArrayList<>();
 
         // TODO: if desired, use setLocalizer() to change the localization method
-        setLocalizer(new SparkFunLocalizer(hardwareMap));
+        setLocalizer(new RedundantLocalizer(hardwareMap));
         //        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
 
         trajectorySequenceRunner =

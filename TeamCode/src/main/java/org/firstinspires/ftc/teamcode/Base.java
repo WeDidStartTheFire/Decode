@@ -340,7 +340,7 @@ public abstract class Base extends LinearOpMode {
         double tolerance = 1;
         double startAngle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
         double angle, turnModifier, turnPower;
-        double error = degrees != 0 ? 999 : 0;
+        double error = 999;
         while (active() && error > tolerance) {
             angle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
             error = abs(angleDifference(angle, goalAngle));

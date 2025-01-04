@@ -92,10 +92,10 @@ public abstract class Base extends LinearOpMode {
         // run the motor.
         // Drive train
         try {
-            lf = hardwareMap.get(DcMotorEx.class, "leftFront");
-            lb = hardwareMap.get(DcMotorEx.class, "leftBack");
-            rf = hardwareMap.get(DcMotorEx.class, "rightFront");
-            rb = hardwareMap.get(DcMotorEx.class, "rightBack");
+            lf = hardwareMap.get(DcMotorEx.class, "leftFront"); // Port 1
+            lb = hardwareMap.get(DcMotorEx.class, "leftBack"); // Port 3
+            rf = hardwareMap.get(DcMotorEx.class, "rightFront"); // Port 0
+            rb = hardwareMap.get(DcMotorEx.class, "rightBack"); // Port 4
         } catch (IllegalArgumentException e) {
             except("At least one drive train motor is not connected, so all will be disabled");
             lf = lb = rf = rb = null;

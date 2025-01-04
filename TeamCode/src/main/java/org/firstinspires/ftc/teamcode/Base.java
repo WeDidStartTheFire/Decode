@@ -434,7 +434,7 @@ public abstract class Base extends LinearOpMode {
      * @param direction Direction to strafe in.*
      */
     public void velocityStrafe(double inches, Dir direction) {
-        if (isStopRequested() || !opModeIsActive() || lf == null) return;
+        if (!active() || lf == null) return;
         setMotorModes(STOP_AND_RESET_ENCODER);
 
         setMotorModes(RUN_USING_ENCODER);

@@ -50,7 +50,7 @@ public class TeleOp_Debug_No_Driving extends Base {
             motorB = liftMotor;
         }
 
-        while (opModeIsActive() && !isStopRequested()) {
+        while (active()) {
             if (servoA != null) {
                 if (gamepad1.a && !wasDownA) {
                     if (servoA.getPosition() > 0.95) {

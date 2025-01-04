@@ -7,17 +7,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 @TeleOp(name = "Test No Driving", group = "Into The Deep")
 public class TeleOp_Debug_No_Driving extends Base {
 
-    double axial = 0.0;
-    double lateral = 0.0;
-    double yaw = 0.0;
-    double leftFrontPower = 0.0;
-    double rightFrontPower = 0.0;
-    double leftBackPower = 0.0;
-    double rightBackPower = 0.0;
-    double max = 0.0;
-    static final double SPEED_MULTIPLIER = 0.75;
-    static final double BASE_TURN_SPEED = 2.5;
-    double slowdownMultiplier = 0.0;
     boolean wasDownA = false;
     boolean wasDownB = false;
     public Servo servoA, servoB, servoC, servoD;

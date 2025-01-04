@@ -566,7 +566,6 @@ public abstract class Base extends LinearOpMode {
 
         // Turn off RUN_TO_POSITION
         setMotorModes(RUN_USING_ENCODER);
-
     }
 
     /**

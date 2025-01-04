@@ -876,7 +876,7 @@ public abstract class Base extends LinearOpMode {
         if (wristServo == null) print("Intake Servo", "Disconnected");
         if (useOdometry) {
             Pose2d pos = drive.getPoseEstimate();
-            print(String.format(US, "SparkFun Position :  X: %.2f, Y: %.2f, θ: %.2f", pos.getX(), pos.getY(), pos.getHeading()));
+            print(String.format(US, "SparkFun Position :  X: %.2f, Y: %.2f, θ: %.2f°", pos.getX(), pos.getY(), toDegrees(pos.getHeading())));
         } else print("Odometry disabled");
 
         telemetry.update();

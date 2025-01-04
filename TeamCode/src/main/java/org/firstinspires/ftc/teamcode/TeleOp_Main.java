@@ -110,8 +110,8 @@ public class TeleOp_Main extends Base {
                  else newWristPosition = 1.0 - wristServo.getPosition();
                 wristServo.setPosition(wristPosition = newWristPosition);
             }
-
             wasWristServoButtonPressed = gamepad2.a;
+
             // Logic for the intake servo
             if (intakeServo != null && gamepad1.b && !wasIntakeServoButtonPressed)
                 intakeServo.setPosition(intakeServo.getPosition() == 0 ? 1 : 0);

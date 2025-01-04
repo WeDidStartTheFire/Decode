@@ -50,7 +50,7 @@ public class TeleOp_Main extends Base {
     public void runOpMode() throws InterruptedException {
         setup();
 
-        while (opModeIsActive() && !isStopRequested()) {
+        while (active()) {
             slowdownMultiplier = gamepad1.left_bumper ? 0.3 : gamepad1.right_bumper ? 1 : 0.7;
 
             axial = ((gamepad1.left_stick_y * SPEED_MULTIPLIER));

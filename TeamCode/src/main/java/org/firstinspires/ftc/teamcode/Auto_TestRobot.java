@@ -23,6 +23,14 @@ public class Auto_TestRobot extends Base {
             }
         } else print("Turn test skipped");
 
+        if (lf != null) {
+            if (confirm("New custom turn test?")) {
+                newIMUTurn(90, RIGHT);
+                newIMUTurn(90, LEFT);
+                confirm("Please confirm the robot turned 90° right and then 90° left back");
+            }
+        } else print("New turn test skipped");
+
         if (lf != null && useOdometry && confirm("Test")) {
             traj = drive.trajectoryBuilder(new Pose2d()).splineTo(new Vector2d(30, 30), 0).build();
 
@@ -75,7 +83,7 @@ public class Auto_TestRobot extends Base {
         if (touchSensor != null && confirm("Test touch sensor?")) {
             print("Please press the touch sensor or hit B to skip");
             update();
-            while (opModeIsActive() && !touchSensor.isPressed() && !gamepad1.b) {}
+            while (opModeIsActive() && !touchSensor.isPressed()) if (gamepad1.b) break;
             print("Touch sensor pressed", touchSensor.isPressed());
         } else print("Touch sensor test skipped");
 

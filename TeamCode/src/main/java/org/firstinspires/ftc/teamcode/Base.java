@@ -333,7 +333,7 @@ public abstract class Base extends LinearOpMode {
      */
     public void newIMUTurn(double degrees, Dir direction) {
         double direct = direction == LEFT ? -1 : direction == RIGHT ? 1 : 0;
-        goalAngle += -degrees;
+        goalAngle -= degrees;
         goalAngle = simplifyAngle(goalAngle);
         degrees *= -1;
         degrees -= imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;

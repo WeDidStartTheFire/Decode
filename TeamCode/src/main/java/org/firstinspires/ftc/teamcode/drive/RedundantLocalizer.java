@@ -88,6 +88,6 @@ public class RedundantLocalizer implements Localizer {
      * @return Normalized error
      */
     private double getError(double a, double b) {
-        return Math.abs(a - b) / ((Math.abs(a) + Math.abs(b)) / 2.0);
+        return Math.abs(a - b) / ((Math.abs(a) + Math.abs(b)) / 2.0) * 100;
     }
 }

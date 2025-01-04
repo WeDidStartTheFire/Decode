@@ -53,8 +53,8 @@ public class TeleOp_Main extends Base {
         while (opModeIsActive() && !isStopRequested()) {
             slowdownMultiplier = gamepad1.left_bumper ? 0.3 : gamepad1.right_bumper ? 1 : 0.7;
 
-            axial = ((-gamepad1.left_stick_y * SPEED_MULTIPLIER));
-            lateral = ((gamepad1.left_stick_x * SPEED_MULTIPLIER));
+            axial = ((gamepad1.left_stick_y * SPEED_MULTIPLIER));
+            lateral = ((-gamepad1.left_stick_x * SPEED_MULTIPLIER));
             yaw = ((gamepad1.right_stick_x * BASE_TURN_SPEED));
 
             leftFrontPower = axial + lateral + yaw;

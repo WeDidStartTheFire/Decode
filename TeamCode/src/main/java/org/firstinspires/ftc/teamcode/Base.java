@@ -771,6 +771,8 @@ public abstract class Base extends LinearOpMode {
                 verticalMotorB.setPower(direction * 0.95);
             else verticalMotorB.setPower(direction);
 
+            if (abs(encoders - vertAvg) < 5) break;
+
             // Display it for the driver.
             print("Position", vertAvg);
             print("Goal", encoders);

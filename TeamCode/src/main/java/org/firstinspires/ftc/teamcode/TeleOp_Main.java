@@ -41,6 +41,8 @@ public class TeleOp_Main extends Base {
     int wristMotorPosition = 0;
     int error;
 
+    static double[] speeds = {0.2, 0.6, 1};
+
     boolean wasDpu, isDpu, isDpd, wasDpd;
 
     int newGoal;
@@ -50,7 +52,7 @@ public class TeleOp_Main extends Base {
         setup();
 
         while (active()) {
-            slowdownMultiplier = gamepad1.left_bumper ? 0.3 : gamepad1.right_bumper ? 1 : 0.7;
+            slowdownMultiplier = gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1];
 
             axial = ((gamepad1.left_stick_y * SPEED_MULTIPLIER));
             lateral = ((-gamepad1.left_stick_x * SPEED_MULTIPLIER));
@@ -168,10 +170,10 @@ public class TeleOp_Main extends Base {
                 if (vertRunToPos) {
                     if (vertAvg < vertGoal) {
                         vertUp = true;
-                        if (vertAvg >= vertGoal - 50) slowdownMultiplier = 0.3;
+                        if (vertAvg >= vertGoal - 50) slowdownMultiplier = speeds[0];
                     } else {
                         vertDown = true;
-                        if (vertAvg < vertGoal + 50) slowdownMultiplier = 0.3;
+                        if (vertAvg < vertGoal + 50) slowdownMultiplier = speeds[0];
                     }
                 }
                 if (!gamepad1.a) {
@@ -197,11 +199,11 @@ public class TeleOp_Main extends Base {
                     if (vertUp && !vertDown) {
                         power = 0;
                         if (vertAvg < V_LIFT_BOUNDARIES[1])
-                            power = slowdownMultiplier == 0.3 ? 0.7 : 1;
+                            power = slowdownMultiplier == speeds[0] ? 0.7 : 1;
                     } else if (vertDown && !vertUp && !touchSensorPressed) {
                         power = 0;
                         if (vertAvg > V_LIFT_BOUNDARIES[0])
-                            power = slowdownMultiplier == 0.3 ? -0.7 : -slowdownMultiplier;
+                            power = slowdownMultiplier == speeds[0] ? -0.5 : -0.7;
                     }
                     vertUp = vertDown = false;
                 }

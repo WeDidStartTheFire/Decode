@@ -13,5 +13,11 @@ public class Auto_ObservationZone_Specimen extends Base {
     public void runOpMode() throws InterruptedException {
         setup();
         drive(30, FORWARD);
+        moveVerticalLift(V_LIFT_GOALS[3]);
+        drive(.75, FORWARD);
+        moveVerticalLift(V_LIFT_GOALS[3] - 50);
+        openSpecimenServo();
+        retractVerticalLift();
+
     }
 }

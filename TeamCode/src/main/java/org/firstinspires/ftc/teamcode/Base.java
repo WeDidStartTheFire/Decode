@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.rev.*;
 import com.qualcomm.robotcore.eventloop.opmode.*;
@@ -62,6 +63,7 @@ public abstract class Base extends LinearOpMode {
     static final double TURN_SPEED = 0.5;
     static final int[] LIFT_BOUNDARIES = {0, 1200};
     static final int[] V_LIFT_BOUNDARIES = {0, 1950};
+    static final int[] V_LIFT_GOALS = {0, 280, 500, 1350, 1500};
 
     public boolean useOdometry = true, useCam = true;
     double velocity = 2000;
@@ -503,6 +505,17 @@ public abstract class Base extends LinearOpMode {
     }
 
     /**
+     * Moves the robot to a specified position (not around obstacles!)
+     *
+     * @param x X position to go to, inches
+     * @param y Y position to go to, inches
+     * @param theta Angle to turn to, radians
+     */
+    public void blindNavigate(double x, double y, double theta) {
+        drive.followTrajectory(drive.trajectoryBuilder(currentPose).splineTo(new Vector2d(x, y), theta).build());
+    }
+
+    /**
      * Drives the specified number of inches. Negative values will drive backwards. An inches value
      * of zero will cause the robot to drive until manually stopped.
      *
@@ -589,6 +602,25 @@ public abstract class Base extends LinearOpMode {
     /** Closes the intake servo. */
     public void closeIntake() {
         moveIntake(0);
+    }
+
+    /**
+     * Moves the specimen servo to the specified position.
+     *
+     * @param position Position between 0 and 1 to move the servo to
+     */
+    public void moveSpecimenServo(double position) {
+        if (specimenServo != null) specimenServo.setPosition(position);
+    }
+
+    /** Opens the specimen servo. */
+    public void openSpecimenServo() {
+        moveSpecimenServo(0.4);
+    }
+
+    /** Closes the specimen servo. */
+    public void closeSpecimenServo() {
+        moveSpecimenServo(0);
     }
 
     /**

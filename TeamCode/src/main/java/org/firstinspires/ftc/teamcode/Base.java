@@ -619,7 +619,7 @@ public abstract class Base extends LinearOpMode {
      * @return Information about the tag detected.
      */
     @Nullable
-    public AprilTagDetection tagDetections(int id) {
+    public AprilTagDetection detectTag(int id) {
         ArrayList<AprilTagDetection> t = tagProcessor.getDetections();
         for (int i = 0; i < t.size(); i++) if (t.get(i).id == id) return t.get(i);
         return null;
@@ -634,10 +634,10 @@ public abstract class Base extends LinearOpMode {
      * @return Information about the tag detected.
      */
     @Nullable
-    public AprilTagDetection tagDetections(int id, double timeout) {
+    public AprilTagDetection detectTag(int id, double timeout) {
         AprilTagDetection a;
         while (active() && (runtime.milliseconds() < runtime.milliseconds() + timeout))
-            if ((a = tagDetections(id)) != null) return a;
+            if ((a = detectTag(id)) != null) return a;
         return null;
     }
 
@@ -647,16 +647,16 @@ public abstract class Base extends LinearOpMode {
      * @param id ID of tag to align with.
      */
     public void align(int id) {
-        AprilTagDetection a = tagDetections(id, 1);
+        AprilTagDetection a = detectTag(id, 1);
         turn(0);
         while (active() && (a != null && (abs(a.ftcPose.x) > 0.5 || abs(a.ftcPose.yaw) > 0.5))) {
-            if ((a = tagDetections(id, 1)) == null) return;
+            if ((a = detectTag(id, 1)) == null) return;
             print("Strafe", a.ftcPose.x);
             strafe(a.ftcPose.x);
-            if ((a = tagDetections(id, 1)) == null) return;
+            if ((a = detectTag(id, 1)) == null) return;
             print("Drive", -a.ftcPose.y + 5);
             drive(-a.ftcPose.y + 2);
-            if ((a = tagDetections(id, 1)) == null) return;
+            if ((a = detectTag(id, 1)) == null) return;
             print("Turn", a.ftcPose.yaw / 2);
             turn(a.ftcPose.yaw / 2);
             update();

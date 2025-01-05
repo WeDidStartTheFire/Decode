@@ -115,7 +115,7 @@ public class TeleOp_Main extends Base {
             // Logic for the intake servo
             if (intakeServo != null && gamepad1.b && !wasIntakeServoButtonPressed)
                 intakeServo.setPosition(intakeServo.getPosition() == 0 ? 1 : 0);
-            wasIntakeServoButtonPressed = gamepad2.b;
+            wasIntakeServoButtonPressed = gamepad1.b;
 
             // Logic to extend or retract the horizontal lift
             if (liftMotor != null) {

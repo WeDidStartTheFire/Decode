@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
@@ -757,10 +758,9 @@ public abstract class Base extends LinearOpMode {
         verticalMotorA.setPower(direction);
         verticalMotorB.setPower(direction);
 
-        runtime.reset();
         // The loop stops after being under the encoder goal when going down and when being
         // above the encoder goal when going up
-        while (active() && ((vertAvg < encoders && direction == 1) || (vertAvg > encoders && direction == -1))) {
+        while (active() && ((vertAvg <= encoders && direction == 1) || (vertAvg >= encoders && direction == -1))) {
             vertA = verticalMotorA.getCurrentPosition();
             vertB = verticalMotorB.getCurrentPosition();
             if (vertA == 0 && vertB > 100) vertA = vertB;
@@ -775,14 +775,20 @@ public abstract class Base extends LinearOpMode {
                 verticalMotorB.setPower(direction * 0.95);
             else verticalMotorB.setPower(direction);
 
-            if (abs(encoders - vertAvg) < 5) break;
+            if (touchSensor != null && touchSensor.isPressed()) {
+                verticalMotorA.setMode(STOP_AND_RESET_ENCODER);
+                verticalMotorB.setMode(STOP_AND_RESET_ENCODER);
+                verticalMotorA.setMode(RUN_WITHOUT_ENCODER);
+                verticalMotorB.setMode(RUN_WITHOUT_ENCODER);
+            }
 
             // Display it for the driver.
             print("Position", vertAvg);
             print("Goal", encoders);
             update();
         }
-        liftMotor.setVelocity(0);
+        verticalMotorA.setPower(0);
+        verticalMotorB.setPower(0);
     }
 
     /** Retracts the horizontal lift motor. */

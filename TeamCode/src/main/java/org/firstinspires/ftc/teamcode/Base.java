@@ -752,7 +752,7 @@ public abstract class Base extends LinearOpMode {
      */
     public void moveVerticalLift(double encoders) {
         if (verticalMotorA == null) return;
-        int vertAvg = (verticalMotorA.getCurrentPosition() + verticalMotorB.getCurrentPosition()) / 2;
+        int vertA, vertB,vertAvg = (verticalMotorA.getCurrentPosition() + verticalMotorB.getCurrentPosition()) / 2;
         int direction = (int) signum(encoders - vertAvg);
         verticalMotorA.setPower(direction);
         verticalMotorB.setPower(direction);
@@ -761,7 +761,11 @@ public abstract class Base extends LinearOpMode {
         // The loop stops after being under the encoder goal when going down and when being
         // above the encoder goal when going up
         while (active() && ((vertAvg < encoders && direction == 1) || (vertAvg > encoders && direction == -1))) {
-            vertAvg = (verticalMotorA.getCurrentPosition() + verticalMotorB.getCurrentPosition()) / 2;
+            vertA = verticalMotorA.getCurrentPosition();
+            vertB = verticalMotorB.getCurrentPosition();
+            if (vertA == 0 && vertB > 100) vertA = vertB;
+            if (vertB == 0 && vertA > 100) vertB = vertA;
+            vertAvg = (vertA + vertB) / 2;
 
             // Corrects for smaller amounts of slippage and drift while moving
             if (verticalMotorA.getCurrentPosition() - vertAvg > 10)

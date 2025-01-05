@@ -509,10 +509,10 @@ public abstract class Base extends LinearOpMode {
      *
      * @param x X position to go to, inches
      * @param y Y position to go to, inches
-     * @param theta Angle to turn to, radians
+     * @param θ Angle to turn to, radians
      */
-    public void blindNavigate(double x, double y, double theta) {
-        drive.followTrajectory(drive.trajectoryBuilder(currentPose).splineTo(new Vector2d(x, y), theta).build());
+    public void blindNavigate(double x, double y, double θ) {
+        drive.followTrajectory(drive.trajectoryBuilder(currentPose).splineTo(new Vector2d(x, y), θ).build());
     }
 
     /**

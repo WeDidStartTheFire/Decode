@@ -62,7 +62,7 @@ public abstract class Base extends LinearOpMode {
     static final double M = 0.889;
     static final double TURN_SPEED = 0.5;
     static final int[] LIFT_BOUNDARIES = {0, 1200};
-    static final int[] V_LIFT_BOUNDARIES = {0, 1950};
+    static final int[] V_LIFT_BOUNDS = {0, 1950};
     static final int[] V_LIFT_GOALS = {0, 280, 500, 1350, 1500};
 
     public boolean useOdometry = true, useCam = true;
@@ -809,12 +809,12 @@ public abstract class Base extends LinearOpMode {
 
     /** Retracts the horizontal lift motor. */
     public void retractVerticalLift() {
-        moveVerticalLift(V_LIFT_BOUNDARIES[0]);
+        moveVerticalLift(V_LIFT_BOUNDS[0]);
     }
 
     /** Retracts the horizontal lift motor. */
     public void extendVerticalLift() {
-        moveVerticalLift(V_LIFT_BOUNDARIES[1]);
+        moveVerticalLift(V_LIFT_BOUNDS[1]);
     }
 
     /**

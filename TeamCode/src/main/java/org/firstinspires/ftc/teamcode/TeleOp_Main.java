@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 
+import static java.lang.Math.abs;
+
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "Main", group = "Into The Deep")
@@ -19,16 +21,16 @@ public class TeleOp_Main extends Base {
 
     double max;
 
-    double slowdownMultiplier;
+    double speedMultiplier;
     boolean touchSensorPressed = false;
     boolean touchSensorWasPressed = false;
 
     static final double SPEED_MULTIPLIER = 0.75;
     static final double BASE_TURN_SPEED = 2.5;
     static final double WRIST_MOTOR_POWER = 0.1;
-    static final int[] WRIST_MOTOR_BOUNDARIES = {0, 140};
-    double wristPosition = 0.5;
-    double newWristPosition = 1;
+    static final int[] WRIST_M_BOUNDS = {0, 140};
+    double wristPos = 0.5;
+    double newWristPos = 1;
     int vertA, vertB, vertAvg, vertGoal;
     boolean vertUp, vertDown, vertRunToPos = false;
     double power = 0;
@@ -38,7 +40,8 @@ public class TeleOp_Main extends Base {
     boolean wasWristServoButtonPressed = false;
     boolean wasSpecimenServoButtonPressed = false;
     int wristMotorTicksStopped = 0;
-    int wristMotorPosition = 0;
+    int wristMotorPos = 0;
+    int wristMotorStopPos = 0;
     int error;
 
     static double[] speeds = {0.2, 0.6, 1};
@@ -52,7 +55,7 @@ public class TeleOp_Main extends Base {
         setup();
 
         while (active()) {
-            slowdownMultiplier = gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1];
+            speedMultiplier = gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1];
 
             axial = ((gamepad1.left_stick_y * SPEED_MULTIPLIER));
             lateral = ((-gamepad1.left_stick_x * SPEED_MULTIPLIER));
@@ -63,9 +66,9 @@ public class TeleOp_Main extends Base {
             leftBackPower = axial - lateral + yaw;
             rightBackPower = axial + lateral - yaw;
 
-            max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-            max = Math.max(max, Math.abs(leftBackPower));
-            max = Math.max(max, Math.abs(rightBackPower));
+            max = Math.max(abs(leftFrontPower), abs(rightFrontPower));
+            max = Math.max(max, abs(leftBackPower));
+            max = Math.max(max, abs(rightBackPower));
 
             if (max > 1.0) {
                 leftFrontPower /= max;
@@ -76,40 +79,39 @@ public class TeleOp_Main extends Base {
 
             // Send calculated power to wheels
             if (lf != null) {
-                lf.setVelocity(leftFrontPower * 5000 * slowdownMultiplier);
-                rf.setVelocity(rightFrontPower * 5000 * slowdownMultiplier);
-                lb.setVelocity(leftBackPower * 5000 * slowdownMultiplier);
-                rb.setVelocity(rightBackPower * 5000 * slowdownMultiplier);
+                lf.setVelocity(leftFrontPower * 5000 * speedMultiplier);
+                rf.setVelocity(rightFrontPower * 5000 * speedMultiplier);
+                lb.setVelocity(leftBackPower * 5000 * speedMultiplier);
+                rb.setVelocity(rightBackPower * 5000 * speedMultiplier);
             }
 
             // Logic for the wrist motor
             if (wristMotor != null) {
-                if (gamepad2.dpad_down && wristMotor.getCurrentPosition() < WRIST_MOTOR_BOUNDARIES[1]) {
-                    wristMotor.setPower(WRIST_MOTOR_POWER);
+                wristMotorPos = wristMotor.getCurrentPosition();
+                if (gamepad2.dpad_down && wristMotorPos < WRIST_M_BOUNDS[1]) {
+                    power = WRIST_MOTOR_POWER;
                     wristMotorTicksStopped = 0;
-                } else if (gamepad2.dpad_up && (wristMotor.getCurrentPosition() > WRIST_MOTOR_BOUNDARIES[0] || gamepad2.right_bumper)) {
-                    wristMotor.setPower(-WRIST_MOTOR_POWER);
+                } else if (gamepad2.dpad_up && (wristMotorPos > WRIST_M_BOUNDS[0] || gamepad2.right_bumper)) {
+                    power = -WRIST_MOTOR_POWER;
                     wristMotorTicksStopped = 0;
                     if (gamepad2.right_bumper) {
-                        WRIST_MOTOR_BOUNDARIES[1] += wristMotor.getCurrentPosition() - WRIST_MOTOR_BOUNDARIES[0];
-                        WRIST_MOTOR_BOUNDARIES[0] = wristMotor.getCurrentPosition();
+                        WRIST_M_BOUNDS[1] += wristMotorPos - WRIST_M_BOUNDS[0];
+                        WRIST_M_BOUNDS[0] = wristMotorPos;
                     }
                 } else {
-                    error = wristMotorPosition - wristMotor.getCurrentPosition();
-                    wristMotor.setPower(0);
-                    if (wristMotorTicksStopped < 5)
-                        wristMotorPosition = wristMotor.getCurrentPosition();
-                    else if (Math.abs(error) > 3)
-                        wristMotor.setPower(WRIST_MOTOR_POWER * error / 10.0);
+                    error = wristMotorStopPos - wristMotorPos;
+                    if (wristMotorTicksStopped < 5) wristMotorStopPos = wristMotorPos;
+                    else power = abs(error) > 3 ? WRIST_MOTOR_POWER * error / 10.0 : 0;
                     wristMotorTicksStopped++;
                 }
+                wristMotor.setPower(power);
             }
 
             // Logic for the wrist servo
             if (wristServo != null && gamepad2.a && !wasWristServoButtonPressed) {
-                if (wristPosition == 0.0 || wristPosition == 1.0) newWristPosition = 0.5;
-                 else newWristPosition = 1.0 - wristServo.getPosition();
-                wristServo.setPosition(wristPosition = newWristPosition);
+                if (wristPos == 0.0 || wristPos == 1.0) newWristPos = 0.5;
+                else newWristPos = 1.0 - wristServo.getPosition();
+                wristServo.setPosition(wristPos = newWristPos);
             }
             wasWristServoButtonPressed = gamepad2.a;
 
@@ -124,11 +126,10 @@ public class TeleOp_Main extends Base {
                 if (gamepad1.dpad_right ^ gamepad1.dpad_left) {
                     // If the touch sensor isn't connected, assume it isn't pressed
                     touchSensorPressed = touchSensor != null && touchSensor.isPressed();
-                    if (gamepad1.dpad_right && !gamepad1.dpad_left) {
-                        power = liftMotor.getCurrentPosition() < LIFT_BOUNDARIES[1] ? slowdownMultiplier : 0;
-                    } else if (gamepad1.dpad_left && !gamepad1.dpad_right && !touchSensorPressed) {
-                        power = liftMotor.getCurrentPosition() > LIFT_BOUNDARIES[0] ? -slowdownMultiplier : 0;
-                    }
+                    if (gamepad1.dpad_right && !gamepad1.dpad_left)
+                        power = liftMotor.getCurrentPosition() < LIFT_BOUNDARIES[1] ? speedMultiplier : 0;
+                    else if (gamepad1.dpad_left && !gamepad1.dpad_right && !touchSensorPressed)
+                        power = liftMotor.getCurrentPosition() > LIFT_BOUNDARIES[0] ? -speedMultiplier : 0;
                 }
                 liftMotor.setPower(power);
             }
@@ -170,17 +171,17 @@ public class TeleOp_Main extends Base {
                 if (vertRunToPos) {
                     if (vertAvg < vertGoal) {
                         vertUp = true;
-                        if (vertAvg >= vertGoal - 50) slowdownMultiplier = speeds[0];
+                        if (vertAvg >= vertGoal - 50) speedMultiplier = speeds[0];
                     } else {
                         vertDown = true;
-                        if (vertAvg < vertGoal + 50) slowdownMultiplier = speeds[0];
+                        if (vertAvg < vertGoal + 50) speedMultiplier = speeds[0];
                     }
                 }
                 if (!gamepad1.a) {
                     vertUp = gamepad1.dpad_up || vertUp;
                     vertDown = gamepad1.dpad_down || vertDown;
                 }
-                if (!vertUp && !vertDown || vertDown && vertUp) {
+                if (vertUp == vertDown) {
                     if (!vertStopped && !gamepad1.a) {
                         vertStopped = true;
                         vertGoal = vertAvg;
@@ -196,15 +197,10 @@ public class TeleOp_Main extends Base {
                         verticalMotorA.setMode(RUN_WITHOUT_ENCODER);
                         verticalMotorB.setMode(RUN_WITHOUT_ENCODER);
                     }
-                    if (vertUp && !vertDown) {
-                        power = 0;
-                        if (vertAvg < V_LIFT_BOUNDARIES[1])
-                            power = slowdownMultiplier == speeds[0] ? 0.7 : 1;
-                    } else if (vertDown && !vertUp && !touchSensorPressed) {
-                        power = 0;
-                        if (vertAvg > V_LIFT_BOUNDARIES[0])
-                            power = slowdownMultiplier == speeds[0] ? -0.5 : -0.7;
-                    }
+                    if (vertUp && !vertDown)
+                        power = vertAvg < V_LIFT_BOUNDS[1] ? speedMultiplier == speeds[0] ? 0.7 : 1 : 0;
+                    else if (vertDown && !vertUp && !touchSensorPressed)
+                        power = vertAvg > V_LIFT_BOUNDS[0] ? speedMultiplier == speeds[0] ? -0.5 : -0.7 : 0;
                     vertUp = vertDown = false;
                 }
                 if (vertA > vertB + 5 && power != 0) {
@@ -225,18 +221,6 @@ public class TeleOp_Main extends Base {
                 specimenServo.setPosition(specimenServo.getPosition() == 0 ? 0.4 : 0);
             wasSpecimenServoButtonPressed = gamepad1.b;
 
-            // Logic to stop lift when it hits touch sensor
-            if (touchSensor != null && liftMotor != null) {
-                if (!touchSensorWasPressed) {
-                    touchSensorPressed = false;
-                    if (touchSensor.isPressed()) {
-                        liftMotor.setPower(0);
-                        liftMotor.setMode(STOP_AND_RESET_ENCODER);
-                        touchSensorWasPressed = true;
-                    }
-                } else if (!touchSensor.isPressed()) touchSensorWasPressed = false;
-            }
-
             if (gamepad1.dpad_up && !isDpu && !wasDpu) isDpu = wasDpu = true;
             else if (gamepad1.dpad_up && isDpu && wasDpu) isDpu = false;
             else if (!gamepad1.dpad_up && wasDpu) wasDpu = false;
@@ -247,7 +231,7 @@ public class TeleOp_Main extends Base {
             else if (!gamepad1.dpad_down && wasDpd) wasDpd = false;
             else if (!gamepad1.dpad_down && isDpd) isDpd = wasDpd = false;
 
-            print("Speed Multiplier", slowdownMultiplier);
+            print("Speed Multiplier", speedMultiplier);
             updateAll();
         }
     }

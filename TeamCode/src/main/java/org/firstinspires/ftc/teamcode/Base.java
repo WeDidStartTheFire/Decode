@@ -75,6 +75,8 @@ public abstract class Base extends LinearOpMode {
 
     double goalAngle = 0;
 
+    public volatile boolean hold = true;
+
     public static final IMU.Parameters IMU_PARAMS = new IMU.Parameters(
             new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                     RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
@@ -290,7 +292,7 @@ public abstract class Base extends LinearOpMode {
         if (inches != 0) stopRobot();
     }
 
-    public void IMUTurn(double degrees, Dir direction){
+    public void IMUTurn(double degrees, Dir direction) {
         double direct = direction == LEFT ? -1 : direction == RIGHT ? 1 : 0;
         sleep(100);
         degrees *= -1;
@@ -508,8 +510,8 @@ public abstract class Base extends LinearOpMode {
     /**
      * Moves the robot to a specified position (not around obstacles!)
      *
-     * @param x X position to go to, inches
-     * @param y Y position to go to, inches
+     * @param x     X position to go to, inches
+     * @param y     Y position to go to, inches
      * @param theta Angle to turn to, radians
      */
     public void blindNavigate(double x, double y, double theta) {
@@ -753,7 +755,7 @@ public abstract class Base extends LinearOpMode {
      */
     public void moveVerticalLift(double encoders) {
         if (verticalMotorA == null) return;
-        int vertA, vertB,vertAvg = (verticalMotorA.getCurrentPosition() + verticalMotorB.getCurrentPosition()) / 2;
+        int vertA, vertB, vertAvg = (verticalMotorA.getCurrentPosition() + verticalMotorB.getCurrentPosition()) / 2;
         int direction = (int) signum(encoders - vertAvg);
         verticalMotorA.setPower(direction);
         verticalMotorB.setPower(direction);
@@ -789,6 +791,20 @@ public abstract class Base extends LinearOpMode {
         }
         verticalMotorA.setPower(0);
         verticalMotorB.setPower(0);
+    }
+
+    public void holdVerticalLift(int vertGoal) {
+        while (active() && hold) {
+            if (verticalMotorA == null) return;
+            int vertA = verticalMotorA.getCurrentPosition();
+            int vertB = verticalMotorB.getCurrentPosition();
+            if (vertA == 0 && vertB > 100) vertA = vertB;
+            if (vertB == 0 && vertA > 100) vertB = vertA;
+            int vertAvg = (vertA + vertB) / 2;
+            double power = vertAvg < vertGoal - 20 ? 0.1 : (vertGoal - vertAvg) / 20.0 * .1;
+            verticalMotorA.setPower(power);
+            verticalMotorB.setPower(power);
+        }
     }
 
     /** Retracts the horizontal lift motor. */

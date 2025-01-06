@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Base.Dir.BACKWARD;
-import static org.firstinspires.ftc.teamcode.Base.Dir.FORWARD;
-import static org.firstinspires.ftc.teamcode.Base.Dir.LEFT;
-import static org.firstinspires.ftc.teamcode.Base.Dir.RIGHT;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 

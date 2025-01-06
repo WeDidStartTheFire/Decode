@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.rev.*;
 import com.qualcomm.robotcore.eventloop.opmode.*;
@@ -67,11 +66,17 @@ public abstract class Base extends LinearOpMode {
     static final int[] V_LIFT_GOALS = {0, 280, 500, 1350, 1500};
 
     public boolean useOdometry = true, useCam = true;
-    double velocity = 2000;
+    static final double DEFAULT_VELOCITY = 2000;
+    double velocity = DEFAULT_VELOCITY;
     public VisionPortal visionPortal;
     private AprilTagProcessor tagProcessor;
     public SampleMecanumDrive drive;
     public Pose2d currentPose = new Pose2d();
+
+    /** Dimension front to back on robot in inches */
+    public static final double ROBOT_LENGTH = 17;
+    /** Dimension left to right on robot in inches */
+    public static final double ROBOT_WIDTH = 16;
 
     double goalAngle = 0;
 
@@ -164,6 +169,7 @@ public abstract class Base extends LinearOpMode {
         }
         try {
             drive = new SampleMecanumDrive(hardwareMap);
+            drive.setPoseEstimate(currentPose);
         } catch (IllegalArgumentException e) {
             except("SparkFun Sensor not connected");
             useOdometry = false;
@@ -218,7 +224,7 @@ public abstract class Base extends LinearOpMode {
         print("Hub Name", hubName);
         update();
 
-        while (!isStarted()) {
+        while (!isStarted() && !isStopRequested()) {
             useOdometry = ((useOdometry || gamepad1.b) && !gamepad1.a);
             print("useOdometry", useOdometry);
             print("Status", "Initialized");
@@ -228,6 +234,11 @@ public abstract class Base extends LinearOpMode {
             updateAll();
         }
         runtime.reset();
+    }
+
+    public void setup(Pose2d startPose) {
+        currentPose = startPose;
+        setup();
     }
 
     /**
@@ -505,17 +516,6 @@ public abstract class Base extends LinearOpMode {
      */
     public void setVelocity(double vel) {
         velocity = vel;
-    }
-
-    /**
-     * Moves the robot to a specified position (not around obstacles!)
-     *
-     * @param x     X position to go to, inches
-     * @param y     Y position to go to, inches
-     * @param theta Angle to turn to, radians
-     */
-    public void blindNavigate(double x, double y, double theta) {
-        drive.followTrajectory(drive.trajectoryBuilder(currentPose).splineTo(new Vector2d(x, y), theta).build());
     }
 
     /**

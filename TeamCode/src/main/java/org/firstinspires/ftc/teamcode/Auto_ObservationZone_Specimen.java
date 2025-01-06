@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Base.Dir.BACKWARD;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Autonomous(name = "Observation Zone Specimen", group = "IntoTheDeep", preselectTeleOp = "Main")
@@ -9,7 +12,7 @@ public class Auto_ObservationZone_Specimen extends Base {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        setup();
+        setup(new Pose2d(0, -72 + ROBOT_LENGTH / 2, Math.toRadians(180)));
         closeSpecimenServo();
         Thread driveThread = new Thread(() -> drive(31.5, BACKWARD));
         Thread liftThread = new Thread(() -> moveVerticalLift(V_LIFT_GOALS[3]));
@@ -30,6 +33,11 @@ public class Auto_ObservationZone_Specimen extends Base {
         openSpecimenServo();
         s(5);
         retractVerticalLift();
-        blindNavigate(-24, 0, 0);
+        // Goes in a straight line to the observation zone
+        Trajectory trajectory = drive.trajectoryBuilder(currentPose)
+                .lineTo(new Vector2d(36, -72 + ROBOT_LENGTH / 2))
+                .build();
+        drive.followTrajectory(trajectory);
+        currentPose = trajectory.end();
     }
 }

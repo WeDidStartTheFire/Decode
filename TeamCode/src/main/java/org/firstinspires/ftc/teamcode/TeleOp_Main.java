@@ -23,7 +23,6 @@ public class TeleOp_Main extends Base {
 
     double speedMultiplier;
     boolean touchSensorPressed = false;
-    boolean touchSensorWasPressed = false;
 
     static final double SPEED_MULTIPLIER = 0.75;
     static final double BASE_TURN_SPEED = 2.5;

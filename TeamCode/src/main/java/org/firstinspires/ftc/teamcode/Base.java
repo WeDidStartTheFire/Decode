@@ -144,7 +144,7 @@ public abstract class Base extends LinearOpMode {
         try {
             specimenServo = hardwareMap.get(Servo.class, "specimenServo"); // Port 2
         } catch (IllegalArgumentException e) {
-            except("pixelFrontServo not connected");
+            except("specimenServo not connected");
         }
         try {
             droneServo = hardwareMap.get(Servo.class, "droneServo"); // Port 4
@@ -368,10 +368,23 @@ public abstract class Base extends LinearOpMode {
         stopRobot();
     }
 
+    /**
+     * Simplifies an angle to be between -180 and 180 degrees.
+     *
+     * @param angle Angle to be simplified
+     * @return Angle now simplified between -180 and 180 degrees
+     */
     public double simplifyAngle(double angle) {
         return ((angle + 180) % 360 + 360) % 360 - 180;
     }
 
+    /**
+     * Returns the difference between two angles.
+     *
+     * @param a First angle in degrees
+     * @param b Second angle, to subtract, in degrees
+     * @return The difference between the two angles in degrees
+     */
     public double angleDifference(double a, double b) {
         return simplifyAngle(a - b);
     }
@@ -755,40 +768,54 @@ public abstract class Base extends LinearOpMode {
      */
     public void moveVerticalLift(double encoders) {
         if (verticalMotorA == null) return;
-        int vertA, vertB, vertAvg = (verticalMotorA.getCurrentPosition() + verticalMotorB.getCurrentPosition()) / 2;
-        int direction = (int) signum(encoders - vertAvg);
-        verticalMotorA.setPower(direction);
-        verticalMotorB.setPower(direction);
+        // Use RUN_WITHOUT_ENCODER on both motors
+        verticalMotorA.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        verticalMotorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        // The loop stops after being under the encoder goal when going down and when being
-        // above the encoder goal when going up
-        while (active() && ((vertAvg <= encoders && direction == 1) || (vertAvg >= encoders && direction == -1))) {
-            vertA = verticalMotorA.getCurrentPosition();
-            vertB = verticalMotorB.getCurrentPosition();
+        while (active()) {
+            int vertA = verticalMotorA.getCurrentPosition();
+            int vertB = verticalMotorB.getCurrentPosition();
+
+            // Copy the non-zero value if one is zero but the other is large
             if (vertA == 0 && vertB > 100) vertA = vertB;
             if (vertB == 0 && vertA > 100) vertB = vertA;
-            vertAvg = (vertA + vertB) / 2;
 
-            // Corrects for smaller amounts of slippage and drift while moving
+            int vertAvg = (vertA + vertB) / 2;
+            double error = encoders - vertAvg;
+
+            // Stop if close enough
+            if (Math.abs(error) < 20) break;
+
+            double direction = Math.signum(error);
+            double basePower = 0.8 * direction;
+
+            // Minor correction if one motor is off-center by >10
             if (verticalMotorA.getCurrentPosition() - vertAvg > 10)
-                verticalMotorA.setPower(direction * 0.95);
-            else verticalMotorA.setPower(direction);
+                verticalMotorA.setPower(basePower * 0.95);
+            else verticalMotorA.setPower(basePower);
             if (verticalMotorB.getCurrentPosition() - vertAvg > 10)
-                verticalMotorB.setPower(direction * 0.95);
-            else verticalMotorB.setPower(direction);
+                verticalMotorB.setPower(basePower * 0.95);
+            else verticalMotorB.setPower(basePower);
 
+            // If we press the touch sensor, reset encoders
             if (touchSensor != null && touchSensor.isPressed()) {
-                verticalMotorA.setMode(STOP_AND_RESET_ENCODER);
-                verticalMotorB.setMode(STOP_AND_RESET_ENCODER);
-                verticalMotorA.setMode(RUN_WITHOUT_ENCODER);
-                verticalMotorB.setMode(RUN_WITHOUT_ENCODER);
+                verticalMotorA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                verticalMotorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                verticalMotorA.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                verticalMotorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             }
 
-            // Display it for the driver.
+            // Better telemetry
             print("Position", vertAvg);
             print("Goal", encoders);
+            print("Error", error);
+            print("A Power", verticalMotorA.getPower());
+            print("B Power", verticalMotorB.getPower());
+            print("Direction", direction);
             update();
         }
+
+        // Turn off power at the end
         verticalMotorA.setPower(0);
         verticalMotorB.setPower(0);
     }
@@ -936,6 +963,7 @@ public abstract class Base extends LinearOpMode {
         telemetry.update();
     }
 
+    /** Returns whether the robot is active. */
     public boolean active() {
         return opModeIsActive() && !isStopRequested();
     }

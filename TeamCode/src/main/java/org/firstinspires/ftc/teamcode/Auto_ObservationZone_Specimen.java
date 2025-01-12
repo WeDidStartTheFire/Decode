@@ -12,7 +12,8 @@ public class Auto_ObservationZone_Specimen extends Base {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        setup(new Pose2d(0, -72 + ROBOT_LENGTH / 2, Math.toRadians(180)));
+//        setup(new Pose2d(0, -72 + ROBOT_LENGTH / 2, Math.toRadians(180)));
+        setup();
         closeSpecimenServo();
         Thread driveThread = new Thread(() -> drive(31.5, BACKWARD));
         Thread liftThread = new Thread(() -> moveVerticalLift(V_LIFT_GOALS[3]));
@@ -29,6 +30,7 @@ public class Auto_ObservationZone_Specimen extends Base {
             except(e.getStackTrace());
         }
         hold = false;
+        holdLift.join();
         moveVerticalLift(V_LIFT_GOALS[3] - 500);
         openSpecimenServo();
         s(5);

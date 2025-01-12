@@ -10,14 +10,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 @TeleOp(name = "Main", group = "Into The Deep")
 public class TeleOp_Main extends Base {
 
-    double axial;
-    double lateral;
-    double yaw;
+    double axial,lateral, yaw;
 
-    double leftFrontPower;
-    double rightFrontPower;
-    double leftBackPower;
-    double rightBackPower;
+    double leftFrontPower, rightFrontPower, leftBackPower, rightBackPower;
 
     double max;
 

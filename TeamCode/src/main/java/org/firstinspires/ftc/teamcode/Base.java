@@ -769,8 +769,8 @@ public abstract class Base extends LinearOpMode {
     public void moveVerticalLift(double encoders) {
         if (verticalMotorA == null) return;
         // Use RUN_WITHOUT_ENCODER on both motors
-        verticalMotorA.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        verticalMotorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        verticalMotorA.setMode(RUN_WITHOUT_ENCODER);
+        verticalMotorB.setMode(RUN_WITHOUT_ENCODER);
 
         while (active()) {
             int vertA = verticalMotorA.getCurrentPosition();

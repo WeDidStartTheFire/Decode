@@ -12,10 +12,10 @@ public class Auto_ObservationZone_Specimen extends Base {
 
     @Override
     public void runOpMode() throws InterruptedException {
-//        setup(new Pose2d(0, -72 + ROBOT_LENGTH / 2, Math.toRadians(180)));
-        setup();
+        setup(new Pose2d(0, 72 - ROBOT_LENGTH / 2, Math.toRadians(90)));
+//        setup();
         closeSpecimenServo();
-        Thread driveThread = new Thread(() -> drive(31.5, BACKWARD));
+        Thread driveThread = new Thread(() -> drive(30, BACKWARD));
         Thread liftThread = new Thread(() -> moveVerticalLift(V_LIFT_GOALS[3]));
         Thread holdLift = new Thread(() -> holdVerticalLift(V_LIFT_GOALS[3]));
         // Start both threads
@@ -31,15 +31,15 @@ public class Auto_ObservationZone_Specimen extends Base {
         }
         hold = false;
         holdLift.join();
-        moveVerticalLift(V_LIFT_GOALS[3] - 500);
+        moveVerticalLift(V_LIFT_GOALS[3] - 400);
         openSpecimenServo();
-        s(5);
-        retractVerticalLift();
+        s(.5);
         // Goes in a straight line to the observation zone
         Trajectory trajectory = drive.trajectoryBuilder(currentPose)
-                .lineTo(new Vector2d(36, -72 + ROBOT_LENGTH / 2))
+                .splineTo(new Vector2d(-36, 72 - ROBOT_LENGTH / 2), Math.toRadians(-90))
                 .build();
         drive.followTrajectory(trajectory);
         currentPose = trajectory.end();
+        retractVerticalLift();
     }
 }

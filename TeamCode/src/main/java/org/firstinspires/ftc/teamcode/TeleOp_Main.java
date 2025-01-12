@@ -39,6 +39,7 @@ public class TeleOp_Main extends Base {
     boolean wasIntakeServoButtonPressed = false;
     boolean wasWristServoButtonPressed = false;
     boolean wasSpecimenServoButtonPressed = false;
+    boolean wasBasketServoButtonPressed = false;
     int wristMotorTicksStopped = 0;
     int wristMotorPos = 0;
     int wristMotorStopPos = 0;
@@ -215,6 +216,11 @@ public class TeleOp_Main extends Base {
                 }
                 print("Vertical Lift Goal", vertGoal);
             }
+
+            // Logic to open and close basket servo
+            if (basketServo != null && gamepad2.x && !wasBasketServoButtonPressed && vertAvg > 100)
+                basketServo.setPosition(basketServo.getPosition() == 0 ? 1 : 0);
+            wasBasketServoButtonPressed = gamepad2.x && vertAvg > 100;
 
             // Logic to open and close the specimen servo
             if (specimenServo != null && gamepad1.b && !wasSpecimenServoButtonPressed)

@@ -38,7 +38,7 @@ public abstract class Base extends LinearOpMode {
     private final ElapsedTime runtime = new ElapsedTime();
     // All non-primitive data types initialize to null on default.
     public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor, verticalMotorA, verticalMotorB;
-    public Servo wristServo, droneServo, specimenServo, intakeServo;
+    public Servo wristServo, basketServo, specimenServo, intakeServo;
     public TouchSensor touchSensor;
     private IMU imu;
     /*
@@ -147,9 +147,9 @@ public abstract class Base extends LinearOpMode {
             except("specimenServo not connected");
         }
         try {
-            droneServo = hardwareMap.get(Servo.class, "droneServo"); // Port 4
+            basketServo = hardwareMap.get(Servo.class, "basketServo"); // Port 3
         } catch (IllegalArgumentException e) {
-            except("droneServo not connected");
+            except("basketServo not connected");
         }
 
         // Touch Sensors

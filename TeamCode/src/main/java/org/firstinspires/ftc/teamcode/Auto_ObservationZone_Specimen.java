@@ -36,7 +36,10 @@ public class Auto_ObservationZone_Specimen extends Base {
         s(.5);
         // Goes in a straight line to the observation zone
         Trajectory trajectory = drive.trajectoryBuilder(currentPose)
-                .splineTo(new Vector2d(-36, 72 - ROBOT_LENGTH / 2), Math.toRadians(-90))
+                .splineTo(new Vector2d(-36 + 12, 72 - ROBOT_LENGTH / 2 - 18), Math.toRadians(-90))
+                .splineTo(new Vector2d(-36, 72 - ROBOT_LENGTH / 2 - 36), Math.toRadians(-90))
+                .splineTo(new Vector2d(-36 - 12, 72 - ROBOT_LENGTH / 2 - 48), Math.toRadians(-90))
+                .splineTo(new Vector2d(-36 - 12, 72 - ROBOT_LENGTH / 2), Math.toRadians(-90))
                 .build();
         drive.followTrajectory(trajectory);
         currentPose = trajectory.end();

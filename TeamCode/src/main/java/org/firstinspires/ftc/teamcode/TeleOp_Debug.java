@@ -51,7 +51,7 @@ public class TeleOp_Debug extends Base {
                 except("servoD disconnected");
             }
         } else {
-            servoA = droneServo;
+            servoA = basketServo;
             servoB = specimenServo;
             servoC = wristServo;
             servoD = intakeServo;

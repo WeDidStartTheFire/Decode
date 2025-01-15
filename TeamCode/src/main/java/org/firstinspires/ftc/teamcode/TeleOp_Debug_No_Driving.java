@@ -42,7 +42,7 @@ public class TeleOp_Debug_No_Driving extends Base {
             motorA = lf;
             motorB = lb;
         } else {
-            servoA = droneServo;
+            servoA = basketServo;
             servoB = specimenServo;
             servoC = wristServo;
             servoD = intakeServo;

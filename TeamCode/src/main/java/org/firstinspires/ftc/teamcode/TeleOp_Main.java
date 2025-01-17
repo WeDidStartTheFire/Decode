@@ -209,7 +209,7 @@ public class TeleOp_Main extends Base {
                     verticalMotorB.setPower(power);
                 }
                 print("Vertical Lift Goal", vertGoal);
-            }
+            } else vertAvg = 0; // So the basket servo won't go with the lift not connected
 
             // Logic to open and close basket servo
             if (basketServo != null && gamepad2.x && !wasBasketServoButtonPressed && vertAvg > 100)

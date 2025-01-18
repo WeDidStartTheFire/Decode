@@ -53,6 +53,7 @@ public abstract class Base extends LinearOpMode {
     public static final double SMALL_WHEEL_DIAMETER = 3.77953;
     static double WHEEL_DIAMETER_INCHES = SMALL_WHEEL_DIAMETER;
 
+    public static final double TAU = 2 * PI;
     static final double COUNTS_PER_MOTOR_REV = 537.6898395722;  // ((((1.0 + (46.0 / 17.0))) * (1.0 + (46.0 / 11.0))) * 28.0);
     static final double DRIVE_GEAR_REDUCTION = 1.0; // No External Gearing
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * PI);
@@ -369,13 +370,23 @@ public abstract class Base extends LinearOpMode {
     }
 
     /**
-     * Simplifies an angle to be between -180 and 180 degrees.
+     * Simplifies an angle in degrees to be between -180 and 180 degrees.
      *
-     * @param angle Angle to be simplified
+     * @param angle Angle in degrees to be simplified
      * @return Angle now simplified between -180 and 180 degrees
      */
     public double simplifyAngle(double angle) {
         return ((angle + 180) % 360 + 360) % 360 - 180;
+    }
+
+    /**
+     * Simplifies an angle in radians to be between -pi and pi radians
+     *
+     * @param angle Angle in radians to be simplified
+     * @return Angle now simplified between -pi and pi radians
+     */
+    public double simplifyAngleRadians(double angle) {
+        return ((angle + PI) % TAU + TAU) % TAU - PI;
     }
 
     /**

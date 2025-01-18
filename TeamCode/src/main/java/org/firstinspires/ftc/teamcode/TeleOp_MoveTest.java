@@ -58,9 +58,9 @@ public class TeleOp_Main extends Base {
 
 			  angle = useOdometry ? drive.getRawExternalHeading() : imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
 			
-            angleTurnError = simplifyAngle(atan(gamepad1.right_stick_y / gamepad1.right_stick_x) - angle);
+            angleTurnError = simplifyAngleRadians(atan(gamepad1.right_stick_y / gamepad1.right_stick_x) - angle);
 
-			  angleMove = simplifyAngle(atan(gamepad1.left_stick_y / gamepad1.left_stick_x) - angle);
+			  angleMove = simplifyAngleRadians(atan(gamepad1.left_stick_y / gamepad1.left_stick_x) - angle);
 			  xMove = sin(angleMove);
 			  yMove = cos(angleMove);
 

@@ -3,15 +3,20 @@ package org.firstinspires.ftc.teamcode;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 import static java.lang.Math.abs;
 import static java.lang.Math.atan;
+import static java.lang.Math.max;
 import static java.lang.Math.sin;
 import static java.lang.Math.cos;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+
 @TeleOp(name = "Main", group = "Into The Deep")
-public class TeleOp_Main extends Base {
+public class TeleOp_MainTest extends Base {
 
     double axial,lateral, yaw;
 
@@ -41,7 +46,7 @@ public class TeleOp_Main extends Base {
     int wristMotorPos = 0;
     int wristMotorStopPos = 0;
     int error;
-    double angleError, angle;
+    double angleTurnError, angleMove, xMove, yMove, angle;
 
     static double[] speeds = {0.2, 0.6, 1};
 
@@ -56,13 +61,13 @@ public class TeleOp_Main extends Base {
         while (active()) {
             speedMultiplier = gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1];
 
-			  angle = useOdometry ? drive.getRawExternalHeading() : imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
-			
+            angle = useOdometry ? drive.getRawExternalHeading() : imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
+
             angleTurnError = simplifyAngleRadians(atan(gamepad1.right_stick_y / gamepad1.right_stick_x) - angle);
 
-			  angleMove = simplifyAngleRadians(atan(gamepad1.left_stick_y / gamepad1.left_stick_x) - angle);
-			  xMove = sin(angleMove);
-			  yMove = cos(angleMove);
+            angleMove = simplifyAngleRadians(atan(gamepad1.left_stick_y / gamepad1.left_stick_x) - angle);
+            xMove = sin(angleMove);
+            yMove = cos(angleMove);
 
             axial = ((yMove * SPEED_MULTIPLIER));
             lateral = ((-xMove * SPEED_MULTIPLIER));
@@ -73,9 +78,9 @@ public class TeleOp_Main extends Base {
             leftBackPower = axial - lateral + yaw;
             rightBackPower = axial + lateral - yaw;
 
-            max = Math.max(abs(leftFrontPower), abs(rightFrontPower));
-            max = Math.max(max, abs(leftBackPower));
-            max = Math.max(max, abs(rightBackPower));
+            max = max(abs(leftFrontPower), abs(rightFrontPower));
+            max = max(max, abs(leftBackPower));
+            max = max(max, abs(rightBackPower));
 
             if (max > 1.0) {
                 leftFrontPower /= max;

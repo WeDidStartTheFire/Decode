@@ -40,7 +40,7 @@ public abstract class Base extends LinearOpMode {
     public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor, verticalMotorA, verticalMotorB;
     public Servo wristServo, basketServo, specimenServo, intakeServo;
     public TouchSensor touchSensor;
-    private IMU imu;
+    public IMU imu;
     /*
      - Calculate the COUNTS_PER_INCH for your specific drive train.
      - Go to your motor vendor website to determine your motor's COUNTS_PER_MOTOR_REV

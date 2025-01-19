@@ -39,7 +39,7 @@ public abstract class Base extends LinearOpMode {
     // All non-primitive data types initialize to null on default.
     public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor, verticalMotorA, verticalMotorB;
     public Servo wristServo, basketServo, specimenServo, intakeServo;
-    public TouchSensor touchSensor;
+    public TouchSensor verticalTouchSensor, horizontalTouchSensor;
     public IMU imu;
     /*
      - Calculate the COUNTS_PER_INCH for your specific drive train.
@@ -155,9 +155,14 @@ public abstract class Base extends LinearOpMode {
 
         // Touch Sensors
         try {
-            touchSensor = hardwareMap.get(TouchSensor.class, "touchSensor"); // Port 0
+            verticalTouchSensor = hardwareMap.get(TouchSensor.class, "touchSensor"); // Port 0
         } catch (IllegalArgumentException e) {
             except("touchSensor not connected");
+        }
+        try {
+            horizontalTouchSensor = hardwareMap.get(TouchSensor.class, "horizontalTouchSensor"); // Port 0
+        } catch (IllegalArgumentException e) {
+            except("horizontalTouchSensor not connected");
         }
 
         if (useCam) {
@@ -193,10 +198,7 @@ public abstract class Base extends LinearOpMode {
             rf.setTargetPosition(rf.getCurrentPosition());
         }
 
-        if (liftMotor != null) {
-            liftMotor.setDirection(DcMotorEx.Direction.REVERSE);
-            liftMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        }
+        if (liftMotor != null) liftMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
         if (verticalMotorA != null) {
             verticalMotorB.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -809,7 +811,7 @@ public abstract class Base extends LinearOpMode {
             else verticalMotorB.setPower(basePower);
 
             // If we press the touch sensor, reset encoders
-            if (touchSensor != null && touchSensor.isPressed()) {
+            if (verticalTouchSensor != null && verticalTouchSensor.isPressed()) {
                 verticalMotorA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 verticalMotorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 verticalMotorA.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -963,8 +965,8 @@ public abstract class Base extends LinearOpMode {
         if (specimenServo == null) print("Specimen Servo", "Disconnected");
         else print("Specimen Servo Position", specimenServo.getPosition());
 
-        if (touchSensor == null) print("Touch Sensor", "Disconnected");
-        else print("Touch Sensor Pressed", touchSensor.isPressed());
+        if (verticalTouchSensor == null) print("Touch Sensor", "Disconnected");
+        else print("Touch Sensor Pressed", verticalTouchSensor.isPressed());
         if (wristServo == null) print("Intake Servo", "Disconnected");
         if (useOdometry) {
             Pose2d pos = drive.getPoseEstimate();

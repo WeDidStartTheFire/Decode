@@ -80,11 +80,11 @@ public class Auto_TestRobot extends Base {
             confirm("Please confirm that the vertical lift extendend and retracted");
         } else print("Vertical lift test skipped");
 
-        if (touchSensor != null && confirm("Test touch sensor?")) {
+        if (verticalTouchSensor != null && confirm("Test touch sensor?")) {
             print("Please press the touch sensor or hit B to skip");
             update();
-            while (opModeIsActive() && !touchSensor.isPressed()) if (gamepad1.b) break;
-            print("Touch sensor pressed", touchSensor.isPressed());
+            while (opModeIsActive() && !verticalTouchSensor.isPressed()) if (gamepad1.b) break;
+            print("Touch sensor pressed", verticalTouchSensor.isPressed());
         } else print("Touch sensor test skipped");
 
         update();

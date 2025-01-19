@@ -7,7 +7,6 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADI
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 import static java.lang.Math.abs;
-import static java.lang.Math.max;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -18,8 +17,6 @@ public class TeleOp_MainTest extends Base {
     double axial,lateral, yaw;
 
     double leftFrontPower, rightFrontPower, leftBackPower, rightBackPower;
-
-    double max;
 
     double speedMultiplier;
     boolean touchSensorPressed = false;
@@ -43,7 +40,7 @@ public class TeleOp_MainTest extends Base {
     int wristMotorPos = 0;
     int wristMotorStopPos = 0;
     int error;
-    double difference, turnInput, xMove, yMove, angle, moveAngle, magnitude, joystickAngle;
+    double xMove, yMove, angle, moveAngle, magnitude, joystickAngle;
 
     static double[] speeds = {0.2, 0.6, 1};
 
@@ -146,7 +143,7 @@ public class TeleOp_MainTest extends Base {
                 power = 0;
                 if (gamepad1.dpad_right ^ gamepad1.dpad_left) {
                     // If the touch sensor isn't connected, assume it isn't pressed
-                    touchSensorPressed = touchSensor != null && touchSensor.isPressed();
+                    touchSensorPressed = horizontalTouchSensor != null && horizontalTouchSensor.isPressed();
                     if (gamepad1.dpad_right && !gamepad1.dpad_left)
                         power = liftMotor.getCurrentPosition() < LIFT_BOUNDARIES[1] ? speedMultiplier : 0;
                     else if (gamepad1.dpad_left && !gamepad1.dpad_right && !touchSensorPressed)
@@ -211,7 +208,7 @@ public class TeleOp_MainTest extends Base {
                 } else {
                     vertStopped = false;
                     // If the touch sensor isn't connected, assume it isn't pressed
-                    touchSensorPressed = touchSensor != null && touchSensor.isPressed();
+                    touchSensorPressed = verticalTouchSensor != null && verticalTouchSensor.isPressed();
                     if (touchSensorPressed) {
                         verticalMotorA.setMode(STOP_AND_RESET_ENCODER);
                         verticalMotorB.setMode(STOP_AND_RESET_ENCODER);

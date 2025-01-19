@@ -4,13 +4,16 @@ import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODE
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
+import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 import static java.lang.Math.atan;
 import static java.lang.Math.max;
 import static java.lang.Math.sin;
 import static java.lang.Math.cos;
+import static java.lang.Math.sqrt;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -46,7 +49,7 @@ public class TeleOp_MainTest extends Base {
     int wristMotorPos = 0;
     int wristMotorStopPos = 0;
     int error;
-    double angleTurnError, angleMove, xMove, yMove, angle;
+    double difference, turnInput, xMove, yMove, angle, a, joystickAngle;
 
     static double[] speeds = {0.2, 0.6, 1};
 
@@ -59,42 +62,59 @@ public class TeleOp_MainTest extends Base {
         setup();
 
         while (active()) {
-            speedMultiplier = gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1];
+            speedMultiplier = (gamepad1.left_bumper ? speeds[0] : (gamepad1.right_bumper ? speeds[2] : speeds[1]));
 
-            angle = useOdometry ? drive.getRawExternalHeading() : imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
+            angle = useOdometry ? drive.getRawExternalHeading() : -imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle;
 
-            angleTurnError = simplifyAngleRadians(atan(gamepad1.right_stick_y / gamepad1.right_stick_x) - angle);
+            joystickAngle = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
+            double moveAngle = joystickAngle - angle;
+            double magnitude = Math.min(1, Math.hypot(gamepad1.left_stick_x, gamepad1.left_stick_y));
 
-            angleMove = simplifyAngleRadians(atan(gamepad1.left_stick_y / gamepad1.left_stick_x) - angle);
-            xMove = sin(angleMove);
-            yMove = cos(angleMove);
+            xMove = Math.cos(moveAngle) * magnitude;
+            yMove = Math.sin(moveAngle) * magnitude;
 
-            axial = ((yMove * SPEED_MULTIPLIER));
-            lateral = ((-xMove * SPEED_MULTIPLIER));
-            yaw = ((max(angleTurnError / 20, 1) * BASE_TURN_SPEED));
+            axial = yMove * SPEED_MULTIPLIER;
+            lateral = -xMove * SPEED_MULTIPLIER;
+
+            joystickAngle = Math.atan2(gamepad1.right_stick_y, gamepad1.right_stick_x);
+            difference = simplifyAngleRadians(joystickAngle - angle + PI / 2);
+
+            turnInput = (difference / Math.toRadians(20)) * sqrt(gamepad1.right_stick_y * gamepad1.right_stick_y + gamepad1.right_stick_x * gamepad1.right_stick_x);
+            turnInput = Math.max(-1.0, Math.min(1.0, turnInput));
+            yaw = -turnInput * BASE_TURN_SPEED;
+
+            print("Angle", angle);
+            print("Move Angle", moveAngle);
+            print("X Move", xMove);
+            print("Y Move", yMove);
+            print("Yaw", yaw);
 
             leftFrontPower = axial + lateral + yaw;
             rightFrontPower = axial - lateral - yaw;
             leftBackPower = axial - lateral + yaw;
             rightBackPower = axial + lateral - yaw;
 
-            max = max(abs(leftFrontPower), abs(rightFrontPower));
-            max = max(max, abs(leftBackPower));
-            max = max(max, abs(rightBackPower));
-
-            if (max > 1.0) {
-                leftFrontPower /= max;
-                rightFrontPower /= max;
-                leftBackPower /= max;
-                rightBackPower /= max;
+            double maxP = Math.max(
+                    Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower)),
+                    Math.max(Math.abs(leftBackPower), Math.abs(rightBackPower))
+            );
+            if (maxP > 1.0) {
+                leftFrontPower  /= maxP;
+                rightFrontPower /= maxP;
+                leftBackPower   /= maxP;
+                rightBackPower  /= maxP;
             }
 
-            // Send calculated power to wheels
             if (lf != null) {
                 lf.setVelocity(leftFrontPower * 5000 * speedMultiplier);
                 rf.setVelocity(rightFrontPower * 5000 * speedMultiplier);
                 lb.setVelocity(leftBackPower * 5000 * speedMultiplier);
                 rb.setVelocity(rightBackPower * 5000 * speedMultiplier);
+
+                print("LF Power", leftFrontPower);
+                print("RF Power", rightFrontPower);
+                print("LB Power", leftBackPower);
+                print("RB Power", rightBackPower);
             }
 
             // Logic for the wrist motor

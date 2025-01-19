@@ -26,8 +26,9 @@ public class TeleOp_Main extends Base {
     double wristPos = 0.5;
     double newWristPos = 1;
     int vertA, vertB, vertAvg, vertGoal;
-    boolean vertUp, vertDown, vertRunToPos = false;
+    boolean vertUp, vertDown, vertRunToPos;
     double power = 0;
+    double speed;
 
     boolean vertStopped = false;
     boolean wasIntakeServoButtonPressed = false;
@@ -52,9 +53,9 @@ public class TeleOp_Main extends Base {
         while (active()) {
             speedMultiplier = gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1];
 
-            axial = ((gamepad1.left_stick_y * SPEED_MULTIPLIER));
-            lateral = ((-gamepad1.left_stick_x * SPEED_MULTIPLIER));
-            yaw = ((gamepad1.right_stick_x * BASE_TURN_SPEED));
+            axial = gamepad1.left_stick_y * SPEED_MULTIPLIER;
+            lateral = -gamepad1.left_stick_x * SPEED_MULTIPLIER;
+            yaw = gamepad1.right_stick_x * BASE_TURN_SPEED;
 
             leftFrontPower = axial + lateral + yaw;
             rightFrontPower = axial - lateral - yaw;
@@ -121,10 +122,11 @@ public class TeleOp_Main extends Base {
                 if (gamepad1.dpad_right ^ gamepad1.dpad_left) {
                     // If the touch sensor isn't connected, assume it isn't pressed
                     touchSensorPressed = horizontalTouchSensor != null && horizontalTouchSensor.isPressed();
+                    speed = speedMultiplier == speeds[0] ? 0.6 : 1;
                     if (gamepad1.dpad_right && !gamepad1.dpad_left)
-                        power = liftMotor.getCurrentPosition() < LIFT_BOUNDARIES[1] ? speedMultiplier : 0;
+                        power = liftMotor.getCurrentPosition() < LIFT_BOUNDARIES[1] ? speed : 0;
                     else if (gamepad1.dpad_left && !gamepad1.dpad_right && !touchSensorPressed)
-                        power = liftMotor.getCurrentPosition() > LIFT_BOUNDARIES[0] ? -speedMultiplier : 0;
+                        power = liftMotor.getCurrentPosition() > LIFT_BOUNDARIES[0] ? -speed : 0;
                 }
                 liftMotor.setPower(power);
             }

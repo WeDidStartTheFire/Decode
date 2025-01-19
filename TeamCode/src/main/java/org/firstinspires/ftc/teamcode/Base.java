@@ -4,6 +4,8 @@ import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
+import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
+import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
@@ -62,7 +64,7 @@ public abstract class Base extends LinearOpMode {
     static final double B = 1.1375;
     static final double M = 0.889;
     static final double TURN_SPEED = 0.5;
-    static final int[] LIFT_BOUNDARIES = {0, 1200};
+    static final int[] LIFT_BOUNDARIES = {0, 1425};
     static final int[] V_LIFT_BOUNDS = {0, 1950};
     static final int[] V_LIFT_GOALS = {0, 280, 500, 1350, 1500};
 
@@ -182,15 +184,15 @@ public abstract class Base extends LinearOpMode {
         }
 
         if (lf != null) {
-            lf.setDirection(DcMotorEx.Direction.REVERSE);
-            lb.setDirection(DcMotorEx.Direction.REVERSE);
+            lf.setDirection(REVERSE);
+            lb.setDirection(REVERSE);
             rf.setDirection(DcMotorEx.Direction.FORWARD);
             rb.setDirection(DcMotorEx.Direction.FORWARD);
 
-            lf.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-            lb.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-            rf.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-            rb.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+            lf.setZeroPowerBehavior(BRAKE);
+            lb.setZeroPowerBehavior(BRAKE);
+            rf.setZeroPowerBehavior(BRAKE);
+            rb.setZeroPowerBehavior(BRAKE);
 
             lb.setTargetPosition(lb.getCurrentPosition());
             rb.setTargetPosition(rb.getCurrentPosition());
@@ -198,13 +200,17 @@ public abstract class Base extends LinearOpMode {
             rf.setTargetPosition(rf.getCurrentPosition());
         }
 
-        if (liftMotor != null) liftMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        if (liftMotor != null) {
+            liftMotor.setMode(STOP_AND_RESET_ENCODER);
+            liftMotor.setMode(RUN_WITHOUT_ENCODER);
+            liftMotor.setZeroPowerBehavior(BRAKE);
+        }
 
         if (verticalMotorA != null) {
-            verticalMotorB.setDirection(DcMotorSimple.Direction.REVERSE);
+            verticalMotorB.setDirection(REVERSE);
 
-            verticalMotorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            verticalMotorB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            verticalMotorA.setZeroPowerBehavior(BRAKE);
+            verticalMotorB.setZeroPowerBehavior(BRAKE);
 
             verticalMotorA.setMode(STOP_AND_RESET_ENCODER);
             verticalMotorB.setMode(STOP_AND_RESET_ENCODER);
@@ -217,8 +223,8 @@ public abstract class Base extends LinearOpMode {
         }
 
         if (wristMotor != null) {
-            wristMotor.setDirection(DcMotorEx.Direction.REVERSE);
-            wristMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+            wristMotor.setDirection(REVERSE);
+            wristMotor.setZeroPowerBehavior(BRAKE);
             wristMotor.setMode(STOP_AND_RESET_ENCODER);
             wristMotor.setMode(RUN_USING_ENCODER);
         }

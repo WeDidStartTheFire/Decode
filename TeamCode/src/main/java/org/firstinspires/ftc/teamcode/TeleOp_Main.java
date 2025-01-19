@@ -122,7 +122,7 @@ public class TeleOp_Main extends Base {
                 if (gamepad1.dpad_right ^ gamepad1.dpad_left) {
                     // If the touch sensor isn't connected, assume it isn't pressed
                     touchSensorPressed = horizontalTouchSensor != null && horizontalTouchSensor.isPressed();
-                    speed = speedMultiplier == speeds[0] ? 0.6 : 1;
+                    speed = gamepad1.left_bumper ? 0.6 : 1;
                     if (gamepad1.dpad_right && !gamepad1.dpad_left)
                         power = liftMotor.getCurrentPosition() < LIFT_BOUNDARIES[1] ? speed : 0;
                     else if (gamepad1.dpad_left && !gamepad1.dpad_right && !touchSensorPressed)

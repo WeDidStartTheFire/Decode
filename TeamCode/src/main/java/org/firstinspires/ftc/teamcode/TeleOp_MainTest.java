@@ -3,17 +3,11 @@ package org.firstinspires.ftc.teamcode;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
-import static java.lang.Math.PI;
 import static java.lang.Math.abs;
-import static java.lang.Math.atan;
 import static java.lang.Math.max;
-import static java.lang.Math.sin;
-import static java.lang.Math.cos;
-import static java.lang.Math.sqrt;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -49,7 +43,7 @@ public class TeleOp_MainTest extends Base {
     int wristMotorPos = 0;
     int wristMotorStopPos = 0;
     int error;
-    double difference, turnInput, xMove, yMove, angle, a, joystickAngle;
+    double difference, turnInput, xMove, yMove, angle, moveAngle, magnitude, joystickAngle;
 
     static double[] speeds = {0.2, 0.6, 1};
 
@@ -67,8 +61,8 @@ public class TeleOp_MainTest extends Base {
             angle = useOdometry ? drive.getRawExternalHeading() : -imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle;
 
             joystickAngle = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
-            double moveAngle = joystickAngle - angle;
-            double magnitude = Math.min(1, Math.hypot(gamepad1.left_stick_x, gamepad1.left_stick_y));
+            moveAngle = joystickAngle - angle;
+            magnitude = Math.min(1, Math.hypot(gamepad1.left_stick_x, gamepad1.left_stick_y));
 
             xMove = Math.cos(moveAngle) * magnitude;
             yMove = Math.sin(moveAngle) * magnitude;
@@ -76,12 +70,7 @@ public class TeleOp_MainTest extends Base {
             axial = yMove * SPEED_MULTIPLIER;
             lateral = -xMove * SPEED_MULTIPLIER;
 
-            joystickAngle = Math.atan2(gamepad1.right_stick_y, gamepad1.right_stick_x);
-            difference = simplifyAngleRadians(joystickAngle - angle + PI / 2);
-
-            turnInput = (difference / Math.toRadians(20)) * sqrt(gamepad1.right_stick_y * gamepad1.right_stick_y + gamepad1.right_stick_x * gamepad1.right_stick_x);
-            turnInput = Math.max(-1.0, Math.min(1.0, turnInput));
-            yaw = -turnInput * BASE_TURN_SPEED;
+            yaw = gamepad1.right_stick_x * BASE_TURN_SPEED;
 
             print("Angle", angle);
             print("Move Angle", moveAngle);

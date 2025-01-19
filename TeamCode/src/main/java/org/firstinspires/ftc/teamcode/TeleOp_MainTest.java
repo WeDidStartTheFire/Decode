@@ -15,7 +15,7 @@ import static java.lang.Math.cos;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
-@TeleOp(name = "Main", group = "Into The Deep")
+@TeleOp(name = "Main Test", group = "Into The Deep")
 public class TeleOp_MainTest extends Base {
 
     double axial,lateral, yaw;

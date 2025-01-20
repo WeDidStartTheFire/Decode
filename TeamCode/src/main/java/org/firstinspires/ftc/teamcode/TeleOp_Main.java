@@ -43,6 +43,9 @@ public class TeleOp_Main extends Base {
     static double[] speeds = {0.2, 0.6, 1};
 
     boolean wasDpu, isDpu, isDpd, wasDpd;
+    
+    double liftPos, liftGoal = 0;
+    boolean liftOut, liftIn, liftRunToPos, slow;
 
     int newGoal;
 
@@ -119,15 +122,24 @@ public class TeleOp_Main extends Base {
 
             // Logic to extend or retract the horizontal lift
             if (liftMotor != null) {
+                liftPos = liftMotor.getCurrentPosition();
+                liftRunToPos = liftRunToPos && !(gamepad1.dpad_right || gamepad1.dpad_left);
+                if (liftRunToPos) {
+                    if (liftPos > liftGoal) liftOut = true;
+                    else liftIn = true;
+                    slow = abs(liftPos - liftGoal) < 50;
+                    liftRunToPos = abs(liftPos - liftGoal) > 15;
+                }
+                slow = gamepad1.left_bumper || slow;
+                liftOut = liftOut || gamepad1.dpad_right;
+                liftIn = liftIn || gamepad1.dpad_left;
                 power = 0;
-                if (gamepad1.dpad_right ^ gamepad1.dpad_left) {
+                if (liftOut ^ liftIn) {
                     // If the touch sensor isn't connected, assume it isn't pressed
                     touchSensorPressed = horizontalTouchSensor != null && horizontalTouchSensor.isPressed();
-                    speed = gamepad1.left_bumper ? 0.6 : 1;
-                    if (gamepad1.dpad_right && !gamepad1.dpad_left)
-                        power = liftMotor.getCurrentPosition() < LIFT_BOUNDARIES[1] ? speed : 0;
-                    else if (gamepad1.dpad_left && !gamepad1.dpad_right && !touchSensorPressed)
-                        power = liftMotor.getCurrentPosition() > LIFT_BOUNDARIES[0] ? -speed : 0;
+                    speed = slow ? 0.6 : 1;
+                    if (liftOut) power = liftPos < LIFT_BOUNDARIES[1] ? speed : 0;
+                    else if (!touchSensorPressed) power = liftPos > LIFT_BOUNDARIES[0] ? -speed : 0;
                 }
                 liftMotor.setPower(power);
             }

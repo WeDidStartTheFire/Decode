@@ -22,7 +22,7 @@ public class TeleOp_Main extends Base {
     static final double SPEED_MULTIPLIER = 0.75;
     static final double BASE_TURN_SPEED = 2.5;
     static final double WRIST_MOTOR_POWER = 0.1;
-    static final int[] WRIST_M_BOUNDS = {0, 140};
+    static final int[] WRIST_M_BOUNDS = {0, 160};
     double wristPos = 0.5;
     double newWristPos = 1;
     int vertA, vertB, vertAvg, vertGoal;

@@ -218,8 +218,10 @@ public class TeleOp_MainTest extends Base {
                         verticalMotorA.setMode(RUN_WITHOUT_ENCODER);
                         verticalMotorB.setMode(RUN_WITHOUT_ENCODER);
                     }
-                    if (vertUp && !vertDown)
+                    if (vertUp && !vertDown) {
                         power = vertAvg < V_LIFT_BOUNDS[1] ? speedMultiplier == speeds[0] ? 0.7 : 1 : 0;
+                        wristMotorTicksStopped = wristMotorStopPos = 35;
+                    }
                     else if (vertDown && !vertUp && !touchSensorPressed)
                         power = vertAvg > V_LIFT_BOUNDS[0] ? speedMultiplier == speeds[0] ? -0.5 : -0.7 : 0;
                     vertUp = vertDown = false;

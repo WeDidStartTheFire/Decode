@@ -128,7 +128,8 @@ public class TeleOp_Main extends Base {
                     if (liftPos > liftGoal) liftOut = true;
                     else liftIn = true;
                     slow = abs(liftPos - liftGoal) < 50;
-                    liftRunToPos = abs(liftPos - liftGoal) > 15;
+                    liftRunToPos = abs(liftPos - liftGoal) > 20;
+                    if (!liftRunToPos && intakeServo != null) openIntake();
                 }
                 slow = gamepad1.left_bumper || slow;
                 liftOut = liftOut || gamepad1.dpad_right;
@@ -237,6 +238,16 @@ public class TeleOp_Main extends Base {
             if (specimenServo != null && gamepad1.b && !wasSpecimenServoButtonPressed)
                 specimenServo.setPosition(specimenServo.getPosition() == 0 ? 0.4 : 0);
             wasSpecimenServoButtonPressed = gamepad1.b;
+
+            if (gamepad2.y) {
+                wristMotorTicksStopped = 5;
+                wristMotorStopPos = 0;
+                wristPos = 1;
+                newWristPos = 0.5;
+                moveWristServo(0.5);
+                liftRunToPos = true;
+                liftGoal = 0;
+            }
 
             if (gamepad1.dpad_up && !isDpu && !wasDpu) isDpu = wasDpu = true;
             else if (gamepad1.dpad_up && isDpu && wasDpu) isDpu = false;

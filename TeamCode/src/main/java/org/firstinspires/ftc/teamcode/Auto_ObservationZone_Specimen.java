@@ -15,7 +15,7 @@ public class Auto_ObservationZone_Specimen extends Base {
         setup(new Pose2d(0, 72 - ROBOT_LENGTH / 2, Math.toRadians(90)));
 //        setup();
         closeSpecimenServo();
-        Thread driveThread = new Thread(() -> drive(30, BACKWARD));
+        Thread driveThread = new Thread(() -> drive(29, BACKWARD));
         Thread liftThread = new Thread(() -> moveVerticalLift(V_LIFT_GOALS[3]));
         Thread holdLift = new Thread(() -> holdVerticalLift(V_LIFT_GOALS[3]));
         // Start both threads
@@ -34,15 +34,20 @@ public class Auto_ObservationZone_Specimen extends Base {
         moveVerticalLift(V_LIFT_GOALS[3] - 400);
         openSpecimenServo();
         s(.5);
-        // Goes in a straight line to the observation zone
         Trajectory trajectory = drive.trajectoryBuilder(currentPose)
                 .splineTo(new Vector2d(-36 + 12, 72 - ROBOT_LENGTH / 2 - 18), Math.toRadians(-90))
-                .splineTo(new Vector2d(-36, 72 - ROBOT_LENGTH / 2 - 36), Math.toRadians(-90))
-                .splineTo(new Vector2d(-36 - 12, 72 - ROBOT_LENGTH / 2 - 48), Math.toRadians(-90))
-                .splineTo(new Vector2d(-36 - 12, 72 - ROBOT_LENGTH / 2), Math.toRadians(-90))
+                .splineTo(new Vector2d(-38, 72 - ROBOT_LENGTH / 2 - 36), Math.toRadians(-90))
+                .splineTo(new Vector2d(-36 - 12, 72 - ROBOT_LENGTH / 2 - 52), Math.toRadians(-90))
                 .build();
-        drive.followTrajectory(trajectory);
         currentPose = trajectory.end();
+        drive.followTrajectory(trajectory);
         retractVerticalLift();
+        drive(48, BACKWARD);
+        Trajectory trajectory1 = drive.trajectoryBuilder(currentPose)
+                .splineTo(new Vector2d(-36 - 12, 72 - ROBOT_LENGTH / 2 - 36), Math.toRadians(-90))
+                .splineTo(new Vector2d(-36 - 20, 72 - ROBOT_LENGTH / 2 - 52), Math.toRadians(-90))
+                .build();
+        drive.followTrajectory(trajectory1);
+        drive(48, BACKWARD);
     }
 }

@@ -103,11 +103,12 @@ public class TeleOp_Main extends Base {
                 wristMotor.setPower(power);
             }
 
-            // Logic for the wrist servo
+            // Logic for the wrist servo. Cycles from 1.0 to 0.5 to 0.0 to 0.5 to 1.0...
             if (wristServo != null && gamepad2.a && !wasWristServoButtonPressed) {
-                if (wristPos == 0.0 || wristPos == 1.0) newWristPos = 0.5;
-                else newWristPos = 1.0 - wristServo.getPosition();
-                wristServo.setPosition(wristPos = newWristPos);
+                if (wristPos == 0.0 || wristPos == 1.0)
+                    newWristPos = 1.0 - wristPos + (wristPos = newWristPos) * 0;
+                else newWristPos = 0.5 + (wristPos = newWristPos) * 0;
+                wristServo.setPosition(newWristPos);
             }
             wasWristServoButtonPressed = gamepad2.a;
 

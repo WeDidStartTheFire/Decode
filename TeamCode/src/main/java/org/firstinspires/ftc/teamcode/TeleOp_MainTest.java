@@ -55,7 +55,7 @@ public class TeleOp_MainTest extends Base {
         while (active()) {
             speedMultiplier = (gamepad1.left_bumper ? speeds[0] : (gamepad1.right_bumper ? speeds[2] : speeds[1]));
 
-            angle = useOdometry ? drive.getRawExternalHeading() : -imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle;
+            angle = useOdometry ? -drive.getRawExternalHeading() : -imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle;
 
             joystickAngle = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
             moveAngle = joystickAngle - angle;

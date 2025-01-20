@@ -32,7 +32,7 @@ import static java.util.Locale.US;
 
 import java.util.ArrayList;
 
-// Connect to robot: adb connect 192.168.43.1:5555 OR rc
+// Connect to robot: rc
 
 /** Base class that contains common methods and other configuration. */
 public abstract class Base extends LinearOpMode {

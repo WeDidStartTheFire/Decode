@@ -40,6 +40,7 @@ public class TeleOp_MainTest extends Base {
     int wristMotorPos = 0;
     int wristMotorStopPos = 0;
     int error;
+    double speed;
     double xMove, yMove, angle, moveAngle, magnitude, joystickAngle;
 
     static double[] speeds = {0.2, 0.6, 1};
@@ -125,11 +126,12 @@ public class TeleOp_MainTest extends Base {
                 wristMotor.setPower(power);
             }
 
-            // Logic for the wrist servo
+            // Logic for the wrist servo. Cycles from 1.0 to 0.5 to 0.0 to 0.5 to 1.0...
             if (wristServo != null && gamepad2.a && !wasWristServoButtonPressed) {
-                if (wristPos == 0.0 || wristPos == 1.0) newWristPos = 0.5;
-                else newWristPos = 1.0 - wristServo.getPosition();
-                wristServo.setPosition(wristPos = newWristPos);
+                if (wristPos == 0.0 || wristPos == 1.0)
+                    newWristPos = 1.0 - wristPos + (wristPos = newWristPos) * 0;
+                else newWristPos = 0.5 + (wristPos = newWristPos) * 0;
+                wristServo.setPosition(newWristPos);
             }
             wasWristServoButtonPressed = gamepad2.a;
 
@@ -144,10 +146,11 @@ public class TeleOp_MainTest extends Base {
                 if (gamepad1.dpad_right ^ gamepad1.dpad_left) {
                     // If the touch sensor isn't connected, assume it isn't pressed
                     touchSensorPressed = horizontalTouchSensor != null && horizontalTouchSensor.isPressed();
+                    speed = gamepad1.left_bumper ? 0.6 : 1;
                     if (gamepad1.dpad_right && !gamepad1.dpad_left)
-                        power = liftMotor.getCurrentPosition() < LIFT_BOUNDARIES[1] ? speedMultiplier : 0;
+                        power = liftMotor.getCurrentPosition() < LIFT_BOUNDARIES[1] ? speed : 0;
                     else if (gamepad1.dpad_left && !gamepad1.dpad_right && !touchSensorPressed)
-                        power = liftMotor.getCurrentPosition() > LIFT_BOUNDARIES[0] ? -speedMultiplier : 0;
+                        power = liftMotor.getCurrentPosition() > LIFT_BOUNDARIES[0] ? -speed : 0;
                 }
                 liftMotor.setPower(power);
             }

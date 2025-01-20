@@ -243,8 +243,7 @@ public class TeleOp_Main extends Base {
                 wristMotorTicksStopped = 5;
                 wristMotorStopPos = 0;
                 wristPos = 1;
-                newWristPos = 0.5;
-                moveWristServo(0.5);
+                moveWristServo(newWristPos = 0.5);
                 liftRunToPos = true;
                 liftGoal = 0;
             }

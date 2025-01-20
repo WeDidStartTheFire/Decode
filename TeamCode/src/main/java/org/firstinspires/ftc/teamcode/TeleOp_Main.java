@@ -44,7 +44,7 @@ public class TeleOp_Main extends Base {
 
     boolean wasDpu, isDpu, isDpd, wasDpd;
     
-    double liftPos, liftGoal = 0;
+    int liftPos, liftGoal = 0;
     boolean liftOut, liftIn, liftRunToPos, slow;
 
     int newGoal;

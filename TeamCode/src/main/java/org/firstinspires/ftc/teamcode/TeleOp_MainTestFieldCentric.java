@@ -11,8 +11,8 @@ import static java.lang.Math.abs;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
-@TeleOp(name = "Main Test", group = "Into The Deep")
-public class TeleOp_MainTest extends Base {
+@TeleOp(name = "Test Field Centric", group = "Test")
+public class TeleOp_MainTestFieldCentric extends Base {
 
     double axial,lateral, yaw;
 

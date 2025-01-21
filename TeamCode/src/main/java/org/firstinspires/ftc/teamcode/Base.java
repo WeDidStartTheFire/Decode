@@ -579,7 +579,7 @@ public abstract class Base extends LinearOpMode {
     /**
      * Changes the velocity.
      *
-     * @param vel value.
+     * @param vel New velocity value.
      */
     public void setVelocity(double vel) {
         velocity = vel;
@@ -675,6 +675,15 @@ public abstract class Base extends LinearOpMode {
     }
 
     /**
+     * Gets the position of the intake servo.
+     *
+     * @return The position of the intake servo when connected, else -1;
+     */
+    public double getIntakePosition() {
+        return intakeServo != null ? intakeServo.getPosition() : -1;
+    }
+
+    /**
      * Moves the specimen servo to the specified position.
      *
      * @param position Position between 0 and 1 to move the servo to
@@ -694,6 +703,15 @@ public abstract class Base extends LinearOpMode {
     }
 
     /**
+     * Gets the position of the specimen servo.
+     *
+     * @return The position of the specimen servo when connected, else -1;
+     */
+    public double getSpecimenPosition() {
+        return specimenServo != null ? specimenServo.getPosition() : -1;
+    }
+
+    /**
      * Moves the basket servo to the specified position.
      *
      * @param position The position to move the basket servo to.
@@ -710,6 +728,15 @@ public abstract class Base extends LinearOpMode {
     /** WARNING: Function may do the opposite - Returns the basket servo to the robot */
     public void returnBasketServo() {
         moveBasketServo(0); // Number may be wrong
+    }
+
+    /**
+     * Gets the position of the basket servo.
+     *
+     * @return The position of the basket servo when connected, else -1;
+     */
+    public double getBasketPosition() {
+        return basketServo != null ? basketServo.getPosition() : -1;
     }
 
     /**
@@ -1013,32 +1040,30 @@ public abstract class Base extends LinearOpMode {
 
     /** Logic for the wrist motor during TeleOp */
     public void wristMotorLogic() {
-        if (wristMotor != null) {
-            double power = 0;
-            int wristMotorPos = wristMotor.getCurrentPosition();
-            if (gamepad2.dpad_down && wristMotorPos < WRIST_M_BOUNDS[1]) {
-                power = WRIST_MOTOR_POWER;
-                wristMotorTicksStopped = 0;
-            } else if (gamepad2.dpad_up && (wristMotorPos > WRIST_M_BOUNDS[0] || gamepad2.right_bumper)) {
-                power = -WRIST_MOTOR_POWER;
-                wristMotorTicksStopped = 0;
-                if (gamepad2.right_bumper) {
-                    WRIST_M_BOUNDS[1] += wristMotorPos - WRIST_M_BOUNDS[0];
-                    WRIST_M_BOUNDS[0] = wristMotorPos;
-                }
-            } else {
-                int error = wristMotorStopPos - wristMotorPos;
-                if (wristMotorTicksStopped < 5) wristMotorStopPos = wristMotorPos;
-                else power = abs(error) > 3 ? WRIST_MOTOR_POWER * error / 10.0 : 0;
-                wristMotorTicksStopped++;
+        if (wristMotor == null) return;
+        double power = 0;
+        int wristMotorPos = wristMotor.getCurrentPosition();
+        if (gamepad2.dpad_down && wristMotorPos < WRIST_M_BOUNDS[1]) {
+            power = WRIST_MOTOR_POWER;
+            wristMotorTicksStopped = 0;
+        } else if (gamepad2.dpad_up && (wristMotorPos > WRIST_M_BOUNDS[0] || gamepad2.right_bumper)) {
+            power = -WRIST_MOTOR_POWER;
+            wristMotorTicksStopped = 0;
+            if (gamepad2.right_bumper) {
+                WRIST_M_BOUNDS[1] += wristMotorPos - WRIST_M_BOUNDS[0];
+                WRIST_M_BOUNDS[0] = wristMotorPos;
             }
-            wristMotor.setPower(power);
+        } else {
+            int error = wristMotorStopPos - wristMotorPos;
+            if (wristMotorTicksStopped < 5) wristMotorStopPos = wristMotorPos;
+            else power = abs(error) > 3 ? WRIST_MOTOR_POWER * error / 10.0 : 0;
+            wristMotorTicksStopped++;
         }
+        wristMotor.setPower(power);
     }
 
-    /** Logic for the wrist servo during TeleOp */
+    /** Logic for the wrist servo during TeleOp. Cycles from 1.0 to 0.5 to 0.0 to 0.5 to 1.0... */
     public void wristServoLogic() {
-        // Logic for the wrist servo. Cycles from 1.0 to 0.5 to 0.0 to 0.5 to 1.0...
         if (gamepad2.a && !wasWristServoButtonPressed) {
             if (wristPos == 0.0 || wristPos == 1.0)
                 newWristPos = 1.0 - wristPos + (wristPos = newWristPos) * 0;
@@ -1050,138 +1075,135 @@ public abstract class Base extends LinearOpMode {
 
     /** Logic for the intake servo during TeleOp */
     public void intakeServoLogic() {
-        if (intakeServo != null && gamepad2.b && !wasIntakeServoButtonPressed)
-            moveIntake(intakeServo.getPosition() == 0 ? 1 : 0);
+        if (gamepad2.b && !wasIntakeServoButtonPressed)
+            moveIntake(getIntakePosition() == 0 ? 1 : 0);
         wasIntakeServoButtonPressed = gamepad2.b;
     }
 
     /** Logic for the horizontal lift during TeleOp */
     public void horizontalLiftLogic() {
+        if (liftMotor == null) return;
         boolean slow = false, liftIn = false, liftOut = false;
-        // Logic to extend or retract the horizontal lift
-        if (liftMotor != null) {
-            int liftPos = liftMotor.getCurrentPosition();
-            liftRunToPos = liftRunToPos && !(gamepad1.dpad_right || gamepad1.dpad_left);
-            if (liftRunToPos) {
-                if (liftPos > liftGoal) liftOut = true;
-                else liftIn = true;
-                slow = abs(liftPos - liftGoal) < 50;
-                liftRunToPos = abs(liftPos - liftGoal) > 20;
-                if (!liftRunToPos && intakeServo != null) openIntake();
-            }
-            slow = gamepad1.left_bumper || slow;
-            liftOut = liftOut || gamepad1.dpad_right;
-            liftIn = liftIn || gamepad1.dpad_left;
-            double power = 0;
-            if (liftOut ^ liftIn) {
-                // If the touch sensor isn't connected, assume it isn't pressed
-                boolean touchSensorPressed = horizontalTouchSensor != null && horizontalTouchSensor.isPressed();
-                double speed = slow ? 0.6 : 1;
-                if (liftOut) power = liftPos < LIFT_BOUNDARIES[1] ? speed : 0;
-                else if (!touchSensorPressed) power = liftPos > LIFT_BOUNDARIES[0] ? -speed : 0;
-            }
-            liftMotor.setPower(power);
+        int liftPos = liftMotor.getCurrentPosition();
+        liftRunToPos = liftRunToPos && !(gamepad1.dpad_right || gamepad1.dpad_left);
+        if (liftRunToPos) {
+            if (liftPos > liftGoal) liftOut = true;
+            else liftIn = true;
+            slow = abs(liftPos - liftGoal) < 50;
+            liftRunToPos = abs(liftPos - liftGoal) > 20;
+            if (!liftRunToPos && intakeServo != null) openIntake();
         }
+        slow = gamepad1.left_bumper || slow;
+        liftOut = liftOut || gamepad1.dpad_right;
+        liftIn = liftIn || gamepad1.dpad_left;
+        double power = 0;
+        if (liftOut ^ liftIn) {
+            // If the touch sensor isn't connected, assume it isn't pressed
+            boolean touchSensorPressed = horizontalTouchSensor != null && horizontalTouchSensor.isPressed();
+            double speed = slow ? 0.6 : 1;
+            if (liftOut) power = liftPos < LIFT_BOUNDARIES[1] ? speed : 0;
+            else if (!touchSensorPressed) power = liftPos > LIFT_BOUNDARIES[0] ? -speed : 0;
+        }
+        liftMotor.setPower(power);
     }
 
     /** Logic for the vertical lift during TeleOp */
     public void verticalLiftLogic() {
+        if (verticalMotorA == null) return;
         boolean vertUp = false, vertDown = false, slow = false;
         double power = 0;
-        if (verticalMotorA != null) {
-            int vertA = verticalMotorA.getCurrentPosition();
-            int vertB = verticalMotorB.getCurrentPosition();
-            int vertAvg = (vertA + vertB) / 2;
-            // Relies on one encoder if one seems disconnected
-            if (vertB == 0 && vertA > 100) vertAvg = vertB = vertA;
-            if (vertA == 0 && vertB > 100) vertAvg = vertA = vertB;
-            if ((gamepad1.dpad_up || gamepad1.dpad_down) && !gamepad1.a) vertRunToPos = false;
-            else {
-                if (gamepad1.a && (isDpu ^ isDpd)) {
-                    vertGoal = vertRunToPos ? vertGoal : vertAvg;
-                    if (isDpu) {
-                        for (int goal : V_LIFT_GOALS) {
-                            if (goal > vertGoal + 50) {
-                                vertGoal = goal;
-                                break;
-                            }
+        int vertA = verticalMotorA.getCurrentPosition();
+        int vertB = verticalMotorB.getCurrentPosition();
+        int vertAvg = (vertA + vertB) / 2;
+        // Relies on one encoder if one seems disconnected
+        if (vertB == 0 && vertA > 100) vertAvg = vertB = vertA;
+        if (vertA == 0 && vertB > 100) vertAvg = vertA = vertB;
+        if ((gamepad1.dpad_up || gamepad1.dpad_down) && !gamepad1.a) vertRunToPos = false;
+        else {
+            if (gamepad1.a && (isDpu ^ isDpd)) {
+                vertGoal = vertRunToPos ? vertGoal : vertAvg;
+                if (isDpu) {
+                    for (int goal : V_LIFT_GOALS) {
+                        if (goal > vertGoal + 50) {
+                            vertGoal = goal;
+                            break;
                         }
-                    } else { // isDpd is always true because of the conditions to enter the if
-                        int newGoal = vertGoal;
-                        for (int goal : V_LIFT_GOALS) {
-                            if (goal < vertGoal - 50) newGoal = goal;
-                            else break;
-                        }
-                        vertGoal = newGoal;
                     }
-                    vertRunToPos = true; // Ensure the flag is set
+                } else { // isDpd is always true because of the conditions to enter the if
+                    int newGoal = vertGoal;
+                    for (int goal : V_LIFT_GOALS) {
+                        if (goal < vertGoal - 50) newGoal = goal;
+                        else break;
+                    }
+                    vertGoal = newGoal;
                 }
-                if (vertAvg - 20 < vertGoal && vertGoal < vertAvg + 20) {
-                    vertRunToPos = false;
-                    vertStopped = true;
-                }
+                vertRunToPos = true; // Ensure the flag is set
             }
-            if (vertRunToPos) {
-                if (vertAvg < vertGoal) {
-                    vertUp = true;
-                    if (vertAvg >= vertGoal - 50) slow = true;
-                } else {
-                    vertDown = true;
-                    if (vertAvg < vertGoal + 50) slow = true;
-                }
+            if (vertAvg - 20 < vertGoal && vertGoal < vertAvg + 20) {
+                vertRunToPos = false;
+                vertStopped = true;
             }
-            if (!gamepad1.a) {
-                vertUp = gamepad1.dpad_up || vertUp;
-                vertDown = gamepad1.dpad_down || vertDown;
-            }
-            slow = slow || gamepad1.left_bumper;
-            if (vertUp == vertDown) {
-                if (!vertStopped && !gamepad1.a) {
-                    vertStopped = true;
-                    vertGoal = vertAvg;
-                }
-                power = vertAvg < vertGoal - 20 ? 0.1 : (vertGoal - vertAvg) / 20.0 * .1;
-            } else {
-                vertStopped = false;
-                // If the touch sensor isn't connected, assume it isn't pressed
-                boolean touchSensorPressed = verticalTouchSensor != null && verticalTouchSensor.isPressed();
-                if (touchSensorPressed) {
-                    verticalMotorA.setMode(STOP_AND_RESET_ENCODER);
-                    verticalMotorB.setMode(STOP_AND_RESET_ENCODER);
-                    verticalMotorA.setMode(RUN_WITHOUT_ENCODER);
-                    verticalMotorB.setMode(RUN_WITHOUT_ENCODER);
-                }
-                if (vertUp) {
-                    power = vertAvg < V_LIFT_BOUNDS[1] ? slow ? 0.7 : 1 : 0;
-                    wristMotorTicksStopped = wristMotorStopPos = 35;
-                } else if (!touchSensorPressed)
-                    power = vertAvg > V_LIFT_BOUNDS[0] ? slow ? -0.5 : -0.7 : 0;
-            }
-            if (vertA > vertB + 5 && power != 0) {
-                verticalMotorA.setPower(power - .05);
-                verticalMotorB.setPower(power + .05);
-            } else if (vertB > vertA + 5 && power != 0) {
-                verticalMotorA.setPower(power + .05);
-                verticalMotorB.setPower(power - .05);
-            } else {
-                verticalMotorA.setPower(power);
-                verticalMotorB.setPower(power);
-            }
-            print("Vertical Lift Goal", vertGoal);
         }
+        if (vertRunToPos) {
+            if (vertAvg < vertGoal) {
+                vertUp = true;
+                if (vertAvg >= vertGoal - 50) slow = true;
+            } else {
+                vertDown = true;
+                if (vertAvg < vertGoal + 50) slow = true;
+            }
+        }
+        if (!gamepad1.a) {
+            vertUp = gamepad1.dpad_up || vertUp;
+            vertDown = gamepad1.dpad_down || vertDown;
+        }
+        slow = slow || gamepad1.left_bumper;
+        if (vertUp == vertDown) {
+            if (!vertStopped && !gamepad1.a) {
+                vertStopped = true;
+                vertGoal = vertAvg;
+            }
+            power = vertAvg < vertGoal - 20 ? 0.1 : (vertGoal - vertAvg) / 20.0 * .1;
+        } else {
+            vertStopped = false;
+            // If the touch sensor isn't connected, assume it isn't pressed
+            boolean touchSensorPressed = verticalTouchSensor != null && verticalTouchSensor.isPressed();
+            if (touchSensorPressed) {
+                verticalMotorA.setMode(STOP_AND_RESET_ENCODER);
+                verticalMotorB.setMode(STOP_AND_RESET_ENCODER);
+                verticalMotorA.setMode(RUN_WITHOUT_ENCODER);
+                verticalMotorB.setMode(RUN_WITHOUT_ENCODER);
+            }
+            if (vertUp) {
+                power = vertAvg < V_LIFT_BOUNDS[1] ? slow ? 0.7 : 1 : 0;
+                wristMotorTicksStopped = wristMotorStopPos = 35;
+            } else if (!touchSensorPressed)
+                power = vertAvg > V_LIFT_BOUNDS[0] ? slow ? -0.5 : -0.7 : 0;
+        }
+        if (vertA > vertB + 5 && power != 0) {
+            verticalMotorA.setPower(power - .05);
+            verticalMotorB.setPower(power + .05);
+        } else if (vertB > vertA + 5 && power != 0) {
+            verticalMotorA.setPower(power + .05);
+            verticalMotorB.setPower(power - .05);
+        } else {
+            verticalMotorA.setPower(power);
+            verticalMotorB.setPower(power);
+        }
+        print("Vertical Lift Goal", vertGoal);
     }
 
     /** Logic for the basket servo during TeleOp */
     public void basketServoLogic() {
-        if (basketServo != null && gamepad2.x && !wasBasketServoButtonPressed && getVertLiftPos() > 100)
-            moveBasketServo(basketServo.getPosition() == 0 ? 1 : 0);
+        if (gamepad2.x && !wasBasketServoButtonPressed && getVertLiftPos() > 100)
+            moveBasketServo(getBasketPosition() == 0 ? 1 : 0);
         wasBasketServoButtonPressed = gamepad2.x && getVertLiftPos() > 100;
     }
 
     /** Logic for the specimen servo during TeleOp */
     public void specimenServoLogic() {
-        if (specimenServo != null && gamepad1.b && !wasSpecimenServoButtonPressed)
-            moveSpecimenServo(specimenServo.getPosition() == 0 ? 0.4 : 0);
+        if (gamepad1.b && !wasSpecimenServoButtonPressed)
+            moveSpecimenServo(getSpecimenPosition() == 0 ? 0.4 : 0);
         wasSpecimenServoButtonPressed = gamepad1.b;
     }
 

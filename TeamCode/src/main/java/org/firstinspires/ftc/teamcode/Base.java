@@ -688,12 +688,12 @@ public abstract class Base extends LinearOpMode {
         if (basketServo != null) basketServo.setPosition(position);
     }
 
-    /** Scores the sample in the basket servo */
-    public void scoreBasketServo() {
+    /** WARNING: Function may do the opposite - Extends the basket servo outside of the robot */
+    public void extendBasketServo() {
         moveBasketServo(1); // Number may be wrong
     }
 
-    /** Returns the basket servo to the robot */
+    /** WARNING: Function may do the opposite - Returns the basket servo to the robot */
     public void returnBasketServo() {
         moveBasketServo(0); // Number may be wrong
     }

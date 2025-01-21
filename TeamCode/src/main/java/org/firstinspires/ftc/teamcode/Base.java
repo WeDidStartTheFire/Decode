@@ -908,6 +908,11 @@ public abstract class Base extends LinearOpMode {
         moveVerticalLift(V_LIFT_BOUNDS[1]);
     }
 
+    /**
+     * Gets the position of the vertical lift
+     *
+     * @return int, average encoder value of the vertical lift motors
+     */
     public int getVertLiftPos() {
         int vertA = verticalMotorA.getCurrentPosition();
         int vertB = verticalMotorB.getCurrentPosition();

@@ -37,8 +37,8 @@ public class Auto_ObservationZone_Specimen_VirtualTest extends Base {
         moveVerticalLift(V_LIFT_GOALS[3] - 400);
         openSpecimenServo();
         s(.5);
+
         Trajectory trajectory = drive.trajectoryBuilder(currentPose)
-//                .splineTo(new Vector2d(-36 + 12, 72 - ROBOT_LENGTH / 2 - 18), Math.toRadians(-90))
                 .splineTo(new Vector2d(-38, 72 - ROBOT_LENGTH / 2 - 40), Math.toRadians(-90))
                 .splineTo(new Vector2d(-36 - 12, 72 - ROBOT_LENGTH / 2 - 52), Math.toRadians(-90))
                 .build();
@@ -46,18 +46,21 @@ public class Auto_ObservationZone_Specimen_VirtualTest extends Base {
         currentPose = trajectory.end();
         retractVerticalLift();
         drive(48, BACKWARD);
+
         Trajectory trajectory1 = drive.trajectoryBuilder(currentPose)
-                .splineTo(new Vector2d(-36 - 12, 72 - ROBOT_LENGTH / 2 - 36), Math.toRadians(-90))
+                .splineTo(new Vector2d(-36 - 12, 72 - ROBOT_LENGTH / 2 - 40), Math.toRadians(-90))
                 .splineTo(new Vector2d(-36 - 20, 72 - ROBOT_LENGTH / 2 - 52), Math.toRadians(-90))
                 .build();
         drive.followTrajectory(trajectory1);
         currentPose = trajectory1.end();
         drive(52, BACKWARD);
-        Trajectory trajectory3 = drive.trajectoryBuilder(currentPose)
-                .splineTo(new Vector2d(0, 72 - ROBOT_LENGTH / 2 - 29), Math.toRadians(90))
+
+        Trajectory trajectory2 = drive.trajectoryBuilder(currentPose)
+                .splineTo(new Vector2d(0, 72 - ROBOT_LENGTH / 2 - 29 + 14), Math.toRadians(90))
                 .build();
-        currentPose = trajectory3.end();
-        driveThread = new Thread(() -> drive.followTrajectory(trajectory3));
+        currentPose = trajectory2.end();
+        driveThread = new Thread(() -> drive.followTrajectory(trajectory2));
+        Thread driveThread1 = new Thread(() -> drive(14, BACKWARD));
         liftThread = new Thread(liftTask);
         holdLift = new Thread(holdLiftTask);
         closeSpecimenServo();
@@ -70,6 +73,8 @@ public class Auto_ObservationZone_Specimen_VirtualTest extends Base {
             liftThread.join();
             holdLift.start();
             driveThread.join();
+            driveThread1.start();
+            driveThread1.join();
         } catch (InterruptedException e) {
             except(e.getStackTrace());
         }
@@ -78,15 +83,17 @@ public class Auto_ObservationZone_Specimen_VirtualTest extends Base {
         moveVerticalLift(V_LIFT_GOALS[3] - 400);
         openSpecimenServo();
         s(.5);
+
         Trajectory trajectory4 = drive.trajectoryBuilder(currentPose)
                 .splineTo(new Vector2d(-36 - 20, 72 - ROBOT_LENGTH / 2), Math.toRadians(-90))
                 .build();
         currentPose = trajectory4.end();
         Trajectory trajectory5 = drive.trajectoryBuilder(currentPose)
-                .splineTo(new Vector2d(0, 72 - ROBOT_LENGTH / 2 - 29), Math.toRadians(90))
+                .splineTo(new Vector2d(0, 72 - ROBOT_LENGTH / 2 - 29 + 14), Math.toRadians(90))
                 .build();
         currentPose = trajectory5.end();
         driveThread = new Thread(() -> drive.followTrajectory(trajectory5));
+        driveThread1 = new Thread(() -> drive(14, BACKWARD));
         liftThread = new Thread(liftTask);
         holdLift = new Thread(holdLiftTask);
         drive.followTrajectory(trajectory4);
@@ -101,6 +108,8 @@ public class Auto_ObservationZone_Specimen_VirtualTest extends Base {
             liftThread.join();
             holdLift.start();
             driveThread.join();
+            driveThread1.start();
+            driveThread1.join();
         } catch (InterruptedException e) {
             except(e.getStackTrace());
         }
@@ -111,3 +120,4 @@ public class Auto_ObservationZone_Specimen_VirtualTest extends Base {
         s(.5);
     }
 }
+

@@ -23,6 +23,7 @@ import com.qualcomm.robotcore.eventloop.opmode.*;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.*;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.*;
 import org.firstinspires.ftc.vision.apriltag.*;
@@ -399,34 +400,47 @@ public abstract class Base extends LinearOpMode {
     }
 
     /**
-     * Simplifies an angle in degrees to be between -180 and 180 degrees.
+     * Simplifies an angle in degrees to be between -180 and 180 degrees
      *
      * @param angle Angle in degrees to be simplified
      * @return Angle now simplified between -180 and 180 degrees
      */
     public double simplifyAngle(double angle) {
-        return ((angle + 180) % 360 + 360) % 360 - 180;
+        return simplifyAngle(angle, DEGREES);
     }
 
     /**
-     * Simplifies an angle in radians to be between -pi and pi radians
+     * Simplifies an angle in degrees to be between -180 and 180 degrees or -pi and pi radians
      *
-     * @param angle Angle in radians to be simplified
-     * @return Angle now simplified between -pi and pi radians
+     * @param angle Angle
+     * @param u Whether the angle is in radians or degrees
      */
-    public double simplifyAngleRadians(double angle) {
+    public double simplifyAngle(double angle, AngleUnit u) {
+        if (u == DEGREES) return ((angle + 180) % 360 + 360) % 360 - 180;
         return ((angle + PI) % TAU + TAU) % TAU - PI;
     }
 
     /**
-     * Returns the difference between two angles.
+     * Returns the difference between two angles in degrees
      *
      * @param a First angle in degrees
      * @param b Second angle, to subtract, in degrees
      * @return The difference between the two angles in degrees
      */
     public double angleDifference(double a, double b) {
-        return simplifyAngle(a - b);
+        return angleDifference(a, b, DEGREES);
+    }
+
+    /**
+     * Returns the difference between two angles in degrees or radians
+     *
+     * @param a First angle
+     * @param b Second angle to subtract
+     * @param u Whether the angles are in radians or degrees
+     * @return The difference between the two angles in the specified unit
+     */
+    public double angleDifference(double a, double b, AngleUnit u) {
+        return simplifyAngle(a - b, u);
     }
 
     /**

@@ -109,7 +109,7 @@ public abstract class Base extends LinearOpMode {
     boolean wasDpu, isDpu, isDpd, wasDpd;
 
     int liftGoal = 0;
-    boolean liftRunToPos;
+    boolean liftRunToPos, handoff;
 
     /** Directions. Options: LEFT, RIGHT, FORWARD, BACKWARD */
     public enum Dir {
@@ -1091,7 +1091,12 @@ public abstract class Base extends LinearOpMode {
             else liftIn = true;
             slow = abs(liftPos - liftGoal) < 50;
             liftRunToPos = abs(liftPos - liftGoal) > 20;
-            if (!liftRunToPos && intakeServo != null) openIntake();
+            if (!liftRunToPos && intakeServo != null && handoff) {
+                handoff = false;
+                openIntake();
+                vertRunToPos = true;
+                vertGoal = V_LIFT_GOALS[3];
+            }
         }
         slow = gamepad1.left_bumper || slow;
         liftOut = liftOut || gamepad1.dpad_right;

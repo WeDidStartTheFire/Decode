@@ -3,13 +3,13 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "Test Logic", group = "Test")
-public class TeleOp_MainTestLogic extends Base {
+public class TeleOp_TestLogic extends Base {
     @Override
     public void runOpMode() throws InterruptedException {
         setup();
 
         while (active()) {
-            drivetrainLogic(false);
+            drivetrainLogic(true);
             wristMotorLogic();
             wristServoLogic();
             intakeServoLogic();
@@ -19,6 +19,7 @@ public class TeleOp_MainTestLogic extends Base {
             specimenServoLogic();
 
             if (gamepad2.y) {
+                handoff = true;
                 wristMotorTicksStopped = 5;
                 wristMotorStopPos = 0;
                 wristPos = 1;

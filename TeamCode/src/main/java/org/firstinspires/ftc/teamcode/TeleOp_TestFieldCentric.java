@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
 @TeleOp(name = "Test Field Centric", group = "Test")
-public class TeleOp_MainTestFieldCentric extends Base {
+public class TeleOp_TestFieldCentric extends Base {
 
     double axial,lateral, yaw;
 
@@ -36,6 +36,7 @@ public class TeleOp_MainTestFieldCentric extends Base {
     boolean wasWristServoButtonPressed = false;
     boolean wasSpecimenServoButtonPressed = false;
     boolean wasBasketServoButtonPressed = false;
+    boolean handoff = false;
     int wristMotorTicksStopped = 0;
     int wristMotorPos = 0;
     int wristMotorStopPos = 0;
@@ -153,7 +154,12 @@ public class TeleOp_MainTestFieldCentric extends Base {
                     else liftIn = true;
                     slow = abs(liftPos - liftGoal) < 50;
                     liftRunToPos = abs(liftPos - liftGoal) > 20;
-                    if (!liftRunToPos && intakeServo != null) openIntake();
+                    if (!liftRunToPos && intakeServo != null && handoff) {
+                        handoff = false;
+                        openIntake();
+                        vertRunToPos = true;
+                        vertGoal = V_LIFT_GOALS[3];
+                    }
                 }
                 slow = gamepad1.left_bumper || slow;
                 liftOut = liftOut || gamepad1.dpad_right;
@@ -264,6 +270,7 @@ public class TeleOp_MainTestFieldCentric extends Base {
             wasSpecimenServoButtonPressed = gamepad1.b;
 
             if (gamepad2.y) {
+                handoff = true;
                 wristMotorTicksStopped = 5;
                 wristMotorStopPos = 0;
                 wristPos = 1;

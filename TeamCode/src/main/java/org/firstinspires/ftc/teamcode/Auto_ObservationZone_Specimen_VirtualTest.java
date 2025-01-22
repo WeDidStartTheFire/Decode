@@ -39,8 +39,8 @@ public class Auto_ObservationZone_Specimen_VirtualTest extends Base {
         s(.5);
 
         Trajectory trajectory = drive.trajectoryBuilder(currentPose)
-                .splineTo(new Vector2d(-38, 72 - ROBOT_LENGTH / 2 - 40), Math.toRadians(-90))
-                .splineTo(new Vector2d(-36 - 12, 72 - ROBOT_LENGTH / 2 - 52), Math.toRadians(-90))
+                .splineTo(new Vector2d(-38, 21), Math.toRadians(-90))
+                .splineTo(new Vector2d(-36 - 11, 8), Math.toRadians(-90))
                 .build();
         drive.followTrajectory(trajectory);
         currentPose = trajectory.end();
@@ -48,15 +48,15 @@ public class Auto_ObservationZone_Specimen_VirtualTest extends Base {
         drive(48, BACKWARD);
 
         Trajectory trajectory1 = drive.trajectoryBuilder(currentPose)
-                .splineTo(new Vector2d(-36 - 12, 72 - ROBOT_LENGTH / 2 - 40), Math.toRadians(-90))
-                .splineTo(new Vector2d(-36 - 20, 72 - ROBOT_LENGTH / 2 - 52), Math.toRadians(-90))
+                .splineTo(new Vector2d(-36 - 11, 21), Math.toRadians(-90))
+                .splineTo(new Vector2d(-36 - 20, 8), Math.toRadians(-90))
                 .build();
         drive.followTrajectory(trajectory1);
         currentPose = trajectory1.end();
         drive(52, BACKWARD);
 
         Trajectory trajectory2 = drive.trajectoryBuilder(currentPose)
-                .splineTo(new Vector2d(0, 72 - ROBOT_LENGTH / 2 - 29 + 14), Math.toRadians(90))
+                .splineTo(new Vector2d(-ROBOT_WIDTH / 2 - 2, 72 - ROBOT_LENGTH / 2 - 29 + 14), Math.toRadians(90))
                 .build();
         currentPose = trajectory2.end();
         driveThread = new Thread(() -> drive.followTrajectory(trajectory2));
@@ -89,7 +89,7 @@ public class Auto_ObservationZone_Specimen_VirtualTest extends Base {
                 .build();
         currentPose = trajectory4.end();
         Trajectory trajectory5 = drive.trajectoryBuilder(currentPose)
-                .splineTo(new Vector2d(0, 72 - ROBOT_LENGTH / 2 - 29 + 14), Math.toRadians(90))
+                .splineTo(new Vector2d(-ROBOT_WIDTH / 2 - 4, 72 - ROBOT_LENGTH / 2 - 29 + 14), Math.toRadians(90))
                 .build();
         currentPose = trajectory5.end();
         driveThread = new Thread(() -> drive.followTrajectory(trajectory5));

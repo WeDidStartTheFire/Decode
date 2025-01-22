@@ -79,7 +79,7 @@ public abstract class Base extends LinearOpMode {
     public Pose2d currentPose = new Pose2d();
 
     /** Dimension front to back on robot in inches */
-    public static final double ROBOT_LENGTH = 17;
+    public static final double ROBOT_LENGTH = 18;
     /** Dimension left to right on robot in inches */
     public static final double ROBOT_WIDTH = 16;
 

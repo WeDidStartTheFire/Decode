@@ -19,7 +19,7 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
 //        setup();
 
         closeSpecimenServo();
-        Thread driveThread = new Thread(() -> drive(29, BACKWARD));
+        Thread driveThread = new Thread(() -> drive(30, BACKWARD));
         Thread liftThread = new Thread(liftTask);
         Thread holdLift = new Thread(holdLiftTask);
         // Start both threads

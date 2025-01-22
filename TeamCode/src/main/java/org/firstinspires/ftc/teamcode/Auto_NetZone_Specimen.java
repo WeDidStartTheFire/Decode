@@ -18,7 +18,7 @@ public class Auto_NetZone_Specimen extends  Base {
         setup(new Pose2d(ROBOT_WIDTH / 2 + .5, 72 - ROBOT_LENGTH / 2, toRadians(90)));
 
         closeSpecimenServo();
-        Thread driveThread = new Thread(() -> drive(29, BACKWARD));
+        Thread driveThread = new Thread(() -> drive(30, BACKWARD));
         Thread liftThread = new Thread(liftTask);
         Thread holdLift = new Thread(holdLiftTask);
         // Start both threads
@@ -60,7 +60,7 @@ public class Auto_NetZone_Specimen extends  Base {
                 .build();
         currentPose = trajectory2.end();
         drive.followTrajectory(trajectory2);
-        drive(48, BACKWARD);
+        drive(49, BACKWARD);
 
         Trajectory trajectory3 = drive.trajectoryBuilder(currentPose)
                 .splineTo(new Vector2d(currentPose.getX(), 21), toRadians(-90))

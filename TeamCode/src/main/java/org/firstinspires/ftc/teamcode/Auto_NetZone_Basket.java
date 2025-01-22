@@ -60,7 +60,7 @@ public class Auto_NetZone_Basket extends Base {
         drive(52, BACKWARD);
 
         Trajectory trajectory2 = drive.trajectoryBuilder(currentPose)
-                .splineTo(new Vector2d(48, 21), toRadians(-90))
+                .splineTo(new Vector2d(currentPose.getX(), 21), toRadians(-90))
                 .splineTo(new Vector2d(56, 8), toRadians(-90))
                 .build();
         currentPose = trajectory2.end();
@@ -68,7 +68,7 @@ public class Auto_NetZone_Basket extends Base {
         drive(48, BACKWARD);
 
         Trajectory trajectory3 = drive.trajectoryBuilder(currentPose)
-                .splineTo(new Vector2d(54, 21), toRadians(-90))
+                .splineTo(new Vector2d(currentPose.getX(), 21), toRadians(-90))
                 .splineTo(new Vector2d(72 - ROBOT_WIDTH / 2, 8), toRadians(-90))
                 .build();
         currentPose = trajectory3.end();

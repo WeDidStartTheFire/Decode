@@ -8,7 +8,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name="Net Zone Specimen", group="IntoTheDeep")
+@Autonomous(name="Net Zone Specimen", group="IntoTheDeep", preselectTeleOp = "Main")
 public class Auto_NetZone_Specimen extends  Base {
 
     Runnable liftTask = () -> moveVerticalLift(V_LIFT_GOALS[3]);

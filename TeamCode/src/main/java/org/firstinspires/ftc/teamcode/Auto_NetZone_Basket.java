@@ -80,7 +80,7 @@ public class Auto_NetZone_Basket extends Base {
                 .build();
         currentPose = trajectory4.end();
         Trajectory trajectory5 = drive.trajectoryBuilder(currentPose, true)
-                .lineTo(new Vector2d(18 + ROBOT_WIDTH / 2, 20 - ROBOT_WIDTH / 2))
+                .lineTo(new Vector2d(16 + ROBOT_WIDTH / 2, 20 - ROBOT_WIDTH / 2))
                 .build();
         currentPose = trajectory5.end();
         drive.followTrajectory(trajectory4);

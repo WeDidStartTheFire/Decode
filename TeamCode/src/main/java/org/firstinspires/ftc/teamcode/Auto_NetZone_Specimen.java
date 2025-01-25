@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Base.Dir.BACKWARD;
+import static org.firstinspires.ftc.teamcode.Base.Dir.LEFT;
 import static java.lang.Math.toRadians;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -40,7 +41,7 @@ public class Auto_NetZone_Specimen extends  Base {
 
         Trajectory trajectory1 = drive.trajectoryBuilder(currentPose)
                 .splineTo(new Vector2d(36, 21), toRadians(-90))
-                .splineTo(new Vector2d(48, 8), toRadians(-90))
+                .splineTo(new Vector2d(48, 8), toRadians(0))
                 .build();
         currentPose = trajectory1.end();
         liftThread = new Thread(this::retractVerticalLift);
@@ -52,33 +53,30 @@ public class Auto_NetZone_Specimen extends  Base {
         } catch (InterruptedException e) {
             except(e.getStackTrace());
         }
-        drive(52, BACKWARD);
+        strafe(52.5, LEFT);
 
         Trajectory trajectory2 = drive.trajectoryBuilder(currentPose)
-                .splineTo(new Vector2d(currentPose.getX(), 21), toRadians(-90))
-                .splineTo(new Vector2d(56, 8), toRadians(-90))
+                .lineToConstantHeading(new Vector2d(currentPose.getX(), 21))
+                .splineToConstantHeading(new Vector2d(56, 8), toRadians(0))
                 .build();
         currentPose = trajectory2.end();
         drive.followTrajectory(trajectory2);
-        drive(49, BACKWARD);
+        strafe(48, LEFT);
 
         Trajectory trajectory3 = drive.trajectoryBuilder(currentPose)
-                .splineTo(new Vector2d(currentPose.getX(), 21), toRadians(-90))
-                .splineTo(new Vector2d(72 - ROBOT_WIDTH / 2, 8), toRadians(-90))
+                .lineToConstantHeading(new Vector2d(currentPose.getX(), 21))
+                .splineToConstantHeading(new Vector2d(72 - ROBOT_WIDTH / 2, 8), toRadians(0))
                 .build();
         currentPose = trajectory3.end();
         drive.followTrajectory(trajectory3);
-        drive(42, BACKWARD);
+        strafe(42, LEFT);
 
-        Trajectory trajectory4 = drive.trajectoryBuilder(currentPose)
-                .splineTo(new Vector2d(40, 20 - ROBOT_WIDTH / 2), toRadians(0))
-                .build();
-        currentPose = trajectory4.end();
-        Trajectory trajectory5 = drive.trajectoryBuilder(currentPose, true)
-                .lineTo(new Vector2d(16 + ROBOT_WIDTH / 2, 20 - ROBOT_WIDTH / 2))
+        Trajectory trajectory5 = drive.trajectoryBuilder(currentPose)
+                .splineToConstantHeading(new Vector2d(40, 20 - ROBOT_WIDTH / 2), toRadians(0))
+                .splineToConstantHeading(new Vector2d(16 + ROBOT_WIDTH / 2, 20 - ROBOT_WIDTH / 2), toRadians(0))
                 .build();
         currentPose = trajectory5.end();
-        drive.followTrajectory(trajectory4);
         drive.followTrajectory(trajectory5);
+
     }
 }

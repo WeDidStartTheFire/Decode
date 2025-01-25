@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Base.Dir.BACKWARD;
 
+import static java.lang.Math.toRadians;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -16,7 +18,7 @@ public class Auto_ObservationZone_Specimen extends Base {
     @Override
     public void runOpMode() throws InterruptedException {
         setup(new Pose2d(-ROBOT_WIDTH / 2 - .5, 72 - ROBOT_LENGTH / 2, Math.toRadians(90)));
-//        setup();
+
         closeSpecimenServo();
         Thread driveThread = new Thread(() -> drive(30, BACKWARD));
         Thread liftThread = new Thread(liftTask);
@@ -39,33 +41,30 @@ public class Auto_ObservationZone_Specimen extends Base {
         s(.5);
 
         Trajectory trajectory = drive.trajectoryBuilder(currentPose)
-                .splineTo(new Vector2d(-38, 21), Math.toRadians(-90))
-                .splineTo(new Vector2d(-36 - 11, 8), Math.toRadians(-90))
+                .lineTo(new Vector2d(currentPose.getX() - 24, currentPose.getY() + 2))
                 .build();
-        drive.followTrajectory(trajectory);
         currentPose = trajectory.end();
+        Trajectory trajectory_5 = drive.trajectoryBuilder(currentPose, true)
+                .splineTo(new Vector2d(-36 - 5, 8), toRadians(180))
+                .splineToConstantHeading(new Vector2d(-36 - 11, 72 - 10), toRadians(180))
+                .build();
+        currentPose = trajectory_5.end();
+        drive.followTrajectory(trajectory);
+        drive.followTrajectory(trajectory_5);
         retractVerticalLift();
-        drive(48, BACKWARD);
 
         Trajectory trajectory1 = drive.trajectoryBuilder(currentPose)
-                .splineTo(new Vector2d(-36 - 11, 21), Math.toRadians(-90))
-                .splineTo(new Vector2d(-36 - 20, 8), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(-36 - 14, 8), toRadians(180))
+                .splineToConstantHeading(new Vector2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2), toRadians(180))
                 .build();
         currentPose = trajectory1.end();
-        Trajectory trajectory1_5 = drive.trajectoryBuilder(currentPose)
-                .lineTo(new Vector2d(-36 - 20, 72 - ROBOT_LENGTH / 2))
-                .build();
-        currentPose = trajectory1_5.end();
         drive.followTrajectory(trajectory1);
-        drive.followTrajectory(trajectory1_5);
-//        drive(52, BACKWARD);
 
-        Trajectory trajectory2 = drive.trajectoryBuilder(currentPose)
-                .splineTo(new Vector2d(-ROBOT_WIDTH / 2 - 2, 72 - ROBOT_LENGTH / 2 - 29 + 14), Math.toRadians(90))
+        Trajectory trajectory2 = drive.trajectoryBuilder(currentPose, true)
+                .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 29, toRadians(90)))
                 .build();
         currentPose = trajectory2.end();
         driveThread = new Thread(() -> drive.followTrajectory(trajectory2));
-        Thread driveThread1 = new Thread(() -> drive(14, BACKWARD));
         liftThread = new Thread(liftTask);
         holdLift = new Thread(holdLiftTask);
         closeSpecimenServo();
@@ -78,8 +77,6 @@ public class Auto_ObservationZone_Specimen extends Base {
             liftThread.join();
             holdLift.start();
             driveThread.join();
-            driveThread1.start();
-            driveThread1.join();
         } catch (InterruptedException e) {
             except(e.getStackTrace());
         }
@@ -90,7 +87,7 @@ public class Auto_ObservationZone_Specimen extends Base {
         s(.5);
 
         Trajectory trajectory4 = drive.trajectoryBuilder(currentPose)
-                .splineTo(new Vector2d(-36 - 20, 72 - ROBOT_LENGTH / 2), Math.toRadians(-90))
+                .lineToLinearHeading(new Pose2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2, toRadians(0)))
                 .build();
         currentPose = trajectory4.end();
         drive.followTrajectory(trajectory4);

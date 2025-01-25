@@ -8,6 +8,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 import static java.lang.Math.abs;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
@@ -56,7 +57,8 @@ public class TeleOp_TestFieldCentric extends Base {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        setup();
+        Pose2d p = loadOdometryPosition();
+        setup(p != null ? p : new Pose2d());
 
         while (active()) {
             speedMultiplier = (gamepad1.left_bumper ? speeds[0] : (gamepad1.right_bumper ? speeds[2] : speeds[1]));

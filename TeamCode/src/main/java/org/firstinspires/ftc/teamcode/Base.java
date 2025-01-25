@@ -12,6 +12,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 import static java.lang.Math.*;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -32,6 +33,13 @@ import static org.firstinspires.ftc.teamcode.Base.Dir.*;
 
 import static java.util.Locale.US;
 
+import android.os.Environment;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 // Connect to robot: rc
@@ -78,7 +86,7 @@ public abstract class Base extends LinearOpMode {
     public SampleMecanumDrive drive;
     public Pose2d currentPose = new Pose2d();
 
-    public volatile boolean tele = false;
+    public volatile boolean loop = false;
 
     /** Dimension front to back on robot in inches */
     public static final double ROBOT_LENGTH = 18;
@@ -88,6 +96,7 @@ public abstract class Base extends LinearOpMode {
     double goalAngle = 0;
 
     public volatile boolean hold = true;
+    public boolean auto = false;
 
     public static final IMU.Parameters IMU_PARAMS = new IMU.Parameters(
             new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
@@ -331,11 +340,18 @@ public abstract class Base extends LinearOpMode {
             print("Angle", imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
             print("Running to", " " + lfTarget + ":" + rfTarget);
             print("Currently at", lf.getCurrentPosition() + ":" + rf.getCurrentPosition());
-            if (!tele) update();
+            if (!loop) update();
         }
         if (inches != 0) stopRobot();
     }
 
+    /**
+     * Turns the robot a specified number of degrees. Positive values turn right, negative values
+     * turn left.
+     *
+     * @param degrees   The amount of degrees to turn.
+     * @param direction Direction to turn if degrees is zero.
+     */
     public void IMUTurn(double degrees, Dir direction) {
         double direct = direction == LEFT ? -1 : direction == RIGHT ? 1 : 0;
         sleep(100);
@@ -364,7 +380,7 @@ public abstract class Base extends LinearOpMode {
             print("Start", startAngle);
             print("Angle", angle);
             print("Distance from goal", difference);
-            if (!tele) update();
+            if (!loop) update();
         }
         stopRobot();
         imu.resetYaw();
@@ -375,7 +391,7 @@ public abstract class Base extends LinearOpMode {
      * turn left.
      *
      * @param degrees   The amount of degrees to turn.
-     * @param direction (opt.) Direction to turn if degrees is zero.
+     * @param direction Direction to turn if degrees is zero.
      */
     public void newIMUTurn(double degrees, Dir direction) {
         double direct = direction == LEFT ? -1 : direction == RIGHT ? 1 : 0;
@@ -396,7 +412,7 @@ public abstract class Base extends LinearOpMode {
             print("Current Angle", angle);
             print("Goal Angle", goalAngle);
             print("Error", error);
-            if (!tele) update();
+            if (!loop) update();
         }
         stopRobot();
     }
@@ -540,11 +556,11 @@ public abstract class Base extends LinearOpMode {
         while (active() && (runtime.seconds() < duration) && inches != 0) {
             print("Strafing until", duration + " seconds");
             print("Currently at", runtime.seconds() + " seconds");
-            if (!tele)  update();
+            if (!loop)  update();
         }
         if (inches != 0) stopRobot();
         print("Strafing", "Complete");
-        if (!tele) update();
+        if (!loop) update();
     }
 
     /**
@@ -809,7 +825,7 @@ public abstract class Base extends LinearOpMode {
             if ((a = detectTag(id, 1)) == null) return;
             print("Turn", a.ftcPose.yaw / 2);
             turn(a.ftcPose.yaw / 2);
-            if (!tele) update();
+            if (!loop) update();
         }
     }
 
@@ -848,7 +864,7 @@ public abstract class Base extends LinearOpMode {
             // Display it for the driver.
             print("Position", liftMotor.getCurrentPosition());
             print("Goal", encoders);
-            if (!tele) update();
+            if (!loop) update();
         }
         liftMotor.setVelocity(0);
     }
@@ -914,7 +930,7 @@ public abstract class Base extends LinearOpMode {
             print("A Power", verticalMotorA.getPower());
             print("B Power", verticalMotorB.getPower());
             print("Direction", direction);
-            if (!tele) update();
+            if (!loop) update();
         }
 
         // Turn off power at the end
@@ -1242,8 +1258,8 @@ public abstract class Base extends LinearOpMode {
     public void printSeconds(String content, double seconds) {
         print(content);
         double t0 = getRuntime();
-        if (!tele) update();
-        if (!tele) s(seconds);
+        if (!loop) update();
+        if (!loop) s(seconds);
         else while (getRuntime() - t0 < seconds) print(content);
     }
 
@@ -1279,8 +1295,44 @@ public abstract class Base extends LinearOpMode {
     }
 
     public void telemetryLoop() {
-        tele = true;
-        while (active() && tele) updateAll();
+        loop = true;
+        while (active() && loop) {
+            updateAll();
+            if (auto) saveOdometryPosition(drive.getPoseEstimate());
+        }
+    }
+
+    public void saveOdometryPosition(@NonNull Pose2d pos) {
+        File file = new File(Environment.getExternalStorageDirectory(), "odometryPosition.txt");
+        try (FileWriter writer = new FileWriter(file, false)) {
+            writer.write(pos.getX() + "," + pos.getY() + "," + pos.getHeading()); // Write the latest position
+        } catch (IOException e) {
+            print("Error", "Failed to save odometry position: " + e.getMessage());
+        }
+    }
+
+    @Nullable
+    public Pose2d loadOdometryPosition() {
+        File file = new File(Environment.getExternalStorageDirectory(), "odometryPosition.txt");
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line = reader.readLine();
+                if (line != null) {
+                    String[] values = line.split(",");
+                    double x = Double.parseDouble(values[0]); // X
+                    double y = Double.parseDouble(values[1]); // Y
+                    double h = Double.parseDouble(values[2]); // Heading
+                    // Delete the file after reading it
+                    if (!file.delete()) {
+                        print("Error", "Failed to delete odometry file.");
+                    }
+                    return new Pose2d(x, y, h);
+                }
+            } catch (IOException e) {
+                print("Error", "Failed to load odometry position: " + e.getMessage());
+            }
+        }
+        return null;
     }
 
     /** Adds information messages to telemetry and updates it */

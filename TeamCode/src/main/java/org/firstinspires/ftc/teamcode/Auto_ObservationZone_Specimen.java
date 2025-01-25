@@ -19,6 +19,7 @@ public class Auto_ObservationZone_Specimen extends Base {
     public void runOpMode() throws InterruptedException {
         setup(new Pose2d(-ROBOT_WIDTH / 2 - .5, 72 - ROBOT_LENGTH / 2, Math.toRadians(90)));
 
+        auto = true;
         Thread telemetryThread = new Thread(this::telemetryLoop);
         telemetryThread.start();
 
@@ -96,7 +97,7 @@ public class Auto_ObservationZone_Specimen extends Base {
         drive.followTrajectory(trajectory4);
         retractVerticalLift();
 
-        tele = false;
+        loop = false;
         telemetryThread.join();
     }
 }

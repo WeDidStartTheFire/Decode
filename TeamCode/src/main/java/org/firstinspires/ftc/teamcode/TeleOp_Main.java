@@ -5,6 +5,7 @@ import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENC
 
 import static java.lang.Math.abs;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "Main", group = "Into The Deep")
@@ -52,7 +53,8 @@ public class TeleOp_Main extends Base {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        setup();
+        Pose2d p = loadOdometryPosition();
+        setup(p != null ? p : new Pose2d());
 
         while (active()) {
             speedMultiplier = gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1];

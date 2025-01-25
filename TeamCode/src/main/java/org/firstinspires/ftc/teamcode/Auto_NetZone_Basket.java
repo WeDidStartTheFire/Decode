@@ -19,6 +19,9 @@ public class Auto_NetZone_Basket extends Base {
     public void runOpMode() throws InterruptedException {
         setup(new Pose2d(48 - ROBOT_WIDTH / 2 - .5, 72 - .5 - ROBOT_LENGTH / 2, toRadians(180)));
 
+        Thread telemetryThread = new Thread(this::telemetryLoop);
+        telemetryThread.start();
+
         double v = 72 - 12 - (ROBOT_LENGTH / 2 / sqrt(2)) + 1;
         Trajectory trajectory = drive.trajectoryBuilder(currentPose, true)
                 .splineTo(new Vector2d(v, v), toRadians(45))
@@ -81,5 +84,8 @@ public class Auto_NetZone_Basket extends Base {
                 .build();
         currentPose = trajectory5.end();
         drive.followTrajectory(trajectory5);
+
+        tele = false;
+        telemetryThread.join();
     }
 }

@@ -18,6 +18,9 @@ public class Auto_NetZone_Specimen extends  Base {
     public void runOpMode() throws InterruptedException {
         setup(new Pose2d(ROBOT_WIDTH / 2 + .5, 72 - ROBOT_LENGTH / 2, toRadians(90)));
 
+        Thread telemetryThread = new Thread(this::telemetryLoop);
+        telemetryThread.start();
+
         closeSpecimenServo();
         Thread driveThread = new Thread(() -> drive(30, BACKWARD));
         Thread liftThread = new Thread(liftTask);
@@ -78,5 +81,7 @@ public class Auto_NetZone_Specimen extends  Base {
         currentPose = trajectory5.end();
         drive.followTrajectory(trajectory5);
 
+        tele = false;
+        telemetryThread.join();
     }
 }

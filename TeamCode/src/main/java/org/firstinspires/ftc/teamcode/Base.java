@@ -78,6 +78,8 @@ public abstract class Base extends LinearOpMode {
     public SampleMecanumDrive drive;
     public Pose2d currentPose = new Pose2d();
 
+    public volatile boolean tele = false;
+
     /** Dimension front to back on robot in inches */
     public static final double ROBOT_LENGTH = 18;
     /** Dimension left to right on robot in inches */
@@ -329,7 +331,7 @@ public abstract class Base extends LinearOpMode {
             print("Angle", imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
             print("Running to", " " + lfTarget + ":" + rfTarget);
             print("Currently at", lf.getCurrentPosition() + ":" + rf.getCurrentPosition());
-            update();
+            if (!tele) update();
         }
         if (inches != 0) stopRobot();
     }
@@ -362,7 +364,7 @@ public abstract class Base extends LinearOpMode {
             print("Start", startAngle);
             print("Angle", angle);
             print("Distance from goal", difference);
-            update();
+            if (!tele) update();
         }
         stopRobot();
         imu.resetYaw();
@@ -394,7 +396,7 @@ public abstract class Base extends LinearOpMode {
             print("Current Angle", angle);
             print("Goal Angle", goalAngle);
             print("Error", error);
-            update();
+            if (!tele) update();
         }
         stopRobot();
     }
@@ -538,11 +540,11 @@ public abstract class Base extends LinearOpMode {
         while (active() && (runtime.seconds() < duration) && inches != 0) {
             print("Strafing until", duration + " seconds");
             print("Currently at", runtime.seconds() + " seconds");
-            update();
+            if (!tele)  update();
         }
         if (inches != 0) stopRobot();
         print("Strafing", "Complete");
-        update();
+        if (!tele) update();
     }
 
     /**
@@ -807,7 +809,7 @@ public abstract class Base extends LinearOpMode {
             if ((a = detectTag(id, 1)) == null) return;
             print("Turn", a.ftcPose.yaw / 2);
             turn(a.ftcPose.yaw / 2);
-            update();
+            if (!tele) update();
         }
     }
 
@@ -846,7 +848,7 @@ public abstract class Base extends LinearOpMode {
             // Display it for the driver.
             print("Position", liftMotor.getCurrentPosition());
             print("Goal", encoders);
-            update();
+            if (!tele) update();
         }
         liftMotor.setVelocity(0);
     }
@@ -912,7 +914,7 @@ public abstract class Base extends LinearOpMode {
             print("A Power", verticalMotorA.getPower());
             print("B Power", verticalMotorB.getPower());
             print("Direction", direction);
-            update();
+            if (!tele) update();
         }
 
         // Turn off power at the end
@@ -1239,8 +1241,10 @@ public abstract class Base extends LinearOpMode {
      */
     public void printSeconds(String content, double seconds) {
         print(content);
-        update();
-        s(seconds);
+        double t0 = getRuntime();
+        if (!tele) update();
+        if (!tele) s(seconds);
+        else while (getRuntime() - t0 < seconds) print(content);
     }
 
     /** A less space consuming way to update the displayed telemetry. */
@@ -1272,6 +1276,11 @@ public abstract class Base extends LinearOpMode {
         if (gamepad1.a) printSeconds("Confirmed.", .5);
         else printSeconds("Canceled.", .5);
         return gamepad1.a;
+    }
+
+    public void telemetryLoop() {
+        tele = true;
+        while (active() && tele) updateAll();
     }
 
     /** Adds information messages to telemetry and updates it */
@@ -1306,7 +1315,7 @@ public abstract class Base extends LinearOpMode {
             print(String.format(US, "SparkFun Position :  X: %.2f, Y: %.2f, θ: %.2f°", pos.getX(), pos.getY(), toDegrees(pos.getHeading())));
         } else print("Odometry disabled");
 
-        telemetry.update();
+        update();
     }
 
     /** Returns whether the robot is active. */

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -25,7 +27,8 @@ public class RedundantLocalizer implements Localizer {
         secondaryLocalizer.update();
 
         // Switch if SparkFun is unreliable; Skip check if already found unreliable
-        if (!usePrimary && !isSparkFunReliable()) usePrimary = false;
+        if (usePrimary && !isSparkFunReliable()) usePrimary = false;
+        if (!usePrimary) telemetry.addData("Primary Localizer", "Unreliable");
     }
 
     @NonNull
@@ -58,11 +61,11 @@ public class RedundantLocalizer implements Localizer {
         double compounding_error = 0;
         for (int i = 0; i < sfMeasurements.length; i++) {
             error =  getError(sfMeasurements[i], encMeasurements[i]);
-            if (error > 50) return false;
-            else if (error > 20) compounding_error += error;
+            if (error > .5) return false;
+            else if (error > .2) compounding_error += error;
         }
 
-        return !(compounding_error > 100);
+        return !(compounding_error > 1);
     }
 
     /** Gets the normalized error between two numbers
@@ -72,6 +75,6 @@ public class RedundantLocalizer implements Localizer {
      * @return Normalized error
      */
     private double getError(double a, double b) {
-        return Math.abs(a - b) / ((Math.abs(a) + Math.abs(b)) / 2.0) * 100;
+        return Math.abs(a - b) / ((Math.abs(a) + Math.abs(b)) / 2.0);
     }
 }

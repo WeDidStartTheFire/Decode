@@ -1198,7 +1198,7 @@ public abstract class Base extends LinearOpMode {
             }
             if (vertUp) {
                 power = vertAvg < V_LIFT_BOUNDS[1] ? slow ? 0.7 : 1 : 0;
-                wristMotorTicksStopped = wristMotorStopPos = 35;
+                wristMotorTicksStopped = wristMotorStopPos = 16;
             } else if (!touchSensorPressed)
                 power = vertAvg > V_LIFT_BOUNDS[0] ? slow ? -0.5 : -0.7 : 0;
         }

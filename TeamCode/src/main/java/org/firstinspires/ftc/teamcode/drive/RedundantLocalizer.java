@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.drive;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -28,7 +26,10 @@ public class RedundantLocalizer implements Localizer {
 
         // Switch if SparkFun is unreliable; Skip check if already found unreliable
         if (usePrimary && !isSparkFunReliable()) usePrimary = false;
-        if (!usePrimary) telemetry.addData("Primary Localizer", "Unreliable");
+    }
+
+    public boolean isUsingPrimaryLocalizer() {
+        return usePrimary;
     }
 
     @NonNull

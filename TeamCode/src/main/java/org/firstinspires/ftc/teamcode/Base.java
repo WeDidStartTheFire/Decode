@@ -26,6 +26,7 @@ import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.*;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.drive.RedundantLocalizer;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.*;
 import org.firstinspires.ftc.vision.apriltag.*;
@@ -1065,10 +1066,10 @@ public abstract class Base extends LinearOpMode {
         double power = 0;
         int wristMotorPos = wristMotor.getCurrentPosition();
         if (wristMotorPos < 15) moveWristServo(WRIST_S_GOALS[wristIndex = 2]);
-        if (gamepad2.right_stick_y < -.1 && wristMotorPos < WRIST_M_BOUNDS[1]) {
+        if (gamepad2.right_stick_y > .1 && wristMotorPos < WRIST_M_BOUNDS[1]) {
             power = WRIST_MOTOR_POWER;
             wristMotorTicksStopped = 0;
-        } else if (gamepad2.right_stick_y > .1 && (wristMotorPos > WRIST_M_BOUNDS[0] || gamepad2.right_bumper)) {
+        } else if (gamepad2.right_stick_y < -.1 && (wristMotorPos > WRIST_M_BOUNDS[0] || gamepad2.right_bumper)) {
             power = -WRIST_MOTOR_POWER;
             wristMotorTicksStopped = 0;
             if (gamepad2.right_bumper) {
@@ -1103,7 +1104,7 @@ public abstract class Base extends LinearOpMode {
         if (liftMotor == null) return;
         boolean slow = false, liftIn = false, liftOut = false;
         int liftPos = liftMotor.getCurrentPosition();
-        liftRunToPos = liftRunToPos && gamepad2.dpad_right == gamepad2.dpad_left;
+        if (gamepad2.dpad_left || gamepad2.dpad_right) liftRunToPos = false;
         if (liftRunToPos) {
             if (liftPos > liftGoal) liftIn = true;
             else liftOut = true;
@@ -1202,7 +1203,7 @@ public abstract class Base extends LinearOpMode {
                 power = vertAvg < V_LIFT_BOUNDS[1] ? slow ? 0.7 : 1 : 0;
                 wristMotorTicksStopped = wristMotorStopPos = 16;
             } else if (!touchSensorPressed)
-                power = vertAvg > V_LIFT_BOUNDS[0] ? slow ? -0.5 : -0.7 : 0;
+                power = vertAvg > V_LIFT_BOUNDS[0] ? slow ? -0.5 : -1 : 0;
         }
         if (vertA > vertB + 5 && power != 0) {
             verticalMotorA.setPower(power - .05);
@@ -1372,6 +1373,12 @@ public abstract class Base extends LinearOpMode {
             Pose2d pos = drive.getPoseEstimate();
             print(String.format(US, "SparkFun Position :  X: %.2f, Y: %.2f, θ: %.2f°", pos.getX(), pos.getY(), toDegrees(pos.getHeading())));
         } else print("Odometry disabled");
+
+        if (drive.getLocalizer() instanceof RedundantLocalizer) {
+            RedundantLocalizer localizer = (RedundantLocalizer) drive.getLocalizer();
+            boolean usingPrimary = localizer.isUsingPrimaryLocalizer();
+            print("Using Primary Localizer", usingPrimary);
+        } else print("Localizer is not a RedundantLocalizer");
 
         update();
     }

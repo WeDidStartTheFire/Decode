@@ -1064,6 +1064,7 @@ public abstract class Base extends LinearOpMode {
         if (wristMotor == null) return;
         double power = 0;
         int wristMotorPos = wristMotor.getCurrentPosition();
+        if (wristMotorPos < 15) moveWristServo(WRIST_S_GOALS[wristIndex = 2]);
         if (gamepad2.right_stick_y < -.1 && wristMotorPos < WRIST_M_BOUNDS[1]) {
             power = WRIST_MOTOR_POWER;
             wristMotorTicksStopped = 0;
@@ -1108,6 +1109,7 @@ public abstract class Base extends LinearOpMode {
             else liftOut = true;
             slow = abs(liftPos - liftGoal) < 50;
             liftRunToPos = abs(liftPos - liftGoal) > 20;
+            print("In liftRunToPos if");
             if (!liftRunToPos && intakeServo != null && handoff) {
                 handoff = false;
                 openIntake();
@@ -1342,6 +1344,7 @@ public abstract class Base extends LinearOpMode {
             print("Vertical Motor A Position", verticalMotorA.getCurrentPosition());
             print("Vertical Motor B Position", verticalMotorB.getCurrentPosition());
             print("Vertical Motor Power", (verticalMotorA.getPower() + verticalMotorB.getPower()) / 2.0);
+            print("Vertical Run To Position", vertRunToPos);
         }
         if (liftMotor == null) print("Horizontal Lift Motor", "Disconnected");
         else {

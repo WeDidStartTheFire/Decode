@@ -435,7 +435,7 @@ public abstract class Base extends LinearOpMode {
      * Simplifies an angle in degrees to be between -180 and 180 degrees or -pi and pi radians
      *
      * @param angle Angle
-     * @param u Whether the angle is in radians or degrees
+     * @param u     Whether the angle is in radians or degrees
      */
     public double simplifyAngle(double angle, AngleUnit u) {
         if (u == DEGREES) return ((angle + 180) % 360 + 360) % 360 - 180;
@@ -560,7 +560,7 @@ public abstract class Base extends LinearOpMode {
         while (active() && (runtime.seconds() < duration) && inches != 0) {
             print("Strafing until", duration + " seconds");
             print("Currently at", runtime.seconds() + " seconds");
-            if (!loop)  update();
+            if (!loop) update();
         }
         if (inches != 0) stopRobot();
         print("Strafing", "Complete");
@@ -780,6 +780,15 @@ public abstract class Base extends LinearOpMode {
     /** Retracts the wrist. */
     public void retractWrist() {
         moveWrist(0);
+    }
+
+    /**
+     * Returns the current position of the wrist.
+     *
+     * @return The current position of the wrist motor.
+     */
+    public int getWristPos() {
+        return wristMotor != null ? wristMotor.getCurrentPosition() : 0;
     }
 
     /**
@@ -1088,7 +1097,7 @@ public abstract class Base extends LinearOpMode {
     /** Logic for the wrist servo during TeleOp. Cycles from 1.0 to 0.5 to 0.0 to 0.5 to 1.0... */
     public void wristServoLogic() {
         if (gamepad2.a && !wasWristServoButtonPressed)
-            moveWristServo(WRIST_S_GOALS[(wristIndex ++) % WRIST_S_GOALS.length]);
+            moveWristServo(WRIST_S_GOALS[(wristIndex++) % WRIST_S_GOALS.length]);
         wasWristServoButtonPressed = gamepad2.a;
     }
 
@@ -1142,7 +1151,8 @@ public abstract class Base extends LinearOpMode {
         // Relies on one encoder if one seems disconnected
         if (vertB == 0 && vertA > 100) vertAvg = vertB = vertA;
         if (vertA == 0 && vertB > 100) vertAvg = vertA = vertB;
-        if ((gamepad2.dpad_up || gamepad2.dpad_down) && !gamepad2.right_bumper) vertRunToPos = false;
+        if ((gamepad2.dpad_up || gamepad2.dpad_down) && !gamepad2.right_bumper)
+            vertRunToPos = false;
         else {
             if (gamepad2.right_bumper && (isDpu ^ isDpd)) {
                 vertGoal = vertRunToPos ? vertGoal : vertAvg;
@@ -1200,7 +1210,7 @@ public abstract class Base extends LinearOpMode {
             }
             if (vertUp) {
                 power = vertAvg < V_LIFT_BOUNDS[1] ? slow ? 0.7 : 1 : 0;
-                wristMotorTicksStopped = wristMotorStopPos = 16;
+                if (getWristPos() < 16) wristMotorTicksStopped = wristMotorStopPos = 16;
             } else if (!touchSensorPressed)
                 power = vertAvg > V_LIFT_BOUNDS[0] ? slow ? -0.5 : -1 : 0;
         }

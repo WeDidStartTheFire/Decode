@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 @TeleOp(name = "Test Field Centric", group = "Test")
 public class TeleOp_TestFieldCentric extends Base {
 
-    double axial,lateral, yaw;
+    double axial, lateral, yaw;
 
     double leftFrontPower, rightFrontPower, leftBackPower, rightBackPower;
 

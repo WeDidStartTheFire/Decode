@@ -1104,8 +1104,8 @@ public abstract class Base extends LinearOpMode {
         int liftPos = liftMotor.getCurrentPosition();
         liftRunToPos = liftRunToPos && gamepad2.dpad_right == gamepad2.dpad_left;
         if (liftRunToPos) {
-            if (liftPos > liftGoal) liftOut = true;
-            else liftIn = true;
+            if (liftPos > liftGoal) liftIn = true;
+            else liftOut = true;
             slow = abs(liftPos - liftGoal) < 50;
             liftRunToPos = abs(liftPos - liftGoal) > 20;
             if (!liftRunToPos && intakeServo != null && handoff) {

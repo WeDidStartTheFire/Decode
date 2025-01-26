@@ -5,6 +5,7 @@ import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
+import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
@@ -222,10 +223,10 @@ public abstract class Base extends LinearOpMode {
             rf.setDirection(DcMotorEx.Direction.FORWARD);
             rb.setDirection(DcMotorEx.Direction.FORWARD);
 
-            lf.setZeroPowerBehavior(BRAKE);
-            lb.setZeroPowerBehavior(BRAKE);
-            rf.setZeroPowerBehavior(BRAKE);
-            rb.setZeroPowerBehavior(BRAKE);
+            lf.setZeroPowerBehavior(FLOAT);
+            lb.setZeroPowerBehavior(FLOAT);
+            rf.setZeroPowerBehavior(FLOAT);
+            rb.setZeroPowerBehavior(FLOAT);
 
             lb.setTargetPosition(lb.getCurrentPosition());
             rb.setTargetPosition(rb.getCurrentPosition());

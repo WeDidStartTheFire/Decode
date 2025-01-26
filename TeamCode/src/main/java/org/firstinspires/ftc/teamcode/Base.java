@@ -1110,7 +1110,6 @@ public abstract class Base extends LinearOpMode {
             else liftOut = true;
             slow = abs(liftPos - liftGoal) < 50;
             liftRunToPos = abs(liftPos - liftGoal) > 20;
-            print("In liftRunToPos if");
             if (!liftRunToPos && intakeServo != null && handoff) {
                 handoff = false;
                 openIntake();
@@ -1230,6 +1229,28 @@ public abstract class Base extends LinearOpMode {
         if (gamepad1.b && !wasSpecimenServoButtonPressed)
             moveSpecimenServo(getSpecimenPosition() == 0 ? 0.4 : 0);
         wasSpecimenServoButtonPressed = gamepad1.b;
+    }
+
+    public void otherLogic() {
+        if (gamepad2.y) {
+            handoff = true;
+            wristMotorTicksStopped = 5;
+            wristMotorStopPos = 0;
+            wristPos = 1;
+            moveWristServo(newWristPos = 0.5);
+            liftRunToPos = true;
+            liftGoal = 0;
+        }
+
+        if (gamepad1.dpad_up && !isDpu && !wasDpu) isDpu = wasDpu = true;
+        else if (gamepad1.dpad_up && isDpu && wasDpu) isDpu = false;
+        else if (!gamepad1.dpad_up && wasDpu) wasDpu = false;
+        else if (!gamepad1.dpad_down && isDpu) isDpu = wasDpu = false;
+
+        if (gamepad1.dpad_down && !isDpd && !wasDpd) isDpd = wasDpd = true;
+        else if (gamepad1.dpad_down && isDpd && wasDpd) isDpd = false;
+        else if (!gamepad1.dpad_down && wasDpd) wasDpd = false;
+        else if (!gamepad1.dpad_down && isDpd) isDpd = wasDpd = false;
     }
 
     /**

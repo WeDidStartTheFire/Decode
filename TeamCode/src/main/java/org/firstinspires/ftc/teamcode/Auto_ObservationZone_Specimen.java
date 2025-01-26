@@ -53,9 +53,15 @@ public class Auto_ObservationZone_Specimen extends Base {
                 .splineToConstantHeading(new Vector2d(-36 - 11, 72 - 10), toRadians(180))
                 .build();
         currentPose = trajectory_5.end();
+        liftThread = new Thread(this::retractVerticalLift);
+        liftThread.start();
         drive.followTrajectory(trajectory);
         drive.followTrajectory(trajectory_5);
-        retractVerticalLift();
+        try {
+            liftThread.join();
+        } catch (InterruptedException e) {
+            except(e.getStackTrace());
+        }
 
         Trajectory trajectory1 = drive.trajectoryBuilder(currentPose)
                 .splineToConstantHeading(new Vector2d(-36 - 14, 8), toRadians(180))

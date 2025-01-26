@@ -53,9 +53,15 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
                 .splineToConstantHeading(new Vector2d(-36 - 12, 72 - 20), toRadians(180))
                 .splineToConstantHeading(new Vector2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2), toRadians(180))
                 .build();
+        liftThread = new Thread(this::retractVerticalLift);
+        liftThread.start();
         drive.followTrajectory(trajectory);
         drive.followTrajectory(trajectory_5);
-        retractVerticalLift();
+        try {
+            liftThread.join();
+        } catch (InterruptedException e) {
+            except(e.getStackTrace());
+        }
         closeSpecimenServo();
         s(.5);
         moveVerticalLift(100);
@@ -88,8 +94,14 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
                 .lineToLinearHeading(new Pose2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2, toRadians(0)))
                 .build();
         currentPose = trajectory4.end();
+        liftThread = new Thread(this::retractVerticalLift);
+        liftThread.start();
         drive.followTrajectory(trajectory4);
-        retractVerticalLift();
+        try {
+            liftThread.join();
+        } catch (InterruptedException e) {
+            except(e.getStackTrace());
+        }
         closeSpecimenServo();
         s(.5);
         Trajectory trajectory5 = drive.trajectoryBuilder(currentPose, true)

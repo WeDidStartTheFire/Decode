@@ -78,6 +78,8 @@ public abstract class Base extends LinearOpMode {
     static final int[] LIFT_BOUNDARIES = {0, 1425};
     static final int[] V_LIFT_BOUNDS = {0, 1950};
     static final int[] V_LIFT_GOALS = {0, 280, 500, 1350, 1500};
+    static final double[] WRIST_S_GOALS = {.1, .3, .5, .9};
+    int wristIndex = 0;
 
     public boolean useOdometry = true, useCam = true;
     static final double DEFAULT_VELOCITY = 2000;
@@ -1083,13 +1085,8 @@ public abstract class Base extends LinearOpMode {
 
     /** Logic for the wrist servo during TeleOp. Cycles from 1.0 to 0.5 to 0.0 to 0.5 to 1.0... */
     public void wristServoLogic() {
-        //.9, .5, .3, .1
-        if (gamepad2.a && !wasWristServoButtonPressed) {
-            if (wristPos == 0.0 || wristPos == 1.0)
-                newWristPos = 1.0 - wristPos + (wristPos = newWristPos) * 0;
-            else newWristPos = 0.5 + (wristPos = newWristPos) * 0;
-            moveWristServo(newWristPos);
-        }
+        if (gamepad2.a && !wasWristServoButtonPressed)
+            moveWristServo(WRIST_S_GOALS[(wristIndex ++) % WRIST_S_GOALS.length]);
         wasWristServoButtonPressed = gamepad2.a;
     }
 

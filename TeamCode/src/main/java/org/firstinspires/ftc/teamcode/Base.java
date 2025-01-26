@@ -739,14 +739,14 @@ public abstract class Base extends LinearOpMode {
         if (basketServo != null) basketServo.setPosition(position);
     }
 
-    /** WARNING: Function may do the opposite - Extends the basket servo outside of the robot */
+    /** Extends the basket servo outside of the robot */
     public void extendBasketServo() {
-        moveBasketServo(1); // Number may be wrong
+        moveBasketServo(1);
     }
 
-    /** WARNING: Function may do the opposite - Returns the basket servo to the robot */
+    /** Returns the basket servo to the robot */
     public void returnBasketServo() {
-        moveBasketServo(0); // Number may be wrong
+        moveBasketServo(0);
     }
 
     /**
@@ -1062,10 +1062,10 @@ public abstract class Base extends LinearOpMode {
         if (wristMotor == null) return;
         double power = 0;
         int wristMotorPos = wristMotor.getCurrentPosition();
-        if (gamepad2.dpad_down && wristMotorPos < WRIST_M_BOUNDS[1]) {
+        if (gamepad2.right_stick_y < -.1 && wristMotorPos < WRIST_M_BOUNDS[1]) {
             power = WRIST_MOTOR_POWER;
             wristMotorTicksStopped = 0;
-        } else if (gamepad2.dpad_up && (wristMotorPos > WRIST_M_BOUNDS[0] || gamepad2.right_bumper)) {
+        } else if (gamepad2.right_stick_y > .1 && (wristMotorPos > WRIST_M_BOUNDS[0] || gamepad2.right_bumper)) {
             power = -WRIST_MOTOR_POWER;
             wristMotorTicksStopped = 0;
             if (gamepad2.right_bumper) {
@@ -1083,6 +1083,7 @@ public abstract class Base extends LinearOpMode {
 
     /** Logic for the wrist servo during TeleOp. Cycles from 1.0 to 0.5 to 0.0 to 0.5 to 1.0... */
     public void wristServoLogic() {
+        //.9, .5, .3, .1
         if (gamepad2.a && !wasWristServoButtonPressed) {
             if (wristPos == 0.0 || wristPos == 1.0)
                 newWristPos = 1.0 - wristPos + (wristPos = newWristPos) * 0;
@@ -1104,7 +1105,7 @@ public abstract class Base extends LinearOpMode {
         if (liftMotor == null) return;
         boolean slow = false, liftIn = false, liftOut = false;
         int liftPos = liftMotor.getCurrentPosition();
-        liftRunToPos = liftRunToPos && gamepad1.dpad_right != gamepad1.dpad_left;
+        liftRunToPos = liftRunToPos && gamepad2.dpad_right == gamepad2.dpad_left;
         if (liftRunToPos) {
             if (liftPos > liftGoal) liftOut = true;
             else liftIn = true;
@@ -1117,9 +1118,9 @@ public abstract class Base extends LinearOpMode {
                 vertGoal = V_LIFT_GOALS[3];
             }
         }
-        slow = gamepad1.left_bumper || slow;
-        liftOut = liftOut || gamepad1.dpad_right;
-        liftIn = liftIn || gamepad1.dpad_left;
+        slow = gamepad2.left_bumper || slow;
+        liftOut = liftOut || gamepad2.dpad_right;
+        liftIn = liftIn || gamepad2.dpad_left;
         double power = 0;
         if (liftOut ^ liftIn) {
             // If the touch sensor isn't connected, assume it isn't pressed
@@ -1142,9 +1143,9 @@ public abstract class Base extends LinearOpMode {
         // Relies on one encoder if one seems disconnected
         if (vertB == 0 && vertA > 100) vertAvg = vertB = vertA;
         if (vertA == 0 && vertB > 100) vertAvg = vertA = vertB;
-        if ((gamepad1.dpad_up || gamepad1.dpad_down) && !gamepad1.a) vertRunToPos = false;
+        if ((gamepad2.dpad_up || gamepad2.dpad_down) && !gamepad2.right_bumper) vertRunToPos = false;
         else {
-            if (gamepad1.a && (isDpu ^ isDpd)) {
+            if (gamepad2.right_bumper && (isDpu ^ isDpd)) {
                 vertGoal = vertRunToPos ? vertGoal : vertAvg;
                 if (isDpu) {
                     for (int goal : V_LIFT_GOALS) {
@@ -1177,13 +1178,13 @@ public abstract class Base extends LinearOpMode {
                 if (vertAvg < vertGoal + 50) slow = true;
             }
         }
-        if (!gamepad1.a) {
-            vertUp = gamepad1.dpad_up || vertUp;
-            vertDown = gamepad1.dpad_down || vertDown;
+        if (!gamepad2.right_bumper) {
+            vertUp = gamepad2.dpad_up || vertUp;
+            vertDown = gamepad2.dpad_down || vertDown;
         }
-        slow = slow || gamepad1.left_bumper;
+        slow = slow || gamepad2.left_bumper;
         if (vertUp == vertDown) {
-            if (!vertStopped && !gamepad1.a) {
+            if (!vertStopped && !gamepad2.right_bumper) {
                 vertStopped = true;
                 vertGoal = vertAvg;
             }
@@ -1349,6 +1350,8 @@ public abstract class Base extends LinearOpMode {
         else {
             print("Horizontal Lift Motor Position", liftMotor.getCurrentPosition());
             print("Horizontal Lift Motor Power", liftMotor.getPower());
+            print("Lift Run To Position", liftRunToPos);
+            print("Lift Goal", liftGoal);
         }
         if (wristMotor == null) print("Wrist Motor", "Disconnected");
         else print("Wrist Motor Position", wristMotor.getCurrentPosition());
@@ -1359,6 +1362,8 @@ public abstract class Base extends LinearOpMode {
         else print("Intake Servo Position", intakeServo.getPosition());
         if (specimenServo == null) print("Specimen Servo", "Disconnected");
         else print("Specimen Servo Position", specimenServo.getPosition());
+        if (basketServo == null) print("Basket Servo", "Disconnected");
+        else print("Basket Servo Position", basketServo.getPosition());
 
         if (verticalTouchSensor == null) print("Touch Sensor", "Disconnected");
         else print("Touch Sensor Pressed", verticalTouchSensor.isPressed());

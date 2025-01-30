@@ -1150,6 +1150,10 @@ public abstract class Base extends LinearOpMode {
         if (liftMotor == null) return;
         boolean slow = false, liftIn = false, liftOut = false;
         int liftPos = liftMotor.getCurrentPosition();
+        if (gamepad2.right_trigger > .1) {
+            liftRunToPos = true;
+            liftGoal = LIFT_BOUNDARIES[1] - 300;
+        }
         if (gamepad2.dpad_left || gamepad2.dpad_right) liftRunToPos = false;
         if (liftRunToPos) {
             if (liftPos > liftGoal) liftIn = true;

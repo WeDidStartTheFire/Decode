@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Base.Dir.LEFT;
-import static java.lang.Math.sqrt;
 import static java.lang.Math.toRadians;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -43,6 +42,7 @@ public class Auto_NetZone_Basket extends Base {
             except(e.getStackTrace());
         }
         extendBasketServo();
+        s(.5);
         hold = false;
         holdLift.join();
 
@@ -60,6 +60,7 @@ public class Auto_NetZone_Basket extends Base {
         } catch (InterruptedException e) {
             except(e.getStackTrace());
         }
+        returnBasketServo();
         strafe(52.5, LEFT);
 
         Trajectory trajectory2 = drive.trajectoryBuilder(currentPose)

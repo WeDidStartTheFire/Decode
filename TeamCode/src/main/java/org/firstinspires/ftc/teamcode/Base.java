@@ -1091,8 +1091,7 @@ public abstract class Base extends LinearOpMode {
                     .lineToLinearHeading(NET_ZONE_POSITION)
                     .build();
             drive.followTrajectoryAsync(trajectory);
-        }
-        else if (gamepad1.x) {
+        } else if (gamepad1.x) {
             following = true;
             Trajectory trajectory = drive.trajectoryBuilder(poseEstimate)
                     .lineToLinearHeading(OBSERVATION_ZONE_POSITION)
@@ -1282,6 +1281,7 @@ public abstract class Base extends LinearOpMode {
         wasSpecimenServoButtonPressed = gamepad1.b;
     }
 
+    /** Logic for other controls during TeleOp */
     public void otherLogic() {
         if (gamepad2.y) {
             handoff = true;
@@ -1368,6 +1368,7 @@ public abstract class Base extends LinearOpMode {
         return gamepad1.a;
     }
 
+    /** Repeatedly reports info about the robot via telemetry. Stopped by setting loop to false. */
     public void telemetryLoop() {
         loop = true;
         while (active() && loop) {
@@ -1376,6 +1377,11 @@ public abstract class Base extends LinearOpMode {
         }
     }
 
+    /**
+     * Saves the current pose to a file.
+     *
+     * @param pos Pose to save
+     */
     public void saveOdometryPosition(@NonNull Pose2d pos) {
         File file = new File(Environment.getExternalStorageDirectory(), "odometryPosition.txt");
         try (FileWriter writer = new FileWriter(file, false)) {

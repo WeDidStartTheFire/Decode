@@ -12,7 +12,7 @@ public class TeleOp_TestOdometry extends Base {
 
         while (active()) {
             drivetrainLogic(p != null);
-            autoMovementLogic();
+            autoMovementLogic(p != null);
             wristMotorLogic();
             wristServoLogic();
             intakeServoLogic();

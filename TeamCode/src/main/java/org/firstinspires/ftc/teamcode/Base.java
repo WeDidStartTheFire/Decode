@@ -1080,7 +1080,8 @@ public abstract class Base extends LinearOpMode {
     }
 
     /** Logic for automatically moving during TeleOp */
-    public void autoMovementLogic() {
+    public void autoMovementLogic(boolean validPose) {
+        if (!validPose) return;
         if (useOdometry) drive.update();
         else if (!gamepad1.a) return;
         Pose2d poseEstimate = drive.getPoseEstimate();

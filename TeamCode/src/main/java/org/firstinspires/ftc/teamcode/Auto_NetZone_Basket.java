@@ -23,9 +23,8 @@ public class Auto_NetZone_Basket extends Base {
         Thread telemetryThread = new Thread(this::telemetryLoop);
         telemetryThread.start();
 
-        double v = 72 - 12 - (ROBOT_LENGTH / 2 / sqrt(2)) + 1;
         Trajectory trajectory = drive.trajectoryBuilder(currentPose, true)
-                .splineTo(new Vector2d(v, v), toRadians(45))
+                .splineTo(NET_ZONE_POSITION.vec(), NET_ZONE_POSITION.getHeading())
                 .build();
         currentPose = trajectory.end();
         Thread driveThread = new Thread(() -> drive.followTrajectory(trajectory));

@@ -126,6 +126,10 @@ public abstract class Base extends LinearOpMode {
     int liftGoal = 0;
     boolean liftRunToPos, handoff;
 
+    Pose2d NET_ZONE_POSITION = new Pose2d(72 - 12 - (ROBOT_LENGTH / 2 / sqrt(2)) + 1, 72 - 12 - (ROBOT_LENGTH / 2 / sqrt(2)) + 1, toRadians(45));
+    Pose2d OBSERVATION_ZONE_POSITION = new Pose2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2, toRadians(0));
+    boolean following = false;
+
     /** Directions. Options: LEFT, RIGHT, FORWARD, BACKWARD */
     public enum Dir {
         LEFT, RIGHT, FORWARD, BACKWARD
@@ -215,6 +219,7 @@ public abstract class Base extends LinearOpMode {
         try {
             drive = new SampleMecanumDrive(hardwareMap);
             drive.setPoseEstimate(currentPose);
+            drive.breakFollowing();
         } catch (IllegalArgumentException e) {
             except("SparkFun Sensor not connected");
             useOdometry = false;
@@ -1066,7 +1071,33 @@ public abstract class Base extends LinearOpMode {
             rb.setVelocity(rightBackPower * 5000 * speedMultiplier);
         }
 
+        if (abs(leftFrontPower) > .05 || abs(rightFrontPower) > .05 || abs(leftBackPower) > .05 || abs(rightBackPower) > .05) {
+            if (following) drive.breakFollowing();
+            following = false;
+        }
+
         print("Speed Multiplier", speedMultiplier);
+    }
+
+    /** Logic for automatically moving during TeleOp */
+    public void autoMovementLogic() {
+        if (useOdometry) drive.update();
+        else if (!gamepad1.a) return;
+        Pose2d poseEstimate = drive.getPoseEstimate();
+        if (gamepad1.a) {
+            following = true;
+            Trajectory trajectory = drive.trajectoryBuilder(poseEstimate)
+                    .lineToLinearHeading(NET_ZONE_POSITION)
+                    .build();
+            drive.followTrajectoryAsync(trajectory);
+        }
+        else if (gamepad1.x) {
+            following = true;
+            Trajectory trajectory = drive.trajectoryBuilder(poseEstimate)
+                    .lineToLinearHeading(OBSERVATION_ZONE_POSITION)
+                    .build();
+            drive.followTrajectoryAsync(trajectory);
+        }
     }
 
     /** Logic for the wrist motor during TeleOp */

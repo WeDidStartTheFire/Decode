@@ -130,6 +130,8 @@ public abstract class Base extends LinearOpMode {
     Pose2d OBSERVATION_ZONE_POSITION = new Pose2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2, toRadians(0));
     boolean following = false;
 
+    double[] WRIST_S_ANGLES = {toRadians(-100), toRadians(80)};
+
     /** Directions. Options: LEFT, RIGHT, FORWARD, BACKWARD */
     public enum Dir {
         LEFT, RIGHT, FORWARD, BACKWARD
@@ -1131,10 +1133,20 @@ public abstract class Base extends LinearOpMode {
     }
 
     /** Logic for the wrist servo during TeleOp. Cycles from 1.0 to 0.5 to 0.0 to 0.5 to 1.0... */
-    public void wristServoLogic() {
+    public void wristServoLogic(boolean continuous) {
+        if (continuous) {
+            double angle = Math.atan2(gamepad2.left_stick_y, gamepad2.left_stick_x);
+            moveWristServo(min(max(0, (angle - WRIST_S_ANGLES[0])  / (WRIST_S_ANGLES[1] - WRIST_S_ANGLES[0])), 1));
+            return;
+        }
         if (gamepad2.a && !wasWristServoButtonPressed)
             moveWristServo(WRIST_S_GOALS[(wristIndex++) % WRIST_S_GOALS.length]);
         wasWristServoButtonPressed = gamepad2.a;
+    }
+
+    /** Logic for the wrist servo during TeleOp. Cycles from 1.0 to 0.5 to 0.0 to 0.5 to 1.0... */
+    public void wristServoLogic() {
+        wristServoLogic(false);
     }
 
     /** Logic for the intake servo during TeleOp */

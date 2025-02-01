@@ -25,7 +25,7 @@ public class RedundantLocalizer implements Localizer {
         secondaryLocalizer.update();
 
         // Switch if SparkFun is unreliable; Skip check if already found unreliable
-        if (usePrimary && !isSparkFunReliable()) usePrimary = false;
+//        if (usePrimary && !isSparkFunReliable()) usePrimary = false;
     }
 
     public boolean isUsingPrimaryLocalizer() {

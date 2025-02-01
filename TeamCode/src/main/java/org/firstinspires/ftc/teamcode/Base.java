@@ -91,6 +91,7 @@ public abstract class Base extends LinearOpMode {
     public Pose2d currentPose = new Pose2d();
 
     public volatile boolean loop = false;
+    public volatile boolean running = true;
 
     /** Dimension front to back on robot in inches */
     public static final double ROBOT_LENGTH = 18;
@@ -622,7 +623,7 @@ public abstract class Base extends LinearOpMode {
      * @param direction (opt.) Direction to drive if inches is zero.*
      */
     public void drive(double inches, Dir direction) {
-        if (useOdometry) {
+        if (useOdometry && active()) {
             Trajectory strafeTrajectory;
             if (direction == FORWARD)
                 strafeTrajectory = drive.trajectoryBuilder(currentPose).forward(inches).build();
@@ -1475,6 +1476,6 @@ public abstract class Base extends LinearOpMode {
 
     /** Returns whether the robot is active. */
     public boolean active() {
-        return opModeIsActive() && !isStopRequested();
+        return opModeIsActive() && !isStopRequested() && running;
     }
 }

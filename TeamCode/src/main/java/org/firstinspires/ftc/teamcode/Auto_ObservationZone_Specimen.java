@@ -24,6 +24,7 @@ public class Auto_ObservationZone_Specimen extends Base {
         telemetryThread.start();
 
         closeSpecimenServo();
+        moveWrist(16);
         Thread driveThread = new Thread(() -> drive(30, BACKWARD));
         Thread liftThread = new Thread(liftTask);
         Thread holdLift = new Thread(holdLiftTask);

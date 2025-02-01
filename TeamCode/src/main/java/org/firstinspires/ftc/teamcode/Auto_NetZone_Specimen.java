@@ -23,6 +23,8 @@ public class Auto_NetZone_Specimen extends  Base {
         telemetryThread.start();
 
         closeSpecimenServo();
+        moveWrist(16);
+        s(.5);
         Thread driveThread = new Thread(() -> drive(30, BACKWARD));
         Thread liftThread = new Thread(liftTask);
         Thread holdLift = new Thread(holdLiftTask);

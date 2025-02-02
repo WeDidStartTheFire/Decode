@@ -297,6 +297,11 @@ public abstract class Base extends LinearOpMode {
         runtime.reset();
     }
 
+    /**
+     * Initializes all hardware devices on the robot.
+     *
+     * @param startPose Starting position of the robot
+     */
     public void setup(Pose2d startPose) {
         currentPose = startPose;
         setup();
@@ -1153,7 +1158,7 @@ public abstract class Base extends LinearOpMode {
     public void wristServoLogic(boolean continuous) {
         if (continuous && Math.hypot(gamepad2.left_stick_y, gamepad2.left_stick_x) > .2) {
             double angle = Math.atan2(gamepad2.left_stick_y, gamepad2.left_stick_x);
-            moveWristServo(min(max(0, (angle - WRIST_S_ANGLES[0])  / (WRIST_S_ANGLES[1] - WRIST_S_ANGLES[0])), 1));
+            moveWristServo(min(max(0, (angle - WRIST_S_ANGLES[0]) / (WRIST_S_ANGLES[1] - WRIST_S_ANGLES[0])), 1));
             return;
         }
         if (gamepad2.a && !wasWristServoButtonPressed)
@@ -1425,6 +1430,11 @@ public abstract class Base extends LinearOpMode {
         }
     }
 
+    /**
+     * Loads the current pose from a file.
+     *
+     * @return The position the robot ended at in the last Auto
+     */
     @Nullable
     public Pose2d loadOdometryPosition() {
         File file = new File(Environment.getExternalStorageDirectory(), "odometryPosition.txt");

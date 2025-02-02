@@ -10,6 +10,7 @@ public class Auto_NetZone_Efficient extends Base {
     Trajectory traj;
     @Override
     public void runOpMode() throws InterruptedException {
+        auto = true;
         setup();
         strafe(6, LEFT);
         traj = drive.trajectoryBuilder(currentPose)

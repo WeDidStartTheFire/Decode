@@ -16,9 +16,9 @@ public class Auto_NetZone_Basket extends Base {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        auto = true;
         setup(new Pose2d(48 - ROBOT_WIDTH / 2 - .5, 72 - .5 - ROBOT_LENGTH / 2, toRadians(180)));
 
-        auto = true;
         Thread telemetryThread = new Thread(this::telemetryLoop);
         telemetryThread.start();
 

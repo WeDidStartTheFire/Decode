@@ -76,7 +76,7 @@ public abstract class Base extends LinearOpMode {
     static final double B = 1.1375;
     static final double M = 0.889;
     static final double TURN_SPEED = 0.5;
-    static final int[] LIFT_BOUNDARIES = {0, 1425};
+    static final int[] LIFT_BOUNDARIES = {0, 1625};
     static final int[] V_LIFT_BOUNDS = {0, 1950};
     static final int[] V_LIFT_GOALS = {0, 280, 500, 1350, 1500};
     static final double[] WRIST_S_GOALS = {.1, .3, .5, .9};
@@ -116,6 +116,7 @@ public abstract class Base extends LinearOpMode {
     double wristPos = 0.5, newWristPos = 1;
     int vertGoal;
     boolean vertRunToPos, vertStopped;
+    double vertical_lift_timer = 0;
 
     boolean wasIntakeServoButtonPressed, wasWristServoButtonPressed;
     boolean wasSpecimenServoButtonPressed, wasBasketServoButtonPressed;
@@ -131,7 +132,7 @@ public abstract class Base extends LinearOpMode {
     Pose2d OBSERVATION_ZONE_POSITION = new Pose2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2, toRadians(0));
     boolean following = false;
 
-    double[] WRIST_S_ANGLES = {toRadians(-100), toRadians(80)};
+    double[] WRIST_S_ANGLES = {toRadians(-180), toRadians(180)};
 
     /** Directions. Options: LEFT, RIGHT, FORWARD, BACKWARD */
     public enum Dir {
@@ -201,12 +202,12 @@ public abstract class Base extends LinearOpMode {
 
         // Touch Sensors
         try {
-            verticalTouchSensor = hardwareMap.get(TouchSensor.class, "touchSensor"); // Port 0
+            verticalTouchSensor = hardwareMap.get(TouchSensor.class, "touchSensor"); // Port 0/1
         } catch (IllegalArgumentException e) {
             except("touchSensor not connected");
         }
         try {
-            horizontalTouchSensor = hardwareMap.get(TouchSensor.class, "horizontalTouchSensor"); // Port 0
+            horizontalTouchSensor = hardwareMap.get(TouchSensor.class, "horizontalTouchSensor"); // Port 2/3
         } catch (IllegalArgumentException e) {
             except("horizontalTouchSensor not connected");
         }
@@ -233,11 +234,17 @@ public abstract class Base extends LinearOpMode {
             lb.setDirection(REVERSE);
             rf.setDirection(DcMotorEx.Direction.FORWARD);
             rb.setDirection(DcMotorEx.Direction.FORWARD);
-
-            lf.setZeroPowerBehavior(FLOAT);
-            lb.setZeroPowerBehavior(FLOAT);
-            rf.setZeroPowerBehavior(FLOAT);
-            rb.setZeroPowerBehavior(FLOAT);
+            if (auto) {
+                lf.setZeroPowerBehavior(BRAKE);
+                lb.setZeroPowerBehavior(BRAKE);
+                rf.setZeroPowerBehavior(BRAKE);
+                rb.setZeroPowerBehavior(BRAKE);
+            } else {
+                lf.setZeroPowerBehavior(FLOAT);
+                lb.setZeroPowerBehavior(FLOAT);
+                rf.setZeroPowerBehavior(FLOAT);
+                rb.setZeroPowerBehavior(FLOAT);
+            }
 
             lb.setTargetPosition(lb.getCurrentPosition());
             rb.setTargetPosition(rb.getCurrentPosition());
@@ -776,8 +783,16 @@ public abstract class Base extends LinearOpMode {
      */
     public void moveWrist(int encoderValue) {
         if (wristMotor == null) return;
-        wristMotor.setTargetPosition(encoderValue);
-        wristMotor.setMode(RUN_TO_POSITION);
+        int pos = getWristPos();
+        int error = pos - encoderValue;
+        wristMotor.setMode(RUN_WITHOUT_ENCODER);
+        while (abs(error) > 3) {
+            if (error > 0) wristMotor.setPower(max(-0.7, -error / 10.0));
+            else wristMotor.setPower(min(0.7, -error / 10.0));
+            pos = getWristPos();
+            error = pos - encoderValue;
+        }
+        wristMotor.setPower(0);
     }
 
     /** Extends the wrist. */
@@ -965,6 +980,7 @@ public abstract class Base extends LinearOpMode {
      * @param vertGoal Number of encoders from zero position to turn the motor to
      */
     public void holdVerticalLift(int vertGoal) {
+        hold = true;
         while (active() && hold) {
             if (verticalMotorA == null) return;
             int vertA = verticalMotorA.getCurrentPosition();
@@ -1135,7 +1151,7 @@ public abstract class Base extends LinearOpMode {
 
     /** Logic for the wrist servo during TeleOp. Cycles from 1.0 to 0.5 to 0.0 to 0.5 to 1.0... */
     public void wristServoLogic(boolean continuous) {
-        if (continuous) {
+        if (continuous && Math.hypot(gamepad2.left_stick_y, gamepad2.left_stick_x) > .2) {
             double angle = Math.atan2(gamepad2.left_stick_y, gamepad2.left_stick_x);
             moveWristServo(min(max(0, (angle - WRIST_S_ANGLES[0])  / (WRIST_S_ANGLES[1] - WRIST_S_ANGLES[0])), 1));
             return;
@@ -1175,6 +1191,7 @@ public abstract class Base extends LinearOpMode {
             if (!liftRunToPos && intakeServo != null && handoff) {
                 handoff = false;
                 openIntake();
+                vertical_lift_timer = getRuntime() + 0.5;
                 vertRunToPos = true;
                 vertGoal = V_LIFT_GOALS[3];
             }
@@ -1187,8 +1204,12 @@ public abstract class Base extends LinearOpMode {
             // If the touch sensor isn't connected, assume it isn't pressed
             boolean touchSensorPressed = horizontalTouchSensor != null && horizontalTouchSensor.isPressed();
             double speed = slow ? 0.6 : 1;
+            if (touchSensorPressed) {
+                liftMotor.setMode(STOP_AND_RESET_ENCODER);
+                liftMotor.setMode(RUN_WITHOUT_ENCODER);
+            }
             if (liftOut) power = liftPos < LIFT_BOUNDARIES[1] ? speed : 0;
-            else if (!touchSensorPressed) power = liftPos > LIFT_BOUNDARIES[0] ? -speed : 0;
+            else if (!touchSensorPressed) power = -speed;
         }
         liftMotor.setPower(power);
     }
@@ -1231,7 +1252,7 @@ public abstract class Base extends LinearOpMode {
                 vertStopped = true;
             }
         }
-        if (vertRunToPos) {
+        if (vertRunToPos && (getRuntime() - vertical_lift_timer >= 0)) {
             if (vertAvg < vertGoal) {
                 vertUp = true;
                 if (vertAvg >= vertGoal - 50) slow = true;

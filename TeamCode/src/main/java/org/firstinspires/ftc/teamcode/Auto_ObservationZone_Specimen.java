@@ -17,9 +17,9 @@ public class Auto_ObservationZone_Specimen extends Base {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        auto = true;
         setup(new Pose2d(-ROBOT_WIDTH / 2 - .5, 72 - ROBOT_LENGTH / 2, Math.toRadians(90)));
 
-        auto = true;
         Thread telemetryThread = new Thread(this::telemetryLoop);
         telemetryThread.start();
 
@@ -32,13 +32,9 @@ public class Auto_ObservationZone_Specimen extends Base {
         driveThread.start();
         liftThread.start();
         // Wait for both threads to complete
-        try {
-            liftThread.join();
-            holdLift.start();
-            driveThread.join();
-        } catch (InterruptedException e) {
-            except(e.getStackTrace());
-        }
+        liftThread.join();
+        holdLift.start();
+        driveThread.join();
         hold = false;
         holdLift.join();
         moveVerticalLift(V_LIFT_GOALS[3] - 400);
@@ -58,11 +54,7 @@ public class Auto_ObservationZone_Specimen extends Base {
         liftThread.start();
         drive.followTrajectory(trajectory);
         drive.followTrajectory(trajectory_5);
-        try {
-            liftThread.join();
-        } catch (InterruptedException e) {
-            except(e.getStackTrace());
-        }
+        liftThread.join();
 
         Trajectory trajectory1 = drive.trajectoryBuilder(currentPose)
                 .splineToConstantHeading(new Vector2d(-36 - 14, 8), toRadians(180))
@@ -84,13 +76,9 @@ public class Auto_ObservationZone_Specimen extends Base {
         driveThread.start();
         liftThread.start();
         // Wait for both threads to complete
-        try {
-            liftThread.join();
-            holdLift.start();
-            driveThread.join();
-        } catch (InterruptedException e) {
-            except(e.getStackTrace());
-        }
+        liftThread.join();
+        holdLift.start();
+        driveThread.join();
         hold = false;
         holdLift.join();
         moveVerticalLift(V_LIFT_GOALS[3] - 400);

@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.Base.Dir.*;
 public class Auto_NetZone extends Base {
     @Override
     public void runOpMode() throws InterruptedException {
+        auto = true;
         setup();
         strafe(6, LEFT);
         strafe(8, RIGHT);

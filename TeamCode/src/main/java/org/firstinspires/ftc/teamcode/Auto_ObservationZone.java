@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.Base.Dir.*;
 public class Auto_ObservationZone extends Base {
     @Override
     public void runOpMode() throws InterruptedException {
+        auto = true;
         setup();
         strafe(20, RIGHT);
         drive(52, FORWARD);

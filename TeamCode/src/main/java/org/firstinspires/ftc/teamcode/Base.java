@@ -1188,7 +1188,7 @@ public abstract class Base extends LinearOpMode {
             boolean touchSensorPressed = horizontalTouchSensor != null && horizontalTouchSensor.isPressed();
             double speed = slow ? 0.6 : 1;
             if (liftOut) power = liftPos < LIFT_BOUNDARIES[1] ? speed : 0;
-            else if (!touchSensorPressed) power = liftPos > LIFT_BOUNDARIES[0] ? -speed : 0;
+            else if (!touchSensorPressed) power = liftPos;
         }
         liftMotor.setPower(power);
     }

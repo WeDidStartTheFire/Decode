@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.Base.Dir.BACKWARD;
 import static org.firstinspires.ftc.teamcode.Base.Dir.LEFT;
 import static java.lang.Math.toRadians;
 
@@ -8,55 +9,30 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "Net Zone Basket", group = "!!Secondary", preselectTeleOp = "Main")
-public class Auto_NetZone_Basket extends Base {
-
-    Runnable liftTask = () -> moveVerticalLift(V_LIFT_GOALS[4]);
-    Runnable holdLiftTask = () -> holdVerticalLift(V_LIFT_GOALS[4]);
-
+@Autonomous(name = "Net Zone Efficient Ascend", group="!!!Primary", preselectTeleOp = "Main")
+public class Auto_NetZone_EfficientAscend extends Base {
     @Override
     public void runOpMode() throws InterruptedException {
         auto = true;
-        setup(new Pose2d(48 - ROBOT_WIDTH / 2 - .5, 72 - .5 - ROBOT_LENGTH / 2, toRadians(180)));
+        setup(new Pose2d(48 - ROBOT_WIDTH / 2 - .5, 72 - ROBOT_LENGTH / 2, toRadians(180)));
+
         Thread telemetryThread = new Thread(this::telemetryLoop);
         telemetryThread.start();
-        Trajectory trajectory = drive.trajectoryBuilder(currentPose, true)
-                .splineTo(NET_ZONE_POSITION.vec(), NET_ZONE_POSITION.getHeading())
-                .build();
-        currentPose = trajectory.end();
-        Thread driveThread = new Thread(() -> drive.followTrajectory(trajectory));
-        Thread liftThread = new Thread(liftTask);
-        Thread holdLift = new Thread(holdLiftTask);
 
         try {
-            // Start both threads
-            driveThread.start();
-            liftThread.start();
-            // Wait for both threads to complete
-            liftThread.join();
-            holdLift.start();
-            driveThread.join();
-            extendBasketServo();
-            s(.5);
-            hold = false;
-            holdLift.join();
-
+            drive(3, BACKWARD);
             Trajectory trajectory1 = drive.trajectoryBuilder(currentPose)
                     .splineTo(new Vector2d(36, 21), toRadians(-90))
                     .splineTo(new Vector2d(48, 8), toRadians(0))
                     .build();
             currentPose = trajectory1.end();
-            liftThread = new Thread(this::retractVerticalLift);
-            liftThread.start();
 
             drive.followTrajectory(trajectory1);
-            liftThread.join();
-            returnBasketServo();
             strafe(52.5, LEFT);
 
             Trajectory trajectory2 = drive.trajectoryBuilder(currentPose)
-                    .lineToConstantHeading(new Vector2d(currentPose.getX(), 21))
-                    .splineToConstantHeading(new Vector2d(56, 8), toRadians(0))
+                    .lineToConstantHeading(new Vector2d(currentPose.getX(), 19))
+                    .splineToConstantHeading(new Vector2d(56, 7), toRadians(0))
                     .build();
             currentPose = trajectory2.end();
             drive.followTrajectory(trajectory2);
@@ -79,11 +55,7 @@ public class Auto_NetZone_Basket extends Base {
         } finally {
             running = false;
             loop = false;
-            hold = false;
             telemetryThread.interrupt();
-            driveThread.interrupt();
-            liftThread.interrupt();
-            holdLift.interrupt();
             stop();
         }
     }

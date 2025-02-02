@@ -5,7 +5,7 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import static org.firstinspires.ftc.teamcode.Base.Dir.*;
 
-@Autonomous(name = "Net Zone Efficient", group = "IntoTheDeep", preselectTeleOp = "Main")
+@Autonomous(name = "Net Zone Efficient", group = "!Tertiary", preselectTeleOp = "Main")
 public class Auto_NetZone_Efficient extends Base {
     Trajectory traj;
     @Override

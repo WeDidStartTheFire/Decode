@@ -40,7 +40,7 @@ public class Auto_ObservationZone_SingleSpecimenPark extends Base {
             s(.5);
 
             Trajectory trajectory = drive.trajectoryBuilder(currentPose)
-                    .lineToLinearHeading(new Pose2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2, toRadians(180)))
+                    .lineToLinearHeading(new Pose2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2, toRadians(0)))
                     .build();
             currentPose = trajectory.end();
             drive.followTrajectory(trajectory);

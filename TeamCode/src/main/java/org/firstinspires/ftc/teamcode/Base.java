@@ -235,10 +235,10 @@ public abstract class Base extends LinearOpMode {
             rf.setDirection(DcMotorEx.Direction.FORWARD);
             rb.setDirection(DcMotorEx.Direction.FORWARD);
             if (auto) {
-                lf.setZeroPowerBehavior(BRAKE);
-                lb.setZeroPowerBehavior(BRAKE);
-                rf.setZeroPowerBehavior(BRAKE);
-                rb.setZeroPowerBehavior(BRAKE);
+                lf.setZeroPowerBehavior(FLOAT);
+                lb.setZeroPowerBehavior(FLOAT);
+                rf.setZeroPowerBehavior(FLOAT);
+                rb.setZeroPowerBehavior(FLOAT);
             } else {
                 lf.setZeroPowerBehavior(FLOAT);
                 lb.setZeroPowerBehavior(FLOAT);
@@ -530,7 +530,7 @@ public abstract class Base extends LinearOpMode {
      * @param lfPower Left front motor power.
      * @param rfPower Right front motor power.
      */
-    private void setMotorPowers(double lbPower, double rbPower, double lfPower, double rfPower) {
+    public void setMotorPowers(double lbPower, double rbPower, double lfPower, double rfPower) {
         if (lb == null) return;
         lb.setPower(lbPower);
         rb.setPower(rbPower);
@@ -543,12 +543,20 @@ public abstract class Base extends LinearOpMode {
      *
      * @param velocity Velocity of the motors.
      */
-    private void setMotorVelocities(double velocity) {
+    public void setMotorVelocities(double velocity) {
         if (lb == null) return;
         lf.setVelocity(velocity);
         lb.setVelocity(velocity);
         rf.setVelocity(velocity);
         rb.setVelocity(velocity);
+    }
+
+    public void setMotorVelocities(double lbPower, double rbPower, double lfPower, double rfPower) {
+        if (lb == null) return;
+        lf.setVelocity(lfPower);
+        lb.setVelocity(lbPower);
+        rf.setVelocity(rfPower);
+        rb.setVelocity(rbPower);
     }
 
     /**
@@ -636,13 +644,13 @@ public abstract class Base extends LinearOpMode {
      */
     public void drive(double inches, Dir direction) {
         if (useOdometry && active()) {
-            Trajectory strafeTrajectory;
+            Trajectory driveTrajectory;
             if (direction == FORWARD)
-                strafeTrajectory = drive.trajectoryBuilder(currentPose).forward(inches).build();
-            else strafeTrajectory = drive.trajectoryBuilder(currentPose).back(inches).build();
+                driveTrajectory = drive.trajectoryBuilder(currentPose).forward(inches).build();
+            else driveTrajectory = drive.trajectoryBuilder(currentPose).back(inches).build();
 
-            drive.followTrajectory(strafeTrajectory);
-            currentPose = strafeTrajectory.end();
+            drive.followTrajectory(driveTrajectory);
+            currentPose = driveTrajectory.end();
             return; // Early return
         }
 
@@ -791,7 +799,8 @@ public abstract class Base extends LinearOpMode {
         int pos = getWristPos();
         int error = pos - encoderValue;
         wristMotor.setMode(RUN_WITHOUT_ENCODER);
-        while (abs(error) > 3) {
+        double t0 = getRuntime();
+        while ((abs(error) > 3 && !(getRuntime() - t0 >= 1 && pos == 0)) && active()) {
             if (error > 0) wristMotor.setPower(max(-0.7, -error / 10.0));
             else wristMotor.setPower(min(0.7, -error / 10.0));
             pos = getWristPos();
@@ -895,13 +904,17 @@ public abstract class Base extends LinearOpMode {
      */
     public void moveHorizontalLift(double encoders) {
         if (liftMotor == null) return;
+        if (horizontalTouchSensor != null && horizontalTouchSensor.isPressed()) {
+            liftMotor.setMode(STOP_AND_RESET_ENCODER);
+        }
+        liftMotor.setMode(RUN_USING_ENCODER);
         int direction = (int) signum(encoders - liftMotor.getCurrentPosition());
         liftMotor.setVelocity(LIFT_VEL * direction);
 
         runtime.reset();
         // The loop stops after being under the encoder goal when going down and when being
         // above the encoder goal when going up
-        while (active() && ((liftMotor.getCurrentPosition() < encoders && signum(encoders) == 1) || (liftMotor.getCurrentPosition() > encoders && signum(encoders) == -1))) {
+        while (active() && ((liftMotor.getCurrentPosition() < encoders && encoders > 1) || (liftMotor.getCurrentPosition() > encoders && signum(encoders) == -1))) {
             // Display it for the driver.
             print("Position", liftMotor.getCurrentPosition());
             print("Goal", encoders);
@@ -927,7 +940,10 @@ public abstract class Base extends LinearOpMode {
      */
     public void moveVerticalLift(double encoders) {
         if (verticalMotorA == null) return;
-        // Use RUN_WITHOUT_ENCODER on both motors
+        if (verticalTouchSensor != null && verticalTouchSensor.isPressed()) {
+            verticalMotorA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            verticalMotorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
         verticalMotorA.setMode(RUN_WITHOUT_ENCODER);
         verticalMotorB.setMode(RUN_WITHOUT_ENCODER);
 

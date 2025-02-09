@@ -1148,7 +1148,7 @@ public abstract class Base extends LinearOpMode {
         } else {
             int error = wristMotorStopPos - wristMotorPos;
             if (wristMotorTicksStopped < 5) wristMotorStopPos = wristMotorPos;
-            else power = abs(error) > 3 ? WRIST_MOTOR_POWER * error / 10.0 : 0;
+            else power = abs(error) > 3 ? WRIST_MOTOR_POWER * error / 9.0 : 0;
             wristMotorTicksStopped++;
         }
         wristMotor.setPower(power);
@@ -1287,7 +1287,7 @@ public abstract class Base extends LinearOpMode {
                 verticalMotorA.setMode(RUN_WITHOUT_ENCODER);
                 verticalMotorB.setMode(RUN_WITHOUT_ENCODER);
             }
-            if (vertUp) {
+            if (vertUp && !(vertAvg < 100 && getWristPos() < 10)) {
                 power = vertAvg < V_LIFT_BOUNDS[1] ? slow ? 0.7 : 1 : 0;
                 if (getWristPos() < 16) wristMotorTicksStopped = wristMotorStopPos = 16;
             } else if (!touchSensorPressed)

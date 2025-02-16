@@ -719,6 +719,16 @@ public abstract class Base extends LinearOpMode {
         if (wristServoY != null) wristServoY.setPosition(position);
     }
 
+    /** Retracts the wrist Y servo */
+    public void retractWristServoY() {
+        moveWristServoY(0);
+    }
+
+    /** Extends the wrist Y servo */
+    public void extendWristServoY() {
+        moveWristServoY(1);
+    }
+
     /**
      * Moves the intake servo to the specified position.
      *

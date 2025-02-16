@@ -724,6 +724,11 @@ public abstract class Base extends LinearOpMode {
         moveWristServoY(0);
     }
 
+    /** Hovers the wrist Y servo */
+    public void hoverWristServoY() {
+        moveWristServoY(0.9);
+    }
+
     /** Extends the wrist Y servo */
     public void extendWristServoY() {
         moveWristServoY(1);
@@ -1215,11 +1220,15 @@ public abstract class Base extends LinearOpMode {
     public void intakeLogic() {
         if (gamepad2.b && !wasIntakeServoButtonPressed) {
             if (getIntakePosition() == 0) {
-                closeIntake();
+                wristMotorStopPos = 130;
+                wristMotorTicksStopped = 5;
                 extendWristServoY();
+                closeIntake();
             } else {
+                wristMotorStopPos = 150;
+                wristMotorTicksStopped = 5;
                 openIntake();
-                retractWristServoY();
+                hoverWristServoY();
             }
         }
         wasIntakeServoButtonPressed = gamepad2.b;
@@ -1375,7 +1384,7 @@ public abstract class Base extends LinearOpMode {
             wristMotorStopPos = 0;
             wristPos = 1;
             moveWristServoX(newWristPos = 0.5);
-            moveWristServoY(0);
+            retractWristServoY();
             liftRunToPos = true;
             liftGoal = 0;
         }

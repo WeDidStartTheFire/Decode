@@ -173,16 +173,16 @@ public abstract class Base extends LinearOpMode {
             except(">= 1 verticalMotor connected; All vertical lift motors disabled");
         }
         try {
-            wristMotor = hardwareMap.get(DcMotorEx.class, "pixelLiftingMotor"); // Port 1
+            wristMotor = hardwareMap.get(DcMotorEx.class, "wristMotor"); // Port 1
         } catch (IllegalArgumentException e) {
-            except("pixelLiftingMotor not connected");
+            except("wristMotor not connected");
         }
 
         // Servos
         try {
-            wristServoX = hardwareMap.get(Servo.class, "pixelBackServo"); // Port 0
+            wristServoX = hardwareMap.get(Servo.class, "wristServoX"); // Port 0
         } catch (IllegalArgumentException e) {
-            except("wristServo not connected");
+            except("wristServoX not connected");
         }
         try {
             wristServoY = hardwareMap.get(Servo.class, "wristServoY");
@@ -190,9 +190,9 @@ public abstract class Base extends LinearOpMode {
             except("wristServoY not connected");
         }
         try {
-            intakeServo = hardwareMap.get(Servo.class, "trayTiltingServo"); // Port 1
+            intakeServo = hardwareMap.get(Servo.class, "intakeServo"); // Port 1
         } catch (IllegalArgumentException e) {
-            except("trayTiltingServo not connected");
+            except("intakeServo not connected");
         }
         try {
             specimenServo = hardwareMap.get(Servo.class, "specimenServo"); // Port 2
@@ -207,9 +207,9 @@ public abstract class Base extends LinearOpMode {
 
         // Touch Sensors
         try {
-            verticalTouchSensor = hardwareMap.get(TouchSensor.class, "touchSensor"); // Port 0/1
+            verticalTouchSensor = hardwareMap.get(TouchSensor.class, "verticalTouchSensor"); // Port 0/1
         } catch (IllegalArgumentException e) {
-            except("touchSensor not connected");
+            except("verticalTouchSensor not connected");
         }
         try {
             horizontalTouchSensor = hardwareMap.get(TouchSensor.class, "horizontalTouchSensor"); // Port 2/3

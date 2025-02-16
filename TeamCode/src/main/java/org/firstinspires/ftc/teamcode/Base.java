@@ -120,7 +120,7 @@ public abstract class Base extends LinearOpMode {
 
     boolean wasIntakeServoButtonPressed, wasWristServoButtonPressed;
     boolean wasSpecimenServoButtonPressed, wasBasketServoButtonPressed;
-    int wristMotorTicksStopped = 0, wristMotorStopPos = 0;
+    int wristMotorTicksStopped = 0, wristMotorStopPos = 0, ticksPowered = 0;
 
     static double[] speeds = {0.2, 0.6, 1};
     boolean wasDpu, isDpu, isDpd, wasDpd;
@@ -1176,19 +1176,22 @@ public abstract class Base extends LinearOpMode {
             openIntake();
         }
         if (gamepad2.right_stick_y > .1 && wristMotorPos < WRIST_M_BOUNDS[1]) {
-            power = WRIST_MOTOR_POWER;
+            power = ticksPowered > 15 ? WRIST_MOTOR_POWER : 2 * WRIST_MOTOR_POWER;
             wristMotorTicksStopped = 0;
+            ticksPowered++;
         } else if (gamepad2.right_stick_y < -.1 && (wristMotorPos > WRIST_M_BOUNDS[0] || gamepad2.right_bumper)) {
-            power = -WRIST_MOTOR_POWER;
+            power = ticksPowered > 15 ? -WRIST_MOTOR_POWER : 2 * -WRIST_MOTOR_POWER;
             wristMotorTicksStopped = 0;
             if (gamepad2.right_bumper) {
                 WRIST_M_BOUNDS[1] += wristMotorPos - WRIST_M_BOUNDS[0];
                 WRIST_M_BOUNDS[0] = wristMotorPos;
             }
+            ticksPowered++;
         } else {
             int error = wristMotorStopPos - wristMotorPos;
             if (wristMotorTicksStopped < 5) wristMotorStopPos = wristMotorPos;
             else power = (abs(error) > 3 ? WRIST_MOTOR_POWER * error / 15.0 :  0) + wristMotorPos > 30 ? 0.03 : 0;
+            ticksPowered = 0;
             wristMotorTicksStopped++;
         }
         wristMotor.setPower(power);

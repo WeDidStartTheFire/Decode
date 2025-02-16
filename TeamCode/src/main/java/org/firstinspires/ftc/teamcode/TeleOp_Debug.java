@@ -53,7 +53,7 @@ public class TeleOp_Debug extends Base {
         } else {
             servoA = basketServo;
             servoB = specimenServo;
-            servoC = wristServo;
+            servoC = wristServoX;
             servoD = intakeServo;
         }
 

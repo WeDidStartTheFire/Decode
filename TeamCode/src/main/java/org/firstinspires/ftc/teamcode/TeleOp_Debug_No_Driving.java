@@ -44,7 +44,7 @@ public class TeleOp_Debug_No_Driving extends Base {
         } else {
             servoA = basketServo;
             servoB = specimenServo;
-            servoC = wristServo;
+            servoC = wristServoX;
             servoD = intakeServo;
             motorA = wristMotor;
             motorB = liftMotor;

@@ -52,7 +52,7 @@ public abstract class Base extends LinearOpMode {
     private final ElapsedTime runtime = new ElapsedTime();
     // All non-primitive data types initialize to null on default.
     public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor, verticalMotorA, verticalMotorB;
-    public Servo wristServo, basketServo, specimenServo, intakeServo;
+    public Servo wristServoX, wristServoY, basketServo, specimenServo, intakeServo;
     public TouchSensor verticalTouchSensor, horizontalTouchSensor;
     public IMU imu;
     /*
@@ -180,9 +180,14 @@ public abstract class Base extends LinearOpMode {
 
         // Servos
         try {
-            wristServo = hardwareMap.get(Servo.class, "pixelBackServo"); // Port 0
+            wristServoX = hardwareMap.get(Servo.class, "pixelBackServo"); // Port 0
         } catch (IllegalArgumentException e) {
-            except("intakeServo (pixelBackServo) not connected");
+            except("wristServo not connected");
+        }
+        try {
+            wristServoY = hardwareMap.get(Servo.class, "wristServoY");
+        } catch (IllegalArgumentException e) {
+            except("wristServo2 not connected");
         }
         try {
             intakeServo = hardwareMap.get(Servo.class, "trayTiltingServo"); // Port 1
@@ -702,7 +707,7 @@ public abstract class Base extends LinearOpMode {
      * @param position The position to move the intake servo to.
      */
     public void moveWristServo(double position) {
-        if (wristServo != null) wristServo.setPosition(position);
+        if (wristServoX != null) wristServoX.setPosition(position);
     }
 
     /**
@@ -1495,8 +1500,8 @@ public abstract class Base extends LinearOpMode {
         if (wristMotor == null) print("Wrist Motor", "Disconnected");
         else print("Wrist Motor Position", wristMotor.getCurrentPosition());
 
-        if (wristServo == null) print("Wrist Servo", "Disconnected");
-        else print("Wrist Servo Position", wristServo.getPosition());
+        if (wristServoX == null) print("Wrist Servo", "Disconnected");
+        else print("Wrist Servo Position", wristServoX.getPosition());
         if (intakeServo == null) print("Intake Servo", "Disconnected");
         else print("Intake Servo Position", intakeServo.getPosition());
         if (specimenServo == null) print("Specimen Servo", "Disconnected");
@@ -1506,7 +1511,7 @@ public abstract class Base extends LinearOpMode {
 
         if (verticalTouchSensor == null) print("Touch Sensor", "Disconnected");
         else print("Touch Sensor Pressed", verticalTouchSensor.isPressed());
-        if (wristServo == null) print("Intake Servo", "Disconnected");
+        if (wristServoX == null) print("Intake Servo", "Disconnected");
         if (useOdometry) {
             Pose2d pos = drive.getPoseEstimate();
             print(String.format(US, "SparkFun Position :  X: %.2f, Y: %.2f, θ: %.2f°", pos.getX(), pos.getY(), toDegrees(pos.getHeading())));

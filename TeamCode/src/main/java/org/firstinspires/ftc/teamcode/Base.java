@@ -161,58 +161,58 @@ public abstract class Base extends LinearOpMode {
 
         // Motors
         try {
-            liftMotor = hardwareMap.get(DcMotorEx.class, "liftMotor"); // Port 0
+            liftMotor = hardwareMap.get(DcMotorEx.class, "liftMotor"); // Expansion Hub 0
         } catch (IllegalArgumentException e) {
             except("liftMotor (previously used as carWashMotor) not connected");
         }
         try {
-            verticalMotorA = hardwareMap.get(DcMotorEx.class, "verticalMotorA");
-            verticalMotorB = hardwareMap.get(DcMotorEx.class, "verticalMotorB");
+            verticalMotorA = hardwareMap.get(DcMotorEx.class, "verticalMotorA"); // Expansion Hub 2
+            verticalMotorB = hardwareMap.get(DcMotorEx.class, "verticalMotorB"); // Expansion Hub 3
         } catch (IllegalArgumentException e) {
             verticalMotorA = verticalMotorB = null;
             except(">= 1 verticalMotor connected; All vertical lift motors disabled");
         }
         try {
-            wristMotor = hardwareMap.get(DcMotorEx.class, "wristMotor"); // Port 1
+            wristMotor = hardwareMap.get(DcMotorEx.class, "wristMotor"); // Expansion Hub 1
         } catch (IllegalArgumentException e) {
             except("wristMotor not connected");
         }
 
         // Servos
         try {
-            wristServoX = hardwareMap.get(Servo.class, "wristServoX"); // Port 0
+            wristServoX = hardwareMap.get(Servo.class, "wristServoX"); // Expansion Hub 0
         } catch (IllegalArgumentException e) {
             except("wristServoX not connected");
         }
         try {
-            wristServoY = hardwareMap.get(Servo.class, "wristServoY");
+            wristServoY = hardwareMap.get(Servo.class, "wristServoY"); // Expansion Hub 2
         } catch (IllegalArgumentException e) {
             except("wristServoY not connected");
         }
         try {
-            intakeServo = hardwareMap.get(Servo.class, "intakeServo"); // Port 1
+            intakeServo = hardwareMap.get(Servo.class, "intakeServo"); // Expansion Hub 1
         } catch (IllegalArgumentException e) {
             except("intakeServo not connected");
         }
         try {
-            specimenServo = hardwareMap.get(Servo.class, "specimenServo"); // Port 2
+            specimenServo = hardwareMap.get(Servo.class, "specimenServo"); // Control Hub 2
         } catch (IllegalArgumentException e) {
             except("specimenServo not connected");
         }
         try {
-            basketServo = hardwareMap.get(Servo.class, "basketServo"); // Port 3
+            basketServo = hardwareMap.get(Servo.class, "basketServo"); // Control Hub 3
         } catch (IllegalArgumentException e) {
             except("basketServo not connected");
         }
 
         // Touch Sensors
         try {
-            verticalTouchSensor = hardwareMap.get(TouchSensor.class, "verticalTouchSensor"); // Port 0/1
+            verticalTouchSensor = hardwareMap.get(TouchSensor.class, "verticalTouchSensor"); // Control Hub 0/1
         } catch (IllegalArgumentException e) {
             except("verticalTouchSensor not connected");
         }
         try {
-            horizontalTouchSensor = hardwareMap.get(TouchSensor.class, "horizontalTouchSensor"); // Port 2/3
+            horizontalTouchSensor = hardwareMap.get(TouchSensor.class, "horizontalTouchSensor"); // Control Hub 2/3
         } catch (IllegalArgumentException e) {
             except("horizontalTouchSensor not connected");
         }

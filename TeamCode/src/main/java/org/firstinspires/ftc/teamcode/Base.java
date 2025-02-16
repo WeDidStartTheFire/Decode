@@ -239,17 +239,11 @@ public abstract class Base extends LinearOpMode {
             lb.setDirection(REVERSE);
             rf.setDirection(DcMotorEx.Direction.FORWARD);
             rb.setDirection(DcMotorEx.Direction.FORWARD);
-            if (auto) {
-                lf.setZeroPowerBehavior(FLOAT);
-                lb.setZeroPowerBehavior(FLOAT);
-                rf.setZeroPowerBehavior(FLOAT);
-                rb.setZeroPowerBehavior(FLOAT);
-            } else {
-                lf.setZeroPowerBehavior(FLOAT);
-                lb.setZeroPowerBehavior(FLOAT);
-                rf.setZeroPowerBehavior(FLOAT);
-                rb.setZeroPowerBehavior(FLOAT);
-            }
+
+            lf.setZeroPowerBehavior(FLOAT);
+            lb.setZeroPowerBehavior(FLOAT);
+            rf.setZeroPowerBehavior(FLOAT);
+            rb.setZeroPowerBehavior(FLOAT);
 
             lb.setTargetPosition(lb.getCurrentPosition());
             rb.setTargetPosition(rb.getCurrentPosition());

@@ -718,6 +718,7 @@ public abstract class Base extends LinearOpMode {
     public void moveWristServoY(double position) {
         if (wristServoY != null) wristServoY.setPosition(position);
     }
+
     /**
      * Moves the intake servo to the specified position.
      *
@@ -785,12 +786,12 @@ public abstract class Base extends LinearOpMode {
 
     /** Extends the basket servo outside of the robot */
     public void extendBasketServo() {
-        moveBasketServo(1);
+        moveBasketServo(0);
     }
 
     /** Returns the basket servo to the robot */
     public void returnBasketServo() {
-        moveBasketServo(0);
+        moveBasketServo(1);
     }
 
     /**

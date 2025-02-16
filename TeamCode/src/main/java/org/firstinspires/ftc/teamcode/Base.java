@@ -112,7 +112,7 @@ public abstract class Base extends LinearOpMode {
     static final double BASE_TURN_SPEED = 2.5;
 
     static final double WRIST_MOTOR_POWER = 0.1;
-    static final int[] WRIST_M_BOUNDS = {0, 100};
+    static final int[] WRIST_M_BOUNDS = {0, 80};
     double wristPos = 0.5;
     int vertGoal;
     boolean vertRunToPos, vertStopped;

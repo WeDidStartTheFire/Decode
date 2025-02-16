@@ -1193,7 +1193,7 @@ public abstract class Base extends LinearOpMode {
         } else {
             int error = wristMotorStopPos - wristMotorPos;
             if (wristMotorTicksStopped < 5) wristMotorStopPos = wristMotorPos;
-            else power = abs(error) > 3 ? WRIST_MOTOR_POWER * error / 9.0 : 0;
+            else power = abs(error) > 3 ? WRIST_MOTOR_POWER * error / 10.0 : 0.02;
             wristMotorTicksStopped++;
         }
         wristMotor.setPower(power);
@@ -1219,13 +1219,13 @@ public abstract class Base extends LinearOpMode {
     /** Logic for the intake servo during TeleOp */
     public void intakeLogic() {
         if (gamepad2.b && !wasIntakeServoButtonPressed) {
-            if (getIntakePosition() == 0) {
-                wristMotorStopPos = 130;
+            if (getIntakePosition() == 1) {
+                wristMotorStopPos = 80;
                 wristMotorTicksStopped = 5;
                 extendWristServoY();
                 closeIntake();
             } else {
-                wristMotorStopPos = 150;
+                wristMotorStopPos = 70;
                 wristMotorTicksStopped = 5;
                 openIntake();
                 hoverWristServoY();

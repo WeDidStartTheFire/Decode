@@ -49,7 +49,7 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
             Trajectory trajectory_5 = drive.trajectoryBuilder(currentPose, true)
                     .splineTo(new Vector2d(-36 - 7, 8), toRadians(180))
                     .splineToConstantHeading(new Vector2d(-36 - 8, 72 - 20), toRadians(180))
-                    .splineToConstantHeading(new Vector2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2), toRadians(180))
+                    .splineToConstantHeading(new Vector2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2 - 1), toRadians(180))
                     .build();
             liftThread = new Thread(this::retractVerticalLift);
             liftThread.start();

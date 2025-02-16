@@ -187,7 +187,7 @@ public abstract class Base extends LinearOpMode {
         try {
             wristServoY = hardwareMap.get(Servo.class, "wristServoY");
         } catch (IllegalArgumentException e) {
-            except("wristServo2 not connected");
+            except("wristServoY not connected");
         }
         try {
             intakeServo = hardwareMap.get(Servo.class, "trayTiltingServo"); // Port 1
@@ -706,10 +706,18 @@ public abstract class Base extends LinearOpMode {
      *
      * @param position The position to move the intake servo to.
      */
-    public void moveWristServo(double position) {
+    public void moveWristServoX(double position) {
         if (wristServoX != null) wristServoX.setPosition(position);
     }
 
+    /**
+     * Moves the wrist servo to the specified position.
+     *
+     * @param position The position to move the intake servo to.
+     */
+    public void moveWristServoY(double position) {
+        if (wristServoY != null) wristServoY.setPosition(position);
+    }
     /**
      * Moves the intake servo to the specified position.
      *
@@ -1150,7 +1158,7 @@ public abstract class Base extends LinearOpMode {
         if (wristMotor == null) return;
         double power = 0;
         int wristMotorPos = wristMotor.getCurrentPosition();
-        if (wristMotorPos < 15) moveWristServo(WRIST_S_GOALS[wristIndex = 2]);
+        if (wristMotorPos < 15) moveWristServoX(WRIST_S_GOALS[wristIndex = 2]);
         if (gamepad2.right_stick_button) {
             wristMotorStopPos = 140;
             wristMotorTicksStopped = 5;
@@ -1176,20 +1184,20 @@ public abstract class Base extends LinearOpMode {
     }
 
     /** Logic for the wrist servo during TeleOp. Cycles from 1.0 to 0.5 to 0.0 to 0.5 to 1.0... */
-    public void wristServoLogic(boolean continuous) {
+    public void wristServoXLogic(boolean continuous) {
         if (continuous && Math.hypot(gamepad2.left_stick_y, gamepad2.left_stick_x) > .2) {
             double angle = Math.atan2(gamepad2.left_stick_y, gamepad2.left_stick_x);
-            moveWristServo(min(max(0, (angle - WRIST_S_ANGLES[0]) / (WRIST_S_ANGLES[1] - WRIST_S_ANGLES[0])), 1));
+            moveWristServoX(min(max(0, (angle - WRIST_S_ANGLES[0]) / (WRIST_S_ANGLES[1] - WRIST_S_ANGLES[0])), 1));
             return;
         }
         if (gamepad2.a && !wasWristServoButtonPressed)
-            moveWristServo(WRIST_S_GOALS[(wristIndex++) % WRIST_S_GOALS.length]);
+            moveWristServoX(WRIST_S_GOALS[(wristIndex++) % WRIST_S_GOALS.length]);
         wasWristServoButtonPressed = gamepad2.a;
     }
 
     /** Logic for the wrist servo during TeleOp. Cycles from 1.0 to 0.5 to 0.0 to 0.5 to 1.0... */
-    public void wristServoLogic() {
-        wristServoLogic(false);
+    public void wristServoXLogic() {
+        wristServoXLogic(false);
     }
 
     /** Logic for the intake servo during TeleOp */
@@ -1348,7 +1356,7 @@ public abstract class Base extends LinearOpMode {
             wristMotorTicksStopped = 5;
             wristMotorStopPos = 0;
             wristPos = 1;
-            moveWristServo(newWristPos = 0.5);
+            moveWristServoX(newWristPos = 0.5);
             liftRunToPos = true;
             liftGoal = 0;
         }

@@ -53,9 +53,9 @@ public class Auto_TestRobot extends Base {
         } else print("Wrist motor test skipped");
 
         if (wristServoX != null && confirm("Test wrist servo?")) {
-            moveWristServo(0);
+            moveWristServoX(0);
             s(.5);
-            moveWristServo(1);
+            moveWristServoX(1);
             s(.5);
             confirm("Please confirm the wrist servo moved from its left to right extremes");
         } else print("Wrist servo test skipped");

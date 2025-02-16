@@ -13,7 +13,7 @@ public class TeleOp_TestFieldCentric extends Base {
         while (active()) {
             drivetrainLogic(p != null);
             wristMotorLogic();
-            wristServoLogic();
+            wristServoXLogic();
             intakeServoLogic();
             horizontalLiftLogic();
             verticalLiftLogic();

@@ -13,7 +13,7 @@ public class TeleOp_Main extends Base {
         while (active()) {
             drivetrainLogic(false);
             wristMotorLogic();
-            wristServoLogic();
+            wristServoXLogic();
             intakeServoLogic();
             horizontalLiftLogic();
             verticalLiftLogic();

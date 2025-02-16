@@ -767,7 +767,7 @@ public abstract class Base extends LinearOpMode {
 
     /** Opens the specimen servo. */
     public void openSpecimenServo() {
-        moveSpecimenServo(0.4);
+        moveSpecimenServo(1);
     }
 
     /** Closes the specimen servo. */
@@ -1366,7 +1366,7 @@ public abstract class Base extends LinearOpMode {
     /** Logic for the specimen servo during TeleOp */
     public void specimenServoLogic() {
         if (gamepad1.b && !wasSpecimenServoButtonPressed)
-            moveSpecimenServo(getSpecimenPosition() == 0 ? 0.4 : 0);
+            moveSpecimenServo(getSpecimenPosition() == 0 ? 1 : 0);
         wasSpecimenServoButtonPressed = gamepad1.b;
     }
 

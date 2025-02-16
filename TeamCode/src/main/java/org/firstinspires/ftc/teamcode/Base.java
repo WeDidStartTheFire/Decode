@@ -113,7 +113,7 @@ public abstract class Base extends LinearOpMode {
 
     static final double WRIST_MOTOR_POWER = 0.1;
     static final int[] WRIST_M_BOUNDS = {0, 160};
-    double wristPos = 0.5, newWristPos = 1;
+    double wristPos = 0.5;
     int vertGoal;
     boolean vertRunToPos, vertStopped;
     double vertical_lift_timer = 0;
@@ -1168,7 +1168,10 @@ public abstract class Base extends LinearOpMode {
         if (wristMotor == null) return;
         double power = 0;
         int wristMotorPos = wristMotor.getCurrentPosition();
-        if (wristMotorPos < 15) moveWristServoX(WRIST_S_GOALS[wristIndex = 2]);
+        if (wristMotorPos < 15) {
+            moveWristServoX(WRIST_S_GOALS[wristIndex = 2]);
+            retractWristServoY();
+        }
         if (gamepad2.right_stick_button) {
             wristMotorStopPos = 60;
             wristMotorTicksStopped = 5;
@@ -1381,7 +1384,7 @@ public abstract class Base extends LinearOpMode {
             wristMotorTicksStopped = 5;
             wristMotorStopPos = 0;
             wristPos = 1;
-            moveWristServoX(newWristPos = 0.5);
+            moveWristServoX(WRIST_S_GOALS[wristIndex = 2]);
             retractWristServoY();
             liftRunToPos = true;
             liftGoal = 0;

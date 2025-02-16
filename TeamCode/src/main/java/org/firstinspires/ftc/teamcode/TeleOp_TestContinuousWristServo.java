@@ -14,7 +14,7 @@ public class TeleOp_TestContinuousWristServo extends Base {
             drivetrainLogic(false);
             wristMotorLogic();
             wristServoXLogic(true);
-            intakeServoLogic();
+            intakeLogic();
             horizontalLiftLogic();
             verticalLiftLogic();
             basketServoLogic();

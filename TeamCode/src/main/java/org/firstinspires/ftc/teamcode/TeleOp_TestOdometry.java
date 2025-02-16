@@ -15,7 +15,7 @@ public class TeleOp_TestOdometry extends Base {
             autoMovementLogic(p != null);
             wristMotorLogic();
             wristServoXLogic();
-            intakeServoLogic();
+            intakeLogic();
             horizontalLiftLogic();
             verticalLiftLogic();
             basketServoLogic();

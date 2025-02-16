@@ -14,7 +14,7 @@ public class TeleOp_Main extends Base {
             drivetrainLogic(false);
             wristMotorLogic();
             wristServoXLogic();
-            intakeServoLogic();
+            intakeLogic();
             horizontalLiftLogic();
             verticalLiftLogic();
             basketServoLogic();

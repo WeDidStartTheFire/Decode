@@ -1212,9 +1212,16 @@ public abstract class Base extends LinearOpMode {
     }
 
     /** Logic for the intake servo during TeleOp */
-    public void intakeServoLogic() {
-        if (gamepad2.b && !wasIntakeServoButtonPressed)
-            moveIntake(getIntakePosition() == 0 ? 1 : 0);
+    public void intakeLogic() {
+        if (gamepad2.b && !wasIntakeServoButtonPressed) {
+            if (getIntakePosition() == 0) {
+                closeIntake();
+                extendWristServoY();
+            } else {
+                openIntake();
+                retractWristServoY();
+            }
+        }
         wasIntakeServoButtonPressed = gamepad2.b;
     }
 
@@ -1368,6 +1375,7 @@ public abstract class Base extends LinearOpMode {
             wristMotorStopPos = 0;
             wristPos = 1;
             moveWristServoX(newWristPos = 0.5);
+            moveWristServoY(0);
             liftRunToPos = true;
             liftGoal = 0;
         }

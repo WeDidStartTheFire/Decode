@@ -1187,7 +1187,7 @@ public abstract class Base extends LinearOpMode {
         } else {
             int error = wristMotorStopPos - wristMotorPos;
             if (wristMotorTicksStopped < 5) wristMotorStopPos = wristMotorPos;
-            else power = abs(error) > 3 ? WRIST_MOTOR_POWER * error / 10.0 : 0.02;
+            else power = (abs(error) > 3 ? WRIST_MOTOR_POWER * error / 15.0 :  0) + wristMotorPos > 30 ? 0.03 : 0;
             wristMotorTicksStopped++;
         }
         wristMotor.setPower(power);

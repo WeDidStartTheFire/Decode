@@ -1200,7 +1200,7 @@ public abstract class Base extends LinearOpMode {
             ticksPowered = 0;
             wristMotorTicksStopped++;
         }
-        wristMotor.setPower(power);
+        wristMotor.setPower(max(min(power, WRIST_MOTOR_POWER * 2), -WRIST_MOTOR_POWER * 2));
     }
 
     /** Logic for the wrist servo during TeleOp. Cycles from 1.0 to 0.5 to 0.0 to 0.5 to 1.0... */

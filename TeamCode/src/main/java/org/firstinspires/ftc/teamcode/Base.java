@@ -1168,7 +1168,7 @@ public abstract class Base extends LinearOpMode {
         if (wristMotor == null) return;
         double power = 0;
         int wristMotorPos = wristMotor.getCurrentPosition();
-        if (wristMotorPos < 15) {
+        if (wristMotorPos <= 30) {
             moveWristServoX(WRIST_S_GOALS[wristIndex = 2]);
             retractWristServoY();
         }

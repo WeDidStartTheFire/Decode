@@ -1170,8 +1170,9 @@ public abstract class Base extends LinearOpMode {
         int wristMotorPos = wristMotor.getCurrentPosition();
         if (wristMotorPos < 15) moveWristServoX(WRIST_S_GOALS[wristIndex = 2]);
         if (gamepad2.right_stick_button) {
-            wristMotorStopPos = 140;
+            wristMotorStopPos = 60;
             wristMotorTicksStopped = 5;
+            hoverWristServoY();
             openIntake();
         }
         if (gamepad2.right_stick_y > .1 && wristMotorPos < WRIST_M_BOUNDS[1]) {
@@ -1219,7 +1220,7 @@ public abstract class Base extends LinearOpMode {
                 extendWristServoY();
                 closeIntake();
             } else {
-                wristMotorStopPos = 70;
+                wristMotorStopPos = 60;
                 wristMotorTicksStopped = 5;
                 openIntake();
                 hoverWristServoY();

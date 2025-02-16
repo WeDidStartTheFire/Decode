@@ -60,21 +60,21 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
             s(.5);
             moveVerticalLift(100);
 
-//            Trajectory trajectory2 = drive.trajectoryBuilder(currentPose, true)
-//                    .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 30.375 + 14, toRadians(90)))
-//                    .splineToConstantHeading(new Vector2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 30.375), toRadians(90))
-//                    .build();
-//            currentPose = trajectory2.end();
-//            driveThread = new Thread(() -> drive.followTrajectory(trajectory2));
-//            liftThread = new Thread(liftTask);
-//            holdLift = new Thread(holdLiftTask);
-//            driveThread.start();
-//            s(.5);
-//            liftThread.start();
-//
-//            liftThread.join();
-//            holdLift.start();
-//            driveThread.join();
+            Trajectory trajectory2 = drive.trajectoryBuilder(currentPose, true)
+                    .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 30 + 14, toRadians(90)))
+                    .splineToConstantHeading(new Vector2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 30), toRadians(90))
+                    .build();
+            currentPose = trajectory2.end();
+            driveThread = new Thread(() -> drive.followTrajectory(trajectory2));
+            liftThread = new Thread(liftTask);
+            holdLift = new Thread(holdLiftTask);
+            driveThread.start();
+            s(.5);
+            liftThread.start();
+
+            liftThread.join();
+            holdLift.start();
+            driveThread.join();
 //
 //            hold = false;
 //            holdLift.join();
@@ -93,7 +93,7 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
 //            closeSpecimenServo();
 //            s(.5);
 //            Trajectory trajectory5 = drive.trajectoryBuilder(currentPose, true)
-//                    .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 4, 72 - ROBOT_LENGTH / 2 - 30.375, toRadians(90)))
+//                    .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 4, 72 - ROBOT_LENGTH / 2 - 30, toRadians(90)))
 //                    .build();
 //            currentPose = trajectory5.end();
 //            driveThread = new Thread(() -> drive.followTrajectory(trajectory5));

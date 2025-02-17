@@ -1386,6 +1386,10 @@ public abstract class Base extends LinearOpMode {
             wristPos = 1;
             moveWristServoX(WRIST_S_GOALS[wristIndex = 2]);
             retractWristServoY();
+            wristMotorStopPos = 60;
+            wristMotorTicksStopped = 5;
+            openIntake(); // 1e-100% chance of working but maybe
+            hoverWristServoY();
             liftRunToPos = true;
             liftGoal = 0;
         }

@@ -1377,7 +1377,7 @@ public abstract class Base extends LinearOpMode {
         wasSpecimenServoButtonPressed = gamepad1.b;
     }
 
-    /** Logic for other controls during TeleOp */
+    /** Logic for y button handoff */
     public void handoffLogic() {
         if (gamepad2.y) {
             handoff = true;
@@ -1395,6 +1395,7 @@ public abstract class Base extends LinearOpMode {
         }
     }
 
+    /** Logic for dpad buttons **/
     public void dpadLogic() {
         if (gamepad1.dpad_up && !isDpu && !wasDpu) isDpu = wasDpu = true;
         else if (gamepad1.dpad_up && isDpu && wasDpu) isDpu = false;

@@ -92,6 +92,10 @@ public abstract class Base extends LinearOpMode {
 
     public volatile boolean loop = false;
     public volatile boolean running = true;
+    public volatile boolean hold = false;
+    public volatile boolean holdWrist = false;
+
+    public boolean auto = false;
 
     /** Dimension front to back on robot in inches */
     public static final double ROBOT_LENGTH = 18;
@@ -100,8 +104,6 @@ public abstract class Base extends LinearOpMode {
 
     double goalAngle = 0;
 
-    public volatile boolean hold = true;
-    public boolean auto = false;
 
     public static final IMU.Parameters IMU_PARAMS = new IMU.Parameters(
             new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
@@ -842,6 +844,17 @@ public abstract class Base extends LinearOpMode {
     /** Extends the wrist. */
     public void extendWrist() {
         moveWrist(50);
+    }
+
+    /** Holds the wrist */
+    public void holdWrist(int holdPos) {
+        if (wristMotor == null) return;
+        holdWrist = true;
+        while (holdWrist && active()) {
+            int wristMotorPos = wristMotor.getCurrentPosition();
+            int error = holdPos - wristMotorPos;
+            wristMotor.setPower((abs(error) > 3 ? WRIST_MOTOR_POWER * error / 10.0 : 0) + (wristMotorPos > 30 ? 0.02 : 0));
+        }
     }
 
     /** Retracts the wrist. */

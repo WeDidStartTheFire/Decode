@@ -19,7 +19,8 @@ public class TeleOp_Main extends Base {
             verticalLiftLogic();
             basketServoLogic();
             specimenServoLogic();
-            otherLogic();
+            handoffLogic();
+            dpadLogic();
 
             updateAll();
         }

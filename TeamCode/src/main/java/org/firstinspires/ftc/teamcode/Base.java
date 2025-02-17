@@ -1215,7 +1215,7 @@ public abstract class Base extends LinearOpMode {
             wristMotorTicksStopped = 0;
             ticksPowered++;
         } else if (gamepad2.right_stick_y < -.1 && (wristMotorPos > WRIST_M_BOUNDS[0] || gamepad2.right_bumper)) {
-            power = ticksPowered <= 15 ? 2 * -WRIST_MOTOR_POWER : ticksPowered <= 45 ? -WRIST_MOTOR_POWER : -WRIST_MOTOR_POWER * 0.5;
+            power = ticksPowered <= 10 ? 2 * -WRIST_MOTOR_POWER : ticksPowered <= 30 ? -WRIST_MOTOR_POWER : -WRIST_MOTOR_POWER * 0.5;
             wristMotorTicksStopped = 0;
             if (gamepad2.right_bumper) {
                 WRIST_M_BOUNDS[1] += wristMotorPos - WRIST_M_BOUNDS[0];

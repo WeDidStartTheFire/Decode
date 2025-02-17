@@ -42,7 +42,6 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
             holdLift.join();
             moveVerticalLift(V_LIFT_GOALS[3] - 400);
             openSpecimenServo();
-            s(.5);
 
             drive(4, FORWARD);
             Trajectory trajectory = drive.trajectoryBuilder(currentPose)

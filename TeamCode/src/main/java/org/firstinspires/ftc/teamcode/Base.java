@@ -1052,7 +1052,7 @@ public abstract class Base extends LinearOpMode {
             if (vertA == 0 && vertB > 100) vertA = vertB;
             if (vertB == 0 && vertA > 100) vertB = vertA;
             int vertAvg = (vertA + vertB) / 2;
-            double power = vertAvg < vertGoal - 20 ? 0.1 : (vertGoal - vertAvg) / 20.0 * .1;
+            double power = vertAvg < vertGoal - 20 ? 0.15 : (vertGoal - vertAvg) / 20.0 * .1;
             verticalMotorA.setPower(power);
             verticalMotorB.setPower(power);
         }
@@ -1061,6 +1061,13 @@ public abstract class Base extends LinearOpMode {
     /** Retracts the horizontal lift motor. */
     public void retractVerticalLift() {
         moveVerticalLift(V_LIFT_BOUNDS[0]);
+        sleep(10);
+        if (verticalTouchSensor != null && verticalTouchSensor.isPressed()) {
+            verticalMotorA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            verticalMotorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            verticalMotorA.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            verticalMotorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
     }
 
     /** Retracts the horizontal lift motor. */

@@ -20,7 +20,8 @@ public class TeleOp_TestOdometry extends Base {
             verticalLiftLogic();
             basketServoLogic();
             specimenServoLogic();
-            otherLogic();
+            handoffLogic();
+            dpadLogic();
 
             updateAll();
         }

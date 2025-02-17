@@ -19,7 +19,8 @@ public class TeleOp_TestContinuousWristServo extends Base {
             verticalLiftLogic();
             basketServoLogic();
             specimenServoLogic();
-            otherLogic();
+            handoffLogic();
+            dpadLogic();
 
             updateAll();
         }

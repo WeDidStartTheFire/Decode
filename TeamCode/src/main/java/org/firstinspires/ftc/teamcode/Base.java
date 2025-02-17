@@ -1224,9 +1224,11 @@ public abstract class Base extends LinearOpMode {
             ticksPowered++;
         } else {
             int error = wristMotorStopPos - wristMotorPos;
-            if (wristMotorTicksStopped < 5) wristMotorStopPos = min(WRIST_M_BOUNDS[1], max(WRIST_M_BOUNDS[0], wristMotorPos));
-            else power = (abs(error) > 3 ? WRIST_MOTOR_POWER * error / 10.0 :  0) + (wristMotorPos > 30 ? 0.02 : 0);
-            power = wristMotorTicksStopped < 20 ? max(min(power, WRIST_MOTOR_POWER * 2), -WRIST_MOTOR_POWER * 2) : max(min(power, WRIST_MOTOR_POWER), -WRIST_MOTOR_POWER);
+            if (wristMotorTicksStopped < 5)
+                wristMotorStopPos = min(WRIST_M_BOUNDS[1], max(WRIST_M_BOUNDS[0], wristMotorPos));
+            else
+                power = (abs(error) > 3 ? WRIST_MOTOR_POWER * error / 10.0 : 0) + (wristMotorPos > 30 ? 0.02 : 0);
+            power = wristMotorTicksStopped < 15 ? max(min(power, WRIST_MOTOR_POWER * 2), -WRIST_MOTOR_POWER * 2) : wristMotorTicksStopped < 30 ? max(min(power, WRIST_MOTOR_POWER), -WRIST_MOTOR_POWER) : max(min(power, WRIST_MOTOR_POWER * 0.5), -WRIST_MOTOR_POWER * 0.5);
             ticksPowered = 0;
             wristMotorTicksStopped++;
         }

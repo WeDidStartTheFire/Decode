@@ -975,6 +975,11 @@ public abstract class Base extends LinearOpMode {
         moveHorizontalLift(LIFT_BOUNDARIES[1]);
     }
 
+    public int getHorizontalLiftPos() {
+        if (liftMotor != null) return liftMotor.getCurrentPosition();
+        return 0;
+    }
+
     /**
      * Moves the vertical lift motor a to a specified encoder mark
      *
@@ -1080,6 +1085,7 @@ public abstract class Base extends LinearOpMode {
      * @return int, average encoder value of the vertical lift motors
      */
     public int getVertLiftPos() {
+        if (verticalMotorA == null) return 0;
         int vertA = verticalMotorA.getCurrentPosition();
         int vertB = verticalMotorB.getCurrentPosition();
         int vertAvg = (vertA + vertB) / 2;
@@ -1220,10 +1226,11 @@ public abstract class Base extends LinearOpMode {
             int error = wristMotorStopPos - wristMotorPos;
             if (wristMotorTicksStopped < 5) wristMotorStopPos = min(WRIST_M_BOUNDS[1], max(WRIST_M_BOUNDS[0], wristMotorPos));
             else power = (abs(error) > 3 ? WRIST_MOTOR_POWER * error / 10.0 :  0) + (wristMotorPos > 30 ? 0.02 : 0);
+            power = wristMotorTicksStopped < 20 ? max(min(power, WRIST_MOTOR_POWER * 2), -WRIST_MOTOR_POWER * 2) : max(min(power, WRIST_MOTOR_POWER), -WRIST_MOTOR_POWER);
             ticksPowered = 0;
             wristMotorTicksStopped++;
         }
-        wristMotor.setPower(max(min(power, WRIST_MOTOR_POWER * 2), -WRIST_MOTOR_POWER * 2));
+        wristMotor.setPower(power);
     }
 
     /** Logic for the wrist servo during TeleOp. Cycles from 1.0 to 0.5 to 0.0 to 0.5 to 1.0... */
@@ -1274,20 +1281,12 @@ public abstract class Base extends LinearOpMode {
             liftRunToPos = true;
             liftGoal = LIFT_BOUNDARIES[1] - 300;
         }
-        if (gamepad2.dpad_left || gamepad2.dpad_right) liftRunToPos = false;
+        if (gamepad2.dpad_left || gamepad2.dpad_right) liftRunToPos = handoff = false;
         if (liftRunToPos) {
             if (liftPos > liftGoal) liftIn = true;
             else liftOut = true;
             slow = abs(liftPos - liftGoal) < 50;
             liftRunToPos = abs(liftPos - liftGoal) > 20;
-            if (!liftRunToPos && handoff) {
-                handoff = false;
-                openIntake();
-                moveWristServoY(.5);
-                vertical_lift_timer = getRuntime() + 0.5;
-                vertRunToPos = true;
-                vertGoal = V_LIFT_GOALS[3];
-            }
         }
         slow = gamepad2.left_bumper || slow;
         liftOut = liftOut || gamepad2.dpad_right;
@@ -1409,6 +1408,14 @@ public abstract class Base extends LinearOpMode {
 
     /** Logic for y button handoff */
     public void handoffLogic() {
+        if (handoff && getHorizontalLiftPos() < 5 && getWristPos() < 5) {
+            handoff = false;
+            openIntake();
+            moveWristServoY(.5);
+            vertical_lift_timer = getRuntime() + 0.5;
+            vertRunToPos = true;
+            vertGoal = V_LIFT_GOALS[3];
+        }
         if (gamepad2.y) {
             handoff = true;
             wristMotorTicksStopped = 5;

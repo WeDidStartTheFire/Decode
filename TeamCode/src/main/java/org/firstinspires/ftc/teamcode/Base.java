@@ -1284,7 +1284,6 @@ public abstract class Base extends LinearOpMode {
             if (!liftRunToPos && intakeServo != null && handoff) {
                 handoff = false;
                 openIntake();
-                hoverWristServoY();
                 vertical_lift_timer = getRuntime() + 0.5;
                 vertRunToPos = true;
                 vertGoal = V_LIFT_GOALS[3];
@@ -1417,8 +1416,6 @@ public abstract class Base extends LinearOpMode {
             wristPos = 1;
             moveWristServoX(WRIST_S_GOALS[wristIndex = 2]);
             retractWristServoY();
-            wristMotorStopPos = 60;
-            wristMotorTicksStopped = 5;
             liftRunToPos = true;
             liftGoal = 0;
         }

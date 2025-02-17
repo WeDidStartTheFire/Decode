@@ -24,7 +24,7 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
         running = true;
         Thread telemetryThread = new Thread(this::telemetryLoop);
         telemetryThread.start();
-        Thread driveThread = new Thread(() -> drive(31, BACKWARD));
+        Thread driveThread = new Thread(() -> drive(30, BACKWARD));
         Thread liftThread = new Thread(liftTask);
         Thread holdLift = new Thread(holdLiftTask);
         try {
@@ -63,11 +63,11 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
             moveVerticalLift(100);
 
             Trajectory trajectory2 = drive.trajectoryBuilder(currentPose, true)
-                    .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 31 + 14, toRadians(90)))
+                    .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 30 + 14, toRadians(90)))
                     .build();
             currentPose = trajectory2.end();
             Trajectory trajectory2_5 = drive.trajectoryBuilder(currentPose, true)
-                    .lineToConstantHeading(new Vector2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 31))
+                    .lineToConstantHeading(new Vector2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 30))
                     .build();
             driveThread = new Thread(() -> drive.followTrajectory(trajectory2));
             liftThread = new Thread(liftTask);
@@ -99,7 +99,7 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
 //            closeSpecimenServo();
 //            s(.5);
 //            Trajectory trajectory5 = drive.trajectoryBuilder(currentPose, true)
-//                    .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 4, 72 - ROBOT_LENGTH / 2 - 31, toRadians(90)))
+//                    .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 4, 72 - ROBOT_LENGTH / 2 - 30, toRadians(90)))
 //                    .build();
 //            currentPose = trajectory5.end();
 //            driveThread = new Thread(() -> drive.followTrajectory(trajectory5));

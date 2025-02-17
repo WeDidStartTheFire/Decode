@@ -78,7 +78,7 @@ public abstract class Base extends LinearOpMode {
     static final double TURN_SPEED = 0.5;
     static final int[] LIFT_BOUNDARIES = {0, 1625};
     static final int[] V_LIFT_BOUNDS = {0, 1950};
-    static final int[] V_LIFT_GOALS = {0, 280, 500, 1350, 1500};
+    static final int[] V_LIFT_GOALS = {0, 280, 500, 1350, 1950};
     static final double[] WRIST_S_GOALS = {.1, .3, .5, .9};
     int wristIndex = 0;
 
@@ -115,7 +115,6 @@ public abstract class Base extends LinearOpMode {
 
     static final double WRIST_MOTOR_POWER = 0.1;
     static final int[] WRIST_M_BOUNDS = {0, 80};
-    double wristPos = 0.5;
     int vertGoal;
     boolean vertRunToPos, vertStopped;
     double vertical_lift_timer = 0;
@@ -1281,9 +1280,10 @@ public abstract class Base extends LinearOpMode {
             else liftOut = true;
             slow = abs(liftPos - liftGoal) < 50;
             liftRunToPos = abs(liftPos - liftGoal) > 20;
-            if (!liftRunToPos && intakeServo != null && handoff) {
+            if (!liftRunToPos && handoff) {
                 handoff = false;
                 openIntake();
+                moveWristServoY(.5);
                 vertical_lift_timer = getRuntime() + 0.5;
                 vertRunToPos = true;
                 vertGoal = V_LIFT_GOALS[3];
@@ -1413,7 +1413,6 @@ public abstract class Base extends LinearOpMode {
             handoff = true;
             wristMotorTicksStopped = 5;
             wristMotorStopPos = 0;
-            wristPos = 1;
             moveWristServoX(WRIST_S_GOALS[wristIndex = 2]);
             retractWristServoY();
             liftRunToPos = true;

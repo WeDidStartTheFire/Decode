@@ -24,7 +24,7 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
         running = true;
         Thread telemetryThread = new Thread(this::telemetryLoop);
         telemetryThread.start();
-        Thread driveThread = new Thread(() -> drive(30.375, BACKWARD));
+        Thread driveThread = new Thread(() -> drive(31, BACKWARD));
         Thread liftThread = new Thread(liftTask);
         Thread holdLift = new Thread(holdLiftTask);
         try {
@@ -51,20 +51,24 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
                     .splineToConstantHeading(new Vector2d(-36 - 8, 72 - 20), toRadians(180))
                     .splineToConstantHeading(new Vector2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2 - 1), toRadians(180))
                     .build();
+            currentPose = trajectory_5.end();
             liftThread = new Thread(this::retractVerticalLift);
             liftThread.start();
             drive.followTrajectory(trajectory);
             drive.followTrajectory(trajectory_5);
             liftThread.join();
+            s(.5);
             closeSpecimenServo();
             s(.5);
             moveVerticalLift(100);
 
             Trajectory trajectory2 = drive.trajectoryBuilder(currentPose, true)
-                    .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 30.375 + 14, toRadians(90)))
-                    .splineToConstantHeading(new Vector2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 30.375), toRadians(90))
+                    .splineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 31 + 14, toRadians(90)), toRadians(90))
                     .build();
             currentPose = trajectory2.end();
+            Trajectory trajectory2_5 = drive.trajectoryBuilder(currentPose, true)
+                    .lineToConstantHeading(new Vector2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 31))
+                    .build();
             driveThread = new Thread(() -> drive.followTrajectory(trajectory2));
             liftThread = new Thread(liftTask);
             holdLift = new Thread(holdLiftTask);
@@ -75,6 +79,8 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
             liftThread.join();
             holdLift.start();
             driveThread.join();
+            drive.followTrajectory(trajectory2_5);
+
             hold = false;
             holdLift.join();
             moveVerticalLift(V_LIFT_GOALS[3] - 400);
@@ -93,7 +99,7 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
 //            closeSpecimenServo();
 //            s(.5);
 //            Trajectory trajectory5 = drive.trajectoryBuilder(currentPose, true)
-//                    .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 4, 72 - ROBOT_LENGTH / 2 - 30.375, toRadians(90)))
+//                    .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 4, 72 - ROBOT_LENGTH / 2 - 31, toRadians(90)))
 //                    .build();
 //            currentPose = trajectory5.end();
 //            driveThread = new Thread(() -> drive.followTrajectory(trajectory5));

@@ -1255,8 +1255,8 @@ public abstract class Base extends LinearOpMode {
                     openIntake();
                 }
             }
-            wasIntakeServoButtonPressed = gamepad2.b;
         }
+        wasIntakeServoButtonPressed = gamepad2.b;
     }
 
     /** Logic for the horizontal lift during TeleOp */

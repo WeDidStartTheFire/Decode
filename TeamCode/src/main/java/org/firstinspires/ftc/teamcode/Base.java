@@ -112,7 +112,7 @@ public abstract class Base extends LinearOpMode {
     static final double BASE_TURN_SPEED = 2.5;
 
     static final double WRIST_MOTOR_POWER = 0.1;
-    static final int[] WRIST_M_BOUNDS = {0, 160};
+    static final int[] WRIST_M_BOUNDS = {0, 80};
     double wristPos = 0.5;
     int vertGoal;
     boolean vertRunToPos, vertStopped;
@@ -1168,9 +1168,12 @@ public abstract class Base extends LinearOpMode {
         if (wristMotor == null) return;
         double power = 0;
         int wristMotorPos = wristMotor.getCurrentPosition();
-        if (wristMotorPos < 15) {
+        if (wristMotorPos <= 30) {
             moveWristServoX(WRIST_S_GOALS[wristIndex = 2]);
             retractWristServoY();
+        }
+        if (wristMotorPos > 30) {
+            hoverWristServoY();
         }
         if (gamepad2.right_stick_button) {
             wristMotorStopPos = 60;
@@ -1183,7 +1186,7 @@ public abstract class Base extends LinearOpMode {
             wristMotorTicksStopped = 0;
             ticksPowered++;
         } else if (gamepad2.right_stick_y < -.1 && (wristMotorPos > WRIST_M_BOUNDS[0] || gamepad2.right_bumper)) {
-            power = ticksPowered <= 15 ? 2 * -WRIST_MOTOR_POWER : ticksPowered <= 45 ? -WRIST_MOTOR_POWER : -WRIST_MOTOR_POWER * 0.5;
+            power = ticksPowered <= 10 ? 2 * -WRIST_MOTOR_POWER : ticksPowered <= 30 ? -WRIST_MOTOR_POWER : -WRIST_MOTOR_POWER * 0.5;
             wristMotorTicksStopped = 0;
             if (gamepad2.right_bumper) {
                 WRIST_M_BOUNDS[1] += wristMotorPos - WRIST_M_BOUNDS[0];
@@ -1192,12 +1195,12 @@ public abstract class Base extends LinearOpMode {
             ticksPowered++;
         } else {
             int error = wristMotorStopPos - wristMotorPos;
-            if (wristMotorTicksStopped < 5) wristMotorStopPos = wristMotorPos;
-            else power = (abs(error) > 3 ? WRIST_MOTOR_POWER * error / 15.0 :  0) + wristMotorPos > 30 ? 0.03 : 0;
+            if (wristMotorTicksStopped < 5) wristMotorStopPos = min(WRIST_M_BOUNDS[1], max(WRIST_M_BOUNDS[0], wristMotorPos));
+            else power = (abs(error) > 3 ? WRIST_MOTOR_POWER * error / 10.0 :  0) + (wristMotorPos > 30 ? 0.02 : 0);
             ticksPowered = 0;
             wristMotorTicksStopped++;
         }
-        wristMotor.setPower(power);
+        wristMotor.setPower(max(min(power, WRIST_MOTOR_POWER * 2), -WRIST_MOTOR_POWER * 2));
     }
 
     /** Logic for the wrist servo during TeleOp. Cycles from 1.0 to 0.5 to 0.0 to 0.5 to 1.0... */
@@ -1220,16 +1223,20 @@ public abstract class Base extends LinearOpMode {
     /** Logic for the intake servo during TeleOp */
     public void intakeLogic() {
         if (gamepad2.b && !wasIntakeServoButtonPressed) {
-            if (getIntakePosition() == 1) {
-                wristMotorStopPos = 80;
-                wristMotorTicksStopped = 5;
-                extendWristServoY();
-                closeIntake();
-            } else {
-                wristMotorStopPos = 60;
-                wristMotorTicksStopped = 5;
-                openIntake();
-                hoverWristServoY();
+            if (getWristPos() <= 30)
+                moveIntake(getIntakePosition() == 1 ? 0 : 1);
+            else {
+                if (getIntakePosition() == 1) {
+                    wristMotorStopPos = 80;
+                    wristMotorTicksStopped = 5;
+                    extendWristServoY();
+                    closeIntake();
+                } else {
+                    wristMotorStopPos = 60;
+                    wristMotorTicksStopped = 5;
+                    hoverWristServoY();
+                    openIntake();
+                }
             }
         }
         wasIntakeServoButtonPressed = gamepad2.b;
@@ -1337,18 +1344,17 @@ public abstract class Base extends LinearOpMode {
         } else {
             vertStopped = false;
             // If the touch sensor isn't connected, assume it isn't pressed
-            boolean touchSensorPressed = verticalTouchSensor != null && verticalTouchSensor.isPressed();
-            if (touchSensorPressed) {
+            boolean TSPressed = verticalTouchSensor != null && verticalTouchSensor.isPressed();
+            if (TSPressed) {
                 verticalMotorA.setMode(STOP_AND_RESET_ENCODER);
                 verticalMotorB.setMode(STOP_AND_RESET_ENCODER);
                 verticalMotorA.setMode(RUN_WITHOUT_ENCODER);
                 verticalMotorB.setMode(RUN_WITHOUT_ENCODER);
             }
-            if (vertUp && !(vertAvg < 100 && getWristPos() < 10)) {
+            if (vertUp && getWristPos() < 16) wristMotorTicksStopped = wristMotorStopPos = 16;
+            if (vertUp && !(vertAvg < 100 && getWristPos() < 10))
                 power = vertAvg < V_LIFT_BOUNDS[1] ? slow ? 0.7 : 1 : 0;
-                if (getWristPos() < 16) wristMotorTicksStopped = wristMotorStopPos = 16;
-            } else if (!touchSensorPressed)
-                power = vertAvg > V_LIFT_BOUNDS[0] ? slow ? -0.5 : -1 : 0;
+            else if (!TSPressed) power = vertAvg > V_LIFT_BOUNDS[0] ? slow ? -0.5 : -1 : 0;
         }
         if (vertA > vertB + 5 && power != 0) {
             verticalMotorA.setPower(power - .05);

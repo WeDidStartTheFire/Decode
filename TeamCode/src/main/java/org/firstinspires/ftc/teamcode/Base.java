@@ -1179,9 +1179,7 @@ public abstract class Base extends LinearOpMode {
             moveWristServoX(WRIST_S_GOALS[wristIndex = 2]);
             retractWristServoY();
         }
-        if (wristMotorPos > 30) {
-            hoverWristServoY();
-        }
+        if (wristMotorPos > 30) hoverWristServoY();
         if (gamepad2.right_stick_button) {
             wristMotorStopPos = 60;
             wristMotorTicksStopped = 5;

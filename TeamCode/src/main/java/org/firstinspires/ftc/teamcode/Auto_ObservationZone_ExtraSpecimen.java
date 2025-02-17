@@ -63,7 +63,7 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
             moveVerticalLift(100);
 
             Trajectory trajectory2 = drive.trajectoryBuilder(currentPose, true)
-                    .splineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 31 + 14, toRadians(90)), toRadians(90))
+                    .lineToLinearHeading(new Pose2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 31 + 14, toRadians(90)))
                     .build();
             currentPose = trajectory2.end();
             Trajectory trajectory2_5 = drive.trajectoryBuilder(currentPose, true)

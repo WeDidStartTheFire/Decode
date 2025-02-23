@@ -1283,6 +1283,8 @@ public abstract class Base extends LinearOpMode {
         }
         wasIntakeServoButtonPressed = gamepad2.b;
         if ((runtime.milliseconds() >= wristServoTimer) && (wristServoTimer != 0)){
+            wristMotorStopPos = 60;
+            wristMotorTicksStopped = 5;
             hoverWristServoY();
             wristServoTimer = 0;
         }

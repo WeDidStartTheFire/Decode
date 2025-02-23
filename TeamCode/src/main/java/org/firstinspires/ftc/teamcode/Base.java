@@ -109,9 +109,7 @@ public abstract class Base extends LinearOpMode {
             new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                     RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
 
-    // TeleOp variables below
-    static final double SPEED_MULTIPLIER = 0.75;
-    static final double BASE_TURN_SPEED = 2.5;
+
 
     static final double WRIST_MOTOR_POWER = 0.1;
     static final int[] WRIST_M_BOUNDS = {0, 80};
@@ -123,6 +121,9 @@ public abstract class Base extends LinearOpMode {
     boolean wasIntakeServoButtonPressed, wasWristServoButtonPressed;
     boolean wasSpecimenServoButtonPressed, wasBasketServoButtonPressed;
     int wristMotorTicksStopped = 0, wristMotorStopPos = 0, ticksPowered = 0;
+
+    static double baseSpeedMultiplier = 0.75;
+    static double baseTurnSpeed = 2.5;
 
     static double[] speeds = {0.2, 0.6, 1};
     boolean wasDpu, isDpu, isDpd, wasDpd;
@@ -1151,9 +1152,9 @@ public abstract class Base extends LinearOpMode {
             xMove = gamepad1.left_stick_x;
             yMove = gamepad1.left_stick_y;
         }
-        axial = yMove * SPEED_MULTIPLIER;
-        lateral = -xMove * SPEED_MULTIPLIER;
-        yaw = gamepad1.right_stick_x * BASE_TURN_SPEED;
+        axial = yMove * baseSpeedMultiplier;
+        lateral = -xMove * baseSpeedMultiplier;
+        yaw = gamepad1.right_stick_x * baseTurnSpeed;
 
         double leftFrontPower = axial + lateral + yaw;
         double rightFrontPower = axial - lateral - yaw;

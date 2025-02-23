@@ -1069,6 +1069,8 @@ public abstract class Base extends LinearOpMode {
             double power = vertAvg < vertGoal - 20 ? 0.15 : (vertGoal - vertAvg) / 20.0 * .1;
             verticalMotorA.setPower(power);
             verticalMotorB.setPower(power);
+            print("Holding Lift at", vertGoal);
+            if (!loop) update();
         }
         verticalMotorA.setPower(0);
         verticalMotorB.setPower(0);
@@ -1435,7 +1437,7 @@ public abstract class Base extends LinearOpMode {
             moveWristServoY(.5);
             verticalLiftTimer = getRuntime() + 0.5;
             vertRunToPos = true;
-            vertGoal = V_LIFT_GOALS[3];
+            vertGoal = V_LIFT_GOALS[4];
         }
         if (gamepad2.y) {
             handoff = true;

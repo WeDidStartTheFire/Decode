@@ -1019,7 +1019,7 @@ public abstract class Base extends LinearOpMode {
             if (Math.abs(error) < 20) break;
 
             double direction = Math.signum(error);
-            double basePower = 0.8 * direction;
+            double basePower = .85 * direction;
 
             // Minor correction if one motor is off-center by >10
             if (verticalMotorA.getCurrentPosition() - vertAvg > 10)
@@ -1058,9 +1058,9 @@ public abstract class Base extends LinearOpMode {
      * @param vertGoal Number of encoders from zero position to turn the motor to
      */
     public void holdVerticalLift(int vertGoal) {
+        if (verticalMotorA == null) return;
         hold = true;
         while (active() && hold) {
-            if (verticalMotorA == null) return;
             int vertA = verticalMotorA.getCurrentPosition();
             int vertB = verticalMotorB.getCurrentPosition();
             if (vertA == 0 && vertB > 100) vertA = vertB;
@@ -1070,6 +1070,8 @@ public abstract class Base extends LinearOpMode {
             verticalMotorA.setPower(power);
             verticalMotorB.setPower(power);
         }
+        verticalMotorA.setPower(0);
+        verticalMotorB.setPower(0);
     }
 
     /** Retracts the horizontal lift motor. */

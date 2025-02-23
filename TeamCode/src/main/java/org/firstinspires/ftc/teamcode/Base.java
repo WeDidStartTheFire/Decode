@@ -117,7 +117,7 @@ public abstract class Base extends LinearOpMode {
     static final int[] WRIST_M_BOUNDS = {0, 80};
     int vertGoal;
     boolean vertRunToPos, vertStopped;
-    double vertical_lift_timer = 0;
+    double verticalLiftTimer = 0;
     double wristServoTimer = 0;
 
     boolean wasIntakeServoButtonPressed, wasWristServoButtonPressed;
@@ -1259,7 +1259,7 @@ public abstract class Base extends LinearOpMode {
             if (getWristPos() <= 30)
                 moveIntake(getIntakePosition() == 1 ? 0 : 1);
             else {
-                if (getIntakePosition() == 1) {
+                if (getIntakePosition() == 1) { // 1 is open
                     wristMotorStopPos = 80;
                     wristMotorTicksStopped = 5;
                     extendWristServoY();
@@ -1352,7 +1352,7 @@ public abstract class Base extends LinearOpMode {
                 vertStopped = true;
             }
         }
-        if (vertRunToPos && (getRuntime() - vertical_lift_timer >= 0)) {
+        if (vertRunToPos && (getRuntime() - verticalLiftTimer >= 0)) {
             if (vertAvg < vertGoal) {
                 vertUp = true;
                 if (vertAvg >= vertGoal - 50) slow = true;
@@ -1420,7 +1420,7 @@ public abstract class Base extends LinearOpMode {
             handoff = false;
             openIntake();
             moveWristServoY(.5);
-            vertical_lift_timer = getRuntime() + 0.5;
+            verticalLiftTimer = getRuntime() + 0.5;
             vertRunToPos = true;
             vertGoal = V_LIFT_GOALS[3];
         }

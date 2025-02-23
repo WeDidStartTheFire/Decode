@@ -41,7 +41,7 @@ public class Auto_ObservationZone_NoLineSplineTo extends Base {
             driveThread.join();
             hold = false;
             holdLift.join();
-            moveVerticalLift(V_LIFT_GOALS[3] - 400);
+            moveVerticalLift(V_LIFT_GOALS[3] - 300);
             openSpecimenServo();
 
             drive(4, FORWARD);

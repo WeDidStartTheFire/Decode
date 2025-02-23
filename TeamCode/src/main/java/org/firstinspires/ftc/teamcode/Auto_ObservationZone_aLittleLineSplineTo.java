@@ -40,8 +40,8 @@ public class Auto_ObservationZone_aLittleLineSplineTo extends Base {
             holdLift.start();
             driveThread.join();
             hold = false;
-            holdLift.join();
-            moveVerticalLift(V_LIFT_GOALS[3] - 400);
+            holdLift.interrupt();
+            moveVerticalLift(V_LIFT_GOALS[3] - 300);
             openSpecimenServo();
 
             drive(4, FORWARD);

@@ -644,11 +644,10 @@ public abstract class Base extends LinearOpMode {
     }
 
     /**
-     * Drives the specified number of inches. Negative values will drive backwards. An inches value
-     * of zero will cause the robot to drive until manually stopped.
+     * Drives the specified number of inches. Negative values will drive backwards.
      *
      * @param inches    Amount of inches to drive.
-     * @param direction (opt.) Direction to drive if inches is zero.*
+     * @param direction Direction to drive in.*
      */
     public void drive(double inches, Dir direction) {
         if (useOdometry && active()) {
@@ -673,13 +672,22 @@ public abstract class Base extends LinearOpMode {
     }
 
     /**
-     * Drives the specified number of inches. Negative values will drive backwards. An inches value
-     * of zero will cause the robot to drive until manually stopped.
+     * Drives the specified number of inches. Negative values will drive backwards.
      *
      * @param inches Amount of inches to drive.
      */
     public void drive(double inches) {
         drive(inches, FORWARD);
+    }
+
+    /**
+     * Drives the specified number of inches. Negative values will drive backwards.
+     *
+     * @param inches    Amount of inches to drive.
+     * @param direction Direction to drive in.*
+     */
+    public void drive(Dir direction, double inches){
+        drive(inches, direction);
     }
 
     /** Stops all drive train motors on the robot. */

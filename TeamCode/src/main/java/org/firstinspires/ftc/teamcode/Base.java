@@ -118,6 +118,7 @@ public abstract class Base extends LinearOpMode {
     int vertGoal;
     boolean vertRunToPos, vertStopped;
     double vertical_lift_timer = 0;
+    double wristServoTimer = 0;
 
     boolean wasIntakeServoButtonPressed, wasWristServoButtonPressed;
     boolean wasSpecimenServoButtonPressed, wasBasketServoButtonPressed;
@@ -1262,6 +1263,7 @@ public abstract class Base extends LinearOpMode {
                     wristMotorStopPos = 80;
                     wristMotorTicksStopped = 5;
                     extendWristServoY();
+                    wristServoTimer = runtime.milliseconds() + 500;
                     closeIntake();
                 } else {
                     wristMotorStopPos = 60;
@@ -1272,6 +1274,10 @@ public abstract class Base extends LinearOpMode {
             }
         }
         wasIntakeServoButtonPressed = gamepad2.b;
+        if ((runtime.milliseconds() >= wristServoTimer) && (wristServoTimer != 0)){
+            hoverWristServoY();
+            wristServoTimer = 0;
+        }
     }
 
     /** Logic for the horizontal lift during TeleOp */

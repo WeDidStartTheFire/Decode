@@ -1,14 +1,18 @@
 package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Base.Dir.BACKWARD;
-import static java.lang.Math.toRadians;
+import static org.firstinspires.ftc.teamcode.Base.Dir.FORWARD;
+import static org.firstinspires.ftc.teamcode.Base.Dir.RIGHT;
+
+import static java.lang.Math.pow;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "Observation Zone Single Specimen Park", group = "!!!!Pre-Primary", preselectTeleOp = "Main")
-public class Auto_ObservationZone_SingleSpecimenPark extends Base {
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+
+@Autonomous(name="Observation Zone Single Specimen Push", group="!!!Primary", preselectTeleOp="Main")
+public class Auto_ObservationZone_SingleSpecimenPush extends Base {
 
     Runnable liftTask = () -> moveVerticalLift(V_LIFT_GOALS[3]);
     Runnable holdLiftTask = () -> holdVerticalLift(V_LIFT_GOALS[3]);
@@ -16,12 +20,12 @@ public class Auto_ObservationZone_SingleSpecimenPark extends Base {
     @Override
     public void runOpMode() throws InterruptedException {
         auto = true;
+        useOdometry = false;
         setup(new Pose2d(-ROBOT_WIDTH / 2 - .5, 72 - ROBOT_LENGTH / 2, Math.toRadians(90)));
 
         running = true;
         Thread telemetryThread = new Thread(this::telemetryLoop);
         telemetryThread.start();
-        useOdometry = false;
         Thread driveThread = new Thread(() -> drive(30, BACKWARD));
         Thread liftThread = new Thread(liftTask);
         Thread holdLift = new Thread(holdLiftTask);
@@ -34,28 +38,45 @@ public class Auto_ObservationZone_SingleSpecimenPark extends Base {
             // Start both threads
             liftThread.start();
             liftThread.join();
-            driveThread.start();
             holdLift.start();
+            driveThread.start();
             driveThread.join();
-            useOdometry = true;
-            currentPose = new Pose2d(currentPose.getX(), currentPose.getY() - 30, currentPose.getHeading());
+            currentPose = new Pose2d(-ROBOT_WIDTH / 2 - .5, 72 - ROBOT_LENGTH / 2 - 30, Math.toRadians(90));
             hold = false;
             holdLift.join();
             moveVerticalLift(V_LIFT_GOALS[3] - 250);
             openSpecimenServo();
-            s(.5);
-
-            Trajectory trajectory = drive.trajectoryBuilder(currentPose)
-                    .lineToLinearHeading(new Pose2d(-72 + 24 + ROBOT_WIDTH / 2, 72 - 2 - ROBOT_LENGTH / 2, toRadians(0)))
-                    .build();
-            currentPose = trajectory.end();
-            drive.followTrajectory(trajectory);
+            drive(25, FORWARD);
+            turn(180);
+            drive(5, BACKWARD);
+            strafe(24 - ROBOT_WIDTH, RIGHT);
             retractVerticalLift();
-            moveWrist(0);
+            try {
+                drive = new SampleMecanumDrive(hardwareMap);
+                drive.setPoseEstimate(currentPose);
+                drive.breakFollowing();
+            } catch (IllegalArgumentException e) {
+                except("SparkFun Sensor not connected");
+                useOdometry = false;
+            }
+            turn(0);
+            strafe(20, RIGHT);
+            drive(52, FORWARD);
+            strafe(9, RIGHT);
+            drive(44, BACKWARD);
+            turn(0); // Re-align
+            drive(44, FORWARD);
+            strafe(12, RIGHT);
+            drive(44, BACKWARD);
+            turn(0); // Re-align
+            drive(44, FORWARD);
+            strafe(7, RIGHT);
+            drive(48, BACKWARD);
         } finally {
             running = false;
             hold = false;
             loop = false;
+            holdWrist = false;
             telemetryThread.interrupt();
             driveThread.interrupt();
             liftThread.interrupt();

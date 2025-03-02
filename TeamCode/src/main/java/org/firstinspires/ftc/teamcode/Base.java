@@ -100,7 +100,7 @@ public abstract class Base extends LinearOpMode {
     /** Dimension front to back on robot in inches */
     public static final double ROBOT_LENGTH = 18;
     /** Dimension left to right on robot in inches */
-    public static final double ROBOT_WIDTH = 16;
+    public static final double ROBOT_WIDTH = 18;
 
     double goalAngle = 0;
 
@@ -400,7 +400,7 @@ public abstract class Base extends LinearOpMode {
             correctedGoalAngle -= abs(initialGoalAngle) / initialGoalAngle * 360;
         while (active() && (difference > tolerance) && degrees != 0) {
             angle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
-            difference = min(abs(initialGoalAngle - angle), abs(correctedGoalAngle - angle));
+            difference = simplifyAngle(min(abs(initialGoalAngle - angle), abs(correctedGoalAngle - angle)));
             turnModifier = min(1, (difference + 3) / 30);
             turnPower = degrees / abs(degrees) * TURN_SPEED * turnModifier * direct;
             setMotorPowers(-turnPower, turnPower, -turnPower, turnPower);
@@ -888,7 +888,7 @@ public abstract class Base extends LinearOpMode {
     }
 
     public void holdWristOutOfWay() {
-        holdWrist(40);
+        holdWrist(30);
     }
 
     /** Retracts the wrist. */
@@ -1239,10 +1239,11 @@ public abstract class Base extends LinearOpMode {
         if (wristMotor == null) return;
         double power = 0;
         int wristMotorPos = wristMotor.getCurrentPosition();
-        if (wristMotorPos <= 25) {
+        if (wristMotorPos < 25) {
             moveWristServoX(WRIST_S_GOALS[wristIndex = 2]);
             retractWristServoY();
-        } else if (wristMotorPos >= 30) hoverWristServoY();
+        } else if (wristMotorPos > 35) hoverWristServoY();
+        else moveWristServoY(0.5);
         if (gamepad2.right_stick_button) {
             wristMotorStopPos = 60;
             wristMotorTicksStopped = 15;
@@ -1276,8 +1277,8 @@ public abstract class Base extends LinearOpMode {
 
     /** Logic for the wrist servo during TeleOp. Cycles from 1.0 to 0.5 to 0.0 to 0.5 to 1.0... */
     public void wristServoXLogic(boolean continuous) {
-        if (continuous && Math.hypot(gamepad2.left_stick_y, gamepad2.left_stick_x) > .2) {
-            double angle = Math.atan2(gamepad2.left_stick_y, gamepad2.left_stick_x);
+        if (continuous && hypot(gamepad2.left_stick_y, gamepad2.left_stick_x) > .2) {
+            double angle = PI / 2 - atan2(gamepad2.left_stick_y, gamepad2.left_stick_x);
             moveWristServoX(min(max(0, (angle - WRIST_S_ANGLES[0]) / (WRIST_S_ANGLES[1] - WRIST_S_ANGLES[0])), 1));
             return;
         }
@@ -1298,7 +1299,7 @@ public abstract class Base extends LinearOpMode {
                 moveIntake(getIntakePosition() == 1 ? 0 : 1);
             else {
                 if (getIntakePosition() == 1) { // 1 is open
-                    wristMotorStopPos = 90;
+                    wristMotorStopPos = 95;
                     wristMotorTicksStopped = 5;
                     extendWristServoY();
                     wristServoTimer = runtime.milliseconds() + 500;
@@ -1422,11 +1423,11 @@ public abstract class Base extends LinearOpMode {
                 verticalMotorA.setMode(RUN_WITHOUT_ENCODER);
                 verticalMotorB.setMode(RUN_WITHOUT_ENCODER);
             }
-            if (vertUp && getWristPos() < 40) {
-                wristMotorStopPos = 40;
+            if (vertUp && getWristPos() < 27) {
+                wristMotorStopPos = 27;
                 wristMotorTicksStopped = 5;
             }
-            if (vertUp && !(vertAvg < 100 && getWristPos() < 30))
+            if (vertUp && !(vertAvg < 100 && getWristPos() < 25))
                 power = vertAvg < V_LIFT_BOUNDS[1] ? slow ? 0.7 : 1 : 0;
             else if (!touchSensorPressed) power = vertAvg > V_LIFT_BOUNDS[0] ? slow ? -0.5 : -1 : 0;
         }

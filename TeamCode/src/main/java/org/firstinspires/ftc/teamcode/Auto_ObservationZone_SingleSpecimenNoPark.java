@@ -19,30 +19,39 @@ public class Auto_ObservationZone_SingleSpecimenNoPark extends Base {
         running = true;
         Thread telemetryThread = new Thread(this::telemetryLoop);
         telemetryThread.start();
+        useOdometry = false;
         Thread driveThread = new Thread(() -> drive(30, BACKWARD));
         Thread liftThread = new Thread(liftTask);
         Thread holdLift = new Thread(holdLiftTask);
+        Thread holdWristOutOfWay = new Thread(this::holdWristOutOfWay);
         try {
             closeSpecimenServo();
-            moveWrist(16);
+            moveWristServoY(0.5);
+            wristOutOfWay();
+            holdWristOutOfWay.start();
             // Start both threads
-            driveThread.start();
             liftThread.start();
             liftThread.join();
+            driveThread.start();
             holdLift.start();
             driveThread.join();
+            useOdometry = true;
+            currentPose = new Pose2d(currentPose.getX(), currentPose.getY() - 30, currentPose.getHeading());
             hold = false;
             holdLift.join();
-            moveVerticalLift(V_LIFT_GOALS[3] - 400);
+            moveVerticalLift(V_LIFT_GOALS[3] - 250);
             openSpecimenServo();
+            moveWrist(0);
         } finally {
             running = false;
             hold = false;
             loop = false;
+            holdWrist = false;
             telemetryThread.interrupt();
             driveThread.interrupt();
             liftThread.interrupt();
             holdLift.interrupt();
+            holdWristOutOfWay.interrupt();
             stop();
         }
     }

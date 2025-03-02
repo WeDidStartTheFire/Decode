@@ -505,6 +505,7 @@ public abstract class Base extends LinearOpMode {
         if (useOdometry) {
             int dir = direction == LEFT ? -1 : 1;
             drive.turn(Math.toRadians(degrees * dir));
+            currentPose = new Pose2d(currentPose.getX(), currentPose.getY(), currentPose.getHeading() + Math.toRadians(degrees * dir));
         } else IMUTurn(degrees, direction);
     }
 

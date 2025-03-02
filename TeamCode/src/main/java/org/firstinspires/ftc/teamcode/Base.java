@@ -519,6 +519,22 @@ public abstract class Base extends LinearOpMode {
         turn(degrees, RIGHT);
     }
 
+    public void lineTo(Pose2d position, boolean reverse, boolean double_reverse) {
+        if (!useOdometry) return;
+        Pose2d delta_pos = position.minus(currentPose);  // position - currentPose?
+        turn(simplifyAngle(toDegrees(toRadians(reverse ^ double_reverse ? 180 : 0) + atan2(delta_pos.getY(), delta_pos.getX()) + currentPose.getHeading())));
+        drive(hypot(delta_pos.getX(), delta_pos.getY()), reverse ? BACKWARD : FORWARD);
+        turn(simplifyAngle(toDegrees(position.getHeading() - currentPose.getHeading())));
+    }
+
+    public void lineTo(Pose2d position, boolean reverse) {
+        lineTo(position, reverse, false);
+    }
+
+    public void lineTo(Pose2d position) {
+        lineTo(position, false, false);
+    }
+
     /**
      * Sets the mode of all drive train motors to the same mode.
      *

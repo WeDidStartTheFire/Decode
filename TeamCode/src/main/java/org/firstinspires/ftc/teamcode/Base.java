@@ -1201,7 +1201,7 @@ public abstract class Base extends LinearOpMode {
                     .lineToLinearHeading(NET_ZONE_POSITION)
                     .build();
             drive.followTrajectoryAsync(trajectory);
-        } else if (gamepad1.x) {
+        } else if (gamepad1.start) {
             following = true;
             Trajectory trajectory = drive.trajectoryBuilder(poseEstimate)
                     .lineToLinearHeading(OBSERVATION_ZONE_POSITION)
@@ -1418,9 +1418,9 @@ public abstract class Base extends LinearOpMode {
 
     /** Logic for the basket servo during TeleOp */
     public void basketServoLogic() {
-        if (gamepad2.x && !wasBasketServoButtonPressed && getVertLiftPos() > 100)
+        if (gamepad1.x && !wasBasketServoButtonPressed && getVertLiftPos() > 100)
             moveBasketServo(getBasketPosition() == 0 ? 1 : 0);
-        wasBasketServoButtonPressed = gamepad2.x && getVertLiftPos() > 100;
+        wasBasketServoButtonPressed = gamepad1.x && getVertLiftPos() > 100;
     }
 
     /** Logic for the specimen servo during TeleOp */

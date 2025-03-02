@@ -1231,13 +1231,13 @@ public abstract class Base extends LinearOpMode {
         if (wristMotor == null) return;
         double power = 0;
         int wristMotorPos = wristMotor.getCurrentPosition();
-        if (wristMotorPos <= 30) {
+        if (wristMotorPos <= 25) {
             moveWristServoX(WRIST_S_GOALS[wristIndex = 2]);
             retractWristServoY();
-        } else hoverWristServoY();
+        } else if (wristMotorPos >= 30) hoverWristServoY();
         if (gamepad2.right_stick_button) {
             wristMotorStopPos = 60;
-            wristMotorTicksStopped = 5;
+            wristMotorTicksStopped = 15;
             hoverWristServoY();
             openIntake();
         }
@@ -1258,7 +1258,7 @@ public abstract class Base extends LinearOpMode {
             if (wristMotorTicksStopped < 5)
                 wristMotorStopPos = min(WRIST_M_BOUNDS[1], max(WRIST_M_BOUNDS[0], wristMotorPos));
             else
-                power = (abs(error) > 3 ? WRIST_MOTOR_POWER * error / 10.0 : 0) + (wristMotorPos > 30 ? 0.02 : 0);
+                power = (abs(error) > 3 ? WRIST_MOTOR_POWER * error / 10.0 : 0) + (wristMotorPos > 30 ? 0.01 : 0);
             power = wristMotorTicksStopped < 15 ? max(min(power, WRIST_MOTOR_POWER * 2), -WRIST_MOTOR_POWER * 2) : wristMotorTicksStopped < 30 ? max(min(power, WRIST_MOTOR_POWER), -WRIST_MOTOR_POWER) : max(min(power, WRIST_MOTOR_POWER * 0.5), -WRIST_MOTOR_POWER * 0.5);
             ticksPowered = 0;
             wristMotorTicksStopped++;
@@ -1290,7 +1290,7 @@ public abstract class Base extends LinearOpMode {
                 moveIntake(getIntakePosition() == 1 ? 0 : 1);
             else {
                 if (getIntakePosition() == 1) { // 1 is open
-                    wristMotorStopPos = 80;
+                    wristMotorStopPos = 90;
                     wristMotorTicksStopped = 5;
                     extendWristServoY();
                     wristServoTimer = runtime.milliseconds() + 500;
@@ -1414,7 +1414,10 @@ public abstract class Base extends LinearOpMode {
                 verticalMotorA.setMode(RUN_WITHOUT_ENCODER);
                 verticalMotorB.setMode(RUN_WITHOUT_ENCODER);
             }
-            if (vertUp && getWristPos() < 16) wristMotorTicksStopped = wristMotorStopPos = 16;
+            if (vertUp && getWristPos() < 16) {
+                wristMotorStopPos = 40;
+                wristMotorTicksStopped = 5;
+            }
             if (vertUp && !(vertAvg < 100 && getWristPos() < 10))
                 power = vertAvg < V_LIFT_BOUNDS[1] ? slow ? 0.7 : 1 : 0;
             else if (!touchSensorPressed) power = vertAvg > V_LIFT_BOUNDS[0] ? slow ? -0.5 : -1 : 0;

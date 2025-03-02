@@ -1446,7 +1446,7 @@ public abstract class Base extends LinearOpMode {
 
     /** Logic for the basket servo during TeleOp */
     public void basketServoLogic() {
-        if (gamepad1.x && !wasBasketServoButtonPressed && getVertLiftPos() > 100)
+        if (gamepad1.x && !wasBasketServoButtonPressed && !(getVertLiftPos() < 100 && getWristPos() < 25))
             moveBasketServo(getBasketPosition() == 0 ? 1 : 0);
         wasBasketServoButtonPressed = gamepad1.x && getVertLiftPos() > 100;
     }

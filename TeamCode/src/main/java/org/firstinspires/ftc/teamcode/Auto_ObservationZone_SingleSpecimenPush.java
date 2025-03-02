@@ -4,14 +4,14 @@ import static org.firstinspires.ftc.teamcode.Base.Dir.BACKWARD;
 import static org.firstinspires.ftc.teamcode.Base.Dir.FORWARD;
 import static org.firstinspires.ftc.teamcode.Base.Dir.RIGHT;
 
-import static java.lang.Math.pow;
-
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Autonomous(name="Observation Zone Single Specimen Push", group="!!!Primary", preselectTeleOp="Main")
+@Disabled
 public class Auto_ObservationZone_SingleSpecimenPush extends Base {
 
     Runnable liftTask = () -> moveVerticalLift(V_LIFT_GOALS[3]);

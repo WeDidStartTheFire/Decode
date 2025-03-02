@@ -3,9 +3,12 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
 import static org.firstinspires.ftc.teamcode.Base.Dir.*;
 
 @Autonomous(name = "Net Zone Efficient", group = "!Tertiary", preselectTeleOp = "Main")
+@Disabled
 public class Auto_NetZone_Efficient extends Base {
     Trajectory traj;
     @Override

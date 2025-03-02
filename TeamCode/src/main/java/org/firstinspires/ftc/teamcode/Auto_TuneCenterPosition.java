@@ -5,11 +5,13 @@ import static java.util.Locale.US;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Autonomous(name="Tune Center Position", group="Test")
+@Disabled
 public class Auto_TuneCenterPosition extends Base {
     @Override
     public void runOpMode() throws InterruptedException {

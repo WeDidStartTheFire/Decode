@@ -7,8 +7,10 @@ import static java.lang.Math.toRadians;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 @Autonomous(name="Observation Zone No Line/Spline To")
+@Disabled
 public class Auto_ObservationZone_NoLineSplineTo extends Base{
 
     Runnable liftTask = () -> moveVerticalLift(V_LIFT_GOALS[3]);

@@ -7,8 +7,10 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 @Autonomous(name = "Net Zone Basket", group = "!!Secondary", preselectTeleOp = "Main")
+@Disabled
 public class Auto_NetZone_Basket extends Base {
 
     Runnable liftTask = () -> moveVerticalLift(V_LIFT_GOALS[4]);

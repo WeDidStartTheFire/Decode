@@ -9,8 +9,10 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 @Autonomous(name="Observation Zone a little Line/Spline To")
+@Disabled
 public class Auto_ObservationZone_aLittleLineSplineTo extends Base {
 
     Runnable liftTask = () -> moveVerticalLift(V_LIFT_GOALS[3]);

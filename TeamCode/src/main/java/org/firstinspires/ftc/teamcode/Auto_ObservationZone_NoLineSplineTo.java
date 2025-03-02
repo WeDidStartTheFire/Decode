@@ -15,6 +15,7 @@ public class Auto_ObservationZone_NoLineSplineTo extends Base {
 
     Runnable liftTask = () -> moveVerticalLift(V_LIFT_GOALS[3]);
     Runnable holdLiftTask = () -> holdVerticalLift(V_LIFT_GOALS[3]);
+    Runnable holdLiftLowTask = () -> holdVerticalLift(V_LIFT_GOALS[3] - 250);
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -27,6 +28,7 @@ public class Auto_ObservationZone_NoLineSplineTo extends Base {
         Thread driveThread = new Thread(() -> drive(30, BACKWARD));
         Thread liftThread = new Thread(liftTask);
         Thread holdLift = new Thread(holdLiftTask);
+        Thread holdLiftLow = new Thread(holdLiftLowTask);
         Thread holdWrist = new Thread(() -> holdWrist(16));
         try {
             closeSpecimenServo();
@@ -41,10 +43,13 @@ public class Auto_ObservationZone_NoLineSplineTo extends Base {
             driveThread.join();
             hold = false;
             holdLift.join();
-            moveVerticalLift(V_LIFT_GOALS[3] - 300);
+            moveVerticalLift(V_LIFT_GOALS[3] - 250);
+            holdLiftLow.start();
             openSpecimenServo();
 
             drive(4, FORWARD);
+            hold = false;
+            holdLiftLow.join();
             liftThread = new Thread(this::retractVerticalLift);
             liftThread.start();
             strafe(26, LEFT);
@@ -85,7 +90,8 @@ public class Auto_ObservationZone_NoLineSplineTo extends Base {
 
             hold = false;
             holdLift.join();
-            moveVerticalLift(V_LIFT_GOALS[3] - 400);
+            moveVerticalLift(V_LIFT_GOALS[3] - 250);
+            holdLiftLow.start();
             openSpecimenServo();
             s(.5);
 
@@ -94,6 +100,8 @@ public class Auto_ObservationZone_NoLineSplineTo extends Base {
                     .lineToLinearHeading(new Pose2d(-36 - 8, 72 - ROBOT_LENGTH / 2 - 1, toRadians(0)))
                     .build();
             currentPose = trajectory4.end();
+            hold = false;
+            holdLiftLow.join();
             liftThread = new Thread(this::retractVerticalLift);
             liftThread.start();
             drive.followTrajectory(trajectory4);
@@ -119,7 +127,8 @@ public class Auto_ObservationZone_NoLineSplineTo extends Base {
             drive(14, BACKWARD);
             hold = false;
             holdLift.join();
-            moveVerticalLift(V_LIFT_GOALS[3] - 400);
+            moveVerticalLift(V_LIFT_GOALS[3] - 250);
+            holdLiftLow.start();
             openSpecimenServo();
             s(.5);
 
@@ -128,6 +137,9 @@ public class Auto_ObservationZone_NoLineSplineTo extends Base {
                     .build();
             currentPose = trajectory6.end();
             drive.followTrajectory(trajectory6);
+            hold = false;
+            holdLiftLow.join();
+            retractVerticalLift();
         } finally {
             running = false;
             hold = false;
@@ -136,6 +148,7 @@ public class Auto_ObservationZone_NoLineSplineTo extends Base {
             driveThread.interrupt();
             liftThread.interrupt();
             holdLift.interrupt();
+            holdLiftLow.interrupt();
             holdWrist.interrupt();
             stop();
         }

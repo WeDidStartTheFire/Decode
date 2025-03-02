@@ -1003,6 +1003,7 @@ public abstract class Base extends LinearOpMode {
         }
         verticalMotorA.setMode(RUN_WITHOUT_ENCODER);
         verticalMotorB.setMode(RUN_WITHOUT_ENCODER);
+        double basePower;
 
         while (active()) {
             int vertA = verticalMotorA.getCurrentPosition();
@@ -1018,8 +1019,8 @@ public abstract class Base extends LinearOpMode {
             // Stop if close enough
             if (Math.abs(error) < 20) break;
 
-            double direction = Math.signum(error);
-            double basePower = .85 * direction;
+            if (error > 0) basePower = .85;
+            else basePower = -.5;
 
             // Minor correction if one motor is off-center by >10
             if (verticalMotorA.getCurrentPosition() - vertAvg > 10)
@@ -1043,7 +1044,6 @@ public abstract class Base extends LinearOpMode {
             print("Error", error);
             print("A Power", verticalMotorA.getPower());
             print("B Power", verticalMotorB.getPower());
-            print("Direction", direction);
             if (!loop) update();
         }
 

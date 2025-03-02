@@ -1,20 +1,16 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 import static java.lang.Math.abs;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name = "Slow (.5)", group = "Into The Deep")
-public class TeleOp_Slow extends Base {
+@TeleOp(name = "Slow (.7)", group = "Into The Deep")
+public class TeleOp_Slow_Point7 extends Base {
     @Override
     public void runOpMode() throws InterruptedException {
         auto = true;
         setup();
-        baseSpeedMultiplier = .5;
+        baseSpeedMultiplier = .7;
         baseTurnSpeed = .625;
         while (active()) {
             double axial, lateral, yaw, xMove, yMove;

@@ -1616,7 +1616,8 @@ public abstract class Base extends LinearOpMode {
             print(String.format(US, "SparkFun Position :  X: %.2f, Y: %.2f, θ: %.2f°", pos.getX(), pos.getY(), toDegrees(pos.getHeading())));
         } else print("Odometry disabled");
 
-        if (drive.getLocalizer() instanceof RedundantLocalizer) {
+
+        if (drive != null && drive.getLocalizer() instanceof RedundantLocalizer) {
             RedundantLocalizer localizer = (RedundantLocalizer) drive.getLocalizer();
             boolean usingPrimary = localizer.isUsingPrimaryLocalizer();
             print("Using Primary Localizer", usingPrimary);

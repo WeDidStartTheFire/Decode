@@ -867,6 +867,10 @@ public abstract class Base extends LinearOpMode {
         wristMotor.setPower(0);
     }
 
+    public void wristOutOfWay() {
+        moveWrist(30);
+    }
+
     /** Extends the wrist. */
     public void extendWrist() {
         moveWrist(50);
@@ -881,6 +885,10 @@ public abstract class Base extends LinearOpMode {
             int error = holdPos - wristMotorPos;
             wristMotor.setPower((abs(error) > 3 ? WRIST_MOTOR_POWER * error / 10.0 : 0) + (wristMotorPos > 30 ? 0.02 : 0));
         }
+    }
+
+    public void holdWristOutOfWay() {
+        holdWrist(40);
     }
 
     /** Retracts the wrist. */
@@ -1258,7 +1266,7 @@ public abstract class Base extends LinearOpMode {
             if (wristMotorTicksStopped < 5)
                 wristMotorStopPos = min(WRIST_M_BOUNDS[1], max(WRIST_M_BOUNDS[0], wristMotorPos));
             else
-                power = (abs(error) > 3 ? WRIST_MOTOR_POWER * error / 10.0 : 0) + (wristMotorPos > 30 ? 0.01 : 0);
+                power = (abs(error) > 3 ? WRIST_MOTOR_POWER * error / 10.0 : 0);
             power = wristMotorTicksStopped < 15 ? max(min(power, WRIST_MOTOR_POWER * 2), -WRIST_MOTOR_POWER * 2) : wristMotorTicksStopped < 30 ? max(min(power, WRIST_MOTOR_POWER), -WRIST_MOTOR_POWER) : max(min(power, WRIST_MOTOR_POWER * 0.5), -WRIST_MOTOR_POWER * 0.5);
             ticksPowered = 0;
             wristMotorTicksStopped++;
@@ -1414,11 +1422,11 @@ public abstract class Base extends LinearOpMode {
                 verticalMotorA.setMode(RUN_WITHOUT_ENCODER);
                 verticalMotorB.setMode(RUN_WITHOUT_ENCODER);
             }
-            if (vertUp && getWristPos() < 16) {
+            if (vertUp && getWristPos() < 40) {
                 wristMotorStopPos = 40;
                 wristMotorTicksStopped = 5;
             }
-            if (vertUp && !(vertAvg < 100 && getWristPos() < 10))
+            if (vertUp && !(vertAvg < 100 && getWristPos() < 30))
                 power = vertAvg < V_LIFT_BOUNDS[1] ? slow ? 0.7 : 1 : 0;
             else if (!touchSensorPressed) power = vertAvg > V_LIFT_BOUNDS[0] ? slow ? -0.5 : -1 : 0;
         }

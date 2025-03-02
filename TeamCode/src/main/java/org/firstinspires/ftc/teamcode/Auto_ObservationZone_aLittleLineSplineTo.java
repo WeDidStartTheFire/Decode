@@ -29,12 +29,12 @@ public class Auto_ObservationZone_aLittleLineSplineTo extends Base {
         Thread liftThread = new Thread(liftTask);
         Thread holdLift = new Thread(holdLiftTask);
         Thread holdLiftLow = new Thread(holdLiftLowTask);
-        Thread holdWrist = new Thread(() -> holdWrist(16));
+        Thread holdWrist = new Thread(this::holdWristOutOfWay);
         try {
             closeSpecimenServo();
             moveWristServoY(.5);
             s(.5);
-            moveWrist(16);
+            wristOutOfWay();
             holdWrist.start();
             driveThread.start();
             liftThread.start();

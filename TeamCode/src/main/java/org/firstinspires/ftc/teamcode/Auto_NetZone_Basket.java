@@ -27,8 +27,11 @@ public class Auto_NetZone_Basket extends Base {
         Thread driveThread = new Thread(() -> drive.followTrajectory(trajectory));
         Thread liftThread = new Thread(liftTask);
         Thread holdLift = new Thread(holdLiftTask);
+        Thread holdWristOutOfWay = new Thread(this::holdWristOutOfWay);
 
         try {
+            wristOutOfWay();
+            holdWristOutOfWay.start();
             // Start both threads
             driveThread.start();
             liftThread.start();
@@ -80,10 +83,12 @@ public class Auto_NetZone_Basket extends Base {
             running = false;
             loop = false;
             hold = false;
+            holdWrist = false;
             telemetryThread.interrupt();
             driveThread.interrupt();
             liftThread.interrupt();
             holdLift.interrupt();
+            holdWristOutOfWay.interrupt();
             stop();
         }
     }

@@ -27,12 +27,12 @@ public class Auto_ObservationZone_ExtraSpecimen extends Base {
         Thread driveThread = new Thread(() -> drive(30, BACKWARD));
         Thread liftThread = new Thread(liftTask);
         Thread holdLift = new Thread(holdLiftTask);
-        Thread holdWrist = new Thread(() -> holdWrist(16));
+        Thread holdWrist = new Thread(this::holdWristOutOfWay);
         try {
             closeSpecimenServo();
             moveWristServoY(.5);
             s(.5);
-//            moveWrist(16);
+            wristOutOfWay();
             holdWrist.start();
             driveThread.start();
             liftThread.start();

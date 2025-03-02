@@ -28,7 +28,10 @@ public class Auto_NetZone_Specimen extends  Base {
         Thread driveThread = new Thread(() -> drive(30, BACKWARD));
         Thread liftThread = new Thread(liftTask);
         Thread holdLift = new Thread(holdLiftTask);
+        Thread holdWristOutOfWay = new Thread(this::holdWristOutOfWay);
         try {
+            wristOutOfWay();
+            holdWristOutOfWay.start();
             // Start both threads
             driveThread.start();
             liftThread.start();
@@ -80,10 +83,12 @@ public class Auto_NetZone_Specimen extends  Base {
             running = false;
             hold = false;
             loop = false;
+            holdWrist = false;
             telemetryThread.interrupt();
             driveThread.interrupt();
             liftThread.interrupt();
             holdLift.interrupt();
+            holdWristOutOfWay.interrupt();
             stop();
         }
     }

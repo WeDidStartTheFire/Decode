@@ -25,26 +25,27 @@ public class Auto_ObservationZone_NoLineSplineTo extends Base{
         Thread driveThread = new Thread(() -> drive(30, BACKWARD));
         Thread liftThread = new Thread(liftTask);
         Thread holdLift = new Thread(holdLiftTask);
-        Thread holdWrist = new Thread(() -> holdWrist(16));
+        Thread holdWrist = new Thread(this::holdWristOutOfWay);
         try {
             closeSpecimenServo();
             moveWristServoY(.5);
             s(.5);
-            moveWrist(16);
+            wristOutOfWay();
             holdWrist.start();
-            driveThread.start();
             liftThread.start();
             liftThread.join();
             holdLift.start();
+            driveThread.start();
             driveThread.join();
             hold = false;
             holdLift.join();
-            moveVerticalLift(V_LIFT_GOALS[3] - 400);
+            moveVerticalLift(V_LIFT_GOALS[3] - 250);
             openSpecimenServo();
 
             drive(4, FORWARD);
-            liftThread = new Thread(this::retractVerticalLift);
-            liftThread.start();
+//            liftThread = new Thread(this::retractVerticalLift);
+//            liftThread.start();
+            retractVerticalLift();
             strafe(26, LEFT); // 35 37 90
             drive(29, BACKWARD);
             turn(90, LEFT);
@@ -61,7 +62,7 @@ public class Auto_ObservationZone_NoLineSplineTo extends Base{
 //            currentPose = trajectory1.end();
 //            drive.followTrajectory(trajectory1);
             strafe(54, LEFT);
-            liftThread.join();
+//            liftThread.join();
             drive(19, BACKWARD); // -62, 62
 //            drive.followTrajectory(trajectory1);
             closeSpecimenServo();
@@ -79,11 +80,10 @@ public class Auto_ObservationZone_NoLineSplineTo extends Base{
             driveThread = new Thread(() -> lineTo(new Pose2d(-ROBOT_WIDTH / 2 + 2, 72 - ROBOT_LENGTH / 2 - 30 + 14, toRadians(90)), true));
             liftThread = new Thread(liftTask);
             holdLift = new Thread(holdLiftTask);
-            driveThread.start();
-            s(.5);
             liftThread.start();
             liftThread.join();
             holdLift.start();
+            driveThread.start();
             driveThread.join();
 //            turn(toDegrees(atan(57.0/15.0)), LEFT);
             drive(14, BACKWARD);
@@ -99,8 +99,8 @@ public class Auto_ObservationZone_NoLineSplineTo extends Base{
 //                    .lineToLinearHeading(new Pose2d(-36 - 8, 72 - ROBOT_LENGTH / 2 - 1, toRadians(0)))
 //                    .build();
 //            currentPose = trajectory4.end();
-            liftThread = new Thread(this::retractVerticalLift);
-            liftThread.start();
+//            liftThread = new Thread(this::retractVerticalLift);
+//            liftThread.start();
 //            lineTo(new Pose2d(-36 - 8, 72 - ROBOT_LENGTH / 2 - 1, toRadians(0)), true, true);
 ////            drive.followTrajectory(trajectory4);
 //            liftThread.join();
@@ -135,7 +135,7 @@ public class Auto_ObservationZone_NoLineSplineTo extends Base{
 //            currentPose = trajectory6.end();
 //            drive.followTrajectory(trajectory6);
             lineTo(new Pose2d(-36 - 11, 72 - ROBOT_LENGTH, toRadians(-90)), true, true);
-            liftThread.join();
+            retractVerticalLift();
         } finally {
             running = false;
             hold = false;

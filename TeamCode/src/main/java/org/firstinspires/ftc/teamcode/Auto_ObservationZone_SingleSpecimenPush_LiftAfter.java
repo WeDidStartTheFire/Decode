@@ -1,57 +1,73 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.Base.Dir.BACKWARD;
+import static org.firstinspires.ftc.teamcode.Base.Dir.*;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-@Autonomous(name = "Observation Zone Single Specimen No Park", group = "!!!Primary", preselectTeleOp = "Main")
-@Disabled
-public class Auto_ObservationZone_SingleSpecimenNoPark extends Base {
+@Autonomous(name = "Observation Zone Single Specimen Push Lift After", group = "!!!Primary", preselectTeleOp = "Main")
+public class Auto_ObservationZone_SingleSpecimenPush_LiftAfter extends Base {
 
-//    Runnable liftTask = () -> moveVerticalLift(V_LIFT_GOALS[3]);
     Runnable holdLiftTask = () -> holdVerticalLift(V_LIFT_GOALS[3]);
 
     @Override
     public void runOpMode() throws InterruptedException {
         auto = true;
+        useOdometry = false;
         setup(new Pose2d(-ROBOT_WIDTH / 2 - .5, 72 - ROBOT_LENGTH / 2, Math.toRadians(90)));
 
-        running = true;
+        closeSpecimenServo();
+
+        drive(25, BACKWARD);
+
         Thread telemetryThread = new Thread(this::telemetryLoop);
         telemetryThread.start();
-        useOdometry = false;
-        Thread driveThread = new Thread(() -> drive(30, BACKWARD));
-//        Thread liftThread = new Thread(liftTask);
         Thread holdLift = new Thread(holdLiftTask);
         Thread holdWristOutOfWay = new Thread(this::holdWristOutOfWay);
+
         try {
-            closeSpecimenServo();
             moveWristServoY(0.5);
             wristOutOfWay();
             holdWristOutOfWay.start();
 
             moveVerticalLift(V_LIFT_GOALS[3]);
-            driveThread.start();
             holdLift.start();
-            driveThread.join();
+            drive(5, BACKWARD);
             hold = false;
             holdLift.join();
             moveVerticalLift(V_LIFT_GOALS[3] - 250);
             openSpecimenServo();
             s(.5);
-            drive(5, BACKWARD);
+            drive(5, FORWARD);
             retractVerticalLift();
-            moveWrist(0);
+            holdWrist = false;
+            holdWristOutOfWay.join();
+            retractWrist();
+
+            drive(10, FORWARD);
+            turn(180);
+            drive(15, BACKWARD);
+            strafe(24 - ROBOT_WIDTH, RIGHT);
+
+            // Other program starts here
+            currentPose = new Pose2d(ROBOT_WIDTH / 2 - 24.5, 72 - ROBOT_LENGTH / 2, Math.toRadians(-90));
+            useOdometry = true;
+            strafe(20, RIGHT);
+            drive(52, FORWARD);
+            strafe(9, RIGHT);
+            drive(44, BACKWARD);
+            drive(44, FORWARD);
+            strafe(12, RIGHT);
+            drive(44, BACKWARD);
+            drive(44, FORWARD);
+            strafe(7, RIGHT);
+            drive(48, BACKWARD);
         } finally {
             running = false;
             hold = false;
             loop = false;
             holdWrist = false;
             telemetryThread.interrupt();
-            driveThread.interrupt();
-//            liftThread.interrupt();
             holdLift.interrupt();
             holdWristOutOfWay.interrupt();
             stop();

@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 @Disabled
 public class Auto_ObservationZone_SingleSpecimenPush extends Base {
 
-    Runnable liftTask = () -> moveVerticalLift(V_LIFT_GOALS[3]);
+//    Runnable liftTask = () -> moveVerticalLift(V_LIFT_GOALS[3]);
     Runnable holdLiftTask = () -> holdVerticalLift(V_LIFT_GOALS[3]);
 
     @Override
@@ -26,8 +26,8 @@ public class Auto_ObservationZone_SingleSpecimenPush extends Base {
         running = true;
         Thread telemetryThread = new Thread(this::telemetryLoop);
         telemetryThread.start();
-        Thread driveThread = new Thread(() -> drive(30, BACKWARD));
-        Thread liftThread = new Thread(liftTask);
+//        Thread driveThread = new Thread(() -> drive(30, BACKWARD));
+//        Thread liftThread = new Thread(liftTask);
         Thread holdLift = new Thread(holdLiftTask);
         Thread holdWristOutOfWay = new Thread(this::holdWristOutOfWay);
         try {
@@ -35,13 +35,9 @@ public class Auto_ObservationZone_SingleSpecimenPush extends Base {
             moveWristServoY(0.5);
             wristOutOfWay();
             holdWristOutOfWay.start();
-            // Start both threads
-            liftThread.start();
-            liftThread.join();
+            moveVerticalLift(V_LIFT_GOALS[3]);
             holdLift.start();
-            driveThread.start();
-            driveThread.join();
-            currentPose = new Pose2d(-ROBOT_WIDTH / 2 - .5, 72 - ROBOT_LENGTH / 2 - 30, Math.toRadians(90));
+            drive(30, BACKWARD);
             hold = false;
             holdLift.join();
             moveVerticalLift(V_LIFT_GOALS[3] - 250);
@@ -51,6 +47,8 @@ public class Auto_ObservationZone_SingleSpecimenPush extends Base {
             drive(5, BACKWARD);
             strafe(24 - ROBOT_WIDTH, RIGHT);
             retractVerticalLift();
+            currentPose = new Pose2d(ROBOT_WIDTH / 2 - 24.5, 72 - ROBOT_LENGTH / 2, Math.toRadians(-90));
+            useOdometry = true;
             try {
                 drive = new SampleMecanumDrive(hardwareMap);
                 drive.setPoseEstimate(currentPose);
@@ -59,16 +57,16 @@ public class Auto_ObservationZone_SingleSpecimenPush extends Base {
                 except("SparkFun Sensor not connected");
                 useOdometry = false;
             }
-            turn(0);
+//            turn(0);
             strafe(20, RIGHT);
             drive(52, FORWARD);
             strafe(9, RIGHT);
             drive(44, BACKWARD);
-            turn(0); // Re-align
+//            turn(0); // Re-align
             drive(44, FORWARD);
             strafe(12, RIGHT);
             drive(44, BACKWARD);
-            turn(0); // Re-align
+//            turn(0); // Re-align
             drive(44, FORWARD);
             strafe(7, RIGHT);
             drive(48, BACKWARD);
@@ -78,8 +76,8 @@ public class Auto_ObservationZone_SingleSpecimenPush extends Base {
             loop = false;
             holdWrist = false;
             telemetryThread.interrupt();
-            driveThread.interrupt();
-            liftThread.interrupt();
+//            driveThread.interrupt();
+//            liftThread.interrupt();
             holdLift.interrupt();
             holdWristOutOfWay.interrupt();
             stop();

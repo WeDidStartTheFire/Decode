@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 @Autonomous(name = "Observation Zone Single Specimen Park", group = "!!!!Pre-Primary", preselectTeleOp = "Main")
 public class Auto_ObservationZone_SingleSpecimenPark extends Base {
 
-    Runnable liftTask = () -> moveVerticalLift(V_LIFT_GOALS[3]);
+//    Runnable liftTask = () -> moveVerticalLift(V_LIFT_GOALS[3]);
     Runnable holdLiftTask = () -> holdVerticalLift(V_LIFT_GOALS[3]);
 
     @Override
@@ -23,7 +23,7 @@ public class Auto_ObservationZone_SingleSpecimenPark extends Base {
         telemetryThread.start();
         useOdometry = false;
         Thread driveThread = new Thread(() -> drive(30, BACKWARD));
-        Thread liftThread = new Thread(liftTask);
+//        Thread liftThread = new Thread(liftTask);
         Thread holdLift = new Thread(holdLiftTask);
         Thread holdWristOutOfWay = new Thread(this::holdWristOutOfWay);
         try {
@@ -31,9 +31,9 @@ public class Auto_ObservationZone_SingleSpecimenPark extends Base {
             moveWristServoY(0.5);
             wristOutOfWay();
             holdWristOutOfWay.start();
+
             // Start both threads
-            liftThread.start();
-            liftThread.join();
+            moveVerticalLift(V_LIFT_GOALS[3]);
             driveThread.start();
             holdLift.start();
             driveThread.join();
@@ -56,9 +56,10 @@ public class Auto_ObservationZone_SingleSpecimenPark extends Base {
             running = false;
             hold = false;
             loop = false;
+            holdWrist = false;
             telemetryThread.interrupt();
             driveThread.interrupt();
-            liftThread.interrupt();
+//            liftThread.interrupt();
             holdLift.interrupt();
             holdWristOutOfWay.interrupt();
             stop();

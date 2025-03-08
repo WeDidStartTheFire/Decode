@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Base.Dir.*;
 
+import static java.lang.Math.toRadians;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -14,11 +16,8 @@ public class Auto_ObservationZone_SingleSpecimenPush_LiftAfter extends Base {
     public void runOpMode() throws InterruptedException {
         auto = true;
         useOdometry = false;
-        setup(new Pose2d(-ROBOT_WIDTH / 2 - .5, 72 - ROBOT_LENGTH / 2, Math.toRadians(90)));
+        setup(new Pose2d(-ROBOT_WIDTH / 2 - .5, 72 - ROBOT_LENGTH / 2, toRadians(90)));
 
-        closeSpecimenServo();
-
-        drive(25, BACKWARD);
 
         Thread telemetryThread = new Thread(this::telemetryLoop);
         telemetryThread.start();
@@ -26,6 +25,9 @@ public class Auto_ObservationZone_SingleSpecimenPush_LiftAfter extends Base {
         Thread holdWristOutOfWay = new Thread(this::holdWristOutOfWay);
 
         try {
+            closeSpecimenServo();
+
+            drive(25, BACKWARD);
             moveWristServoY(0.5);
             wristOutOfWay();
             holdWristOutOfWay.start();
@@ -42,15 +44,19 @@ public class Auto_ObservationZone_SingleSpecimenPush_LiftAfter extends Base {
             retractVerticalLift();
             holdWrist = false;
             holdWristOutOfWay.join();
+            retractWristServoY();
             retractWrist();
 
             drive(10, FORWARD);
-            turn(180);
+            useOdometry = true;
+            currentPose = drive.getPoseEstimate();
+            turn(currentPose.getHeading() + toRadians(90));
+            useOdometry = false;
             drive(15, BACKWARD);
             strafe(24 - ROBOT_WIDTH, RIGHT);
 
             // Other program starts here
-            currentPose = new Pose2d(ROBOT_WIDTH / 2 - 24.5, 72 - ROBOT_LENGTH / 2, Math.toRadians(-90));
+            currentPose = new Pose2d(ROBOT_WIDTH / 2 - 24.5, 72 - ROBOT_LENGTH / 2, toRadians(-90));
             useOdometry = true;
             strafe(20, RIGHT);
             drive(52, FORWARD);
@@ -58,9 +64,9 @@ public class Auto_ObservationZone_SingleSpecimenPush_LiftAfter extends Base {
             drive(44, BACKWARD);
             drive(44, FORWARD);
             strafe(12, RIGHT);
-            drive(44, BACKWARD);
-            drive(44, FORWARD);
-            strafe(7, RIGHT);
+//            drive(44, BACKWARD);
+//            drive(44, FORWARD);
+//            strafe(7, RIGHT);
             drive(48, BACKWARD);
         } finally {
             running = false;

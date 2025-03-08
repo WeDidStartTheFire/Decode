@@ -7,10 +7,8 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 @Autonomous(name = "Net Zone Basket", group = "!!Secondary", preselectTeleOp = "Main")
-@Disabled
 public class Auto_NetZone_Basket extends Base {
 
     Runnable liftTask = () -> moveVerticalLift(V_LIFT_GOALS[4]);
@@ -26,36 +24,42 @@ public class Auto_NetZone_Basket extends Base {
                 .splineTo(NET_ZONE_POSITION.vec(), NET_ZONE_POSITION.getHeading())
                 .build();
         currentPose = trajectory.end();
-        Thread driveThread = new Thread(() -> drive.followTrajectory(trajectory));
-        Thread liftThread = new Thread(liftTask);
-        Thread holdLift = new Thread(holdLiftTask);
+//        Thread driveThread = new Thread(() -> drive.followTrajectory(trajectory));
+//        Thread liftThread = new Thread(liftTask);
+//        Thread holdLift = new Thread(holdLiftTask);
         Thread holdWristOutOfWay = new Thread(this::holdWristOutOfWay);
 
         try {
             wristOutOfWay();
             holdWristOutOfWay.start();
             // Start both threads
-            driveThread.start();
-            liftThread.start();
+//            driveThread.start();
+            drive.followTrajectory(trajectory);
+//            liftThread.start();
             // Wait for both threads to complete
-            liftThread.join();
-            holdLift.start();
-            driveThread.join();
+//            liftThread.join();
+//            holdLift.start();
+//            driveThread.join();
+            moveVerticalLift(V_LIFT_GOALS[4]);
             extendBasketServo();
-            s(.5);
-            hold = false;
-            holdLift.join();
+            s(.75);
+            returnBasketServo();
+            retractVerticalLift();
+            retractWristServoY();
+            retractWrist();
+//            hold = false;
+//            holdLift.join();
 
             Trajectory trajectory1 = drive.trajectoryBuilder(currentPose)
                     .splineTo(new Vector2d(36, 21), toRadians(-90))
                     .splineTo(new Vector2d(48, 8), toRadians(0))
                     .build();
             currentPose = trajectory1.end();
-            liftThread = new Thread(this::retractVerticalLift);
-            liftThread.start();
+//            liftThread = new Thread(this::retractVerticalLift);
+//            liftThread.start();
 
             drive.followTrajectory(trajectory1);
-            liftThread.join();
+//            liftThread.join();
             returnBasketServo();
             strafe(52.5, LEFT);
 
@@ -87,9 +91,9 @@ public class Auto_NetZone_Basket extends Base {
             hold = false;
             holdWrist = false;
             telemetryThread.interrupt();
-            driveThread.interrupt();
-            liftThread.interrupt();
-            holdLift.interrupt();
+//            driveThread.interrupt();
+//            liftThread.interrupt();
+//            holdLift.interrupt();
             holdWristOutOfWay.interrupt();
             stop();
         }

@@ -1165,7 +1165,7 @@ public abstract class Base extends LinearOpMode {
         double speedMultiplier = gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1];
 
         if (fieldCentric) {
-            double angle = useOdometry ? -drive.getRawExternalHeading() : -imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle;
+            double angle = PI / 2 + (useOdometry ? -drive.getRawExternalHeading() : -imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle);
 
             double joystickAngle = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
             double moveAngle = joystickAngle - angle;
@@ -1282,8 +1282,9 @@ public abstract class Base extends LinearOpMode {
             moveWristServoX(min(max(0, (angle - WRIST_S_ANGLES[0]) / (WRIST_S_ANGLES[1] - WRIST_S_ANGLES[0])), 1));
             return;
         }
+        if (gamepad2.x) moveWristServoX(WRIST_S_GOALS[wristIndex = 0]);
         if (gamepad2.a && !wasWristServoButtonPressed)
-            moveWristServoX(WRIST_S_GOALS[(wristIndex++) % WRIST_S_GOALS.length]);
+            moveWristServoX(WRIST_S_GOALS[wristIndex = (wristIndex % (WRIST_S_GOALS.length - 1) + 1)]);
         wasWristServoButtonPressed = gamepad2.a;
     }
 
@@ -1448,7 +1449,7 @@ public abstract class Base extends LinearOpMode {
     public void basketServoLogic() {
         if (gamepad1.x && !wasBasketServoButtonPressed && !(getVertLiftPos() < 100 && getWristPos() < 25))
             moveBasketServo(getBasketPosition() == 0 ? 1 : 0);
-        wasBasketServoButtonPressed = gamepad1.x && getVertLiftPos() > 100;
+        wasBasketServoButtonPressed = gamepad1.x && !(getVertLiftPos() < 100 && getWristPos() < 25);
     }
 
     /** Logic for the specimen servo during TeleOp */

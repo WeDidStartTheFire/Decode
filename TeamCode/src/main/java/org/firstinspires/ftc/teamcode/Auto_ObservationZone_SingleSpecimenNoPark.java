@@ -1,13 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Base.Dir.BACKWARD;
+import static org.firstinspires.ftc.teamcode.Base.Dir.FORWARD;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-@Autonomous(name = "Observation Zone Single Specimen No Park", group = "!!!Primary", preselectTeleOp = "Main")
-@Disabled
+@Autonomous(name = "Observation Zone Single Specimen No Park", group = "!!!!Pre-Primary", preselectTeleOp = "Main")
 public class Auto_ObservationZone_SingleSpecimenNoPark extends Base {
 
 //    Runnable liftTask = () -> moveVerticalLift(V_LIFT_GOALS[3]);
@@ -41,9 +40,12 @@ public class Auto_ObservationZone_SingleSpecimenNoPark extends Base {
             moveVerticalLift(V_LIFT_GOALS[3] - 250);
             openSpecimenServo();
             s(.5);
-            drive(5, BACKWARD);
+            drive(5, FORWARD);
             retractVerticalLift();
-            moveWrist(0);
+            holdWrist = false;
+            holdWristOutOfWay.join();
+            retractWristServoY();
+            retractWrist();
         } finally {
             running = false;
             hold = false;

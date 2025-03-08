@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-@Autonomous(name="Observation Zone Single Specimen Push", group="!!!Primary", preselectTeleOp="Main")
+@Autonomous(name="Observation Zone Single Specimen Push Old", group="!!!Primary", preselectTeleOp="Main")
 @Disabled
 public class Auto_ObservationZone_SingleSpecimenPush extends Base {
 

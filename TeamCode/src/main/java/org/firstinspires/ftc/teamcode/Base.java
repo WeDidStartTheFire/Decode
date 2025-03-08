@@ -1424,8 +1424,8 @@ public abstract class Base extends LinearOpMode {
                 verticalMotorA.setMode(RUN_WITHOUT_ENCODER);
                 verticalMotorB.setMode(RUN_WITHOUT_ENCODER);
             }
-            if (vertUp && getWristPos() < 27) {
-                wristMotorStopPos = 27;
+            if (vertUp && getWristPos() < 30) {
+                wristMotorStopPos = 30;
                 wristMotorTicksStopped = 5;
             }
             if (vertUp && !(vertAvg < 100 && getWristPos() < 25))

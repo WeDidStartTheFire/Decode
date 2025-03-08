@@ -7,7 +7,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "Observation Zone Single Specimen Park", group = "!!!!Pre-Primary", preselectTeleOp = "Main")
+@Autonomous(name = "Observation Zone Single Specimen Park", group = "!!!Primary", preselectTeleOp = "Main")
 public class Auto_ObservationZone_SingleSpecimenPark extends Base {
 
 //    Runnable liftTask = () -> moveVerticalLift(V_LIFT_GOALS[3]);

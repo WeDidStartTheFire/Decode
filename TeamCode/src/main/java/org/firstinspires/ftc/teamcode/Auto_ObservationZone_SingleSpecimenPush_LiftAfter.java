@@ -2,12 +2,13 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Base.Dir.*;
 
+import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "Observation Zone Single Specimen Push Lift After", group = "!!!Primary", preselectTeleOp = "Main")
+@Autonomous(name = "Observation Zone Single Specimen Push", group = "!!!!Pre-Primary", preselectTeleOp = "Main")
 public class Auto_ObservationZone_SingleSpecimenPush_LiftAfter extends Base {
 
     Runnable holdLiftTask = () -> holdVerticalLift(V_LIFT_GOALS[3]);
@@ -34,7 +35,7 @@ public class Auto_ObservationZone_SingleSpecimenPush_LiftAfter extends Base {
 
             moveVerticalLift(V_LIFT_GOALS[3]);
             holdLift.start();
-            drive(5, BACKWARD);
+            drive(8, BACKWARD);
             hold = false;
             holdLift.join();
             moveVerticalLift(V_LIFT_GOALS[3] - 250);
@@ -50,7 +51,7 @@ public class Auto_ObservationZone_SingleSpecimenPush_LiftAfter extends Base {
             drive(10, FORWARD);
             useOdometry = true;
             currentPose = drive.getPoseEstimate();
-            turn(currentPose.getHeading() + toRadians(90));
+            turn(toDegrees(currentPose.getHeading()) + 90);
             useOdometry = false;
             drive(15, BACKWARD);
             strafe(24 - ROBOT_WIDTH, RIGHT);

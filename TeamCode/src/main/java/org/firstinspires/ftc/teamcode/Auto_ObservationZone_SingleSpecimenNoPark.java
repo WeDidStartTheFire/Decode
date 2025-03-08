@@ -6,7 +6,7 @@ import static org.firstinspires.ftc.teamcode.Base.Dir.FORWARD;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "Observation Zone Single Specimen No Park", group = "!!!!Pre-Primary", preselectTeleOp = "Main")
+@Autonomous(name = "Observation Zone Single Specimen No Park", group = "!!!Primary", preselectTeleOp = "Main")
 public class Auto_ObservationZone_SingleSpecimenNoPark extends Base {
 
 //    Runnable liftTask = () -> moveVerticalLift(V_LIFT_GOALS[3]);

@@ -7,8 +7,10 @@ import static java.lang.Math.toRadians;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 @Autonomous(name = "Observation Zone Single Specimen Push Lift After 1", group = "!!!Primary", preselectTeleOp = "Main")
+@Disabled
 public class Auto_ObservationZone_SingleSpecimenPush_LiftAfter1 extends Base {
 
     Runnable holdLiftTask = () -> holdVerticalLift(V_LIFT_GOALS[3]);

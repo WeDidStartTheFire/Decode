@@ -18,16 +18,15 @@ import androidx.annotation.Nullable;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.pedropathing.util.Constants;
 import com.qualcomm.hardware.rev.*;
 import com.qualcomm.robotcore.eventloop.opmode.*;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.*;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.drive.RedundantLocalizer;
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+//import org.firstinspires.ftc.teamcode.drive.RedundantLocalizer;
+//import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.*;
 import org.firstinspires.ftc.vision.apriltag.*;
 
@@ -43,6 +42,20 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import com.pedropathing.follower.Follower;
+import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierCurve;
+import com.pedropathing.pathgen.BezierLine;
+import com.pedropathing.pathgen.Path;
+import com.pedropathing.pathgen.PathChain;
+import com.pedropathing.pathgen.Point;
+import com.pedropathing.util.Timer;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+
+import pedroPathing.constants.FConstants;
+import pedroPathing.constants.LConstants;
 
 // Connect to robot: rc
 
@@ -87,8 +100,10 @@ public abstract class Base extends LinearOpMode {
     double velocity = DEFAULT_VELOCITY;
     public VisionPortal visionPortal;
     private AprilTagProcessor tagProcessor;
-    public SampleMecanumDrive drive;
-    public Pose2d currentPose = new Pose2d();
+//    public SampleMecanumDrive drive;
+    public Timer pathTimer;
+    public Follower follower;
+    public Pose currentPose = new Pose(0, 0);
 
     public volatile boolean loop = false;
     public volatile boolean running = true;
@@ -131,8 +146,8 @@ public abstract class Base extends LinearOpMode {
     int liftGoal = 0;
     boolean liftRunToPos, handoff;
 
-    Pose2d NET_ZONE_POSITION = new Pose2d(72 - 12 - (ROBOT_LENGTH / 2 / sqrt(2)) + 1, 72 - 12 - (ROBOT_LENGTH / 2 / sqrt(2)) + 1, toRadians(45));
-    Pose2d OBSERVATION_ZONE_POSITION = new Pose2d(-72 + ROBOT_WIDTH / 2, 72 - ROBOT_LENGTH / 2, toRadians(0));
+    Pose NET_ZONE_POSITION = new Pose(144 - 12 - (ROBOT_LENGTH / 2 / sqrt(2)) + 1, 144 - 12 - (ROBOT_LENGTH / 2 / sqrt(2)) + 1, toRadians(45));
+    Pose OBSERVATION_ZONE_POSITION = new Pose(ROBOT_WIDTH / 2, 144 - ROBOT_LENGTH / 2, toRadians(0));
     boolean following = false;
 
     double[] WRIST_S_ANGLES = {toRadians(-180), toRadians(180)};
@@ -141,6 +156,8 @@ public abstract class Base extends LinearOpMode {
     public enum Dir {
         LEFT, RIGHT, FORWARD, BACKWARD
     }
+
+    public void buildPaths() {}
 
     /** Initializes all hardware devices on the robot. */
     public void setup() {
@@ -228,14 +245,24 @@ public abstract class Base extends LinearOpMode {
                 except("Webcam not connected");
             }
         }
-        try {
-            drive = new SampleMecanumDrive(hardwareMap);
-            drive.setPoseEstimate(currentPose);
-            drive.breakFollowing();
-        } catch (IllegalArgumentException e) {
-            except("SparkFun Sensor not connected");
-            useOdometry = false;
+
+
+        if (useOdometry) {
+            pathTimer = new Timer();
+            Constants.setConstants(FConstants.class, LConstants.class);
+            follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
+            follower.setStartingPose(currentPose);
+            buildPaths();
         }
+
+//        try {
+//            drive = new SampleMecanumDrive(hardwareMap);
+//            drive.setPoseEstimate(currentPose);
+//            drive.breakFollowing();
+//        } catch (IllegalArgumentException e) {
+//            except("SparkFun Sensor not connected");
+//            useOdometry = false;
+//        }
 
         if (lf != null) {
             lf.setDirection(REVERSE);
@@ -311,7 +338,7 @@ public abstract class Base extends LinearOpMode {
      *
      * @param startPose Starting position of the robot
      */
-    public void setup(Pose2d startPose) {
+    public void setup(Pose startPose) {
         currentPose = startPose;
         setup();
     }
@@ -502,11 +529,9 @@ public abstract class Base extends LinearOpMode {
      * @param direction (opt.) Direction to turn if degrees is zero.
      */
     public void turn(double degrees, Dir direction) {
-        if (useOdometry) {
-            int dir = direction == LEFT ? -1 : 1;
-            drive.turn(Math.toRadians(degrees * dir));
-            currentPose = new Pose2d(currentPose.getX(), currentPose.getY(), currentPose.getHeading() + Math.toRadians(degrees * dir));
-        } else IMUTurn(degrees, direction);
+        if (useOdometry)
+            throw new UnsupportedOperationException("Use explicit Pedro Pathing functions or IMUTurn instead.");
+        IMUTurn(degrees, direction);
     }
 
     /**
@@ -517,22 +542,6 @@ public abstract class Base extends LinearOpMode {
      */
     public void turn(double degrees) {
         turn(degrees, RIGHT);
-    }
-
-    public void lineTo(Pose2d position, boolean reverse, boolean double_reverse) {
-        if (!useOdometry) return;
-        Pose2d delta_pos = position.minus(currentPose);  // position - currentPose?
-        turn(simplifyAngle(toDegrees(toRadians(reverse ^ double_reverse ? 180 : 0) + atan2(delta_pos.getY(), delta_pos.getX()) + currentPose.getHeading())));
-        drive(hypot(delta_pos.getX(), delta_pos.getY()), reverse ? BACKWARD : FORWARD);
-        turn(simplifyAngle(toDegrees(position.getHeading() - currentPose.getHeading())));
-    }
-
-    public void lineTo(Pose2d position, boolean reverse) {
-        lineTo(position, reverse, false);
-    }
-
-    public void lineTo(Pose2d position) {
-        lineTo(position, false, false);
     }
 
     /**
@@ -629,16 +638,8 @@ public abstract class Base extends LinearOpMode {
      * @param direction Direction to strafe in.*
      */
     public void strafe(double inches, Dir direction) {
-        if (useOdometry) {
-            Trajectory strafeTraj;
-            if (direction == LEFT)
-                strafeTraj = drive.trajectoryBuilder(currentPose).strafeLeft(inches).build();
-            else strafeTraj = drive.trajectoryBuilder(currentPose).strafeRight(inches).build();
-
-            drive.followTrajectory(strafeTraj);
-            currentPose = strafeTraj.end();
-            return; // Early return
-        }
+        if (useOdometry)
+            throw new UnsupportedOperationException("Use explicit Pedro Pathing functions or velocityStrafe instead.");
         velocityStrafe(inches, direction);
     }
 
@@ -668,15 +669,8 @@ public abstract class Base extends LinearOpMode {
      * @param direction Direction to drive in.*
      */
     public void drive(double inches, Dir direction) {
-        if (useOdometry && active()) {
-            Trajectory driveTrajectory;
-            if (direction == FORWARD)
-                driveTrajectory = drive.trajectoryBuilder(currentPose).forward(inches).build();
-            else driveTrajectory = drive.trajectoryBuilder(currentPose).back(inches).build();
-
-            drive.followTrajectory(driveTrajectory);
-            currentPose = driveTrajectory.end();
-            return; // Early return
+        if (useOdometry) {
+            throw new UnsupportedOperationException("Use explicit Pedro Pathing functions or velocityDrive instead.");
         }
 
         int checks = 1;
@@ -1165,7 +1159,7 @@ public abstract class Base extends LinearOpMode {
         double speedMultiplier = gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1];
 
         if (fieldCentric) {
-            double angle = PI / 2 + (useOdometry ? -drive.getRawExternalHeading() : -imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle);
+            double angle = PI / 2 + (useOdometry ? -follower.getPose().getHeading() : -imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle);
 
             double joystickAngle = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
             double moveAngle = joystickAngle - angle;
@@ -1206,7 +1200,7 @@ public abstract class Base extends LinearOpMode {
         }
 
         if (abs(leftFrontPower) > .05 || abs(rightFrontPower) > .05 || abs(leftBackPower) > .05 || abs(rightBackPower) > .05) {
-            if (following) drive.breakFollowing();
+            if (following) follower.breakFollowing();
             following = false;
         }
 
@@ -1216,21 +1210,19 @@ public abstract class Base extends LinearOpMode {
     /** Logic for automatically moving during TeleOp */
     public void autoMovementLogic(boolean validPose) {
         if (!validPose) return;
-        if (useOdometry) drive.update();
-        else if (!gamepad1.a) return;
-        Pose2d poseEstimate = drive.getPoseEstimate();
+        if (useOdometry) follower.update();
+        else if (!gamepad1.a && !gamepad1.start) return;
+        Pose poseEstimate = follower.getPose();
         if (gamepad1.a) {
             following = true;
-            Trajectory trajectory = drive.trajectoryBuilder(poseEstimate)
-                    .lineToLinearHeading(NET_ZONE_POSITION)
-                    .build();
-            drive.followTrajectoryAsync(trajectory);
+            Path path = new Path(new BezierLine(new Point(poseEstimate), new Point(NET_ZONE_POSITION)));
+            path.setLinearHeadingInterpolation(poseEstimate.getHeading(), NET_ZONE_POSITION.getHeading());
+            follower.followPath(path);
         } else if (gamepad1.start) {
             following = true;
-            Trajectory trajectory = drive.trajectoryBuilder(poseEstimate)
-                    .lineToLinearHeading(OBSERVATION_ZONE_POSITION)
-                    .build();
-            drive.followTrajectoryAsync(trajectory);
+            Path path = new Path(new BezierLine(new Point(poseEstimate), new Point(OBSERVATION_ZONE_POSITION)));
+            path.setLinearHeadingInterpolation(poseEstimate.getHeading(), OBSERVATION_ZONE_POSITION.getHeading());
+            follower.followPath(path);
         }
     }
 
@@ -1562,7 +1554,7 @@ public abstract class Base extends LinearOpMode {
         loop = true;
         while (active() && loop) {
             updateAll();
-            if (auto) saveOdometryPosition(drive.getPoseEstimate());
+            if (auto) saveOdometryPosition(follower.getPose());
         }
     }
 
@@ -1571,7 +1563,7 @@ public abstract class Base extends LinearOpMode {
      *
      * @param pos Pose to save
      */
-    public void saveOdometryPosition(@NonNull Pose2d pos) {
+    public void saveOdometryPosition(@NonNull Pose pos) {
         File file = new File(Environment.getExternalStorageDirectory(), "odometryPosition.txt");
         try (FileWriter writer = new FileWriter(file, false)) {
             writer.write(pos.getX() + "," + pos.getY() + "," + pos.getHeading()); // Write the latest position
@@ -1586,7 +1578,7 @@ public abstract class Base extends LinearOpMode {
      * @return The position the robot ended at in the last Auto
      */
     @Nullable
-    public Pose2d loadOdometryPosition() {
+    public Pose loadOdometryPosition() {
         File file = new File(Environment.getExternalStorageDirectory(), "odometryPosition.txt");
         if (file.exists()) {
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -1600,7 +1592,7 @@ public abstract class Base extends LinearOpMode {
                     if (!file.delete()) {
                         print("Error", "Failed to delete odometry file.");
                     }
-                    return new Pose2d(x, y, h);
+                    return new Pose(x, y, h);
                 }
             } catch (IOException e) {
                 print("Error", "Failed to load odometry position: " + e.getMessage());
@@ -1642,16 +1634,16 @@ public abstract class Base extends LinearOpMode {
         else print("Touch Sensor Pressed", verticalTouchSensor.isPressed());
         if (wristServoX == null) print("Intake Servo", "Disconnected");
         if (useOdometry) {
-            Pose2d pos = drive.getPoseEstimate();
+            Pose pos = follower.getPose();
             print(String.format(US, "SparkFun Position :  X: %.2f, Y: %.2f, θ: %.2f°", pos.getX(), pos.getY(), toDegrees(pos.getHeading())));
         } else print("Odometry disabled");
 
 
-        if (drive != null && drive.getLocalizer() instanceof RedundantLocalizer) {
-            RedundantLocalizer localizer = (RedundantLocalizer) drive.getLocalizer();
-            boolean usingPrimary = localizer.isUsingPrimaryLocalizer();
-            print("Using Primary Localizer", usingPrimary);
-        } else print("Localizer is not a RedundantLocalizer");
+//        if (drive != null && drive.getLocalizer() instanceof RedundantLocalizer) {
+//            RedundantLocalizer localizer = (RedundantLocalizer) drive.getLocalizer();
+//            boolean usingPrimary = localizer.isUsingPrimaryLocalizer();
+//            print("Using Primary Localizer", usingPrimary);
+//        } else print("Localizer is not a RedundantLocalizer");
 
         update();
     }

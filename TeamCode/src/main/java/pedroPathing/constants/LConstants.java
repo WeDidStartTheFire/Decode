@@ -1,6 +1,5 @@
 package pedroPathing.constants;
 
-import com.pedropathing.localization.*;
 import com.pedropathing.localization.constants.*;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 
@@ -18,7 +17,3 @@ public class LConstants {
         OTOSConstants.angularScalar = 0.99015462564184666344627699951694; // From last year
     }
 }
-
-
-
-

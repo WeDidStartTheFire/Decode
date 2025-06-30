@@ -48,7 +48,7 @@ public class TeleOp_Slow_Point7 extends Base {
             }
 
             if (abs(leftFrontPower) > .05 || abs(rightFrontPower) > .05 || abs(leftBackPower) > .05 || abs(rightBackPower) > .05) {
-                if (following) drive.breakFollowing();
+                if (following) follower.breakFollowing();
                 following = false;
             }
 

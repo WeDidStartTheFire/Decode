@@ -25,8 +25,6 @@ import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.*;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-//import org.firstinspires.ftc.teamcode.drive.RedundantLocalizer;
-//import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.*;
 import org.firstinspires.ftc.vision.apriltag.*;
 
@@ -45,14 +43,10 @@ import java.util.ArrayList;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
-import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.Path;
-import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Timer;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
@@ -100,10 +94,9 @@ public abstract class Base extends LinearOpMode {
     double velocity = DEFAULT_VELOCITY;
     public VisionPortal visionPortal;
     private AprilTagProcessor tagProcessor;
-//    public SampleMecanumDrive drive;
     public Timer pathTimer;
     public Follower follower;
-    public Pose currentPose = new Pose(0, 0);
+    public Pose currentPose = new Pose();
 
     public volatile boolean loop = false;
     public volatile boolean running = true;
@@ -123,7 +116,6 @@ public abstract class Base extends LinearOpMode {
     public static final IMU.Parameters IMU_PARAMS = new IMU.Parameters(
             new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                     RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
-
 
 
     static final double WRIST_MOTOR_POWER = 0.1;
@@ -157,7 +149,8 @@ public abstract class Base extends LinearOpMode {
         LEFT, RIGHT, FORWARD, BACKWARD
     }
 
-    public void buildPaths() {}
+    public void buildPaths() {
+    }
 
     /** Initializes all hardware devices on the robot. */
     public void setup() {
@@ -698,7 +691,7 @@ public abstract class Base extends LinearOpMode {
      * @param inches    Amount of inches to drive.
      * @param direction Direction to drive in.*
      */
-    public void drive(Dir direction, double inches){
+    public void drive(Dir direction, double inches) {
         drive(inches, direction);
     }
 
@@ -1306,7 +1299,7 @@ public abstract class Base extends LinearOpMode {
             }
         }
         wasIntakeServoButtonPressed = gamepad2.b;
-        if ((runtime.milliseconds() >= wristServoTimer) && (wristServoTimer != 0)){
+        if ((runtime.milliseconds() >= wristServoTimer) && (wristServoTimer != 0)) {
             wristMotorStopPos = 60;
             wristMotorTicksStopped = 5;
             hoverWristServoY();

@@ -31,8 +31,12 @@ public class MyPoseUpdater extends PoseUpdater {
         super(hardwareMap);
     }
 
-    private static Localizer createLocalizer(HardwareMap hardwareMap) {
-        switch (MyFollowerConstants.localizers) {
+    public static Localizer createLocalizer(HardwareMap hardwareMap) {
+        return createLocalizer(hardwareMap, MyFollowerConstants.localizer);
+    }
+
+    public static Localizer createLocalizer(HardwareMap hardwareMap, MyLocalizers localizer) {
+        switch (localizer) {
             case DRIVE_ENCODERS:
                 return new DriveEncoderLocalizer(hardwareMap);
             case TWO_WHEEL:

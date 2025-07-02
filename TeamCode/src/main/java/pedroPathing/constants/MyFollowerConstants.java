@@ -14,7 +14,10 @@ import pedroPathing.MyLocalizers;
 
 @Config
 public class MyFollowerConstants {
-    public static MyLocalizers localizers;
+    public static MyLocalizers localizer;
+    public static MyLocalizers secondaryLocalizer;
+    public static MyLocalizers primaryLocalizer;
+
     public static String leftFrontMotorName;
     public static String leftRearMotorName;
     public static String rightFrontMotorName;
@@ -79,7 +82,10 @@ public class MyFollowerConstants {
         // Below are the defaults. To change the Follower Constants, go to the FConstants file.
         // =========================================================================================
         // =========================================================================================
-        localizers = MyLocalizers.THREE_WHEEL;
+        localizer = MyLocalizers.THREE_WHEEL;
+        primaryLocalizer = MyLocalizers.THREE_WHEEL; // For RedundantLocalizer
+        secondaryLocalizer = MyLocalizers.DRIVE_ENCODERS; // For RedundantLocalizer
+
         leftFrontMotorName = "leftFront";
         leftRearMotorName = "leftBack";
         rightFrontMotorName = "rightFront";

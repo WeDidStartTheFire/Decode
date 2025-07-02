@@ -18,7 +18,6 @@ import androidx.annotation.Nullable;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
-import com.pedropathing.follower.Follower;
 import com.pedropathing.util.Constants;
 import com.qualcomm.hardware.rev.*;
 import com.qualcomm.robotcore.eventloop.opmode.*;
@@ -49,10 +48,8 @@ import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Timer;
 
 import pedroPathing.MyFollower;
-import pedroPathing.MyPoseUpdater;
 import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
-import pedroPathing.constants.MyFollowerConstants;
 
 // Connect to robot: rc
 

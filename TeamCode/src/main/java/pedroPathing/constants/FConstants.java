@@ -2,13 +2,15 @@ package pedroPathing.constants;
 
 import com.pedropathing.localization.Localizers;
 import com.pedropathing.follower.FollowerConstants;
-import com.pedropathing.util.CustomFilteredPIDFCoefficients;
-import com.pedropathing.util.CustomPIDFCoefficients;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+import pedroPathing.MyLocalizers;
 
 public class FConstants {
     static {
         FollowerConstants.localizers = Localizers.OTOS;
+
+        MyFollowerConstants.localizers = MyLocalizers.OTOS; // For custom localizers
 
         FollowerConstants.leftFrontMotorName = "leftFront";
         FollowerConstants.leftRearMotorName = "leftBack";

@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
+import com.pedropathing.follower.Follower;
 import com.pedropathing.util.Constants;
 import com.qualcomm.hardware.rev.*;
 import com.qualcomm.robotcore.eventloop.opmode.*;
@@ -41,15 +42,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Timer;
 
+import pedroPathing.MyFollower;
+import pedroPathing.MyPoseUpdater;
 import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
+import pedroPathing.constants.MyFollowerConstants;
 
 // Connect to robot: rc
 
@@ -95,7 +98,7 @@ public abstract class Base extends LinearOpMode {
     public VisionPortal visionPortal;
     private AprilTagProcessor tagProcessor;
     public Timer pathTimer;
-    public Follower follower;
+    public MyFollower follower;
     public Pose currentPose = new Pose();
 
     public volatile boolean loop = false;
@@ -243,7 +246,7 @@ public abstract class Base extends LinearOpMode {
         if (useOdometry) {
             pathTimer = new Timer();
             Constants.setConstants(FConstants.class, LConstants.class);
-            follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
+            follower = new MyFollower(hardwareMap, FConstants.class, LConstants.class);
             follower.setStartingPose(currentPose);
             buildPaths();
         }

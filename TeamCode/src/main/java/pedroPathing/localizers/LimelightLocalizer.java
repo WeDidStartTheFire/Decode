@@ -4,6 +4,8 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADI
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 
+import androidx.annotation.NonNull;
+
 import com.pedropathing.localization.Localizer;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.Vector;
@@ -29,7 +31,7 @@ public class LimelightLocalizer extends Localizer {
         this(map, new Pose());
     }
 
-    public LimelightLocalizer(HardwareMap map, Pose startPose) {
+    public LimelightLocalizer(@NonNull HardwareMap map, Pose startPose) {
         imu = map.get(IMU.class, "imu");
         limelight = map.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100); // How often Limelight is asked for data (100 times per second)

@@ -112,6 +112,7 @@ public class LimelightLocalizer extends Localizer {
     }
 
     public void resetIMU() {
+        imu.resetYaw();
     }
 
     public boolean isNAN() {

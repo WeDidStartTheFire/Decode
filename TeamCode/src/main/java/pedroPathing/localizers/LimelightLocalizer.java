@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.pedropathing.localization.Localizer;
 import com.pedropathing.localization.Pose;
@@ -22,8 +23,9 @@ public class LimelightLocalizer extends Localizer {
     private final Limelight3A limelight;
     private final IMU imu;
     private double prevTime;
-    private Pose prevPose;
+    @Nullable
     private Pose pose;
+    private Pose prevPose;
     private Pose vel;
     private double totalHeading;
 
@@ -41,7 +43,7 @@ public class LimelightLocalizer extends Localizer {
         setStartPose(startPose);
     }
 
-    public Pose getPose() {
+    public @Nullable Pose getPose() {
         return pose;
     }
 
@@ -61,10 +63,13 @@ public class LimelightLocalizer extends Localizer {
 
     public void update() {
         double currTime = System.currentTimeMillis();
-
-        LLResult result = limelight.getLatestResult();
+        double dt = (currTime - prevTime) / 1000.0;
         double robotYaw = imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle;
-        limelight.updateRobotOrientation(robotYaw);
+        double yawRate = imu.getRobotAngularVelocity(RADIANS).zRotationRate;
+        LimelightHelpers.SetRobotOrientation("limelight", robotYaw, yawRate, 0, 0, 0, 0);
+
+        pose = null;
+        LLResult result = limelight.getLatestResult();
         if (result != null && result.isValid()) {
             Pose3D botpose_mt2 = result.getBotpose_MT2();
             Pose3D botpose = result.getBotpose();
@@ -76,19 +81,18 @@ public class LimelightLocalizer extends Localizer {
                 double x = botpose.getPosition().x;
                 double y = botpose.getPosition().y;
                 pose = new Pose(x, y, botpose.getOrientation().getYaw());
-            } else pose = null;
-        } else pose = null;
+            }
+        }
 
-        if (prevPose != null && pose != null) {
-            double dt = (currTime - prevTime) / 1000.0;
+        if (pose != null) {
             double dx = pose.getX() - prevPose.getX();
             double dy = pose.getY() - prevPose.getY();
             double dtheta = pose.getHeading() - prevPose.getHeading();
             totalHeading += dtheta;
             vel = new Pose(dx / dt, dy / dt, dtheta / dt);
+            prevPose = pose;
+            prevTime = currTime;
         }
-        prevPose = pose;
-        prevTime = currTime;
     }
 
     public double getTotalHeading() {
@@ -111,6 +115,7 @@ public class LimelightLocalizer extends Localizer {
     }
 
     public boolean isNAN() {
-        return Double.isNaN(this.getPose().getX()) || Double.isNaN(this.getPose().getY()) || Double.isNaN(this.getPose().getHeading());
+        return getPose() == null || Double.isNaN(getPose().getX()) || Double.isNaN(getPose().getY())
+                || Double.isNaN(getPose().getHeading());
     }
 }

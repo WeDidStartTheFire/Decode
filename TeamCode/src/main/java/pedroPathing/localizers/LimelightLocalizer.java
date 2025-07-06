@@ -22,7 +22,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 public class LimelightLocalizer extends Localizer {
     private final Limelight3A limelight;
     private final IMU imu;
-    private double prevTime;
+    private long prevTime;
     @Nullable
     private Pose pose;
     private Pose prevPose;
@@ -62,8 +62,8 @@ public class LimelightLocalizer extends Localizer {
     }
 
     public void update() {
-        double currTime = System.currentTimeMillis();
-        double dt = (currTime - prevTime) / 1000.0;
+        long currTime = System.nanoTime();
+        double dt = (currTime - prevTime) / 1_000_000.0;
         double robotYaw = imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle;
         double yawRate = imu.getRobotAngularVelocity(RADIANS).zRotationRate;
         LimelightHelpers.SetRobotOrientation("limelight", robotYaw, yawRate, 0, 0, 0, 0);

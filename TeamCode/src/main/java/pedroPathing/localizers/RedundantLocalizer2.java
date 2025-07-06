@@ -48,7 +48,7 @@ public class RedundantLocalizer2 extends Localizer {
     private static final double METERS_PER_INCH = 0.0254;
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION)
             / (WHEEL_DIAMETER_INCHES * PI);
-    static final double COUNTS_PER_METER = COUNTS_PER_INCH  / METERS_PER_INCH;
+    static final double COUNTS_PER_METER = COUNTS_PER_INCH / METERS_PER_INCH;
 
     private final SparkFunOTOS otos;
     private final OTOSLocalizer otosLocalizer;
@@ -81,15 +81,18 @@ public class RedundantLocalizer2 extends Localizer {
 
         // TODO: Confirm wheel positions relative to robot center (in meters)
         MecanumDriveKinematics kinematics = new MecanumDriveKinematics(
-                new Translation2d(0.0, 0.0), // front-left wheel
-                new Translation2d(0.0, 0.0), // front-right wheel
-                new Translation2d(0.0, 0.0), // rear-left wheel
-                new Translation2d(0.0, 0.0)  // rear-right wheel
+                new Translation2d(.168, 0.2066), // front-left wheel
+                new Translation2d(.168, -0.2066), // front-right wheel
+                new Translation2d(-.168, 0.2066), // rear-left wheel
+                new Translation2d(-.168, -0.2066)  // rear-right wheel
         );
         Rotation2d initialHeading = new Rotation2d(startPose.getHeading());
-        // TODO: Replace with actual initial wheel encoder distances
-        MecanumDriveWheelPositions initialWheelPositions =
-                new MecanumDriveWheelPositions(0.0, 0.0, 0.0, 0.0);
+        MecanumDriveWheelPositions initialWheelPositions = new MecanumDriveWheelPositions(
+                lf.getCurrentPosition() / COUNTS_PER_METER,
+                rf.getCurrentPosition() / COUNTS_PER_METER,
+                lb.getCurrentPosition() / COUNTS_PER_METER,
+                rb.getCurrentPosition() / COUNTS_PER_METER
+        );
 
         m_poseEstimator = new MecanumDrivePoseEstimator(
                 kinematics,
@@ -141,8 +144,8 @@ public class RedundantLocalizer2 extends Localizer {
         LimelightHelpers.SetRobotOrientation("limelight", robotYaw, yawRate, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
 
-        // if our angular velocity is greater than 360 degrees per second, ignore vision updates
-        if (Math.abs(yawRate) < 360 || mt2.tagCount == 0) {
+        // if our angular velocity is 360+ degrees per second, ignore limelight vision updates
+        if (Math.abs(yawRate) < 360 && mt2.tagCount > 0) {
             double[] stdevs = LimelightHelpers.getLatestResults("limelight").stdev_mt2;
             m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(stdevs[0], stdevs[1], 9999999));
             m_poseEstimator.addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
@@ -153,8 +156,16 @@ public class RedundantLocalizer2 extends Localizer {
         SparkFunOTOS.Pose2D otosStdDev = otos.getPositionStdDev();
         Pose otosPose = otosLocalizer.getPose();
 
-        Pose2d otosPose2d = new Pose2d(otosPose.getX(), otosPose.getY(), new Rotation2d(otosPose.getHeading()));
-        m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(otosStdDev.x, otosStdDev.y, 9999999));
+        Pose2d otosPose2d = new Pose2d(
+                otosPose.getX() * METERS_PER_INCH,
+                otosPose.getY() * METERS_PER_INCH,
+                new Rotation2d(otosPose.getHeading())
+        );
+        m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(
+                otosStdDev.x * METERS_PER_INCH,
+                otosStdDev.y * METERS_PER_INCH,
+                9999999)
+        );
         m_poseEstimator.addVisionMeasurement(otosPose2d, otosTimeStamp);
 
         Pose2d pose2d = m_poseEstimator.getEstimatedPosition();

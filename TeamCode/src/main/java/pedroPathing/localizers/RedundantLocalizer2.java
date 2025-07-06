@@ -23,6 +23,9 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.IMU;
 
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.MecanumDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -30,6 +33,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
+import pedroPathing.constants.RedundantConstants;
 
 
 public class RedundantLocalizer2 extends Localizer {
@@ -52,6 +56,11 @@ public class RedundantLocalizer2 extends Localizer {
 
     private final SparkFunOTOS otos;
     private final OTOSLocalizer otosLocalizer;
+
+    private final DistanceUnit otosLinearUnit = OTOSConstants.linearUnit;
+    private final AngleUnit otosAngleUnit = OTOSConstants.angleUnit;
+    private final DistanceUnit linearUnit = RedundantConstants.linearUnit;
+    private final AngleUnit angleUnit = RedundantConstants.angleUnit;
 
     public RedundantLocalizer2(HardwareMap map) {
         this(map, new Pose());
@@ -80,6 +89,9 @@ public class RedundantLocalizer2 extends Localizer {
         setStartPose(startPose);
 
         // TODO: Confirm wheel positions relative to robot center (in meters)
+        // Negative y is right, positive x is forward
+        // left-right (y) values confirmed (within .7% of what we used for roadrunner 0.5.6)
+        // front-back (x) taken from website, but it might be smaller because we tmade robot shorter
         MecanumDriveKinematics kinematics = new MecanumDriveKinematics(
                 new Translation2d(.168, 0.2066), // front-left wheel
                 new Translation2d(.168, -0.2066), // front-right wheel
@@ -128,6 +140,7 @@ public class RedundantLocalizer2 extends Localizer {
 
     public void update() {
         double currTime = System.nanoTime() / 1_000_000.0;
+        // TODO: Make sure we have the right axis for yaw
         double robotYaw = imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle;
         double yawRate = imu.getRobotAngularVelocity(RADIANS).zRotationRate;
 
@@ -157,19 +170,23 @@ public class RedundantLocalizer2 extends Localizer {
         Pose otosPose = otosLocalizer.getPose();
 
         Pose2d otosPose2d = new Pose2d(
-                otosPose.getX() * METERS_PER_INCH,
-                otosPose.getY() * METERS_PER_INCH,
-                new Rotation2d(otosPose.getHeading())
+                otosLinearUnit.toMeters(otosPose.getX()),
+                otosLinearUnit.toMeters(otosPose.getY()),
+                new Rotation2d(otosAngleUnit.toRadians(otosPose.getHeading()))
         );
         m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(
-                otosStdDev.x * METERS_PER_INCH,
-                otosStdDev.y * METERS_PER_INCH,
+                otosLinearUnit.toMeters(otosStdDev.x),
+                otosLinearUnit.toMeters(otosStdDev.y),
                 9999999)
         );
         m_poseEstimator.addVisionMeasurement(otosPose2d, otosTimeStamp);
 
         Pose2d pose2d = m_poseEstimator.getEstimatedPosition();
-        pose = new Pose(pose2d.getX(), pose2d.getY(), pose2d.getRotation().getRadians());
+        pose = new Pose(
+                linearUnit.fromMeters(pose2d.getX()),
+                linearUnit.fromMeters(pose2d.getY()),
+                angleUnit.fromRadians(pose2d.getRotation().getRadians())
+        );
 
         double dt = (currTime - prevTime);
         double dx = pose.getX() - prevPose.getX();

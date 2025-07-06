@@ -363,64 +363,80 @@ public class LimelightHelpers {
         @JsonProperty("pID")
         public double pipelineID;
 
+        /// Targeting latency (milliseconds consumed by tracking loop this frame)
         @JsonProperty("tl")
         public double latency_pipeline;
 
+        /// Capture latency (milliseconds between the end of the exposure of the middle row to the
+        /// beginning of the tracking loop)
         @JsonProperty("cl")
         public double latency_capture;
 
         public double latency_jsonParse;
 
+        /// Timestamp in milliseconds from boot.
         @JsonProperty("ts")
         public double timestamp_LIMELIGHT_publish;
 
         @JsonProperty("ts_rio")
         public double timestamp_RIOFPGA_capture;
 
+        /// Validity indicator. 1 = valid targets, 0 = no valid targets
         @JsonProperty("v")
         @JsonFormat(shape = Shape.NUMBER)
         public boolean valid;
 
+        /// Botpose (MegaTag): x,y,z, roll, pitch, yaw (meters, degrees)
         @JsonProperty("botpose")
         public double[] botpose;
 
+        /// Botpose (MegaTag, WPI Red driverstation): x,y,z, roll, pitch, yaw (meters, degrees)
         @JsonProperty("botpose_wpired")
         public double[] botpose_wpired;
 
+        /// Botpose (MegaTag, WPI Blue driverstation): x,y,z, roll, pitch, yaw (meters, degrees)
         @JsonProperty("botpose_wpiblue")
         public double[] botpose_wpiblue;
 
-        /** MT1 Standard Deviation [x, y, z, roll, pitch, yaw] (meters, degrees) */
+        /// MT1 Standard Deviation \[x, y, z, roll, pitch, yaw] (meters, degrees)
         @JsonProperty("stdev_mt1")
         public double[] stdev_mt1; // Custom added
 
-        /** MT2 Standard Deviation [x, y, z, roll, pitch, yaw] (meters, degrees) */
+        /// MT2 Standard Deviation \[x, y, z, roll, pitch, yaw] (meters, degrees)
         @JsonProperty("stdev_mt2")
         public double[] stdev_mt2; // Custom added
 
+        /// Number of tags used to compute botpose
         @JsonProperty("botpose_tagcount")
         public double botpose_tagcount;
 
+        /// Max distance between tags used to compute botpose (meters)
         @JsonProperty("botpose_span")
         public double botpose_span;
 
+        /// Max distance between tags used to compute botpose (meters)
         @JsonProperty("botpose_avgdist")
         public double botpose_avgdist;
 
+        /// Average area of tags used to compute botpose
         @JsonProperty("botpose_avgarea")
         public double botpose_avgarea;
 
+        /// Camera Pose in target space as computed by solvepnp (x,y,z,rx,ry,rz)
         @JsonProperty("t6c_rs")
         public double[] camerapose_robotspace;
 
+        /// Botpose (MegaTag): x,y,z, roll, pitch, yaw (meters, degrees)
         public Pose3d getBotPose3d() {
             return toPose3D(botpose);
         }
 
+        /// Botpose (MegaTag, WPI Red driverstation): x,y,z, roll, pitch, yaw (meters, degrees)
         public Pose3d getBotPose3d_wpiRed() {
             return toPose3D(botpose_wpired);
         }
 
+        /// Botpose (MegaTag, WPI Blue driverstation): x,y,z, roll, pitch, yaw (meters, degrees)
         public Pose3d getBotPose3d_wpiBlue() {
             return toPose3D(botpose_wpiblue);
         }
@@ -437,18 +453,23 @@ public class LimelightHelpers {
             return toPose2D(botpose_wpiblue);
         }
 
+        /// Color/Retroreflective pipeline results array
         @JsonProperty("Retro")
         public LimelightTarget_Retro[] targets_Retro;
 
+        /// AprilTag pipeline results array
         @JsonProperty("Fiducial")
         public LimelightTarget_Fiducial[] targets_Fiducials;
 
+        /// Classifier pipeline results array
         @JsonProperty("Classifier")
         public LimelightTarget_Classifier[] targets_Classifier;
 
+        /// Neural Detector pipeline results array
         @JsonProperty("Detector")
         public LimelightTarget_Detector[] targets_Detector;
 
+        /// Barcode pipeline results array
         @JsonProperty("Barcode")
         public LimelightTarget_Barcode[] targets_Barcode;
 

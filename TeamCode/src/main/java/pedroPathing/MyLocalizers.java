@@ -9,4 +9,5 @@ public enum MyLocalizers {
     PINPOINT,
     LIMELIGHT,
     REDUNDANT,
+    REDUNDANT_2,
 }

@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import pedroPathing.constants.MyFollowerConstants;
 import pedroPathing.localizers.LimelightLocalizer;
 import pedroPathing.localizers.RedundantLocalizer;
+import pedroPathing.localizers.RedundantLocalizer2;
 
 public class MyPoseUpdater extends PoseUpdater {
     public MyPoseUpdater(HardwareMap hardwareMap, Localizer localizer, Class<?> FConstants, Class<?> LConstants) {
@@ -53,6 +54,8 @@ public class MyPoseUpdater extends PoseUpdater {
                 return new LimelightLocalizer(hardwareMap);
             case REDUNDANT:
                 return new RedundantLocalizer(hardwareMap);
+            case REDUNDANT_2:
+                return new RedundantLocalizer2(hardwareMap);
             default:
                 throw new IllegalArgumentException("Unsupported localizer type");
         }

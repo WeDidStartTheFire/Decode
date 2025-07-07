@@ -360,6 +360,9 @@ public class LimelightHelpers {
 
         public String error;
 
+        public double latency_jsonParse;
+
+        /// Current Pipeline index
         @JsonProperty("pID")
         public double pipelineID;
 
@@ -371,8 +374,6 @@ public class LimelightHelpers {
         /// beginning of the tracking loop)
         @JsonProperty("cl")
         public double latency_capture;
-
-        public double latency_jsonParse;
 
         /// Timestamp in milliseconds from boot.
         @JsonProperty("ts")

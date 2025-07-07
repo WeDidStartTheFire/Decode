@@ -89,9 +89,9 @@ public class RedundantLocalizer2 extends Localizer {
         setStartPose(startPose);
 
         // TODO: Confirm wheel positions relative to robot center (in meters)
-        // Negative y is right, positive x is forward
-        // left-right (y) values confirmed (within .7% of what we used for roadrunner 0.5.6)
-        // front-back (x) taken from website, but it might be smaller because we tmade robot shorter
+        //  Negative y is right, positive x is forward
+        //  left-right (y) values confirmed (within .7% of what we used for roadrunner 0.5.6)
+        //  front-back (x) taken from gobilda but it might be smaller because we made robot shorter
         MecanumDriveKinematics kinematics = new MecanumDriveKinematics(
                 new Translation2d(.168, 0.2066), // front-left wheel
                 new Translation2d(.168, -0.2066), // front-right wheel
@@ -111,8 +111,8 @@ public class RedundantLocalizer2 extends Localizer {
                 initialHeading,
                 initialWheelPositions,
                 new Pose2d(startPose.getX(), startPose.getY(), initialHeading),
-                VecBuilder.fill(.15, .15, toRadians(.5)),
-                VecBuilder.fill(0.7, 0.7, 9999999)
+                VecBuilder.fill(.15, .15, toRadians(1)), // TODO: Confirm these values (IMU too)
+                VecBuilder.fill(.05, .05, 9999999)
         );
 
 
@@ -177,7 +177,7 @@ public class RedundantLocalizer2 extends Localizer {
         m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(
                 otosLinearUnit.toMeters(otosStdDev.x),
                 otosLinearUnit.toMeters(otosStdDev.y),
-                9999999)
+                otosAngleUnit.toRadians(otosStdDev.h))
         );
         m_poseEstimator.addVisionMeasurement(otosPose2d, otosTimeStamp);
 

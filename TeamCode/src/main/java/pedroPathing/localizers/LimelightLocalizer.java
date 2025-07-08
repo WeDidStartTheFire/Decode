@@ -40,6 +40,7 @@ public class LimelightLocalizer extends Localizer {
         limelight.pipelineSwitch(0); // Switch to pipeline number 0
         limelight.start(); // This tells Limelight to start looking!
         prevTime = System.currentTimeMillis();
+        prevPose = startPose;
         setStartPose(startPose);
     }
 

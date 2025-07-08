@@ -70,6 +70,8 @@ public class RedundantLocalizer2 extends Localizer {
         imu = map.get(IMU.class, "imu");
 
         otosLocalizer = new OTOSLocalizer(map, startPose);
+        otos = map.get(SparkFunOTOS.class, OTOSConstants.hardwareMapName);
+        setStartPose(startPose);
 
         Limelight3A limelight = map.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100); // How often Limelight is asked for data (x times per second)
@@ -86,7 +88,7 @@ public class RedundantLocalizer2 extends Localizer {
         }
 
         prevTime = System.currentTimeMillis();
-        setStartPose(startPose);
+        prevPose = startPose;
 
         // TODO: Confirm wheel positions relative to robot center (in meters)
         //  Negative y is right, positive x is forward
@@ -114,9 +116,6 @@ public class RedundantLocalizer2 extends Localizer {
                 VecBuilder.fill(.15, .15, toRadians(1)), // TODO: Confirm these values (IMU too)
                 VecBuilder.fill(.05, .05, 9999999)
         );
-
-
-        otos = map.get(SparkFunOTOS.class, OTOSConstants.hardwareMapName);
     }
 
     public @Nullable Pose getPose() {

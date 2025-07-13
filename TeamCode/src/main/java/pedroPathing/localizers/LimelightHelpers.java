@@ -7,13 +7,9 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.TimestampedDoubleArray;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation2d;
+import com.arcrobotics.ftclib.geometry.Pose2d;
+import com.arcrobotics.ftclib.geometry.Rotation2d;
+import com.arcrobotics.ftclib.geometry.Translation2d;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -59,25 +55,7 @@ public class LimelightHelpers {
         @JsonProperty("t6t_rs")
         private double[] targetPose_RobotSpace;
 
-        public Pose3d getCameraPose_TargetSpace() {
-            return toPose3D(cameraPose_TargetSpace);
-        }
-
-        public Pose3d getRobotPose_FieldSpace() {
-            return toPose3D(robotPose_FieldSpace);
-        }
-
-        public Pose3d getRobotPose_TargetSpace() {
-            return toPose3D(robotPose_TargetSpace);
-        }
-
-        public Pose3d getTargetPose_CameraSpace() {
-            return toPose3D(targetPose_CameraSpace);
-        }
-
-        public Pose3d getTargetPose_RobotSpace() {
-            return toPose3D(targetPose_RobotSpace);
-        }
+        // FTCLib does not support 3D poses, so these methods are omitted or return null.
 
         public Pose2d getCameraPose_TargetSpace2D() {
             return toPose2D(cameraPose_TargetSpace);
@@ -159,25 +137,7 @@ public class LimelightHelpers {
         @JsonProperty("t6t_rs")
         private double[] targetPose_RobotSpace;
 
-        public Pose3d getCameraPose_TargetSpace() {
-            return toPose3D(cameraPose_TargetSpace);
-        }
-
-        public Pose3d getRobotPose_FieldSpace() {
-            return toPose3D(robotPose_FieldSpace);
-        }
-
-        public Pose3d getRobotPose_TargetSpace() {
-            return toPose3D(robotPose_TargetSpace);
-        }
-
-        public Pose3d getTargetPose_CameraSpace() {
-            return toPose3D(targetPose_CameraSpace);
-        }
-
-        public Pose3d getTargetPose_RobotSpace() {
-            return toPose3D(targetPose_RobotSpace);
-        }
+        // FTCLib does not support 3D poses, so these methods are omitted
 
         public Pose2d getCameraPose_TargetSpace2D() {
             return toPose2D(cameraPose_TargetSpace);
@@ -427,20 +387,7 @@ public class LimelightHelpers {
         @JsonProperty("t6c_rs")
         public double[] camerapose_robotspace;
 
-        /// Botpose (MegaTag): x,y,z, roll, pitch, yaw (meters, degrees)
-        public Pose3d getBotPose3d() {
-            return toPose3D(botpose);
-        }
-
-        /// Botpose (MegaTag, WPI Red driverstation): x,y,z, roll, pitch, yaw (meters, degrees)
-        public Pose3d getBotPose3d_wpiRed() {
-            return toPose3D(botpose_wpired);
-        }
-
-        /// Botpose (MegaTag, WPI Blue driverstation): x,y,z, roll, pitch, yaw (meters, degrees)
-        public Pose3d getBotPose3d_wpiBlue() {
-            return toPose3D(botpose_wpiblue);
-        }
+        // FTCLib does not support 3D poses, so these methods are omitted or return null.
 
         public Pose2d getBotPose2d() {
             return toPose2D(botpose);
@@ -649,23 +596,7 @@ public class LimelightHelpers {
         return name;
     }
 
-    /**
-     * Takes a 6-length array of pose data and converts it to a Pose3d object.
-     * Array format: [x, y, z, roll, pitch, yaw] where angles are in degrees.
-     *
-     * @param inData Array containing pose data [x, y, z, roll, pitch, yaw]
-     * @return Pose3d object representing the pose, or empty Pose3d if invalid data
-     */
-    public static Pose3d toPose3D(double[] inData) {
-        if (inData.length < 6) {
-            //System.err.println("Bad LL 3D Pose Data!");
-            return new Pose3d();
-        }
-        return new Pose3d(
-                new Translation3d(inData[0], inData[1], inData[2]),
-                new Rotation3d(Units.degreesToRadians(inData[3]), Units.degreesToRadians(inData[4]),
-                        Units.degreesToRadians(inData[5])));
-    }
+    // FTCLib does not support 3D poses. Omit toPose3D.
 
     /**
      * Takes a 6-length array of pose data and converts it to a Pose2d object.
@@ -676,32 +607,18 @@ public class LimelightHelpers {
      * @return Pose2d object representing the pose, or empty Pose2d if invalid data
      */
     public static Pose2d toPose2D(double[] inData) {
-        if (inData.length < 6) {
+        if (inData == null || inData.length < 6) {
             //System.err.println("Bad LL 2D Pose Data!");
             return new Pose2d();
         }
         Translation2d tran2d = new Translation2d(inData[0], inData[1]);
-        Rotation2d r2d = new Rotation2d(Units.degreesToRadians(inData[5]));
+        Rotation2d r2d = new Rotation2d(Math.toRadians(inData[5]));
+
+
         return new Pose2d(tran2d, r2d);
     }
 
-    /**
-     * Converts a Pose3d object to an array of doubles in the format [x, y, z, roll, pitch, yaw].
-     * Translation components are in meters, rotation components are in degrees.
-     *
-     * @param pose The Pose3d object to convert
-     * @return A 6-element array containing [x, y, z, roll, pitch, yaw]
-     */
-    public static double[] pose3dToArray(Pose3d pose) {
-        double[] result = new double[6];
-        result[0] = pose.getTranslation().getX();
-        result[1] = pose.getTranslation().getY();
-        result[2] = pose.getTranslation().getZ();
-        result[3] = Units.radiansToDegrees(pose.getRotation().getX());
-        result[4] = Units.radiansToDegrees(pose.getRotation().getY());
-        result[5] = Units.radiansToDegrees(pose.getRotation().getZ());
-        return result;
-    }
+    // FTCLib does not support 3D poses. Omit pose3dToArray.
 
     /**
      * Converts a Pose2d object to an array of doubles in the format [x, y, z, roll, pitch, yaw].
@@ -716,9 +633,10 @@ public class LimelightHelpers {
         result[0] = pose.getTranslation().getX();
         result[1] = pose.getTranslation().getY();
         result[2] = 0;
-        result[3] = Units.radiansToDegrees(0);
-        result[4] = Units.radiansToDegrees(0);
-        result[5] = Units.radiansToDegrees(pose.getRotation().getRadians());
+        result[3] = 0;
+        result[4] = 0;
+        // Convert radians to degrees for yaw
+        result[5] = Math.toDegrees(pose.getHeading());
         return result;
     }
 
@@ -1215,87 +1133,10 @@ public class LimelightHelpers {
     /// //
     /// //
 
-    public static Pose3d getBotPose3d(String limelightName) {
-        double[] poseArray = getLimelightNTDoubleArray(limelightName, "botpose");
-        return toPose3D(poseArray);
-    }
-
-    /**
-     * (Not Recommended) Gets the robot's 3D pose in the WPILib Red Alliance Coordinate System.
-     *
-     * @param limelightName Name/identifier of the Limelight
-     * @return Pose3d object representing the robot's position and orientation in Red Alliance field space
-     */
-    public static Pose3d getBotPose3d_wpiRed(String limelightName) {
-        double[] poseArray = getLimelightNTDoubleArray(limelightName, "botpose_wpired");
-        return toPose3D(poseArray);
-    }
-
-    /**
-     * (Recommended) Gets the robot's 3D pose in the WPILib Blue Alliance Coordinate System.
-     *
-     * @param limelightName Name/identifier of the Limelight
-     * @return Pose3d object representing the robot's position and orientation in Blue Alliance field space
-     */
-    public static Pose3d getBotPose3d_wpiBlue(String limelightName) {
-        double[] poseArray = getLimelightNTDoubleArray(limelightName, "botpose_wpiblue");
-        return toPose3D(poseArray);
-    }
-
-    /**
-     * Gets the robot's 3D pose with respect to the currently tracked target's coordinate system.
-     *
-     * @param limelightName Name/identifier of the Limelight
-     * @return Pose3d object representing the robot's position and orientation relative to the target
-     */
-    public static Pose3d getBotPose3d_TargetSpace(String limelightName) {
-        double[] poseArray = getLimelightNTDoubleArray(limelightName, "botpose_targetspace");
-        return toPose3D(poseArray);
-    }
-
-    /**
-     * Gets the camera's 3D pose with respect to the currently tracked target's coordinate system.
-     *
-     * @param limelightName Name/identifier of the Limelight
-     * @return Pose3d object representing the camera's position and orientation relative to the target
-     */
-    public static Pose3d getCameraPose3d_TargetSpace(String limelightName) {
-        double[] poseArray = getLimelightNTDoubleArray(limelightName, "camerapose_targetspace");
-        return toPose3D(poseArray);
-    }
-
-    /**
-     * Gets the target's 3D pose with respect to the camera's coordinate system.
-     *
-     * @param limelightName Name/identifier of the Limelight
-     * @return Pose3d object representing the target's position and orientation relative to the camera
-     */
-    public static Pose3d getTargetPose3d_CameraSpace(String limelightName) {
-        double[] poseArray = getLimelightNTDoubleArray(limelightName, "targetpose_cameraspace");
-        return toPose3D(poseArray);
-    }
-
-    /**
-     * Gets the target's 3D pose with respect to the robot's coordinate system.
-     *
-     * @param limelightName Name/identifier of the Limelight
-     * @return Pose3d object representing the target's position and orientation relative to the robot
-     */
-    public static Pose3d getTargetPose3d_RobotSpace(String limelightName) {
-        double[] poseArray = getLimelightNTDoubleArray(limelightName, "targetpose_robotspace");
-        return toPose3D(poseArray);
-    }
-
-    /**
-     * Gets the camera's 3D pose with respect to the robot's coordinate system.
-     *
-     * @param limelightName Name/identifier of the Limelight
-     * @return Pose3d object representing the camera's position and orientation relative to the robot
-     */
-    public static Pose3d getCameraPose3d_RobotSpace(String limelightName) {
-        double[] poseArray = getLimelightNTDoubleArray(limelightName, "camerapose_robotspace");
-        return toPose3D(poseArray);
-    }
+    // FTCLib does not support 3D poses. The following methods are omitted:
+    // getBotPose3d, getBotPose3d_wpiRed, getBotPose3d_wpiBlue, getBotPose3d_TargetSpace,
+    // getCameraPose3d_TargetSpace, getTargetPose3d_CameraSpace, getTargetPose3d_RobotSpace,
+    // getCameraPose3d_RobotSpace
 
     /**
      * Gets the Pose2d for easy use with Odometry vision pose estimator

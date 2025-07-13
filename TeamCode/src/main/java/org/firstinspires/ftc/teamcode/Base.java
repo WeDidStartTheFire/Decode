@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
+import com.pedropathing.follower.Follower;
 import com.pedropathing.util.Constants;
 import com.qualcomm.hardware.rev.*;
 import com.qualcomm.robotcore.eventloop.opmode.*;
@@ -47,7 +48,6 @@ import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Timer;
 
-import pedroPathing.MyFollower;
 import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
 
@@ -95,8 +95,10 @@ public abstract class Base extends LinearOpMode {
     public VisionPortal visionPortal;
     private AprilTagProcessor tagProcessor;
     public Timer pathTimer;
-    public MyFollower follower;
+    public Follower follower;
     public Pose currentPose = new Pose();
+    public int updates = 0;
+    public Double startRuntime;
 
     public volatile boolean loop = false;
     public volatile boolean running = true;
@@ -243,7 +245,8 @@ public abstract class Base extends LinearOpMode {
         if (useOdometry) {
             pathTimer = new Timer();
             Constants.setConstants(FConstants.class, LConstants.class);
-            follower = new MyFollower(hardwareMap, FConstants.class, LConstants.class);
+            follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
+            follower.initialize();
             follower.setStartingPose(currentPose);
             buildPaths();
         }
@@ -1627,8 +1630,14 @@ public abstract class Base extends LinearOpMode {
         else print("Touch Sensor Pressed", verticalTouchSensor.isPressed());
         if (wristServoX == null) print("Intake Servo", "Disconnected");
         if (useOdometry) {
+            if (startRuntime == null)
+                startRuntime = runtime.seconds();
+            follower.update();
             Pose pos = follower.getPose();
             print(String.format(US, "SparkFun Position :  X: %.2f, Y: %.2f, θ: %.2f°", pos.getX(), pos.getY(), toDegrees(pos.getHeading())));
+            updates++;
+            print("Updates", updates);
+            print("Updates per Second", updates / runtime.seconds());
         } else print("Odometry disabled");
 
 

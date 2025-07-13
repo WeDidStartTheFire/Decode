@@ -15,8 +15,8 @@ public class LConstants {
 
         OTOSConstants.useCorrectedOTOSClass = false;
         OTOSConstants.hardwareMapName = "sensorOtos";
-        OTOSConstants.offset = new SparkFunOTOS.Pose2D(0, 6.5, 0);
-        OTOSConstants.linearScalar = 1.0619296947; // From last year
-        OTOSConstants.angularScalar = 0.99015462564184666344627699951694; // From last year
+        OTOSConstants.offset = new SparkFunOTOS.Pose2D(0, -6.5, Math.toRadians(-90));
+        OTOSConstants.linearScalar = 1.163;//1.15216;//1.6333;//1.1895;//1.0619296947; // From last year
+        OTOSConstants.angularScalar = .986;//0.99015462564184666344627699951694; // From last year
     }
 }

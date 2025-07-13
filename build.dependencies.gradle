@@ -26,23 +26,25 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-databind:2.19.1"
     implementation "com.fasterxml.jackson.core:jackson-annotations:2.19.1"
 
+    // FTCLib
+    implementation 'org.ftclib.ftclib:core:2.1.1'
+    implementation 'org.ftclib.ftclib:vision:2.1.0'
+
     // NetworkTables client
-    implementation "edu.wpi.first:networktables-java:2025.3.2"
+//    implementation "edu.wpi.first:networktables-java:2025.3.2"
 
     // WPIMath for Pose2d/Pose3d, Units, etc.
-    implementation "edu.wpi.first.wpimath:wpimath-java:2025.3.2"
+//    implementation "edu.wpi.first.wpimath:wpimath-java:2025.3.2"
 
     // Add ntcore-java
     implementation "edu.wpi.first.ntcore:ntcore-java:2025.3.2"
 
-    // Add wpiutil-java
-    implementation "edu.wpi.first.wpiutil:wpiutil-java:2025.3.2"
 
     // Add ntcore-jni for runtime. We are adding all supported platforms
     // so that our application will work on all supported platforms.
-    runtimeOnly "edu.wpi.first.ntcore:ntcore-jni:2025.3.2:windowsx86"
-    runtimeOnly "edu.wpi.first.ntcore:ntcore-jni:2025.3.2:windowsx86-64"
-    runtimeOnly "edu.wpi.first.ntcore:ntcore-jni:2025.3.2:linuxx86-64"
-    runtimeOnly "edu.wpi.first.ntcore:ntcore-jni:2025.3.2:osxx86-64"
-    runtimeOnly "edu.wpi.first.ntcore:ntcore-jni:2025.3.2:osxarm64"
+//    implementation "edu.wpi.first.ntcore:ntcore-jni:2025.3.2:windowsx86"
+//    implementation "edu.wpi.first.ntcore:ntcore-jni:2025.3.2:windowsx86-64"
+//    implementation "edu.wpi.first.ntcore:ntcore-jni:2025.3.2:linuxx86-64"
+//    implementation "edu.wpi.first.ntcore:ntcore-jni:2025.3.2:osxx86-64"
+//    implementation "edu.wpi.first.ntcore:ntcore-jni:2025.3.2:osxarm64"
 }

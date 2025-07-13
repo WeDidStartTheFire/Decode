@@ -22,6 +22,13 @@ public class MyFollower extends Follower {
         this.hardwareMap = hardwareMap;
     }
 
+    public void updatePose() {
+        super.updatePose();
+        if (drawOnDashboard) {
+            this.dashboardPoseTracker.update();
+        }
+    }
+
     @Override
     public void initialize() {
         super.initialize();

@@ -139,6 +139,7 @@ Constants.setConstants(FConstants.class, LConstants.class);
         }
 
         poseUpdater.update();
+        telemetryA.addData("pose", poseUpdater.getPose());
         if (!end) {
             if (Math.abs(poseUpdater.getPose().getX()) > DISTANCE) {
                 end = true;
@@ -151,6 +152,7 @@ Constants.setConstants(FConstants.class, LConstants.class);
                 velocities.add(currentVelocity);
                 velocities.remove(0);
             }
+            telemetryA.update();
         } else {
             leftFront.setPower(0);
             leftRear.setPower(0);

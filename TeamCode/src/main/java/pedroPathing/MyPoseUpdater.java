@@ -1,6 +1,7 @@
 package pedroPathing;
 
 import com.pedropathing.localization.Localizer;
+import com.pedropathing.localization.Pose;
 import com.pedropathing.localization.PoseUpdater;
 import com.pedropathing.localization.localizers.DriveEncoderLocalizer;
 import com.pedropathing.localization.localizers.OTOSLocalizer;
@@ -12,6 +13,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import pedroPathing.constants.MyFollowerConstants;
 import pedroPathing.localizers.LimelightLocalizer;
+import pedroPathing.localizers.MyOTOSLocalizer;
 import pedroPathing.localizers.RedundantLocalizer;
 //import pedroPathing.localizers.RedundantLocalizer2;
 
@@ -21,7 +23,7 @@ public class MyPoseUpdater extends PoseUpdater {
     }
 
     public MyPoseUpdater(HardwareMap hardwareMap, Class<?> FConstants, Class<?> LConstants) {
-        super(hardwareMap, FConstants, LConstants);
+        super(hardwareMap, createLocalizer(hardwareMap), FConstants, LConstants);
     }
 
     public MyPoseUpdater(HardwareMap hardwareMap, Localizer localizer) {
@@ -29,7 +31,7 @@ public class MyPoseUpdater extends PoseUpdater {
     }
 
     public MyPoseUpdater(HardwareMap hardwareMap) {
-        super(hardwareMap);
+        super(hardwareMap, createLocalizer(hardwareMap));
     }
 
     public static Localizer createLocalizer(HardwareMap hardwareMap) {
@@ -48,6 +50,8 @@ public class MyPoseUpdater extends PoseUpdater {
                 return new ThreeWheelIMULocalizer(hardwareMap);
             case OTOS:
                 return new OTOSLocalizer(hardwareMap);
+            case OTOS_FIXED:
+                return new MyOTOSLocalizer(hardwareMap);
             case PINPOINT:
                 return new PinpointLocalizer(hardwareMap);
             case LIMELIGHT:

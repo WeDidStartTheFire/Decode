@@ -29,7 +29,25 @@ public class LConstants {
         -1.0846
         1.0491
         -1.0735 wiggle on way back
+
+        Brighter Lights
+        1.0466246026361405
+        -1.0898
+
+        Darker Lights
+        1.0510936845327639
+        -1.0940358025846153
+
+        High Speed
+        1.0037812806022586
+        -1.037631232996109
+        0.9950418913432835
+        -1.0329421312330536
+
+        Low Speed
+        1.0354488667076525
+        -1.0853161684110564
         */
-        OTOSConstants.angularScalar = .986;//0.99015462564184666344627699951694; // From last year
+        OTOSConstants.angularScalar = .9871;//0.99015462564184666344627699951694; // From last year
     }
 }

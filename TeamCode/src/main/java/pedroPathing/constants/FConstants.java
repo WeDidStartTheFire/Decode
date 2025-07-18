@@ -10,7 +10,7 @@ public class FConstants {
     static {
         FollowerConstants.localizers = Localizers.OTOS;
 
-        MyFollowerConstants.localizer = MyLocalizers.OTOS; // For custom localizers
+        MyFollowerConstants.localizer = MyLocalizers.OTOS_FIXED; // For custom localizers
         MyFollowerConstants.primaryLocalizer = MyLocalizers.LIMELIGHT; // For RedundantLocalizer
         MyFollowerConstants.secondaryLocalizer = MyLocalizers.OTOS; // For RedundantLocalizer
 
@@ -73,7 +73,7 @@ public class FConstants {
         -78.0097
         */
 
-        FollowerConstants.translationalPIDFCoefficients.setCoefficients(0.1, 0, 0.01, 0);
+        FollowerConstants.translationalPIDFCoefficients.setCoefficients(0.15, 0, 0.015, 0);
         FollowerConstants.useSecondaryTranslationalPID = false;
         FollowerConstants.secondaryTranslationalPIDFCoefficients.setCoefficients(0.1, 0, 0.01, 0); // Not being used, @see useSecondaryTranslationalPID
 

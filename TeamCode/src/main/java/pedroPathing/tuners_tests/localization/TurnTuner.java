@@ -8,10 +8,10 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import com.pedropathing.localization.PoseUpdater;
 import com.pedropathing.util.DashboardPoseTracker;
 import com.pedropathing.util.Drawing;
 
+import pedroPathing.MyPoseUpdater;
 import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
 
@@ -31,7 +31,7 @@ import pedroPathing.constants.LConstants;
 @Config
 @Autonomous(name = "Turn Localizer Tuner", group = ".Localization")
 public class TurnTuner extends OpMode {
-    private PoseUpdater poseUpdater;
+    private MyPoseUpdater poseUpdater;
     private DashboardPoseTracker dashboardPoseTracker;
 
     private Telemetry telemetryA;
@@ -39,12 +39,12 @@ public class TurnTuner extends OpMode {
     public static double ANGLE = 2 * Math.PI;
 
     /**
-     * This initializes the PoseUpdater as well as the FTC Dashboard telemetry.
+     * This initializes the MyPoseUpdater as well as the FTC Dashboard telemetry.
      */
     @Override
     public void init() {
         Constants.setConstants(FConstants.class, LConstants.class);
-        poseUpdater = new PoseUpdater(hardwareMap, FConstants.class, LConstants.class);
+        poseUpdater = new MyPoseUpdater(hardwareMap, FConstants.class, LConstants.class);
 
         dashboardPoseTracker = new DashboardPoseTracker(poseUpdater);
 

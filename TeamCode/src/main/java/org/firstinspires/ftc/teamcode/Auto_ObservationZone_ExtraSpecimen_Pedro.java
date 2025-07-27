@@ -10,11 +10,13 @@ import com.pedropathing.pathgen.PathBuilder;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.pedropathing.util.Timer;
 
 @Autonomous(name = "Observation Zone Extra Specimen Pedro", group = "!!Secondary", preselectTeleOp = "Main")
 public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base extends LinearOpMode
 
-    private int pathState = 0;
+    private int pathState;
+    private Timer pathStateTimer = new Timer();
 
     // Works
     private final Pose startPose = new Pose(135, 81.5, toRadians(0));
@@ -25,78 +27,21 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
 //    private final Pose scorePose1 = new Pose(startPose.getX() + 30, startPose.getY(), toRadians(180));
 
     private Path specimenPath0, park;
-    private PathChain threeSamplesPath, specimenPath1, specimenPath2, specimenPath3, specimenPath4,
-    specimenPath5, specimenPath6;
+    private PathChain specimenPath1, specimenPath1_5, specimenPath2, specimenPath3, specimenPath4,
+            specimenPath5, specimenPath6;
+
+
+    Runnable liftTask = () -> moveVerticalLift(V_LIFT_GOALS[3]);
+    Runnable scoreSpecimen = () -> moveVerticalLift(V_LIFT_GOALS[3] - 400);
+    Runnable holdLiftTask = () -> holdVerticalLift(V_LIFT_GOALS[3]);
+
+    Thread liftThread, scoreSpecimenThread, holdLift, holdWrist;
+
 
     @Override
     public void buildPaths() {
         specimenPath0 = new Path(new BezierLine(startPose, scorePose1));
         specimenPath0.setConstantHeadingInterpolation(scorePose1.getHeading());
-
-        PathBuilder threeSamplesBuilder = new PathBuilder();
-        threeSamplesBuilder
-                .addPath(
-                        // Line 1
-                        new BezierCurve(
-                                new Point(105.000, 81.500, Point.CARTESIAN),
-                                new Point(128.815, 118.919, Point.CARTESIAN),
-                                new Point(79.507, 98.616, Point.CARTESIAN),
-                                new Point(82.749, 116.019, Point.CARTESIAN)
-                        )
-                )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(180))
-                .addPath(
-                        // Line 2
-                        new BezierCurve(
-                                new Point(82.749, 116.019, Point.CARTESIAN),
-                                new Point(82.237, 125.403, Point.CARTESIAN),
-                                new Point(113.801, 118.066, Point.CARTESIAN),
-                                new Point(122.502, 117.896, Point.CARTESIAN)
-                        )
-                )
-                .setConstantHeadingInterpolation(Math.toRadians(180))
-                .addPath(
-                        // Line 3
-                        new BezierCurve(
-                                new Point(122.502, 117.896, Point.CARTESIAN),
-                                new Point(144.000, 112.265, Point.CARTESIAN),
-                                new Point(127.791, 91.280, Point.CARTESIAN),
-                                new Point(82.066, 102.370, Point.CARTESIAN),
-                                new Point(83.431, 120.114, Point.CARTESIAN)
-                        )
-                )
-                .setConstantHeadingInterpolation(Math.toRadians(180))
-                .addPath(
-                        // Line 4
-                        new BezierCurve(
-                                new Point(83.431, 120.114, Point.CARTESIAN),
-                                new Point(82.237, 135.299, Point.CARTESIAN),
-                                new Point(129.156, 132.057, Point.CARTESIAN),
-                                new Point(130.180, 127.280, Point.CARTESIAN)
-                        )
-                )
-                .setConstantHeadingInterpolation(Math.toRadians(180))
-                .addPath(
-                        // Line 5
-                        new BezierCurve(
-                                new Point(130.180, 127.280, Point.CARTESIAN),
-                                new Point(143.829, 112.777, Point.CARTESIAN),
-                                new Point(81.213, 110.900, Point.CARTESIAN),
-                                new Point(83.773, 128.303, Point.CARTESIAN)
-                        )
-                )
-                .setConstantHeadingInterpolation(Math.toRadians(180))
-                .addPath(
-                        // Line 6
-                        new BezierCurve(
-                                new Point(83.773, 128.303, Point.CARTESIAN),
-                                new Point(82.578, 138.540, Point.CARTESIAN),
-                                new Point(95.716, 135.810, Point.CARTESIAN),
-                                new Point(128.000, 135.000, Point.CARTESIAN)
-                        )
-                )
-                .setConstantHeadingInterpolation(Math.toRadians(180));
-        threeSamplesPath = threeSamplesBuilder.build();
 
         PathBuilder specimenBuilder1 = new PathBuilder();
         specimenBuilder1
@@ -105,39 +50,52 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
                         new BezierCurve(
                                 new Point(105.000, 81.500, Point.CARTESIAN),
                                 new Point(127.962, 105.953, Point.CARTESIAN),
-                                new Point(96.227, 108.853, Point.CARTESIAN)
+                                new Point(96.398, 108.682, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-90))
                 .addPath(
                         // Line 2
                         new BezierCurve(
-                                new Point(96.227, 108.853, Point.CARTESIAN),
+                                new Point(96.398, 108.682, Point.CARTESIAN),
                                 new Point(74.389, 111.754, Point.CARTESIAN),
-                                new Point(84.967, 118.066, Point.CARTESIAN)
+                                new Point(84.626, 117.213, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(-90))
                 .addPath(
                         // Line 3
                         new BezierCurve(
-                                new Point(84.967, 118.066, Point.CARTESIAN),
-                                new Point(92.133, 122.844, Point.CARTESIAN),
-                                new Point(120.626, 113.460, Point.CARTESIAN),
-                                new Point(124.038, 132.569, Point.CARTESIAN),
-                                new Point(131.500, 135.000, Point.CARTESIAN)
+                                new Point(84.626, 117.213, Point.CARTESIAN),
+                                new Point(91.962, 122.502, Point.CARTESIAN),
+                                new Point(130.863, 112.607, Point.CARTESIAN),
+                                new Point(131.500, 127.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(-90));
         specimenPath1 = specimenBuilder1.build();
 
+        PathBuilder specimenBuilder1_5 = new PathBuilder();
+        specimenBuilder1_5
+                .addPath(
+                        // Line 1
+                        new BezierLine(
+                                new Point(131.500, 127.000, Point.CARTESIAN),
+                                new Point(131.500, 135.000, Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(-90));
+        specimenPath1_5 = specimenBuilder1_5.build();
+
         PathBuilder specimenBuilder2 = new PathBuilder();
         specimenBuilder2
                 .addPath(
                         // Line 1
-                        new BezierLine(
+                        new BezierCurve(
                                 new Point(131.500, 135.000, Point.CARTESIAN),
-                                new Point(105.000, 83.250, Point.CARTESIAN)
+                                new Point(115.848, 125.744, Point.CARTESIAN),
+                                new Point(128.815, 77.289, Point.CARTESIAN),
+                                new Point(106.500, 79.500, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(0));
@@ -148,9 +106,9 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
                 .addPath(
                         // Line 1
                         new BezierCurve(
-                                new Point(105.000, 83.500, Point.CARTESIAN),
-                                new Point(126.085, 102.199, Point.CARTESIAN),
-                                new Point(82.066, 112.777, Point.CARTESIAN),
+                                new Point(106.500, 79.500, Point.CARTESIAN),
+                                new Point(143.318, 114.313, Point.CARTESIAN),
+                                new Point(79.507, 114.313, Point.CARTESIAN),
                                 new Point(84.626, 123.526, Point.CARTESIAN)
                         )
                 )
@@ -171,9 +129,11 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
         specimenBuilder4
                 .addPath(
                         // Line 1
-                        new BezierLine(
+                        new BezierCurve(
                                 new Point(131.500, 135.000, Point.CARTESIAN),
-                                new Point(105.000, 85.000, Point.CARTESIAN)
+                                new Point(118.066, 122.673, Point.CARTESIAN),
+                                new Point(127.450, 74.900, Point.CARTESIAN),
+                                new Point(107.000, 77.500, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(0));
@@ -184,20 +144,20 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
                 .addPath(
                         // Line 1
                         new BezierCurve(
-                                new Point(105.000, 85.000, Point.CARTESIAN),
-                                new Point(137.858, 96.739, Point.CARTESIAN),
-                                new Point(81.384, 111.071, Point.CARTESIAN),
-                                new Point(81.896, 125.403, Point.CARTESIAN)
+                                new Point(107.000, 77.500, Point.CARTESIAN),
+                                new Point(141.441, 113.289, Point.CARTESIAN),
+                                new Point(81.555, 112.607, Point.CARTESIAN),
+                                new Point(81.384, 127.621, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-90))
                 .addPath(
                         // Line 2
                         new BezierCurve(
-                                new Point(81.896, 125.403, Point.CARTESIAN),
-                                new Point(80.190, 140.929, Point.CARTESIAN),
-                                new Point(106.976, 131.886, Point.CARTESIAN),
-                                new Point(131.500, 135.000, Point.CARTESIAN)
+                                new Point(81.384, 127.621, Point.CARTESIAN),
+                                new Point(77.972, 142.464, Point.CARTESIAN),
+                                new Point(125.062, 136.322, Point.CARTESIAN),
+                                new Point(131.500, 136.500, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(-90));
@@ -207,13 +167,20 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
         specimenBuilder6
                 .addPath(
                         // Line 1
-                        new BezierLine(
-                                new Point(131.500, 135.000, Point.CARTESIAN),
-                                new Point(105.000, 79.750, Point.CARTESIAN)
+                        new BezierCurve(
+                                new Point(131.500, 136.500, Point.CARTESIAN),
+                                new Point(117.896, 123.526, Point.CARTESIAN),
+                                new Point(130.351, 74.389, Point.CARTESIAN),
+                                new Point(108.000, 75.500, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(0));
         specimenPath6 = specimenBuilder6.build();
+    }
+
+    public void setPathState(int pathState) {
+        this.pathState = pathState;
+        this.pathStateTimer.resetTimer();
     }
 
     @Override
@@ -223,6 +190,7 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
 
         int updates = 0;
         double startTime = getRuntime();
+        setPathState(0);
         while (active()) {
             updates++;
             follower.update();
@@ -234,42 +202,62 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
                     }
                     break;
                 case 0:
-                    follower.followPath(specimenPath0);
-                    pathState = 1;
+                    holdWrist = new Thread(this::holdWristOutOfWay);
+                    holdWrist.start();
+                    moveWristServoY(.5);
+                    follower.holdPoint(startPose);
+                    setPathState(1);
                     break;
                 case 1:
-                    if (!follower.isBusy()) {
-                        follower.followPath(specimenPath1);
-                        pathState = 2;
+                    if (pathStateTimer.getElapsedTimeSeconds() >= .5) {
+                        liftThread = new Thread(liftTask);
+                        liftThread.start();
+                        setPathState(2);
                     }
                     break;
                 case 2:
-                    if (!follower.isBusy()) {
-                        follower.followPath(specimenPath2);
-                        pathState = 3;
+                    if (pathStateTimer.getElapsedTimeSeconds() >= .5) {
+                        follower.breakFollowing();
+                        follower.followPath(specimenPath0);
+                        setPathState(3);
                     }
-                    break;
                 case 3:
-                    if (!follower.isBusy()) {
-                        follower.followPath(specimenPath3);
-                        pathState = 4;
+                    if (!liftThread.isAlive()) {
+                        liftThread.join();
+                        holdLift = new Thread(holdLiftTask);
+                        holdLift.start();
+                        follower.holdPoint(scorePose1);
+                        setPathState(4);
                     }
                     break;
                 case 4:
                     if (!follower.isBusy()) {
-                        follower.followPath(specimenPath4);
-                        pathState = 5;
+                        hold = false;
+                        holdLift.join();
+                        scoreSpecimenThread = new Thread(scoreSpecimen);
+                        scoreSpecimenThread.start();
+                        setPathState(5);
                     }
                 case 5:
-                    if (!follower.isBusy()) {
-                        follower.followPath(specimenPath5);
-                        pathState = 6;
+                    if (!scoreSpecimenThread.isAlive()) {
+                        openSpecimenServo();
+                        setPathState(6);
                     }
                 case 6:
-                    if (!follower.isBusy()) {
-                        follower.followPath(specimenPath6);
-                        pathState = -1;
+                    if (pathStateTimer.getElapsedTimeSeconds() >= .5) {
+                        liftThread = new Thread(this::retractVerticalLift);
+                        liftThread.start();
+                        follower.breakFollowing();
+                        follower.followPath(specimenPath1);
+                        setPathState(7);
                     }
+                case 7:
+                    if (!follower.isBusy()) {
+                        follower.setMaxPower(.1);
+                        follower.followPath(specimenPath1_5);
+                        setPathState(-1);
+                    }
+                    break;
             }
             telemetryA.addData("Updates per second", updates / (getRuntime() - startTime));
             telemetryA.addData("Path State", pathState);

@@ -18,6 +18,8 @@ import androidx.annotation.Nullable;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.util.Constants;
 import com.qualcomm.hardware.rev.*;
@@ -46,7 +48,6 @@ import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.Point;
-import com.pedropathing.util.Timer;
 
 import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
@@ -94,7 +95,6 @@ public abstract class Base extends LinearOpMode {
     double velocity = DEFAULT_VELOCITY;
     public VisionPortal visionPortal;
     private AprilTagProcessor tagProcessor;
-    public Timer pathTimer;
     public Follower follower;
     public Pose currentPose = new Pose();
     public int updates = 0;
@@ -145,6 +145,8 @@ public abstract class Base extends LinearOpMode {
     boolean following = false;
 
     double[] WRIST_S_ANGLES = {toRadians(-180), toRadians(180)};
+
+    public MultipleTelemetry telemetryA;
 
     /** Directions. Options: LEFT, RIGHT, FORWARD, BACKWARD */
     public enum Dir {
@@ -243,10 +245,9 @@ public abstract class Base extends LinearOpMode {
 
 
         if (useOdometry) {
-            pathTimer = new Timer();
+            telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
             Constants.setConstants(FConstants.class, LConstants.class);
             follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
-            follower.initialize();
             follower.setStartingPose(currentPose);
             buildPaths();
         }
@@ -1053,7 +1054,6 @@ public abstract class Base extends LinearOpMode {
                 verticalMotorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             }
 
-            // Better telemetry
             print("Position", vertAvg);
             print("Goal", encoders);
             print("Error", error);

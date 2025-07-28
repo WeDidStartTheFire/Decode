@@ -43,8 +43,8 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
         specimenPath0 = new Path(new BezierLine(startPose, scorePose1));
         specimenPath0.setConstantHeadingInterpolation(scorePose1.getHeading());
 
-        PathBuilder specimenBuilder1 = new PathBuilder();
-        specimenBuilder1
+        PathBuilder builder = new PathBuilder();
+        builder
                 .addPath(
                         // Line 1
                         new BezierCurve(
@@ -73,10 +73,10 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(-90));
-        specimenPath1 = specimenBuilder1.build();
+        specimenPath1 = builder.build();
 
-        PathBuilder specimenBuilder1_5 = new PathBuilder();
-        specimenBuilder1_5
+        builder = new PathBuilder();
+        builder
                 .addPath(
                         // Line 1
                         new BezierLine(
@@ -85,10 +85,10 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(-90));
-        specimenPath1_5 = specimenBuilder1_5.build();
+        specimenPath1_5 = builder.build();
 
-        PathBuilder specimenBuilder2 = new PathBuilder();
-        specimenBuilder2
+        builder = new PathBuilder();
+        builder
                 .addPath(
                         // Line 1
                         new BezierCurve(
@@ -99,10 +99,10 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(0));
-        specimenPath2 = specimenBuilder2.build();
+        specimenPath2 = builder.build();
 
-        PathBuilder specimenBuilder3 = new PathBuilder();
-        specimenBuilder3
+        builder = new PathBuilder();
+        builder
                 .addPath(
                         // Line 1
                         new BezierCurve(
@@ -123,10 +123,10 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(-90));
-        specimenPath3 = specimenBuilder3.build();
+        specimenPath3 = builder.build();
 
-        PathBuilder specimenBuilder4 = new PathBuilder();
-        specimenBuilder4
+        builder = new PathBuilder();
+        builder
                 .addPath(
                         // Line 1
                         new BezierCurve(
@@ -137,10 +137,10 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(0));
-        specimenPath4 = specimenBuilder4.build();
+        specimenPath4 = builder.build();
 
-        PathBuilder specimenBuilder5 = new PathBuilder();
-        specimenBuilder5
+        builder = new PathBuilder();
+        builder
                 .addPath(
                         // Line 1
                         new BezierCurve(
@@ -161,10 +161,10 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(-90));
-        specimenPath5 = specimenBuilder5.build();
+        specimenPath5 = builder.build();
 
-        PathBuilder specimenBuilder6 = new PathBuilder();
-        specimenBuilder6
+        builder = new PathBuilder();
+        builder
                 .addPath(
                         // Line 1
                         new BezierCurve(
@@ -175,7 +175,7 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(0));
-        specimenPath6 = specimenBuilder6.build();
+        specimenPath6 = builder.build();
     }
 
     public void setPathState(int pathState) {

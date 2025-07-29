@@ -22,7 +22,7 @@ public class TeleOp_TestFieldCentric extends Base {
             handoffLogic();
             dpadLogic();
 
-            updateAll();
+            telemetryAll();
         }
     }
 }

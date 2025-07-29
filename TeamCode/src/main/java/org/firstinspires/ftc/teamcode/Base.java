@@ -142,7 +142,6 @@ public abstract class Base extends LinearOpMode {
 
     Pose NET_ZONE_POSITION = new Pose(144 - 12 - (ROBOT_LENGTH / 2 / sqrt(2)) + 1, 144 - 12 - (ROBOT_LENGTH / 2 / sqrt(2)) + 1, toRadians(45));
     Pose OBSERVATION_ZONE_POSITION = new Pose(ROBOT_WIDTH / 2, 144 - ROBOT_LENGTH / 2, toRadians(0));
-    boolean following = false;
 
     double[] WRIST_S_ANGLES = {toRadians(-180), toRadians(180)};
 
@@ -325,7 +324,7 @@ public abstract class Base extends LinearOpMode {
             print("Hub Name", hubName);
             print(":::", ":::");
             print(":::", ":::");
-            updateAll();
+            telemetryAll();
         }
         runtime.reset();
     }
@@ -1151,6 +1150,32 @@ public abstract class Base extends LinearOpMode {
      * @param fieldCentric Whether to use field centric driving or not
      */
     public void drivetrainLogic(boolean fieldCentric) {
+        drivetrainLogic(fieldCentric, false);
+    }
+
+    /**
+     * Logic for the drivetrain during TeleOp
+     *
+     * @param fieldCentric Whether to use field centric driving or not
+     */
+    public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
+        if (usePedro) {
+            follower.update();
+            double speedMultiplier = gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1];
+            speedMultiplier *= baseSpeedMultiplier;
+
+            if (abs(gamepad1.left_stick_x) > .05 || abs(gamepad1.left_stick_y) > .05
+                    || abs(gamepad1.right_stick_x) > .05)
+                follower.breakFollowing();
+
+            if (!follower.isBusy())
+                follower.setTeleOpMovementVectors(-gamepad1.left_stick_y * speedMultiplier,
+                                                  -gamepad1.left_stick_x * speedMultiplier,
+                                                  -gamepad1.right_stick_x * speedMultiplier,
+                                                  !fieldCentric);
+            return;
+        }
+
         double axial, lateral, yaw, xMove, yMove;
         double speedMultiplier = gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1];
 
@@ -1187,17 +1212,15 @@ public abstract class Base extends LinearOpMode {
             rightBackPower /= max;
         }
 
+        if (abs(leftFrontPower) > .05 || abs(rightFrontPower) > .05 || abs(leftBackPower) > .05 || abs(rightBackPower) > .05)
+            follower.breakFollowing();
+
         // Send calculated power to wheels
-        if (lf != null) {
+        if (lf != null && !follower.isBusy()) {
             lf.setVelocity(leftFrontPower * 5000 * speedMultiplier);
             rf.setVelocity(rightFrontPower * 5000 * speedMultiplier);
             lb.setVelocity(leftBackPower * 5000 * speedMultiplier);
             rb.setVelocity(rightBackPower * 5000 * speedMultiplier);
-        }
-
-        if (abs(leftFrontPower) > .05 || abs(rightFrontPower) > .05 || abs(leftBackPower) > .05 || abs(rightBackPower) > .05) {
-            if (following) follower.breakFollowing();
-            following = false;
         }
 
         print("Speed Multiplier", speedMultiplier);
@@ -1210,12 +1233,10 @@ public abstract class Base extends LinearOpMode {
         else if (!gamepad1.a && !gamepad1.start) return;
         Pose poseEstimate = follower.getPose();
         if (gamepad1.a) {
-            following = true;
             Path path = new Path(new BezierLine(new Point(poseEstimate), new Point(NET_ZONE_POSITION)));
             path.setLinearHeadingInterpolation(poseEstimate.getHeading(), NET_ZONE_POSITION.getHeading());
             follower.followPath(path);
         } else if (gamepad1.start) {
-            following = true;
             Path path = new Path(new BezierLine(new Point(poseEstimate), new Point(OBSERVATION_ZONE_POSITION)));
             path.setLinearHeadingInterpolation(poseEstimate.getHeading(), OBSERVATION_ZONE_POSITION.getHeading());
             follower.followPath(path);
@@ -1549,7 +1570,7 @@ public abstract class Base extends LinearOpMode {
     public void telemetryLoop() {
         loop = true;
         while (active() && loop) {
-            updateAll();
+            telemetryAll();
             if (auto) saveOdometryPosition(follower.getPose());
         }
     }
@@ -1598,7 +1619,7 @@ public abstract class Base extends LinearOpMode {
     }
 
     /** Adds information messages to telemetry and updates it */
-    public void updateAll() {
+    public void telemetryAll() {
         if (lf == null) telemetry.addData("Drive Train", "Disconnected");
         if (verticalMotorA == null) print("Vertical Lift Motors", "Disconnected");
         else {
@@ -1639,13 +1660,6 @@ public abstract class Base extends LinearOpMode {
             print("Updates", updates);
             print("Updates per Second", updates / runtime.seconds());
         } else print("Odometry disabled");
-
-
-//        if (drive != null && drive.getLocalizer() instanceof RedundantLocalizer) {
-//            RedundantLocalizer localizer = (RedundantLocalizer) drive.getLocalizer();
-//            boolean usingPrimary = localizer.isUsingPrimaryLocalizer();
-//            print("Using Primary Localizer", usingPrimary);
-//        } else print("Localizer is not a RedundantLocalizer");
 
         update();
     }

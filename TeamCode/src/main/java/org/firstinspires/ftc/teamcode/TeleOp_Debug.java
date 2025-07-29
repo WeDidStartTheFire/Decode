@@ -180,7 +180,7 @@ public class TeleOp_Debug extends Base {
                 addLastActionTelemetry("motorB disconnected");
             }
 
-            updateAll();
+            telemetryAll();
         }
     }
 }

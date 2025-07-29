@@ -22,7 +22,7 @@ public class TeleOp_Main extends Base {
             handoffLogic();
             dpadLogic();
 
-            updateAll();
+            telemetryAll();
         }
     }
 }

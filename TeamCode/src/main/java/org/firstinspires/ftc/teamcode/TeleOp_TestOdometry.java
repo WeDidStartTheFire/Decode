@@ -23,7 +23,7 @@ public class TeleOp_TestOdometry extends Base {
             handoffLogic();
             dpadLogic();
 
-            updateAll();
+            telemetryAll();
         }
     }
 }

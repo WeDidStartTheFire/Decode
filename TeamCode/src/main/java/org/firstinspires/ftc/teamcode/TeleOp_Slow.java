@@ -48,13 +48,12 @@ public class TeleOp_Slow extends Base {
             }
 
             if (abs(leftFrontPower) > .05 || abs(rightFrontPower) > .05 || abs(leftBackPower) > .05 || abs(rightBackPower) > .05) {
-                if (following) follower.breakFollowing();
-                following = false;
+                if (follower.isBusy()) follower.breakFollowing();
             }
 
             print("Speed Multiplier", speedMultiplier);
 
-            updateAll();
+            telemetryAll();
         }
     }
 }

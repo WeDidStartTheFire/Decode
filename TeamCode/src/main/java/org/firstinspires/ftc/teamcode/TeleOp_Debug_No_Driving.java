@@ -135,7 +135,7 @@ public class TeleOp_Debug_No_Driving extends Base {
                 addLastActionTelemetry("motorB disconnected");
             }
 
-            updateAll();
+            telemetryAll();
         }
     }
 }

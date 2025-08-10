@@ -226,7 +226,6 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
                         liftThread.join();
                         holdLift = new Thread(holdLiftTask);
                         holdLift.start();
-                        follower.holdPoint(scorePose1);
                         setPathState(4);
                     }
                     break;
@@ -236,6 +235,7 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
                         holdLift.join();
                         scoreSpecimenThread = new Thread(scoreSpecimen);
                         scoreSpecimenThread.start();
+                        follower.holdPoint(scorePose1);
                         setPathState(5);
                     }
                 case 5:
@@ -245,10 +245,10 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
                     }
                 case 6:
                     if (pathStateTimer.getElapsedTimeSeconds() >= .5) {
-                        liftThread = new Thread(this::retractVerticalLift);
-                        liftThread.start();
                         follower.breakFollowing();
                         follower.followPath(specimenPath1);
+                        liftThread = new Thread(this::retractVerticalLift);
+                        liftThread.start();
                         setPathState(7);
                     }
                 case 7:

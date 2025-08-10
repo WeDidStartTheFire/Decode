@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.pedropathing.localization.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name = "Test Field Centric", group = "Test")
+@TeleOp(name = "Test Field Centric Pedro", group = "Test")
 public class TeleOp_TestFieldCentric_Pedro extends Base {
     @Override
     public void runOpMode() throws InterruptedException {

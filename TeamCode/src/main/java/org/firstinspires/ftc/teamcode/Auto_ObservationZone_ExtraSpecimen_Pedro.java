@@ -16,7 +16,7 @@ import com.pedropathing.util.Timer;
 public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base extends LinearOpMode
 
     private int pathState;
-    private Timer pathStateTimer = new Timer();
+    private final Timer pathStateTimer = new Timer();
 
     // Works
     private final Pose startPose = new Pose(135, 81.5, toRadians(0));

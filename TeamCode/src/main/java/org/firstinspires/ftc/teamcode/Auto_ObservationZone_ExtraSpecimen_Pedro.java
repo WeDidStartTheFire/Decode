@@ -259,7 +259,7 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
                     break;
                 case 7:
                     if (!follower.isBusy()) {
-                        follower.setMaxPower(.1);
+                        follower.setMaxPower(.3);
                         follower.followPath(specimenPath1_5);
                         setPathState(-1);
                     }

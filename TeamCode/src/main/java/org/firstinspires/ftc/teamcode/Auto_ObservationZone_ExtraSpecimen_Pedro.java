@@ -21,6 +21,7 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
     // Works
     private final Pose startPose = new Pose(135, 81.5, toRadians(0));
     private final Pose scorePose1 = new Pose(startPose.getX() - 30, startPose.getY(), toRadians(0));
+    private final Pose scorePose2 = new Pose(106.500, 79.500, toRadians(0));
 
     // Doesn't work
 //    private final Pose startPose = new Pose(9, 62.5, toRadians(180));
@@ -81,7 +82,7 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
                         // Line 1
                         new BezierLine(
                                 new Point(131.500, 127.000, Point.CARTESIAN),
-                                new Point(131.500, 135.000, Point.CARTESIAN)
+                                new Point(131.500, 133.00, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(-90));
@@ -261,6 +262,46 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
                     if (!follower.isBusy()) {
                         follower.setMaxPower(.3);
                         follower.followPath(specimenPath1_5);
+                        setPathState(8);
+                    }
+                    break;
+                case 8:
+                    if (!follower.isBusy()) {
+                        closeSpecimenServo();
+                        follower.holdPoint(new Pose(131.500, 133.00));
+                        setPathState(9);
+                    }
+                    break;
+                case 9:
+                    if (pathStateTimer.getElapsedTimeSeconds() >= .5) {
+                        liftThread = new Thread(liftTask);
+                        liftThread.start();
+                        follower.breakFollowing();
+                        follower.followPath(specimenPath2);
+                        setPathState(10);
+                    }
+                    break;
+                case 10:
+                    if (!liftThread.isAlive()) {
+                        liftThread.join();
+                        holdLift = new Thread(holdLiftTask);
+                        holdLift.start();
+                        setPathState(11);
+                    }
+                    break;
+                case 11:
+                    if (!follower.isBusy()) {
+                        hold = false;
+                        holdLift.join();
+                        scoreSpecimenThread = new Thread(scoreSpecimen);
+                        scoreSpecimenThread.start();
+                        follower.holdPoint(scorePose2);
+                        setPathState(12);
+                    }
+                    break;
+                case 12:
+                    if (!scoreSpecimenThread.isAlive()) {
+                        follower.breakFollowing();
                         setPathState(-1);
                     }
                     break;

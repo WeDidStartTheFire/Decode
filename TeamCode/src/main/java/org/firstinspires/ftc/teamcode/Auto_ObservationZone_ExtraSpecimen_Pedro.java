@@ -186,6 +186,7 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
     @Override
     public void runOpMode() throws InterruptedException {
         auto = true;
+        loop = true;
         setup(startPose); // Calls buildPaths(), creates follower, waits for start, etc
 
         int updates = 0;
@@ -221,6 +222,7 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
                         follower.followPath(specimenPath0);
                         setPathState(3);
                     }
+                    break;
                 case 3:
                     if (!liftThread.isAlive()) {
                         liftThread.join();
@@ -238,11 +240,14 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
                         follower.holdPoint(scorePose1);
                         setPathState(5);
                     }
+                    break;
                 case 5:
                     if (!scoreSpecimenThread.isAlive()) {
+                        scoreSpecimenThread.join();
                         openSpecimenServo();
                         setPathState(6);
                     }
+                    break;
                 case 6:
                     if (pathStateTimer.getElapsedTimeSeconds() >= .5) {
                         follower.breakFollowing();
@@ -251,6 +256,7 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
                         liftThread.start();
                         setPathState(7);
                     }
+                    break;
                 case 7:
                     if (!follower.isBusy()) {
                         follower.setMaxPower(.1);

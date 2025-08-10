@@ -268,6 +268,7 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
                 case 8:
                     if (!follower.isBusy()) {
                         closeSpecimenServo();
+                        follower.setMaxPower(1);
                         follower.holdPoint(new Pose(131.500, 133.00));
                         setPathState(9);
                     }

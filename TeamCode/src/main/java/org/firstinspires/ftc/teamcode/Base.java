@@ -141,7 +141,7 @@ public abstract class Base extends LinearOpMode {
     boolean liftRunToPos, handoff;
 
     Pose NET_ZONE_POSITION = new Pose(144 - 12 - (ROBOT_LENGTH / 2 / sqrt(2)) + 1, 144 - 12 - (ROBOT_LENGTH / 2 / sqrt(2)) + 1, toRadians(45));
-    Pose OBSERVATION_ZONE_POSITION = new Pose(ROBOT_WIDTH / 2, 144 - ROBOT_LENGTH / 2, toRadians(0));
+    Pose OBSERVATION_ZONE_POSITION = new Pose(128.000, 135.000, toRadians(-90));//new Pose(ROBOT_WIDTH / 2, 144 - ROBOT_LENGTH / 2, toRadians(0));
 
     double[] WRIST_S_ANGLES = {toRadians(-180), toRadians(180)};
 
@@ -1165,6 +1165,12 @@ public abstract class Base extends LinearOpMode {
             double speedMultiplier = 1.5 * (gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1]);
             speedMultiplier *= baseSpeedMultiplier;
 
+            if (abs(gamepad1.left_stick_y) > .05 || abs(gamepad1.left_stick_x) > .05 ||
+                    abs(gamepad1.right_stick_x) > .05)
+                follower.breakFollowing();
+
+            if (!follower.isBusy()) follower.startTeleopDrive();
+
             follower.setTeleOpMovementVectors(gamepad1.left_stick_y * speedMultiplier,
                     gamepad1.left_stick_x * speedMultiplier,
                     -gamepad1.right_stick_x * speedMultiplier,
@@ -1223,17 +1229,21 @@ public abstract class Base extends LinearOpMode {
         print("Speed Multiplier", speedMultiplier);
     }
 
-    /** Logic for automatically moving during TeleOp */
+    /**
+     * Logic for automatically moving during TeleOp
+     *
+     * @param validPose Whether the robot recieved a valid pose from Auto
+     */
     public void autoMovementLogic(boolean validPose) {
         if (!validPose) return;
         if (useOdometry) follower.update();
-        else if (!gamepad1.a && !gamepad1.start) return;
+        else if (!gamepad1.a && !gamepad1.b) return;
         Pose poseEstimate = follower.getPose();
         if (gamepad1.a) {
             Path path = new Path(new BezierLine(new Point(poseEstimate), new Point(NET_ZONE_POSITION)));
             path.setLinearHeadingInterpolation(poseEstimate.getHeading(), NET_ZONE_POSITION.getHeading());
             follower.followPath(path);
-        } else if (gamepad1.start) {
+        } else if (gamepad1.b) {
             Path path = new Path(new BezierLine(new Point(poseEstimate), new Point(OBSERVATION_ZONE_POSITION)));
             path.setLinearHeadingInterpolation(poseEstimate.getHeading(), OBSERVATION_ZONE_POSITION.getHeading());
             follower.followPath(path);
@@ -1618,6 +1628,7 @@ public abstract class Base extends LinearOpMode {
     /** Adds information messages to telemetry and updates it */
     public void telemetryAll() {
         if (lf == null) telemetry.addData("Drive Train", "Disconnected");
+        print("Following", follower.isBusy());
         if (verticalMotorA == null) print("Vertical Lift Motors", "Disconnected");
         else {
             print("Vertical Motor A Position", verticalMotorA.getCurrentPosition());

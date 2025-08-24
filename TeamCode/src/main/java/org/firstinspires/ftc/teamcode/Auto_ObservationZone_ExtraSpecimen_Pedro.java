@@ -12,7 +12,7 @@ import com.pedropathing.pathgen.Point;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.pedropathing.util.Timer;
 
-@Autonomous(name = "Observation Zone Extra Specimen Pedro", group = "!!Secondary", preselectTeleOp = "Main")
+@Autonomous(name = "Observation Zone Extra Specimen Pedro", group = "!!!Primary", preselectTeleOp = "Main")
 public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base extends LinearOpMode
 
     private int pathState;

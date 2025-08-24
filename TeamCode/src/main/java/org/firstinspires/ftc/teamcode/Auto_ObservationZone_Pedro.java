@@ -11,7 +11,7 @@ import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "Observation Zone Pedro", group = "!!Secondary", preselectTeleOp = "Main")
+@Autonomous(name = "Observation Zone Pedro", group = "!!!Primary", preselectTeleOp = "Main")
 public class Auto_ObservationZone_Pedro extends Base { // Base extends LinearOpMode
 
     private int pathState = 0;

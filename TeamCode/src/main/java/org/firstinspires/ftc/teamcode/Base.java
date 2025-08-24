@@ -248,6 +248,7 @@ public abstract class Base extends LinearOpMode {
             Constants.setConstants(FConstants.class, LConstants.class);
             follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
             follower.setStartingPose(currentPose);
+            follower.startTeleopDrive();
             buildPaths();
         }
 
@@ -1150,7 +1151,7 @@ public abstract class Base extends LinearOpMode {
      * @param fieldCentric Whether to use field centric driving or not
      */
     public void drivetrainLogic(boolean fieldCentric) {
-        drivetrainLogic(fieldCentric, false);
+        drivetrainLogic(fieldCentric, true);
     }
 
     /**
@@ -1161,18 +1162,14 @@ public abstract class Base extends LinearOpMode {
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
         if (usePedro) {
             follower.update();
-            double speedMultiplier = gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1];
+            double speedMultiplier = 1.5 * (gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1]);
             speedMultiplier *= baseSpeedMultiplier;
 
-            if (abs(gamepad1.left_stick_x) > .05 || abs(gamepad1.left_stick_y) > .05
-                    || abs(gamepad1.right_stick_x) > .05)
-                follower.breakFollowing();
+            follower.setTeleOpMovementVectors(gamepad1.left_stick_y * speedMultiplier,
+                    gamepad1.left_stick_x * speedMultiplier,
+                    -gamepad1.right_stick_x * speedMultiplier,
+                    !fieldCentric);
 
-            if (!follower.isBusy())
-                follower.setTeleOpMovementVectors(-gamepad1.left_stick_y * speedMultiplier,
-                                                  -gamepad1.left_stick_x * speedMultiplier,
-                                                  -gamepad1.right_stick_x * speedMultiplier,
-                                                  !fieldCentric);
             return;
         }
 

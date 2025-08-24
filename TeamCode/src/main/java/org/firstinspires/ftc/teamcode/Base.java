@@ -104,6 +104,7 @@ public abstract class Base extends LinearOpMode {
     public volatile boolean running = true;
     public volatile boolean hold = false;
     public volatile boolean holdWrist = false;
+    public boolean following = false;
 
     public boolean auto = false;
 
@@ -1169,7 +1170,10 @@ public abstract class Base extends LinearOpMode {
                     abs(gamepad1.right_stick_x) > .05)
                 follower.breakFollowing();
 
-            if (!follower.isBusy()) follower.startTeleopDrive();
+            if (!follower.isBusy() && following) {
+                following = false;
+                follower.startTeleopDrive();
+            }
 
             follower.setTeleOpMovementVectors(gamepad1.left_stick_y * speedMultiplier,
                     gamepad1.left_stick_x * speedMultiplier,
@@ -1240,10 +1244,12 @@ public abstract class Base extends LinearOpMode {
         else if (!gamepad1.a && !gamepad1.b) return;
         Pose poseEstimate = follower.getPose();
         if (gamepad1.a) {
+            following = true;
             Path path = new Path(new BezierLine(new Point(poseEstimate), new Point(NET_ZONE_POSITION)));
             path.setLinearHeadingInterpolation(poseEstimate.getHeading(), NET_ZONE_POSITION.getHeading());
             follower.followPath(path);
         } else if (gamepad1.b) {
+            following = true;
             Path path = new Path(new BezierLine(new Point(poseEstimate), new Point(OBSERVATION_ZONE_POSITION)));
             path.setLinearHeadingInterpolation(poseEstimate.getHeading(), OBSERVATION_ZONE_POSITION.getHeading());
             follower.followPath(path);

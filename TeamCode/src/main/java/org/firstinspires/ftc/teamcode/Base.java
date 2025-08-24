@@ -1186,8 +1186,8 @@ public abstract class Base extends LinearOpMode {
             double moveAngle = joystickAngle - angle;
             double magnitude = Math.min(1, Math.hypot(gamepad1.left_stick_x, gamepad1.left_stick_y));
 
-            xMove = Math.cos(moveAngle) * magnitude;
-            yMove = Math.sin(moveAngle) * magnitude;
+            xMove = -Math.sin(moveAngle) * magnitude;
+            yMove = Math.cos(moveAngle) * magnitude;
         } else {
             xMove = gamepad1.left_stick_x;
             yMove = gamepad1.left_stick_y;

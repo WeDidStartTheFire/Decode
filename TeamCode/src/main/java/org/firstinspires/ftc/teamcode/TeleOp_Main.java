@@ -11,7 +11,7 @@ public class TeleOp_Main extends Base {
         setup(p != null ? p : new Pose());
 
         while (active()) {
-            drivetrainLogic(false);
+            drivetrainLogic(p != null);
             wristMotorLogic();
             wristServoXLogic();
             intakeLogic();

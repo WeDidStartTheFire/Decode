@@ -193,6 +193,7 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
         int updates = 0;
         double startTime = getRuntime();
         setPathState(0);
+
         while (active()) {
             updates++;
             follower.update();
@@ -311,7 +312,8 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
             telemetryA.addData("Path State", pathState);
             follower.telemetryDebug(telemetryA);
         }
-
+        follower.update();
+        saveOdometryPosition(follower.getPose());
 //        running = true;
 //        Thread telemetryThread = new Thread(this::telemetryLoop);
 //        telemetryThread.start();
@@ -435,4 +437,5 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
 //            stop();
 //        }
     }
+
 }

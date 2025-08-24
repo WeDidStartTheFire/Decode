@@ -129,5 +129,7 @@ public class Auto_ObservationZone_Pedro extends Base { // Base extends LinearOpM
             telemetryA.addData("Path State", pathState);
             follower.telemetryDebug(telemetryA);
         }
+        follower.update();
+        saveOdometryPosition(follower.getPose());
     }
 }

@@ -105,6 +105,7 @@ public abstract class Base extends LinearOpMode {
     public volatile boolean hold = false;
     public volatile boolean holdWrist = false;
     public boolean following = false;
+    public boolean holding = false;
 
     public boolean auto = false;
 
@@ -143,6 +144,7 @@ public abstract class Base extends LinearOpMode {
 
     Pose NET_ZONE_POSITION = new Pose(144 - 12 - (ROBOT_LENGTH / 2 / sqrt(2)) + 1, 144 - 12 - (ROBOT_LENGTH / 2 / sqrt(2)) + 1, toRadians(45));
     Pose OBSERVATION_ZONE_POSITION = new Pose(128.000, 135.000, toRadians(-90));//new Pose(ROBOT_WIDTH / 2, 144 - ROBOT_LENGTH / 2, toRadians(0));
+    Pose[] ROBOT_POSITIONS = {NET_ZONE_POSITION, OBSERVATION_ZONE_POSITION};
 
     double[] WRIST_S_ANGLES = {toRadians(-180), toRadians(180)};
 
@@ -1166,13 +1168,17 @@ public abstract class Base extends LinearOpMode {
             double speedMultiplier = 1.5 * (gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1]);
             speedMultiplier *= baseSpeedMultiplier;
 
-            if (abs(gamepad1.left_stick_y) > .05 || abs(gamepad1.left_stick_x) > .05 ||
-                    abs(gamepad1.right_stick_x) > .05)
-                follower.breakFollowing();
+            if ((following || holding) && (abs(gamepad1.left_stick_y) > .05 ||
+                    abs(gamepad1.left_stick_x) > .05 || abs(gamepad1.right_stick_x) > .05)) {
+                following = false;
+                holding = false;
+                follower.startTeleopDrive();
+            }
 
             if (!follower.isBusy() && following) {
                 following = false;
-                follower.startTeleopDrive();
+                holding = true;
+                follower.holdPoint(follower.getPose());
             }
 
             follower.setTeleOpMovementVectors(gamepad1.left_stick_y * speedMultiplier,
@@ -1241,18 +1247,25 @@ public abstract class Base extends LinearOpMode {
     public void autoMovementLogic(boolean validPose) {
         if (!validPose) return;
         if (useOdometry) follower.update();
-        else if (!gamepad1.a && !gamepad1.b) return;
+        else if (!gamepad1.a && !gamepad1.y) return;
         Pose poseEstimate = follower.getPose();
-        if (gamepad1.a) {
+        if (gamepad1.y) {
             following = true;
-            Path path = new Path(new BezierLine(new Point(poseEstimate), new Point(NET_ZONE_POSITION)));
-            path.setLinearHeadingInterpolation(poseEstimate.getHeading(), NET_ZONE_POSITION.getHeading());
+            double bestDistance = Double.MAX_VALUE;
+            Pose bestPose = ROBOT_POSITIONS[0];
+            for (Pose pose : ROBOT_POSITIONS) {
+                double distance = new Point(poseEstimate).distanceFrom(new Point(pose));
+                if (distance < bestDistance) {
+                    bestDistance = distance;
+                    bestPose = pose;
+                }
+            }
+            Path path = new Path(new BezierLine(new Point(poseEstimate), new Point(bestPose)));
+            path.setLinearHeadingInterpolation(poseEstimate.getHeading(), bestPose.getHeading());
             follower.followPath(path);
-        } else if (gamepad1.b) {
-            following = true;
-            Path path = new Path(new BezierLine(new Point(poseEstimate), new Point(OBSERVATION_ZONE_POSITION)));
-            path.setLinearHeadingInterpolation(poseEstimate.getHeading(), OBSERVATION_ZONE_POSITION.getHeading());
-            follower.followPath(path);
+        } else if (gamepad1.a) {
+            holding = true;
+            follower.holdPoint(poseEstimate);
         }
     }
 

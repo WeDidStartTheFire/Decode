@@ -7,7 +7,7 @@ import static org.firstinspires.ftc.teamcode.Base.Dir.RIGHT;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "Net Zone No Park", group = "!!!!Pre-Primary", preselectTeleOp = "Main")
+@Autonomous(name = "Net Zone No Park", group = "!!Secondary", preselectTeleOp = "Main")
 public class Auto_NetZoneNoPark extends Base {
     @Override
     public void runOpMode() throws InterruptedException {

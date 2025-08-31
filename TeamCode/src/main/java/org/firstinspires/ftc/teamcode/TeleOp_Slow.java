@@ -1,11 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 import static java.lang.Math.abs;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "Slow (.5)", group = "Into The Deep")
@@ -52,13 +48,12 @@ public class TeleOp_Slow extends Base {
             }
 
             if (abs(leftFrontPower) > .05 || abs(rightFrontPower) > .05 || abs(leftBackPower) > .05 || abs(rightBackPower) > .05) {
-                if (following) drive.breakFollowing();
-                following = false;
+                if (follower.isBusy()) follower.breakFollowing();
             }
 
             print("Speed Multiplier", speedMultiplier);
 
-            updateAll();
+            telemetryAll();
         }
     }
 }

@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import static org.firstinspires.ftc.teamcode.Base.Dir.*;
 
-@Autonomous(name = "Observation Zone", group = "!!!!Pre-Primary", preselectTeleOp = "Main")
+@Autonomous(name = "Observation Zone", group = "!!Secondary", preselectTeleOp = "Main")
 public class Auto_ObservationZone extends Base {
     @Override
     public void runOpMode() throws InterruptedException {

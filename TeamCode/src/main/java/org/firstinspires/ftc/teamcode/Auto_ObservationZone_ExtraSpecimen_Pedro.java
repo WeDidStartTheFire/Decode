@@ -23,10 +23,6 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
     private final Pose scorePose1 = new Pose(startPose.getX() - 30, startPose.getY(), toRadians(0));
     private final Pose scorePose2 = new Pose(106.500, 79.500, toRadians(0));
 
-    // Doesn't work
-//    private final Pose startPose = new Pose(9, 62.5, toRadians(180));
-//    private final Pose scorePose1 = new Pose(startPose.getX() + 30, startPose.getY(), toRadians(180));
-
     private Path specimenPath0, park;
     private PathChain specimenPath1, specimenPath1_5, specimenPath2, specimenPath3, specimenPath4,
             specimenPath5, specimenPath6;

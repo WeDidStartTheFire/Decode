@@ -20,10 +20,6 @@ public class Auto_ObservationZone_Pedro extends Base { // Base extends LinearOpM
     private final Pose startPose = new Pose(135, 81.5, toRadians(0));
     private final Pose scorePose1 = new Pose(startPose.getX() - 30, startPose.getY(), toRadians(0));
 
-    // Doesn't work
-//    private final Pose startPose = new Pose(9, 62.5, toRadians(180));
-//    private final Pose scorePose1 = new Pose(startPose.getX() + 30, startPose.getY(), toRadians(180));
-
     private Path specimenPath0;
     private PathChain threeSamplesPath;
 

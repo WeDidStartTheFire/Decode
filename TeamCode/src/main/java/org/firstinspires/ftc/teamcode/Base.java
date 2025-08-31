@@ -1245,9 +1245,9 @@ public abstract class Base extends LinearOpMode {
      * @param validPose Whether the robot recieved a valid pose from Auto
      */
     public void autoMovementLogic(boolean validPose) {
-        if (!validPose) return;
-        if (useOdometry) follower.update();
-        else if (!gamepad1.a && !gamepad1.y) return;
+        if (!validPose || !useOdometry) return;
+        follower.update();
+        if (!gamepad1.a && !gamepad1.y) return;
         Pose poseEstimate = follower.getPose();
         if (gamepad1.y) {
             following = true;

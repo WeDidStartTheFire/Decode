@@ -5,27 +5,23 @@
 
 package pedroPathing.localizers;
 
-import com.pedropathing.localization.Localizer;
-import com.pedropathing.localization.Pose;
-import com.pedropathing.localization.SparkFunOTOSCorrected;
-import com.pedropathing.localization.constants.OTOSConstants;
-import com.pedropathing.localization.localizers.OTOSLocalizer;
-import com.pedropathing.pathgen.MathFunctions;
-import com.pedropathing.pathgen.Vector;
-import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
+import com.pedropathing.ftc.localization.constants.OTOSConstants;
+import com.pedropathing.ftc.localization.localizers.OTOSLocalizer;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.MathFunctions;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class MyOTOSLocalizer extends OTOSLocalizer {
     private double totalHeading;
     private double previousHeading;
 
-    public MyOTOSLocalizer(HardwareMap map) {
-        this(map, new Pose());
+    public MyOTOSLocalizer(HardwareMap map, OTOSConstants localizerConstants) {
+        this(map, localizerConstants, new Pose());
     }
 
-    public MyOTOSLocalizer(HardwareMap map, Pose setStartPose) {
-        super(map, setStartPose);
-        previousHeading = setStartPose.getHeading();
+    public MyOTOSLocalizer(HardwareMap map, OTOSConstants localizerConstants, Pose startPose) {
+        super(map, localizerConstants, startPose);
+        previousHeading = startPose.getHeading();
     }
 
 

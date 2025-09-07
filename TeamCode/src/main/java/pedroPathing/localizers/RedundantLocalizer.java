@@ -1,15 +1,16 @@
 package pedroPathing.localizers;
 
+import com.pedropathing.ftc.localization.localizers.OTOSLocalizer;
 import com.pedropathing.localization.Localizer;
-import com.pedropathing.localization.Pose;
-import com.pedropathing.pathgen.MathFunctions;
-import com.pedropathing.pathgen.Vector;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.MathFunctions;
+import com.pedropathing.math.Vector;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import pedroPathing.MyPoseUpdater;
-import pedroPathing.constants.MyFollowerConstants;
+import pedroPathing.constants.Constants;
 
-public class RedundantLocalizer extends Localizer {
+
+public class RedundantLocalizer implements Localizer {
 
     private final Localizer primaryLocalizer;
     private final Localizer secondaryLocalizer;
@@ -20,20 +21,22 @@ public class RedundantLocalizer extends Localizer {
     private double previousHeading;
 
     public RedundantLocalizer(HardwareMap map) {
-        this(map, new Pose());
+        this(map, new Pose(), new OTOSLocalizer(map, Constants.localizerConstants),
+                new OTOSLocalizer(map, Constants.localizerConstants));
     }
 
-    public RedundantLocalizer(HardwareMap map, Pose setStartPose) {
-        primaryLocalizer = MyPoseUpdater.createLocalizer(map, MyFollowerConstants.primaryLocalizer);
-        secondaryLocalizer = MyPoseUpdater.createLocalizer(map, MyFollowerConstants.secondaryLocalizer);
+    public RedundantLocalizer(HardwareMap map, Pose setStartPose,
+                              Localizer primaryLocalizer, Localizer secondaryLocalizer) {
+        this.primaryLocalizer = primaryLocalizer;
+        this.secondaryLocalizer = secondaryLocalizer;
         setStartPose(setStartPose);
         pose = new Pose();
     }
 
     public Pose getPose() {
-        Vector vec = pose.getVector();
+        Vector vec = pose.getAsVector();
         vec.rotateVector(this.startPose.getHeading());
-        return MathFunctions.addPoses(this.startPose, new Pose(vec.getXComponent(), vec.getYComponent(), pose.getHeading()));
+        return this.startPose.plus(new Pose(vec.getXComponent(), vec.getYComponent(), pose.getHeading()));
     }
 
     public Pose getVelocity() {
@@ -41,7 +44,7 @@ public class RedundantLocalizer extends Localizer {
     }
 
     public Vector getVelocityVector() {
-        return this.getVelocity().getVector();
+        return this.getVelocity().getAsVector();
     }
 
     public void setStartPose(Pose setStart) {
@@ -53,7 +56,7 @@ public class RedundantLocalizer extends Localizer {
     public void setPose(Pose setPose) {
         primaryLocalizer.setPose(setPose);
         secondaryLocalizer.setPose(setPose);
-        pose = MathFunctions.subtractPoses(setPose, startPose);
+        pose = setPose.minus(startPose);
     }
 
     public void update() {
@@ -87,6 +90,10 @@ public class RedundantLocalizer extends Localizer {
 
     public double getTurningMultiplier() {
         return secondaryLocalizer.getTurningMultiplier();
+    }
+
+    public double getIMUHeading() {
+        return pose.getHeading();
     }
 
     public void resetIMU() throws InterruptedException {

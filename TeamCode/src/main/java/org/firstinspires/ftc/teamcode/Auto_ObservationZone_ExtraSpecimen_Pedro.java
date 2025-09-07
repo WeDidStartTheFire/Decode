@@ -2,13 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import static java.lang.Math.toRadians;
 
-import com.pedropathing.localization.Pose;
-import com.pedropathing.pathgen.BezierCurve;
-import com.pedropathing.pathgen.BezierLine;
-import com.pedropathing.pathgen.Path;
-import com.pedropathing.pathgen.PathBuilder;
-import com.pedropathing.pathgen.PathChain;
-import com.pedropathing.pathgen.Point;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.geometry.BezierCurve;
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.paths.Path;
+import com.pedropathing.paths.PathBuilder;
+import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.pedropathing.util.Timer;
 
@@ -40,135 +39,135 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
         specimenPath0 = new Path(new BezierLine(startPose, scorePose1));
         specimenPath0.setConstantHeadingInterpolation(scorePose1.getHeading());
 
-        PathBuilder builder = new PathBuilder();
+        PathBuilder builder = new PathBuilder(follower);
         builder
                 .addPath(
                         // Line 1
                         new BezierCurve(
-                                new Point(105.000, 81.500, Point.CARTESIAN),
-                                new Point(127.962, 105.953, Point.CARTESIAN),
-                                new Point(96.398, 108.682, Point.CARTESIAN)
+                                new Pose(105.000, 81.500),
+                                new Pose(127.962, 105.953),
+                                new Pose(96.398, 108.682)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-90))
                 .addPath(
                         // Line 2
                         new BezierCurve(
-                                new Point(96.398, 108.682, Point.CARTESIAN),
-                                new Point(74.389, 111.754, Point.CARTESIAN),
-                                new Point(84.626, 117.213, Point.CARTESIAN)
+                                new Pose(96.398, 108.682),
+                                new Pose(74.389, 111.754),
+                                new Pose(84.626, 117.213)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(-90))
                 .addPath(
                         // Line 3
                         new BezierCurve(
-                                new Point(84.626, 117.213, Point.CARTESIAN),
-                                new Point(91.962, 122.502, Point.CARTESIAN),
-                                new Point(130.863, 112.607, Point.CARTESIAN),
-                                new Point(131.500, 127.000, Point.CARTESIAN)
+                                new Pose(84.626, 117.213),
+                                new Pose(91.962, 122.502),
+                                new Pose(130.863, 112.607),
+                                new Pose(131.500, 127.000)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(-90));
         specimenPath1 = builder.build();
 
-        builder = new PathBuilder();
+        builder = new PathBuilder(follower);
         builder
                 .addPath(
                         // Line 1
                         new BezierLine(
-                                new Point(131.500, 127.000, Point.CARTESIAN),
-                                new Point(131.500, 133.00, Point.CARTESIAN)
+                                new Pose(131.500, 127.000),
+                                new Pose(131.500, 133.00)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(-90));
         specimenPath1_5 = builder.build();
 
-        builder = new PathBuilder();
+        builder = new PathBuilder(follower);
         builder
                 .addPath(
                         // Line 1
                         new BezierCurve(
-                                new Point(131.500, 135.000, Point.CARTESIAN),
-                                new Point(115.848, 125.744, Point.CARTESIAN),
-                                new Point(128.815, 77.289, Point.CARTESIAN),
-                                new Point(106.500, 79.500, Point.CARTESIAN)
+                                new Pose(131.500, 135.000),
+                                new Pose(115.848, 125.744),
+                                new Pose(128.815, 77.289),
+                                new Pose(106.500, 79.500)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(0));
         specimenPath2 = builder.build();
 
-        builder = new PathBuilder();
+        builder = new PathBuilder(follower);
         builder
                 .addPath(
                         // Line 1
                         new BezierCurve(
-                                new Point(106.500, 79.500, Point.CARTESIAN),
-                                new Point(143.318, 114.313, Point.CARTESIAN),
-                                new Point(79.507, 114.313, Point.CARTESIAN),
-                                new Point(84.626, 123.526, Point.CARTESIAN)
+                                new Pose(106.500, 79.500),
+                                new Pose(143.318, 114.313),
+                                new Pose(79.507, 114.313),
+                                new Pose(84.626, 123.526)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-90))
                 .addPath(
                         // Line 2
                         new BezierCurve(
-                                new Point(84.626, 123.526, Point.CARTESIAN),
-                                new Point(87.355, 135.469, Point.CARTESIAN),
-                                new Point(119.773, 127.109, Point.CARTESIAN),
-                                new Point(131.500, 135.000, Point.CARTESIAN)
+                                new Pose(84.626, 123.526),
+                                new Pose(87.355, 135.469),
+                                new Pose(119.773, 127.109),
+                                new Pose(131.500, 135.000)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(-90));
         specimenPath3 = builder.build();
 
-        builder = new PathBuilder();
+        builder = new PathBuilder(follower);
         builder
                 .addPath(
                         // Line 1
                         new BezierCurve(
-                                new Point(131.500, 135.000, Point.CARTESIAN),
-                                new Point(118.066, 122.673, Point.CARTESIAN),
-                                new Point(127.450, 74.900, Point.CARTESIAN),
-                                new Point(107.000, 77.500, Point.CARTESIAN)
+                                new Pose(131.500, 135.000),
+                                new Pose(118.066, 122.673),
+                                new Pose(127.450, 74.900),
+                                new Pose(107.000, 77.500)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(0));
         specimenPath4 = builder.build();
 
-        builder = new PathBuilder();
+        builder = new PathBuilder(follower);
         builder
                 .addPath(
                         // Line 1
                         new BezierCurve(
-                                new Point(107.000, 77.500, Point.CARTESIAN),
-                                new Point(141.441, 113.289, Point.CARTESIAN),
-                                new Point(81.555, 112.607, Point.CARTESIAN),
-                                new Point(81.384, 127.621, Point.CARTESIAN)
+                                new Pose(107.000, 77.500),
+                                new Pose(141.441, 113.289),
+                                new Pose(81.555, 112.607),
+                                new Pose(81.384, 127.621)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-90))
                 .addPath(
                         // Line 2
                         new BezierCurve(
-                                new Point(81.384, 127.621, Point.CARTESIAN),
-                                new Point(77.972, 142.464, Point.CARTESIAN),
-                                new Point(125.062, 136.322, Point.CARTESIAN),
-                                new Point(131.500, 136.500, Point.CARTESIAN)
+                                new Pose(81.384, 127.621),
+                                new Pose(77.972, 142.464),
+                                new Pose(125.062, 136.322),
+                                new Pose(131.500, 136.500)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(-90));
         specimenPath5 = builder.build();
 
-        builder = new PathBuilder();
+        builder = new PathBuilder(follower);
         builder
                 .addPath(
                         // Line 1
                         new BezierCurve(
-                                new Point(131.500, 136.500, Point.CARTESIAN),
-                                new Point(117.896, 123.526, Point.CARTESIAN),
-                                new Point(130.351, 74.389, Point.CARTESIAN),
-                                new Point(108.000, 75.500, Point.CARTESIAN)
+                                new Pose(131.500, 136.500),
+                                new Pose(117.896, 123.526),
+                                new Pose(130.351, 74.389),
+                                new Pose(108.000, 75.500)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(0));
@@ -306,7 +305,7 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
             }
             telemetryA.addData("Updates per second", updates / (getRuntime() - startTime));
             telemetryA.addData("Path State", pathState);
-            follower.telemetryDebug(telemetryA);
+            follower.debug();
         }
         follower.update();
         saveOdometryPosition(follower.getPose());

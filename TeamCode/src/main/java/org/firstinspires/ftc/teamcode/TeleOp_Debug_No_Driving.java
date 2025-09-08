@@ -11,7 +11,7 @@ public class TeleOp_Debug_No_Driving extends Base {
     boolean wasDownB = false;
     public Servo servoA, servoB, servoC, servoD;
     public DcMotorEx motorA, motorB;
-    public final double MOTOR_SPEED = 0.25;
+    public final double MOTOR_SPEED = 1;
     public final boolean controlHub = true;
 
     @Override

@@ -59,7 +59,7 @@ public abstract class Base extends LinearOpMode {
     private static final double LIFT_VEL = 1500;
     private final ElapsedTime runtime = new ElapsedTime();
     // All non-primitive data types initialize to null on default.
-    public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor, verticalMotorA, verticalMotorB;
+    public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor, verticalMotorA, verticalMotorB, sorterMotor;
     public Servo wristServoX, wristServoY, basketServo, specimenServo, intakeServo;
     public TouchSensor verticalTouchSensor, horizontalTouchSensor;
     public IMU imu;
@@ -142,6 +142,9 @@ public abstract class Base extends LinearOpMode {
     int liftGoal = 0;
     boolean liftRunToPos, handoff;
 
+    int sorterGoal;
+    PIDCoefficients sorterPID = new PIDCoefficients(0, 0, 0);
+
     Pose NET_ZONE_POSITION = new Pose(144 - 12 - (ROBOT_LENGTH / 2 / sqrt(2)) + 1, 144 - 12 - (ROBOT_LENGTH / 2 / sqrt(2)) + 1, toRadians(45));
     Pose OBSERVATION_ZONE_POSITION = new Pose(128.000, 135.000, toRadians(-90));//new Pose(ROBOT_WIDTH / 2, 144 - ROBOT_LENGTH / 2, toRadians(0));
     Pose[] ROBOT_POSITIONS = {NET_ZONE_POSITION, OBSERVATION_ZONE_POSITION};
@@ -193,6 +196,11 @@ public abstract class Base extends LinearOpMode {
         }
         try {
             wristMotor = hardwareMap.get(DcMotorEx.class, "wristMotor"); // Expansion Hub 1
+        } catch (IllegalArgumentException e) {
+            except("wristMotor not connected");
+        }
+        try {
+            sorterMotor = hardwareMap.get(DcMotorEx.class, "sorterMotor"); // Not configured
         } catch (IllegalArgumentException e) {
             except("wristMotor not connected");
         }
@@ -367,6 +375,15 @@ public abstract class Base extends LinearOpMode {
         useOdometry = useOdom;
         useCam = useCamera;
         setup();
+    }
+
+    public void updateSorterPower() {
+        double power = 0;
+        double sorterPosition = sorterMotor.getCurrentPosition();
+
+        // do something with power
+
+        sorterMotor.setPower(power);
     }
 
     /**

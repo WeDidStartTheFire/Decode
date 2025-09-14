@@ -142,6 +142,8 @@ public abstract class Base extends LinearOpMode {
     int liftGoal = 0;
     boolean liftRunToPos, handoff;
 
+    final static int SORTER_GEAR_RATIO = 4;
+    final static int SORTER_TICKS_PER_REV = 28 * SORTER_GEAR_RATIO;
     int sorterGoal;
     PIDCoefficients sorterPID = new PIDCoefficients(0, 0, 0);
 
@@ -377,11 +379,22 @@ public abstract class Base extends LinearOpMode {
         setup();
     }
 
+    public void sorterLogic() {
+        updateSorterPower();
+        if (!gamepad1.dpadUpWasPressed() && !gamepad1.dpadDownWasPressed()) return;
+        if (gamepad1.dpadUpWasPressed()) sorterGoal += SORTER_TICKS_PER_REV / 3;
+        else sorterGoal -= SORTER_TICKS_PER_REV / 3;
+    }
+
     public void updateSorterPower() {
         double power = 0;
         double sorterPosition = sorterMotor.getCurrentPosition();
+        double error = sorterPosition - sorterGoal;
+        double velocity = sorterMotor.getVelocity();
 
-        // do something with power
+        power += sorterPID.p * -error;
+
+        power += sorterPID.d * -velocity;
 
         sorterMotor.setPower(power);
     }

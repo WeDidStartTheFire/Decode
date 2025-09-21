@@ -1677,7 +1677,7 @@ public abstract class Base extends LinearOpMode {
     /** Adds information messages to telemetry and updates it */
     public void telemetryAll() {
         if (lf == null) telemetry.addData("Drive Train", "Disconnected");
-        print("Following", follower.isBusy());
+        if (follower != null) print("Following", follower.isBusy());
         if (verticalMotorA == null) print("Vertical Lift Motors", "Disconnected");
         else {
             print("Vertical Motor A Position", verticalMotorA.getCurrentPosition());

@@ -113,24 +113,38 @@ public class TeleOp_Debug_No_Driving extends Base {
 
             if (motorA != null) {
                 if (gamepad1.dpad_up) {
-                    motorA.setVelocity(MOTOR_VEL);
+                    motorA.setPower(1);
                 } else if (gamepad1.dpad_down) {
-                    motorA.setVelocity(-MOTOR_VEL);
+                    motorA.setPower(-1);
                 } else {
-                    motorA.setVelocity(0);
+                    motorA.setPower(0);
                 }
+//                if (gamepad1.dpad_up) {
+//                    motorA.setVelocity(MOTOR_VEL);
+//                } else if (gamepad1.dpad_down) {
+//                    motorA.setVelocity(-MOTOR_VEL);
+//                } else {
+//                    motorA.setVelocity(0);
+//                }
             } else {
                 addLastActionTelemetry("motorA disconnected");
             }
 
             if (motorB != null) {
                 if (gamepad1.dpad_right) {
-                    motorB.setVelocity(MOTOR_VEL);
+                    motorB.setPower(1);
                 } else if (gamepad1.dpad_left) {
-                    motorB.setVelocity(-MOTOR_VEL);
+                    motorB.setPower(-1);
                 } else {
-                    motorB.setVelocity(0);
+                    motorB.setPower(0);
                 }
+//                if (gamepad1.dpad_right) {
+//                    motorB.setVelocity(MOTOR_VEL);
+//                } else if (gamepad1.dpad_left) {
+//                    motorB.setVelocity(-MOTOR_VEL);
+//                } else {
+//                    motorB.setVelocity(0);
+//                }
             } else {
                 addLastActionTelemetry("motorB disconnected");
             }

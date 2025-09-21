@@ -7,6 +7,7 @@ public class Auto_Basic extends Base {
     @Override
     public void runOpMode() throws InterruptedException {
         auto = true;
+        useOdometry = false;
         setup();
 
         drive(15);

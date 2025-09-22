@@ -116,7 +116,7 @@ public class ProjectileSolver {
         double vy = r.nextDouble() * 20 - 10;
         double xt = 132;
         double yt = 132;
-        double zt = 40;
+        double zt = 43;
         double theta = Math.random() * Math.PI / 2;
         System.out.println("Params:");
         System.out.println("double xr = " + xr + ";");

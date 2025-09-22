@@ -1,11 +1,16 @@
 package org.firstinspires.ftc.teamcode;
 
+import static java.lang.Math.abs;
+import static java.lang.Math.sqrt;
+
+import androidx.annotation.Nullable;
+
 import java.util.Random;
 
 // Filename: ProjectileSolver
 // Owen White
 public class ProjectileSolver {
-    static final double g = 386.09; // Constant for gravity in in/s^2
+    static final double g = 386.0885826772; // Constant for gravity in in/s^2
 
     public static class LaunchSolution {
         public double w; // Launch speed magnitude (relative to robot motion)
@@ -15,20 +20,21 @@ public class ProjectileSolver {
 
     /**
      * Solves for the launch speed, angle, and time of flight given the robot's position and
-     * velocity and a target position
+     * velocity and a target position as long as the time of flight is under 10 seconds
      *
-     * @param xr Robot x (in)
-     * @param yr Robot y (in)
-     * @param zr Robot z (in)
-     * @param vx Robot x velocity (in / s)
-     * @param vy Robot y velocity (in / s)
-     * @param xt Target x (in)
-     * @param yt Target y (in)
-     * @param zt Target z (in)
+     * @param xr    Robot x (in)
+     * @param yr    Robot y (in)
+     * @param zr    Robot z (in)
+     * @param vx    Robot x velocity (in / s)
+     * @param vy    Robot y velocity (in / s)
+     * @param xt    Target x (in)
+     * @param yt    Target y (in)
+     * @param zt    Target z (in)
      * @param theta Robot angle (radians; x-y plane)
-     * @return speed, angle, and time of flight of launch in a LaunchSolution object
+     * @return speed, angle, and time of flight of launch in a LaunchSolution object or null if shot
+     * is not possible
      */
-    public static LaunchSolution solveLaunch(
+    public static @Nullable LaunchSolution solveLaunch(
             double xr, double yr, double zr, // Robot position
             double vx, double vy, // Robot x-y velocities (vz = 0)
             double xt, double yt, double zt, // Target position
@@ -52,7 +58,7 @@ public class ProjectileSolver {
         double d = 4 * (dz * dz - A * C0);
         // Solve for positive root of quartic
         double t = findPositiveRoot(a, b, c, d);
-        if (t <= 0) throw new RuntimeException("No valid solution for launch time t = " + t);
+        if (t <= 0) return null;
         // Compute horizontal velocity of the artifact
         double ux = (dx / t) - vx;
         double uy = (dy / t) - vy;
@@ -69,45 +75,32 @@ public class ProjectileSolver {
     }
 
     /**
-     * Finds the lowest positive real root of a quartic given the root is less than 10; returns -1
-     * otherwise
+     * Finds the lowest positive real root of a quartic given the coefficient of x^3 is 0; returns
+     * -1 if there is no such root
      *
      * @param a Coefficient of first quartic term (a * x^4)
-     * @param b Coefficient of first quartic term (b * x^2)
-     * @param c Coefficient of first quartic term (c * x)
-     * @param d Coefficient of first quartic term (d)
-     * @return Lowest positive real root, or negative one if there is no real root on (0,10)
+     * @param b Coefficient of third quartic term (b * x^2)
+     * @param c Coefficient of fourth quartic term (c * x)
+     * @param d Coefficient of fifth quartic term (d)
+     * @return Lowest positive real root, or negative one if there is no real root
      */
     public static double findPositiveRoot(double a, double b, double c, double d) {
-        double bestT = -1;
-        double minErr = Double.POSITIVE_INFINITY;
-        double tStep = 0.1;
-        for (double t = 0; t < 5.0; t += tStep) { // Scan up to 5s
-            double val = (a * t * t * t * t) + (b * t * t) + (c * t) + d;
-            if (Math.abs(val) < minErr) {
-                minErr = Math.abs(val);
-                bestT = t;
-            }
-        }
-        double halfRange = tStep;
-        for (int h = 0; h < 7; h++) {
-            for (double t = bestT - halfRange; t < bestT + halfRange; t += halfRange / 5) {
-                double val = (a * t * t * t * t) + (b * t * t) + (c * t) + d;
-                if (Math.abs(val) < minErr) {
-                    minErr = Math.abs(val);
-                    bestT = t;
-                }
-            }
-            halfRange *= 0.1;
-        }
-        if (minErr > 1) {
-            return -1;
-        }
-        return bestT;
+        double t = sqrt((-b + sqrt(b * b - 4 * a * d)) / (2 * a));
+        for (int i = 0; i < 5; i++)
+            t -= solveQuartic(t, a, b, c, d) / quarticDerivative(t, a, b, c);
+        return abs(solveQuartic(t, a, b, c, d)) > 1 ? -1 : t;
+    }
+
+    public static double solveQuartic(double t, double a, double b, double c, double d) {
+        return (a * t * t * t * t) + (b * t * t) + (c * t) + d;
+    }
+
+    public static double quarticDerivative(double t, double a, double b, double c) {
+        return (4 * a * t * t * t) + (2 * b * t) + c;
     }
 
     // Example use
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         Random r = new Random();
         double xr = r.nextDouble() * 144;
         double yr = r.nextDouble() * 144;
@@ -135,10 +128,11 @@ public class ProjectileSolver {
                 xt, yt, zt,             // target position (xt, yt, zt)
                 theta                   // vertical launch angle theta
         );
-        // Print results
-        System.out.println("Required launch speed w in inches per second = " + sol.w);
-        System.out.println("Azimuth angle phi (in degrees) = " + Math.toDegrees(sol.phi));
-        System.out.println("Time of flight in seconds = " + sol.t);
+        if (sol != null) {
+            System.out.println("Required launch speed w in inches per second = " + sol.w);
+            System.out.println("Azimuth angle phi (in degrees) = " + Math.toDegrees(sol.phi));
+            System.out.println("Time of flight in seconds = " + sol.t);
+        }
     }
 }
 

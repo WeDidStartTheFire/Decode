@@ -138,6 +138,7 @@ public abstract class Base extends LinearOpMode {
 
     static double[] speeds = {0.2, 0.6, 1};
     boolean wasDpu, isDpu, isDpd, wasDpd;
+    double lastDriveInputTime = getRuntime();
 
     int liftGoal = 0;
     boolean liftRunToPos, handoff;
@@ -1203,6 +1204,10 @@ public abstract class Base extends LinearOpMode {
                 following = false;
                 holding = false;
                 follower.startTeleopDrive();
+                lastDriveInputTime = getRuntime();
+            } else if (getRuntime() - lastDriveInputTime > 0.5) {
+                holding = true;
+                follower.holdPoint(follower.getPose());
             }
 
             if (!follower.isBusy() && following) {

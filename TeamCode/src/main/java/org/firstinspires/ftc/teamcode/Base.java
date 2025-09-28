@@ -56,7 +56,7 @@ public abstract class Base extends LinearOpMode {
     private static final double LIFT_VEL = 1500;
     private final ElapsedTime runtime = new ElapsedTime();
     // All non-primitive data types initialize to null on default.
-    public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor, verticalMotorA, verticalMotorB, sorterMotor;
+    public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor, verticalMotorA, verticalMotorB, sorterMotor, intakeMotor, launcherMotorA, launcherMotorB;
     public Servo wristServoX, wristServoY, basketServo, specimenServo, intakeServo;
     public TouchSensor verticalTouchSensor, horizontalTouchSensor;
     public IMU imu;
@@ -202,7 +202,22 @@ public abstract class Base extends LinearOpMode {
         try {
             sorterMotor = hardwareMap.get(DcMotorEx.class, "sorterMotor"); // Not configured
         } catch (IllegalArgumentException e) {
-            except("wristMotor not connected");
+            except("sorterMotor not connected");
+        }
+        try {
+            intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor"); // Not configured
+        } catch (IllegalArgumentException e) {
+            except("intakeMotor not connected");
+        }
+        try {
+            launcherMotorA = hardwareMap.get(DcMotorEx.class, "launcherMotorA"); // Not configured
+        } catch (IllegalArgumentException e) {
+            except("launcherMotorA not connected");
+        }
+        try {
+            launcherMotorB = hardwareMap.get(DcMotorEx.class, "launcherMotorB"); // Not configured
+        } catch (IllegalArgumentException e) {
+            except("launcherMotorB not connected");
         }
 
         // Servos
@@ -382,6 +397,20 @@ public abstract class Base extends LinearOpMode {
         if (!gamepad1.dpadUpWasPressed() && !gamepad1.dpadDownWasPressed()) return;
         if (gamepad1.dpadUpWasPressed()) sorterGoal += SORTER_TICKS_PER_REV / 3;
         else sorterGoal -= SORTER_TICKS_PER_REV / 3;
+    }
+
+    public void intakeLogic() {
+        intakeMotor.setPower(-gamepad1.right_trigger);
+    }
+
+    public void launcherLogic() {
+        if (gamepad1.right_bumper) {
+            launcherMotorA.setPower(1);
+            launcherMotorB.setPower(-1);
+        } else {
+            launcherMotorA.setPower(0);
+            launcherMotorB.setPower(0);
+        }
     }
 
     public void updateSorterPower() {
@@ -1176,6 +1205,10 @@ public abstract class Base extends LinearOpMode {
         visionPortal = builder.build();
     }
 
+    private double lerp(double t, double a, double b) {
+        return a + (b - a) * t;
+    }
+
     /**
      * Logic for the drivetrain during TeleOp
      *
@@ -1193,7 +1226,7 @@ public abstract class Base extends LinearOpMode {
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
         if (usePedro) {
             follower.update();
-            double speedMultiplier = 1.5 * (gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1]);
+            double speedMultiplier = 1.5 * (gamepad1.left_bumper ? speeds[2] : lerp(gamepad1.left_trigger, speeds[1], speeds[0]));
             speedMultiplier *= baseSpeedMultiplier;
 
             if ((following || holding) && (abs(gamepad1.left_stick_y) > .05 ||
@@ -1361,7 +1394,7 @@ public abstract class Base extends LinearOpMode {
     }
 
     /** Logic for the intake servo during TeleOp */
-    public void intakeLogic() {
+    public void oldIntakeLogic() {
         if (gamepad2.b && !wasIntakeServoButtonPressed) {
             if (getWristPos() <= 30)
                 moveIntake(getIntakePosition() == 1 ? 0 : 1);

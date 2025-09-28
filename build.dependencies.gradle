@@ -10,7 +10,7 @@ repositories {
 dependencies {
     implementation 'org.firstinspires.ftc:Inspection:11.0.0'
     implementation 'org.firstinspires.ftc:Blocks:11.0.0'
-    //noinspection Aligned16KB
+    // noinspection Aligned16KB
     implementation 'org.firstinspires.ftc:RobotCore:11.0.0'
     implementation 'org.firstinspires.ftc:RobotServer:11.0.0'
     implementation 'org.firstinspires.ftc:OnBotJava:11.0.0'
@@ -20,16 +20,16 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.1'
 
     // Pedro Pathing
-    implementation 'com.pedropathing:ftc:2.0.0'
-    implementation 'com.pedropathing:telemetry:0.0.6'
-    implementation 'com.bylazar:fullpanels:1.0.4'
+    implementation 'com.pedropathing:ftc:2.0.2'
+    implementation 'com.pedropathing:telemetry:1.0.0'
+    implementation 'com.bylazar:fullpanels:1.0.6'
 
-    // Jackson JSON parser
+    // Jackson JSON parser; used in LimelightHelpers
     implementation "com.fasterxml.jackson.core:jackson-core:2.20.0"
     implementation "com.fasterxml.jackson.core:jackson-databind:2.20.0"
     implementation "com.fasterxml.jackson.core:jackson-annotations:2.20"
 
-    // FTCLib
+    // FTCLib; used in LimelightHelpers
     implementation 'org.ftclib.ftclib:core:2.1.1'
     implementation 'org.ftclib.ftclib:vision:2.1.0'
 
@@ -41,13 +41,4 @@ dependencies {
 
     // Add ntcore-java
     implementation "edu.wpi.first.ntcore:ntcore-java:2025.3.2"
-
-
-    // Add ntcore-jni for runtime. We are adding all supported platforms
-    // so that our application will work on all supported platforms.
-//    implementation "edu.wpi.first.ntcore:ntcore-jni:2025.3.2:windowsx86"
-//    implementation "edu.wpi.first.ntcore:ntcore-jni:2025.3.2:windowsx86-64"
-//    implementation "edu.wpi.first.ntcore:ntcore-jni:2025.3.2:linuxx86-64"
-//    implementation "edu.wpi.first.ntcore:ntcore-jni:2025.3.2:osxx86-64"
-//    implementation "edu.wpi.first.ntcore:ntcore-jni:2025.3.2:osxarm64"
 }

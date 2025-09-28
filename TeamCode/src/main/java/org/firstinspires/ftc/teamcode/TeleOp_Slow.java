@@ -4,7 +4,7 @@ import static java.lang.Math.abs;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name = "Slow (.5)", group = "Into The Deep")
+@TeleOp(name = "Slow (.5)", group = "Main")
 public class TeleOp_Slow extends Base {
     @Override
     public void runOpMode() throws InterruptedException {

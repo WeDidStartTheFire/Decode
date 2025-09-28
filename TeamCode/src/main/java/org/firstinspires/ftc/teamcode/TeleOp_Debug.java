@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name = "Test", group = "Into The Deep")
+@TeleOp(name = "Test", group = "Main")
 public class TeleOp_Debug extends Base {
 
     double axial = 0.0;

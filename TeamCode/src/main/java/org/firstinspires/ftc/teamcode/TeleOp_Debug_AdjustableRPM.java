@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@TeleOp(name = "Test No Driving", group = "Main")
+@TeleOp(name = "Test Adjustable RPM", group = "Main")
 public class TeleOp_Debug_AdjustableRPM extends Base {
 
     boolean wasDownA = false;

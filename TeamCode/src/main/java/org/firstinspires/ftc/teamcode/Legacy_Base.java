@@ -52,6 +52,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 // Connect to robot: rc
 
 /** Base class that contains common methods and other configuration. */
+@Deprecated
 public abstract class Legacy_Base extends LinearOpMode {
     // All non-primitive data types initialize to null on default.
     public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor, verticalMotorA, verticalMotorB, sorterMotor;

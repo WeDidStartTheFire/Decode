@@ -36,6 +36,9 @@ public class RobotConstants {
 
     final static double[] speeds = {0.2, 0.6, 1};
 
+    final static double baseSpeedMultiplier = 0.75;
+    final static double baseTurnSpeed = 2.5;
+
     /** Directions. Options: LEFT, RIGHT, FORWARD, BACKWARD */
     public enum Dir {
         LEFT, RIGHT, FORWARD, BACKWARD

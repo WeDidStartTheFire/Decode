@@ -23,8 +23,11 @@ import static java.lang.Math.signum;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+
+import com.pedropathing.follower.Follower;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 import static org.firstinspires.ftc.teamcode.Utils.*;
@@ -44,7 +47,9 @@ public class Drivetrain {
     
     public TelemetryUtils tm;
 
-    public Drivetrain(HardwareMap hardwareMap, Telemetry telemetry, boolean auto, boolean useOdom) {
+    public DrivetrainTeleOpFunctions teleop;
+
+    public Drivetrain(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gp1, Gamepad gp2, Follower follower, boolean auto, boolean useOdom) {
         tm = new TelemetryUtils(telemetry);
 
         imu = hardwareMap.get(IMU.class, "imu");
@@ -64,6 +69,8 @@ public class Drivetrain {
             tm.except("At least one drive train motor is not connected, so all will be disabled");
             lf = lb = rf = rb = null;
         }
+
+        teleop = new DrivetrainTeleOpFunctions(lf, lb, rf, rb, imu, gp1, follower, useOdom);
 
         if (lf != null) {
             lf.setDirection(REVERSE);
@@ -125,7 +132,7 @@ public class Drivetrain {
             tm.print("Currently at", lf.getCurrentPosition() + ":" + rf.getCurrentPosition());
             if (!loop) tm.update();
         }
-        if (inches != 0) stopRobot();
+        if (inches != 0) stop();
     }
 
     /**
@@ -165,7 +172,7 @@ public class Drivetrain {
             tm.print("Distance from goal", difference);
             if (!loop) tm.update();
         }
-        stopRobot();
+        stop();
         imu.resetYaw();
     }
 
@@ -197,7 +204,7 @@ public class Drivetrain {
             tm.print("Error", error);
             if (!loop) tm.update();
         }
-        stopRobot();
+        stop();
     }
     /**
      * Turns the robot a specified number of degrees. Positive values turn right, negative values
@@ -303,7 +310,7 @@ public class Drivetrain {
             tm.print("Currently at", runtime.seconds() + " seconds");
             if (!loop) tm.update();
         }
-        if (inches != 0) stopRobot();
+        if (inches != 0) stop();
         tm.print("Strafing", "Complete");
         if (!loop) tm.update();
     }
@@ -349,7 +356,7 @@ public class Drivetrain {
         }
 
         for (int i = 0; i < checks; i++) velocityDrive(inches / checks, direction);
-        stopRobot();
+        stop();
     }
 
     /**
@@ -372,7 +379,7 @@ public class Drivetrain {
     }
 
     /** Stops all drive train motors on the robot. */
-    public void stopRobot() {
+    public void stop() {
         if (lb == null) return;
         setMotorPowers(0, 0, 0, 0);
         lb.setVelocity(0);

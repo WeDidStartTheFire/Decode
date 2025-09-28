@@ -1,10 +1,24 @@
 package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
+import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
 import static java.lang.Math.PI;
 import static java.lang.Math.TAU;
 
+import android.os.Environment;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.pedropathing.localization.Pose;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Utils {
 
@@ -72,6 +86,50 @@ public class Utils {
      */
     public static void s(double seconds) {
         sleep((long) seconds * 1000);
+    }
+
+    public static double getRuntime() {
+        return runtime.milliseconds();
+    }
+
+    /**
+     * Saves the current pose to a file.
+     *
+     * @param pos Pose to save
+     */
+    public static void saveOdometryPosition(@NonNull Pose pos) {
+        File file = new File(Environment.getExternalStorageDirectory(), "odometryPosition.txt");
+        try (FileWriter writer = new FileWriter(file, false)) {
+            writer.write(pos.getX() + "," + pos.getY() + "," + pos.getHeading()); // Write the latest position
+        } catch (IOException e) {
+            return;
+        }
+    }
+
+    /**
+     * Loads the current pose from a file.
+     *
+     * @return The position the robot ended at in the last Auto
+     */
+    @Nullable
+    public static Pose loadOdometryPosition() {
+        File file = new File(Environment.getExternalStorageDirectory(), "odometryPosition.txt");
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line = reader.readLine();
+                if (line != null) {
+                    String[] values = line.split(",");
+                    double x = Double.parseDouble(values[0]); // X
+                    double y = Double.parseDouble(values[1]); // Y
+                    double h = Double.parseDouble(values[2]); // Heading
+                    file.delete();
+                    return new Pose(x, y, h);
+                }
+            } catch (IOException e) {
+                return null;
+            }
+        }
+        return null;
     }
 
     @Deprecated

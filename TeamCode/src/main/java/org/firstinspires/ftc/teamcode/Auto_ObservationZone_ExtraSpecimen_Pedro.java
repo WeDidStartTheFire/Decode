@@ -305,7 +305,7 @@ public class Auto_ObservationZone_ExtraSpecimen_Pedro extends Base { // Base ext
             }
             telemetryA.addData("Updates per second", updates / (getRuntime() - startTime));
             telemetryA.addData("Path State", pathState);
-            follower.debug();
+//            follower.debug();
         }
         follower.update();
         saveOdometryPosition(follower.getPose());

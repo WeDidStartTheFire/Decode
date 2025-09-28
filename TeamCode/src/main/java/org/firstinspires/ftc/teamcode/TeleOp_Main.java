@@ -11,15 +11,10 @@ public class TeleOp_Main extends Base {
         setup(p != null ? p : new Pose());
 
         while (active()) {
-            drivetrainLogic(p != null, false);
-            wristMotorLogic();
-            wristServoXLogic();
+            drivetrainLogic(p != null, true);
+            feederLogic();
+            launcherLogic();
             intakeLogic();
-            horizontalLiftLogic();
-            verticalLiftLogic();
-            basketServoLogic();
-            specimenServoLogic();
-            handoffLogic();
             dpadLogic();
 
             telemetryAll();

@@ -58,7 +58,8 @@ public abstract class Base extends LinearOpMode {
     // All non-primitive data types initialize to null on default.
     public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor, verticalMotorA, verticalMotorB,
             sorterMotor, intakeMotor, launcherMotorA, launcherMotorB;
-    public Servo wristServoX, wristServoY, basketServo, specimenServo, intakeServo;
+    public Servo wristServoX, wristServoY, basketServo, specimenServo, intakeServo, feederServoA,
+            feederServoB;
     public TouchSensor verticalTouchSensor, horizontalTouchSensor;
     public IMU imu;
     /*
@@ -209,19 +210,15 @@ public abstract class Base extends LinearOpMode {
             except("sorterMotor not connected");
         }
         try {
-            intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor"); // Not configured
+            intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor"); // Expansion Hub 0
         } catch (IllegalArgumentException e) {
             except("intakeMotor not connected");
         }
         try {
-            launcherMotorA = hardwareMap.get(DcMotorEx.class, "launcherMotorA"); // Not configured
+            launcherMotorA = hardwareMap.get(DcMotorEx.class, "launcherMotorA"); // Expansion Hub 1
+            launcherMotorB = hardwareMap.get(DcMotorEx.class, "launcherMotorB"); // Expansion Hub 2
         } catch (IllegalArgumentException e) {
-            except("launcherMotorA not connected");
-        }
-        try {
-            launcherMotorB = hardwareMap.get(DcMotorEx.class, "launcherMotorB"); // Not configured
-        } catch (IllegalArgumentException e) {
-            except("launcherMotorB not connected");
+            except("One of the launcherMotors not connected");
         }
 
         // Servos
@@ -232,6 +229,16 @@ public abstract class Base extends LinearOpMode {
         }
         try {
             wristServoY = hardwareMap.get(Servo.class, "wristServoY"); // Expansion Hub 2
+        } catch (IllegalArgumentException e) {
+            except("wristServoY not connected");
+        }
+        try {
+            feederServoA = hardwareMap.get(Servo.class, "feederServoA"); // Expansion Hub 0
+        } catch (IllegalArgumentException e) {
+            except("wristServoX not connected");
+        }
+        try {
+            feederServoB = hardwareMap.get(Servo.class, "feederServoB"); // Expansion Hub 2
         } catch (IllegalArgumentException e) {
             except("wristServoY not connected");
         }
@@ -404,16 +411,25 @@ public abstract class Base extends LinearOpMode {
     }
 
     public void intakeLogic() {
+        if (intakeMotor == null) return;
         intakeMotor.setPower(-gamepad1.right_trigger);
     }
 
     public void launcherLogic() {
+        if (launcherMotorA == null) return;
         if (gamepad1.right_bumper) {
             launcherMotorA.setPower(1);
             launcherMotorB.setPower(-1);
         } else {
             launcherMotorA.setPower(0);
             launcherMotorB.setPower(0);
+        }
+    }
+
+    public void feederLogic() {
+        if (gamepad1.xWasPressed()) {
+            feederServoA.setPosition(feederServoA.getPosition() == 0 ? 1 : 0);
+            feederServoB.setPosition(feederServoA.getPosition() == 0 ? 1 : 0);
         }
     }
 
@@ -1562,9 +1578,9 @@ public abstract class Base extends LinearOpMode {
 
     /** Logic for the basket servo during TeleOp */
     public void basketServoLogic() {
-        if (gamepad1.x && !wasBasketServoButtonPressed && !(getVertLiftPos() < 100 && getWristPos() < 25))
-            moveBasketServo(getBasketPosition() == 0 ? 1 : 0);
-        wasBasketServoButtonPressed = gamepad1.x && !(getVertLiftPos() < 100 && getWristPos() < 25);
+//        if (gamepad1.x && !wasBasketServoButtonPressed && !(getVertLiftPos() < 100 && getWristPos() < 25))
+//            moveBasketServo(getBasketPosition() == 0 ? 1 : 0);
+//        wasBasketServoButtonPressed = gamepad1.x && !(getVertLiftPos() < 100 && getWristPos() < 25);
     }
 
     /** Logic for the specimen servo during TeleOp */

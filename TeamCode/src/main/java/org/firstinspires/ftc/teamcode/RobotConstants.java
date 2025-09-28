@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class RobotConstants {
     public static final ElapsedTime runtime = new ElapsedTime();
-    public static final double LIFT_VEL = 1500;
     public static final double SMALL_WHEEL_DIAMETER = 3.77953;
     static double WHEEL_DIAMETER_INCHES = SMALL_WHEEL_DIAMETER;
     static final double COUNTS_PER_MOTOR_REV = 537.6898395722;  // ((((1.0 + (46.0 / 17.0))) * (1.0 + (46.0 / 11.0))) * 28.0);
@@ -19,11 +18,6 @@ public class RobotConstants {
     static final double B = 1.1375;
     static final double M = 0.889;
     static final double TURN_SPEED = 0.5;
-
-    /** Dimension front to back on robot in inches */
-    public static final double ROBOT_LENGTH = 18;
-    /** Dimension left to right on robot in inches */
-    public static final double ROBOT_WIDTH = 18;
 
     public static final IMU.Parameters IMU_PARAMS = new IMU.Parameters(
             new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT,

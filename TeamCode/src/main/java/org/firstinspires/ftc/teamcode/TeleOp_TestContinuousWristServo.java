@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "Test Continous Wrist Servo", group = "Main")
 @Disabled
-public class TeleOp_TestContinuousWristServo extends Base {
+public class TeleOp_TestContinuousWristServo extends Legacy_Base {
     @Override
     public void runOpMode() throws InterruptedException {
         Pose p = loadOdometryPosition();

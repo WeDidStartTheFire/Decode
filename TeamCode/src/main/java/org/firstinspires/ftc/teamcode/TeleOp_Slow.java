@@ -6,7 +6,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "Slow (.5)", group = "Main")
-public class TeleOp_Slow extends Base {
+public class TeleOp_Slow extends Legacy_Base {
     @Override
     public void runOpMode() throws InterruptedException {
         auto = true;

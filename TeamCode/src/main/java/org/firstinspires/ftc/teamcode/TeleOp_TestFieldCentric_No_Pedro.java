@@ -4,7 +4,7 @@ import com.pedropathing.localization.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "Test Field Centric No Pedro", group = "Test")
-public class TeleOp_TestFieldCentric_No_Pedro extends Base {
+public class TeleOp_TestFieldCentric_No_Pedro extends Legacy_Base {
     @Override
     public void runOpMode() throws InterruptedException {
         Pose p = loadOdometryPosition();

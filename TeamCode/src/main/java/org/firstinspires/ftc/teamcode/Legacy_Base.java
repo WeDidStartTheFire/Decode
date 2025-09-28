@@ -22,7 +22,6 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.util.Constants;
-import com.qualcomm.hardware.rev.*;
 import com.qualcomm.robotcore.eventloop.opmode.*;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.*;
@@ -45,9 +44,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.pedropathing.localization.Pose;
-import com.pedropathing.pathgen.BezierLine;
-import com.pedropathing.pathgen.Path;
-import com.pedropathing.pathgen.Point;
 
 import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
@@ -56,8 +52,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 // Connect to robot: rc
 
 /** Base class that contains common methods and other configuration. */
-public abstract class Base extends LinearOpMode {
-    private final ElapsedTime runtime = new ElapsedTime();
+public abstract class Legacy_Base extends LinearOpMode {
     // All non-primitive data types initialize to null on default.
     public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor, verticalMotorA, verticalMotorB, sorterMotor;
     public Servo wristServoX, wristServoY, basketServo, specimenServo, intakeServo;

@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "Test", group = "Main")
-public class TeleOp_Debug extends Base {
+public class TeleOp_Debug extends Legacy_Base {
 
     double axial = 0.0;
     double lateral = 0.0;

@@ -12,14 +12,6 @@ public class TeleOp_TestFieldCentric_No_Pedro extends Base {
 
         while (active()) {
             drivetrainLogic(p != null, false);
-            wristMotorLogic();
-            wristServoXLogic();
-            intakeLogic();
-            horizontalLiftLogic();
-            verticalLiftLogic();
-            basketServoLogic();
-            specimenServoLogic();
-            handoffLogic();
             dpadLogic();
 
             telemetryAll();

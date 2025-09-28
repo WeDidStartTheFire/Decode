@@ -14,14 +14,6 @@ public class TeleOp_TestContinuousWristServo extends Base {
 
         while (active()) {
             drivetrainLogic(false);
-            wristMotorLogic();
-            wristServoXLogic(true);
-            intakeLogic();
-            horizontalLiftLogic();
-            verticalLiftLogic();
-            basketServoLogic();
-            specimenServoLogic();
-            handoffLogic();
             dpadLogic();
 
             telemetryAll();

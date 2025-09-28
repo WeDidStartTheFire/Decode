@@ -8,7 +8,7 @@ public class Auto_StructureTest extends LinearOpMode {
     public Robot robot;
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(hardwareMap, telemetry, false);
+        robot = new Robot(hardwareMap, telemetry, true, false);
         waitForStart();
         robot.drivetrain.drive(5);
     }

@@ -3,6 +3,9 @@ package org.firstinspires.ftc.teamcode;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
+import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
+import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
+import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
@@ -41,7 +44,7 @@ public class Drivetrain {
     
     public TelemetryUtils tm;
 
-    public Drivetrain(HardwareMap hardwareMap, Telemetry telemetry, boolean useOdom) {
+    public Drivetrain(HardwareMap hardwareMap, Telemetry telemetry, boolean auto, boolean useOdom) {
         tm = new TelemetryUtils(telemetry);
 
         imu = hardwareMap.get(IMU.class, "imu");
@@ -60,6 +63,30 @@ public class Drivetrain {
         } catch (IllegalArgumentException e) {
             tm.except("At least one drive train motor is not connected, so all will be disabled");
             lf = lb = rf = rb = null;
+        }
+
+        if (lf != null) {
+            lf.setDirection(REVERSE);
+            lb.setDirection(REVERSE);
+            rf.setDirection(DcMotorEx.Direction.FORWARD);
+            rb.setDirection(DcMotorEx.Direction.FORWARD);
+
+            if (auto) {
+                lf.setZeroPowerBehavior(BRAKE);
+                lb.setZeroPowerBehavior(BRAKE);
+                rf.setZeroPowerBehavior(BRAKE);
+                rb.setZeroPowerBehavior(BRAKE);
+            } else {
+                lf.setZeroPowerBehavior(FLOAT);
+                lb.setZeroPowerBehavior(FLOAT);
+                rf.setZeroPowerBehavior(FLOAT);
+                rb.setZeroPowerBehavior(FLOAT);
+            }
+
+            lb.setTargetPosition(lb.getCurrentPosition());
+            rb.setTargetPosition(rb.getCurrentPosition());
+            lf.setTargetPosition(lf.getCurrentPosition());
+            rf.setTargetPosition(rf.getCurrentPosition());
         }
 
         useOdometry = useOdom;

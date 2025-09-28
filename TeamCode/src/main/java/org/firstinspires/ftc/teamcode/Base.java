@@ -56,7 +56,8 @@ public abstract class Base extends LinearOpMode {
     private static final double LIFT_VEL = 1500;
     private final ElapsedTime runtime = new ElapsedTime();
     // All non-primitive data types initialize to null on default.
-    public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor, verticalMotorA, verticalMotorB, sorterMotor, intakeMotor, launcherMotorA, launcherMotorB;
+    public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor, verticalMotorA, verticalMotorB,
+            sorterMotor, intakeMotor, launcherMotorA, launcherMotorB;
     public Servo wristServoX, wristServoY, basketServo, specimenServo, intakeServo;
     public TouchSensor verticalTouchSensor, horizontalTouchSensor;
     public IMU imu;
@@ -75,7 +76,8 @@ public abstract class Base extends LinearOpMode {
     public static final double TAU = 2 * PI;
     static final double COUNTS_PER_MOTOR_REV = 537.6898395722;  // ((((1.0 + (46.0 / 17.0))) * (1.0 + (46.0 / 11.0))) * 28.0);
     static final double DRIVE_GEAR_REDUCTION = 1.0; // No External Gearing
-    static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * PI);
+    static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+            (WHEEL_DIAMETER_INCHES * PI);
 
     static final double STRAFE_FRONT_MODIFIER = 1.3;
     static final double B = 1.1375;
@@ -145,8 +147,10 @@ public abstract class Base extends LinearOpMode {
     int sorterGoal;
     PIDCoefficients sorterPID = new PIDCoefficients(0, 0, 0);
 
-    Pose NET_ZONE_POSITION = new Pose(144 - 12 - (ROBOT_LENGTH / 2 / sqrt(2)) + 1, 144 - 12 - (ROBOT_LENGTH / 2 / sqrt(2)) + 1, toRadians(45));
-    Pose OBSERVATION_ZONE_POSITION = new Pose(128.000, 135.000, toRadians(-90));//new Pose(ROBOT_WIDTH / 2, 144 - ROBOT_LENGTH / 2, toRadians(0));
+    Pose NET_ZONE_POSITION = new Pose(144 - 12 - (ROBOT_LENGTH / 2 / sqrt(2)) + 1, 144 - 12 -
+            (ROBOT_LENGTH / 2 / sqrt(2)) + 1, toRadians(45));
+    Pose OBSERVATION_ZONE_POSITION = new Pose(128.000, 135.000, toRadians(-90));
+    //new Pose(ROBOT_WIDTH / 2, 144 - ROBOT_LENGTH / 2, toRadians(0));
     Pose[] ROBOT_POSITIONS = {NET_ZONE_POSITION, OBSERVATION_ZONE_POSITION};
 
     double[] WRIST_S_ANGLES = {toRadians(-180), toRadians(180)};
@@ -484,7 +488,8 @@ public abstract class Base extends LinearOpMode {
             correctedGoalAngle -= abs(initialGoalAngle) / initialGoalAngle * 360;
         while (active() && (difference > tolerance) && degrees != 0) {
             angle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
-            difference = simplifyAngle(min(abs(initialGoalAngle - angle), abs(correctedGoalAngle - angle)));
+            difference = simplifyAngle(min(abs(initialGoalAngle - angle),
+                    abs(correctedGoalAngle - angle)));
             turnModifier = min(1, (difference + 3) / 30);
             turnPower = degrees / abs(degrees) * TURN_SPEED * turnModifier * direct;
             setMotorPowers(-turnPower, turnPower, -turnPower, turnPower);
@@ -934,7 +939,8 @@ public abstract class Base extends LinearOpMode {
         while (holdWrist && active()) {
             int wristMotorPos = wristMotor.getCurrentPosition();
             int error = holdPos - wristMotorPos;
-            wristMotor.setPower((abs(error) > 3 ? WRIST_MOTOR_POWER * error / 10.0 : 0) + (wristMotorPos > 30 ? 0.02 : 0));
+            wristMotor.setPower((abs(error) > 3 ? WRIST_MOTOR_POWER * error / 10.0 : 0) +
+                    (wristMotorPos > 30 ? 0.02 : 0));
         }
     }
 
@@ -1042,7 +1048,8 @@ public abstract class Base extends LinearOpMode {
         runtime.reset();
         // The loop stops after being under the encoder goal when going down and when being
         // above the encoder goal when going up
-        while (active() && ((liftMotor.getCurrentPosition() < encoders && encoders > 1) || (liftMotor.getCurrentPosition() > encoders && signum(encoders) == -1))) {
+        while (active() && ((liftMotor.getCurrentPosition() < encoders && encoders > 1) ||
+                (liftMotor.getCurrentPosition() > encoders && signum(encoders) == -1))) {
             // Display it for the driver.
             print("Position", liftMotor.getCurrentPosition());
             print("Goal", encoders);
@@ -1226,7 +1233,8 @@ public abstract class Base extends LinearOpMode {
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
         if (usePedro) {
             follower.update();
-            double speedMultiplier = 1.5 * (gamepad1.left_bumper ? speeds[2] : lerp(gamepad1.left_trigger, speeds[1], speeds[0]));
+            double speedMultiplier = 1.5 * (gamepad1.left_bumper ? speeds[2] :
+                    lerp(gamepad1.left_trigger, speeds[1], speeds[0]));
             speedMultiplier *= baseSpeedMultiplier;
 
             if ((following || holding) && (abs(gamepad1.left_stick_y) > .05 ||
@@ -1258,7 +1266,8 @@ public abstract class Base extends LinearOpMode {
         double speedMultiplier = gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1];
 
         if (fieldCentric) {
-            double angle = PI / 2 + (useOdometry ? -follower.getPose().getHeading() : -imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle);
+            double angle = PI / 2 + (useOdometry ? -follower.getPose().getHeading() :
+                    -imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle);
 
             double joystickAngle = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
             double moveAngle = joystickAngle - angle;
@@ -1290,8 +1299,8 @@ public abstract class Base extends LinearOpMode {
             rightBackPower /= max;
         }
 
-        if (abs(leftFrontPower) > .05 || abs(rightFrontPower) > .05 || abs(leftBackPower) > .05 || abs(rightBackPower) > .05)
-            follower.breakFollowing();
+        if (abs(leftFrontPower) > .05 || abs(rightFrontPower) > .05 || abs(leftBackPower) > .05 ||
+                abs(rightBackPower) > .05) follower.breakFollowing();
 
         // Send calculated power to wheels
         if (lf != null && !follower.isBusy()) {
@@ -1351,11 +1360,14 @@ public abstract class Base extends LinearOpMode {
             openIntake();
         }
         if (gamepad2.right_stick_y > .1 && wristMotorPos < WRIST_M_BOUNDS[1]) {
-            power = ticksPowered <= 10 ? 2 * WRIST_MOTOR_POWER : ticksPowered <= 30 ? WRIST_MOTOR_POWER : WRIST_MOTOR_POWER * 0.5;
+            power = ticksPowered <= 10 ? 2 * WRIST_MOTOR_POWER :
+                    ticksPowered <= 30 ?WRIST_MOTOR_POWER : WRIST_MOTOR_POWER * 0.5;
             wristMotorTicksStopped = 0;
             ticksPowered++;
-        } else if (gamepad2.right_stick_y < -.1 && (wristMotorPos > WRIST_M_BOUNDS[0] || gamepad2.right_bumper)) {
-            power = ticksPowered <= 10 ? 2 * -WRIST_MOTOR_POWER : ticksPowered <= 30 ? -WRIST_MOTOR_POWER : -WRIST_MOTOR_POWER * 0.5;
+        } else if (gamepad2.right_stick_y < -.1 &&
+                (wristMotorPos > WRIST_M_BOUNDS[0] || gamepad2.right_bumper)) {
+            power = ticksPowered <= 10 ? 2 * -WRIST_MOTOR_POWER :
+                    ticksPowered <= 30 ? -WRIST_MOTOR_POWER : -WRIST_MOTOR_POWER * 0.5;
             wristMotorTicksStopped = 0;
             if (gamepad2.right_bumper) {
                 WRIST_M_BOUNDS[1] += wristMotorPos - WRIST_M_BOUNDS[0];
@@ -1368,7 +1380,10 @@ public abstract class Base extends LinearOpMode {
                 wristMotorStopPos = min(WRIST_M_BOUNDS[1], max(WRIST_M_BOUNDS[0], wristMotorPos));
             else
                 power = (abs(error) > 3 ? WRIST_MOTOR_POWER * error / 10.0 : 0);
-            power = wristMotorTicksStopped < 15 ? max(min(power, WRIST_MOTOR_POWER * 2), -WRIST_MOTOR_POWER * 2) : wristMotorTicksStopped < 30 ? max(min(power, WRIST_MOTOR_POWER), -WRIST_MOTOR_POWER) : max(min(power, WRIST_MOTOR_POWER * 0.5), -WRIST_MOTOR_POWER * 0.5);
+            power = wristMotorTicksStopped < 15 ? max(min(power, WRIST_MOTOR_POWER * 2),
+                    -WRIST_MOTOR_POWER * 2) : wristMotorTicksStopped < 30 ?
+                    max(min(power, WRIST_MOTOR_POWER), -WRIST_MOTOR_POWER) :
+                    max(min(power, WRIST_MOTOR_POWER * 0.5), -WRIST_MOTOR_POWER * 0.5);
             ticksPowered = 0;
             wristMotorTicksStopped++;
         }
@@ -1379,7 +1394,7 @@ public abstract class Base extends LinearOpMode {
     public void wristServoXLogic(boolean continuous) {
         if (continuous && hypot(gamepad2.left_stick_y, gamepad2.left_stick_x) > .2) {
             double angle = PI / 2 - atan2(gamepad2.left_stick_y, gamepad2.left_stick_x);
-            moveWristServoX(min(max(0, (angle - WRIST_S_ANGLES[0]) / (WRIST_S_ANGLES[1] - WRIST_S_ANGLES[0])), 1));
+            moveWristServoX(min(max(0, (angle - WRIST_S_ANGLES[0]) /(WRIST_S_ANGLES[1] - WRIST_S_ANGLES[0])), 1));
             return;
         }
         if (gamepad2.x) moveWristServoX(WRIST_S_GOALS[wristIndex = 0]);
@@ -1747,7 +1762,8 @@ public abstract class Base extends LinearOpMode {
                 startRuntime = runtime.seconds();
             follower.update();
             Pose pos = follower.getPose();
-            print(String.format(US, "SparkFun Position :  X: %.2f, Y: %.2f, θ: %.2f°", pos.getX(), pos.getY(), toDegrees(pos.getHeading())));
+            print(String.format(US, "SparkFun Position :  X: %.2f, Y: %.2f, θ: %.2f°",
+                    pos.getX(), pos.getY(), toDegrees(pos.getHeading())));
             updates++;
             print("Updates", updates);
             print("Updates per Second", updates / runtime.seconds());

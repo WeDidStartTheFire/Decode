@@ -9,6 +9,7 @@ import static java.lang.Math.abs;
 import static java.lang.Runtime.getRuntime;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
+import static org.firstinspires.ftc.teamcode.RobotState.*;
 
 import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -21,7 +22,6 @@ public class DrivetrainTeleOpFunctions {
     Gamepad gamepad1;
     public Follower follower;
     boolean useOdometry;
-    boolean following = false, holding = false;
     double lastDriveInputTime = runtime.milliseconds();
 
     public DrivetrainTeleOpFunctions(DcMotor leftFront, DcMotor leftBack, DcMotor rightFront, DcMotor rightBack, IMU imu1, Gamepad gp1, Follower follower1, boolean useOdom){

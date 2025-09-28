@@ -31,6 +31,7 @@ import com.pedropathing.follower.Follower;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 import static org.firstinspires.ftc.teamcode.Utils.*;
+import static org.firstinspires.ftc.teamcode.RobotState.*;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -49,7 +50,7 @@ public class Drivetrain {
 
     public DrivetrainTeleOpFunctions teleop;
 
-    public Drivetrain(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gp1, Gamepad gp2, Follower follower, boolean auto, boolean useOdom) {
+    public Drivetrain(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gp1, Gamepad gp2, Follower follower, boolean useOdom) {
         tm = new TelemetryUtils(telemetry);
 
         imu = hardwareMap.get(IMU.class, "imu");

@@ -4,15 +4,9 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGR
 import static java.lang.Math.PI;
 import static java.lang.Math.TAU;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class Utils {
-    public Telemetry telemetry;
-
-    public Utils(Telemetry tm) {
-        telemetry = tm;
-    }
 
     /**
      * Simplifies an angle in degrees to be between -180 and 180 degrees
@@ -59,15 +53,6 @@ public class Utils {
     }
 
     /**
-     * Sends an exception message to Driver Station telemetry.
-     *
-     * @param e The exception.
-     */
-    public void except(Object e) {
-        print("Exception", e);
-    }
-
-    /**
      * Sleep a specified number of milliseconds.
      *
      * @param ms The amount of milliseconds to sleep.
@@ -89,43 +74,8 @@ public class Utils {
         sleep((long) seconds * 1000);
     }
 
-    /**
-     * A less space consuming way to add telemetry.
-     *
-     * @param caption String
-     * @param content Object
-     */
-    public void print(String caption, Object content) {
-        telemetry.addData(caption, content);
-    }
-
-    /**
-     * A less space consuming way to add telemetry.
-     *
-     * @param content Content to display in telemetry
-     */
-    public void print(String content) {
-        telemetry.addLine(content);
-    }
-
-
-    /**
-     * A less space consuming way to update the displayed telemetry.
-     */
-    public void update() {
-        telemetry.update();
-    }
-
-    /**
-     * Adds telemetry data from the last action
-     *
-     * @param message Message to be sent
-     */
-    public void addLastActionTelemetry(String message) {
-        print("Last Action", message);
-    }
-
-    public boolean active() {
+    @Deprecated
+    public static boolean active() {
         return true;
     }
 

@@ -24,6 +24,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
+import static org.firstinspires.ftc.teamcode.Utils.*;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -38,10 +39,10 @@ public class Drivetrain {
 
     public boolean useOdometry;
     
-    public Utils utils;
+    public TelemetryUtils tm;
 
     public Drivetrain(HardwareMap hardwareMap, Telemetry telemetry, boolean useOdom) {
-        utils = new Utils(telemetry);
+        tm = new TelemetryUtils(telemetry);
 
         imu = hardwareMap.get(IMU.class, "imu");
         if (!imu.initialize(IMU_PARAMS)) throw new RuntimeException("IMU initialization failed");
@@ -57,7 +58,7 @@ public class Drivetrain {
             rf = hardwareMap.get(DcMotorEx.class, "rightFront"); // Port 0
             rb = hardwareMap.get(DcMotorEx.class, "rightBack"); // Port 4
         } catch (IllegalArgumentException e) {
-            utils.except("At least one drive train motor is not connected, so all will be disabled");
+            tm.except("At least one drive train motor is not connected, so all will be disabled");
             lf = lb = rf = rb = null;
         }
 
@@ -72,7 +73,7 @@ public class Drivetrain {
      * @param direction (opt.) Direction to drive if inches is zero.*
      */
     private void velocityDrive(double inches, RobotConstants.Dir direction) {
-        if (!utils.active() || lf == null) return;
+        if (!active() || lf == null) return;
 
         int lfTarget = 0;
         int rfTarget = 0;
@@ -90,12 +91,12 @@ public class Drivetrain {
 
         double duration = abs(inches * COUNTS_PER_INCH / velocity);
 
-        while (utils.active() && (runtime.seconds() < duration) && inches != 0) {
+        while (active() && (runtime.seconds() < duration) && inches != 0) {
             // Display it for the driver.
-            utils.print("Angle", imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
-            utils.print("Running to", " " + lfTarget + ":" + rfTarget);
-            utils.print("Currently at", lf.getCurrentPosition() + ":" + rf.getCurrentPosition());
-            if (!loop) utils.update();
+            tm.print("Angle", imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
+            tm.print("Running to", " " + lfTarget + ":" + rfTarget);
+            tm.print("Currently at", lf.getCurrentPosition() + ":" + rf.getCurrentPosition());
+            if (!loop) tm.update();
         }
         if (inches != 0) stopRobot();
     }
@@ -109,7 +110,7 @@ public class Drivetrain {
      */
     public void IMUTurn(double degrees, RobotConstants.Dir direction) {
         double direct = direction == LEFT ? -1 : direction == RIGHT ? 1 : 0;
-        utils.sleep(100);
+        sleep(100);
         degrees *= -1;
         degrees -= imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
         imu.resetYaw();
@@ -120,9 +121,9 @@ public class Drivetrain {
         double difference = 999;
         if (abs(initialGoalAngle) > 180)
             correctedGoalAngle -= abs(initialGoalAngle) / initialGoalAngle * 360;
-        while (utils.active() && (difference > tolerance) && degrees != 0) {
+        while (active() && (difference > tolerance) && degrees != 0) {
             angle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
-            difference = utils.simplifyAngle(min(abs(initialGoalAngle - angle), abs(correctedGoalAngle - angle)));
+            difference = simplifyAngle(min(abs(initialGoalAngle - angle), abs(correctedGoalAngle - angle)));
             turnModifier = min(1, (difference + 3) / 30);
             turnPower = degrees / abs(degrees) * TURN_SPEED * turnModifier * direct;
             setMotorPowers(-turnPower, turnPower, -turnPower, turnPower);
@@ -130,12 +131,12 @@ public class Drivetrain {
             angle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
             difference = min(abs(initialGoalAngle - angle), abs(correctedGoalAngle - angle));
 
-            utils.print("Corrected Goal", correctedGoalAngle);
-            utils.print("Initial Goal", initialGoalAngle);
-            utils.print("Start", startAngle);
-            utils.print("Angle", angle);
-            utils.print("Distance from goal", difference);
-            if (!loop) utils.update();
+            tm.print("Corrected Goal", correctedGoalAngle);
+            tm.print("Initial Goal", initialGoalAngle);
+            tm.print("Start", startAngle);
+            tm.print("Angle", angle);
+            tm.print("Distance from goal", difference);
+            if (!loop) tm.update();
         }
         stopRobot();
         imu.resetYaw();
@@ -150,24 +151,24 @@ public class Drivetrain {
      */
     public void newIMUTurn(double degrees, RobotConstants.Dir direction) {
         double direct = direction == LEFT ? -1 : direction == RIGHT ? 1 : 0;
-        goalAngle = utils.simplifyAngle(goalAngle - degrees);
-        degrees = utils.simplifyAngle(-degrees - imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
+        goalAngle = simplifyAngle(goalAngle - degrees);
+        degrees = simplifyAngle(-degrees - imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
         double tolerance = 1;
         double startAngle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
         double angle, turnModifier, turnPower;
         double error = 999;
-        while (utils.active() && error > tolerance) {
+        while (active() && error > tolerance) {
             angle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
-            error = abs(utils.angleDifference(angle, goalAngle));
+            error = abs(angleDifference(angle, goalAngle));
             turnModifier = min(1, (error + 3) / 30);
             turnPower = TURN_SPEED * turnModifier * direct * signum(degrees);
             setMotorPowers(-turnPower, turnPower, -turnPower, turnPower);
 
-            utils.print("Start Angle", startAngle);
-            utils.print("Current Angle", angle);
-            utils.print("Goal Angle", goalAngle);
-            utils.print("Error", error);
-            if (!loop) utils.update();
+            tm.print("Start Angle", startAngle);
+            tm.print("Current Angle", angle);
+            tm.print("Goal Angle", goalAngle);
+            tm.print("Error", error);
+            if (!loop) tm.update();
         }
         stopRobot();
     }
@@ -252,7 +253,7 @@ public class Drivetrain {
      * @param direction Direction to strafe in.*
      */
     public void velocityStrafe(double inches, Dir direction) {
-        if (!utils.active() || lf == null) return;
+        if (!active() || lf == null) return;
         setMotorModes(STOP_AND_RESET_ENCODER);
 
         setMotorModes(RUN_USING_ENCODER);
@@ -270,14 +271,14 @@ public class Drivetrain {
         double duration = abs(inches * COUNTS_PER_INCH / velocity);
 
         runtime.reset();
-        while (utils.active() && (runtime.seconds() < duration) && inches != 0) {
-            utils.print("Strafing until", duration + " seconds");
-            utils.print("Currently at", runtime.seconds() + " seconds");
-            if (!loop) utils.update();
+        while (active() && (runtime.seconds() < duration) && inches != 0) {
+            tm.print("Strafing until", duration + " seconds");
+            tm.print("Currently at", runtime.seconds() + " seconds");
+            if (!loop) tm.update();
         }
         if (inches != 0) stopRobot();
-        utils.print("Strafing", "Complete");
-        if (!loop) utils.update();
+        tm.print("Strafing", "Complete");
+        if (!loop) tm.update();
     }
 
     /**

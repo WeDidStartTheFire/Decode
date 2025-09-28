@@ -1,10 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import static java.lang.Math.PI;
-import static java.lang.Math.sqrt;
-import static java.lang.Math.toRadians;
 
-import com.pedropathing.localization.Pose;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;

@@ -20,7 +20,7 @@ public class Utils {
      * @param angle Angle in degrees to be simplified
      * @return Angle now simplified between -180 and 180 degrees
      */
-    public double simplifyAngle(double angle) {
+    public static double simplifyAngle(double angle) {
         return simplifyAngle(angle, DEGREES);
     }
 
@@ -30,7 +30,7 @@ public class Utils {
      * @param angle Angle
      * @param u     Whether the angle is in radians or degrees
      */
-    public double simplifyAngle(double angle, AngleUnit u) {
+    public static double simplifyAngle(double angle, AngleUnit u) {
         if (u == DEGREES) return ((angle + 180) % 360 + 360) % 360 - 180;
         return ((angle + PI) % TAU + TAU) % TAU - PI;
     }
@@ -42,7 +42,7 @@ public class Utils {
      * @param b Second angle, to subtract, in degrees
      * @return The difference between the two angles in degrees
      */
-    public double angleDifference(double a, double b) {
+    public static double angleDifference(double a, double b) {
         return angleDifference(a, b, DEGREES);
     }
 
@@ -54,7 +54,7 @@ public class Utils {
      * @param u Whether the angles are in radians or degrees
      * @return The difference between the two angles in the specified unit
      */
-    public double angleDifference(double a, double b, AngleUnit u) {
+    public static double angleDifference(double a, double b, AngleUnit u) {
         return simplifyAngle(a - b, u);
     }
 
@@ -72,7 +72,7 @@ public class Utils {
      *
      * @param ms The amount of milliseconds to sleep.
      */
-    public void sleep(long ms) {
+    public static void sleep(long ms) {
         try {
             Thread.sleep(ms);
         } catch (InterruptedException e) {
@@ -85,7 +85,7 @@ public class Utils {
      *
      * @param seconds The amount of seconds to sleep.
      */
-    public void s(double seconds) {
+    public static void s(double seconds) {
         sleep((long) seconds * 1000);
     }
 

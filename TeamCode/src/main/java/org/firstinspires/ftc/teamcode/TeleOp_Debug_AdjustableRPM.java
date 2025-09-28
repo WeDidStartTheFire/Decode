@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp(name = "Test Adjustable RPM", group = "Main")
-public class TeleOp_Debug_AdjustableRPM extends Base {
+public class TeleOp_Debug_AdjustableRPM extends Legacy_Base {
 
     boolean wasDownA = false;
     boolean wasDownB = false;

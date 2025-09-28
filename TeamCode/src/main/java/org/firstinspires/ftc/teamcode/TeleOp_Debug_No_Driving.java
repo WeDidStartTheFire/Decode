@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "Test No Driving", group = "Main")
-public class TeleOp_Debug_No_Driving extends Base {
+public class TeleOp_Debug_No_Driving extends Legacy_Base {
 
     boolean wasDownA = false;
     boolean wasDownB = false;

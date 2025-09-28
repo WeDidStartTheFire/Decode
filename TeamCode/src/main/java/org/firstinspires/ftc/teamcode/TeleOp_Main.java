@@ -4,7 +4,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "Main", group = "Main")
-public class TeleOp_Main extends Base {
+public class TeleOp_Main extends Legacy_Base {
     @Override
     public void runOpMode() throws InterruptedException {
         Pose p = loadOdometryPosition();

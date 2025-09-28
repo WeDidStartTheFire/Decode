@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
 import static java.lang.Math.abs;
+import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "Slow (.7)", group = "Main")
-public class TeleOp_Slow_Point7 extends Base {
+public class TeleOp_Slow_Point7 extends Legacy_Base {
     @Override
     public void runOpMode() throws InterruptedException {
         auto = true;

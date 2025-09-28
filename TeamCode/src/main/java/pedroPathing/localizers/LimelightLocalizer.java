@@ -8,8 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.pedropathing.localization.Localizer;
-import com.pedropathing.localization.Pose;
-import com.pedropathing.pathgen.Vector;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Vector;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -19,7 +19,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 
-public class LimelightLocalizer extends Localizer {
+public class LimelightLocalizer implements Localizer {
     private final Limelight3A limelight;
     private final IMU imu;
     private long prevTime;
@@ -53,7 +53,7 @@ public class LimelightLocalizer extends Localizer {
     }
 
     public Vector getVelocityVector() {
-        return getVelocity().getVector();
+        return getVelocity().getAsVector();
     }
 
     public void setStartPose(Pose setStart) {
@@ -110,6 +110,10 @@ public class LimelightLocalizer extends Localizer {
 
     public double getTurningMultiplier() {
         return 0.0;
+    }
+
+    public double getIMUHeading() {
+        return imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle;
     }
 
     public void resetIMU() {

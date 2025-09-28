@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import static java.lang.Math.toRadians;
 
-import com.pedropathing.localization.Pose;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Autonomous(name = "Write To File", group = "Test", preselectTeleOp = "Test Odometry")

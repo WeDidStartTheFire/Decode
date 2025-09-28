@@ -11,10 +11,9 @@
 //import androidx.annotation.Nullable;
 //
 //import com.pedropathing.localization.Localizer;
-//import com.pedropathing.localization.Pose;
-//import com.pedropathing.localization.constants.OTOSConstants;
-//import com.pedropathing.localization.localizers.OTOSLocalizer;
-//import com.pedropathing.pathgen.Vector;
+//import com.pedropathing.geometry.Pose;
+//import com.pedropathing.ftc.localization.localizers.OTOSLocalizer;
+//import com.pedropathing.math.Vector;
 //import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 //import com.qualcomm.robotcore.hardware.DcMotorEx;
 //import com.qualcomm.robotcore.hardware.HardwareMap;

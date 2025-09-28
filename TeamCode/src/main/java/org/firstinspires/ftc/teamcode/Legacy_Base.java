@@ -18,10 +18,11 @@ import androidx.annotation.Nullable;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.util.Constants;
+import com.pedropathing.paths.Path;
+import com.qualcomm.hardware.rev.*;
 import com.qualcomm.robotcore.eventloop.opmode.*;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.*;
@@ -43,10 +44,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.pedropathing.localization.Pose;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.geometry.BezierLine;
 
-import pedroPathing.constants.FConstants;
-import pedroPathing.constants.LConstants;
+import pedroPathing.constants.Constants;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 // Connect to robot: rc
@@ -55,8 +56,10 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 @Deprecated
 public abstract class Legacy_Base extends LinearOpMode {
     // All non-primitive data types initialize to null on default.
-    public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor, verticalMotorA, verticalMotorB, sorterMotor;
-    public Servo wristServoX, wristServoY, basketServo, specimenServo, intakeServo;
+    public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor, verticalMotorA, verticalMotorB,
+            sorterMotor, intakeMotor, launcherMotorA, launcherMotorB;
+    public Servo wristServoX, wristServoY, basketServo, specimenServo, intakeServo, feederServoA,
+            feederServoB;
     public TouchSensor verticalTouchSensor, horizontalTouchSensor;
     public IMU imu;
     /*
@@ -102,7 +105,7 @@ public abstract class Legacy_Base extends LinearOpMode {
 
     static double baseSpeedMultiplier = 0.75;
     static double baseTurnSpeed = 2.5;
-    
+
     boolean wasDpu, isDpu, isDpd, wasDpd;
     double lastDriveInputTime = getRuntime();
 
@@ -112,7 +115,7 @@ public abstract class Legacy_Base extends LinearOpMode {
     int sorterGoal;
     PIDCoefficients sorterPID = new PIDCoefficients(0, 0, 0);
 
-    public MultipleTelemetry telemetryA;
+    public TelemetryManager telemetryA;
 
     public void buildPaths() {
     }
@@ -158,7 +161,18 @@ public abstract class Legacy_Base extends LinearOpMode {
         try {
             sorterMotor = hardwareMap.get(DcMotorEx.class, "sorterMotor"); // Not configured
         } catch (IllegalArgumentException e) {
-            except("wristMotor not connected");
+            except("sorterMotor not connected");
+        }
+        try {
+            intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor"); // Expansion Hub 0
+        } catch (IllegalArgumentException e) {
+            except("intakeMotor not connected");
+        }
+        try {
+            launcherMotorA = hardwareMap.get(DcMotorEx.class, "launcherMotorA"); // Expansion Hub 1
+            launcherMotorB = hardwareMap.get(DcMotorEx.class, "launcherMotorB"); // Expansion Hub 2
+        } catch (IllegalArgumentException e) {
+            except("One of the launcherMotors not connected");
         }
 
         // Servos
@@ -169,6 +183,16 @@ public abstract class Legacy_Base extends LinearOpMode {
         }
         try {
             wristServoY = hardwareMap.get(Servo.class, "wristServoY"); // Expansion Hub 2
+        } catch (IllegalArgumentException e) {
+            except("wristServoY not connected");
+        }
+        try {
+            feederServoA = hardwareMap.get(Servo.class, "feederServoA"); // Expansion Hub 0
+        } catch (IllegalArgumentException e) {
+            except("wristServoX not connected");
+        }
+        try {
+            feederServoB = hardwareMap.get(Servo.class, "feederServoB"); // Expansion Hub 2
         } catch (IllegalArgumentException e) {
             except("wristServoY not connected");
         }
@@ -200,6 +224,9 @@ public abstract class Legacy_Base extends LinearOpMode {
             except("horizontalTouchSensor not connected");
         }
 
+        telemetryA = PanelsTelemetry.INSTANCE.getTelemetry();
+
+
         if (useCam) {
             try {
                 WebcamName cam = hardwareMap.get(WebcamName.class, "Webcam 1");
@@ -209,11 +236,8 @@ public abstract class Legacy_Base extends LinearOpMode {
             }
         }
 
-
         if (useOdometry) {
-            telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
-            Constants.setConstants(FConstants.class, LConstants.class);
-            follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
+            follower = Constants.createFollower(hardwareMap);
             follower.setStartingPose(currentPose);
             follower.startTeleopDrive();
             buildPaths();
@@ -340,6 +364,29 @@ public abstract class Legacy_Base extends LinearOpMode {
         else sorterGoal -= SORTER_TICKS_PER_REV / 3;
     }
 
+    public void intakeLogic() {
+        if (intakeMotor == null) return;
+        intakeMotor.setPower(-gamepad1.right_trigger);
+    }
+
+    public void launcherLogic() {
+        if (launcherMotorA == null) return;
+        if (gamepad1.right_bumper) {
+            launcherMotorA.setPower(1);
+            launcherMotorB.setPower(-1);
+        } else {
+            launcherMotorA.setPower(0);
+            launcherMotorB.setPower(0);
+        }
+    }
+
+    public void feederLogic() {
+        if (gamepad1.xWasPressed()) {
+            feederServoA.setPosition(feederServoA.getPosition() == 0 ? 1 : 0);
+            feederServoB.setPosition(feederServoA.getPosition() == 0 ? 1 : 0);
+        }
+    }
+
     public void updateSorterPower() {
         double power = 0;
         double sorterPosition = sorterMotor.getCurrentPosition();
@@ -411,7 +458,8 @@ public abstract class Legacy_Base extends LinearOpMode {
             correctedGoalAngle -= abs(initialGoalAngle) / initialGoalAngle * 360;
         while (active() && (difference > tolerance) && degrees != 0) {
             angle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
-            difference = simplifyAngle(min(abs(initialGoalAngle - angle), abs(correctedGoalAngle - angle)));
+            difference = simplifyAngle(min(abs(initialGoalAngle - angle),
+                    abs(correctedGoalAngle - angle)));
             turnModifier = min(1, (difference + 3) / 30);
             turnPower = degrees / abs(degrees) * TURN_SPEED * turnModifier * direct;
             setMotorPowers(-turnPower, turnPower, -turnPower, turnPower);
@@ -797,6 +845,10 @@ public abstract class Legacy_Base extends LinearOpMode {
         visionPortal = builder.build();
     }
 
+    private double lerp(double t, double a, double b) {
+        return a + (b - a) * t;
+    }
+
     /**
      * Logic for the drivetrain during TeleOp
      *
@@ -814,7 +866,8 @@ public abstract class Legacy_Base extends LinearOpMode {
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
         if (usePedro) {
             follower.update();
-            double speedMultiplier = 1.5 * (gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1]);
+            double speedMultiplier = 1.5 * (gamepad1.left_bumper ? speeds[2] :
+                    lerp(gamepad1.left_trigger, speeds[1], speeds[0]));
             speedMultiplier *= baseSpeedMultiplier;
 
             if ((following || holding) && (abs(gamepad1.left_stick_y) > .05 ||
@@ -834,7 +887,7 @@ public abstract class Legacy_Base extends LinearOpMode {
                 follower.holdPoint(follower.getPose());
             }
 
-            follower.setTeleOpMovementVectors(gamepad1.left_stick_y * speedMultiplier,
+            follower.setTeleOpDrive(gamepad1.left_stick_y * speedMultiplier,
                     gamepad1.left_stick_x * speedMultiplier,
                     -gamepad1.right_stick_x * speedMultiplier,
                     !fieldCentric);
@@ -846,7 +899,8 @@ public abstract class Legacy_Base extends LinearOpMode {
         double speedMultiplier = gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1];
 
         if (fieldCentric) {
-            double angle = PI / 2 + (useOdometry ? -follower.getPose().getHeading() : -imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle);
+            double angle = PI / 2 + (useOdometry ? -follower.getPose().getHeading() :
+                    -imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle);
 
             double joystickAngle = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
             double moveAngle = joystickAngle - angle;
@@ -878,8 +932,8 @@ public abstract class Legacy_Base extends LinearOpMode {
             rightBackPower /= max;
         }
 
-        if (abs(leftFrontPower) > .05 || abs(rightFrontPower) > .05 || abs(leftBackPower) > .05 || abs(rightBackPower) > .05)
-            follower.breakFollowing();
+        if (abs(leftFrontPower) > .05 || abs(rightFrontPower) > .05 || abs(leftBackPower) > .05 ||
+                abs(rightBackPower) > .05) follower.breakFollowing();
 
         // Send calculated power to wheels
         if (lf != null && !follower.isBusy()) {
@@ -1059,7 +1113,8 @@ public abstract class Legacy_Base extends LinearOpMode {
                 startRuntime = runtime.seconds();
             follower.update();
             Pose pos = follower.getPose();
-            print(String.format(US, "SparkFun Position :  X: %.2f, Y: %.2f, θ: %.2f°", pos.getX(), pos.getY(), toDegrees(pos.getHeading())));
+            print(String.format(US, "SparkFun Position :  X: %.2f, Y: %.2f, θ: %.2f°",
+                    pos.getX(), pos.getY(), toDegrees(pos.getHeading())));
             updates++;
             print("Updates", updates);
             print("Updates per Second", updates / runtime.seconds());

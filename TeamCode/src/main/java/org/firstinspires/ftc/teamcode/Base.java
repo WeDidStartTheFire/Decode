@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
+import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.paths.Path;
@@ -232,6 +233,9 @@ public abstract class Base extends LinearOpMode {
             except("horizontalTouchSensor not connected");
         }
 
+        telemetryA = PanelsTelemetry.INSTANCE.getTelemetry();
+
+
         if (useCam) {
             try {
                 WebcamName cam = hardwareMap.get(WebcamName.class, "Webcam 1");
@@ -240,7 +244,6 @@ public abstract class Base extends LinearOpMode {
                 except("Webcam not connected");
             }
         }
-
 
         if (useOdometry) {
             follower = Constants.createFollower(hardwareMap);

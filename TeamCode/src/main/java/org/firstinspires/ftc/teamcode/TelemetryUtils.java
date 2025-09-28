@@ -28,7 +28,6 @@ public class TelemetryUtils {
         telemetry.addLine(content);
     }
 
-
     /**
      * A less space consuming way to update the displayed telemetry.
      */

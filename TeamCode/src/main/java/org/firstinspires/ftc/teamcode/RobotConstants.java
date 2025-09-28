@@ -43,4 +43,6 @@ public class RobotConstants {
     public enum Dir {
         LEFT, RIGHT, FORWARD, BACKWARD
     }
+
+    public enum Color {RED, BLUE}
 }

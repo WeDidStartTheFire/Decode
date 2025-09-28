@@ -18,10 +18,10 @@ import androidx.annotation.Nullable;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.util.Constants;
+import com.pedropathing.paths.Path;
 import com.qualcomm.hardware.rev.*;
 import com.qualcomm.robotcore.eventloop.opmode.*;
 import com.qualcomm.robotcore.hardware.*;
@@ -44,13 +44,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.pedropathing.localization.Pose;
-import com.pedropathing.pathgen.BezierLine;
-import com.pedropathing.pathgen.Path;
-import com.pedropathing.pathgen.Point;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.geometry.BezierLine;
 
-import pedroPathing.constants.FConstants;
-import pedroPathing.constants.LConstants;
+import pedroPathing.constants.Constants;
 
 // Connect to robot: rc
 
@@ -154,7 +151,7 @@ public abstract class Base extends LinearOpMode {
 
     double[] WRIST_S_ANGLES = {toRadians(-180), toRadians(180)};
 
-    public MultipleTelemetry telemetryA;
+    public TelemetryManager telemetryA;
 
     /** Directions. Options: LEFT, RIGHT, FORWARD, BACKWARD */
     public enum Dir {
@@ -247,6 +244,9 @@ public abstract class Base extends LinearOpMode {
             except("horizontalTouchSensor not connected");
         }
 
+        telemetryA = PanelsTelemetry.INSTANCE.getTelemetry();
+
+
         if (useCam) {
             try {
                 WebcamName cam = hardwareMap.get(WebcamName.class, "Webcam 1");
@@ -256,11 +256,8 @@ public abstract class Base extends LinearOpMode {
             }
         }
 
-
         if (useOdometry) {
-            telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
-            Constants.setConstants(FConstants.class, LConstants.class);
-            follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
+            follower = Constants.createFollower(hardwareMap);
             follower.setStartingPose(currentPose);
             follower.startTeleopDrive();
             buildPaths();
@@ -1216,7 +1213,7 @@ public abstract class Base extends LinearOpMode {
                 follower.holdPoint(follower.getPose());
             }
 
-            follower.setTeleOpMovementVectors(gamepad1.left_stick_y * speedMultiplier,
+            follower.setTeleOpDrive(gamepad1.left_stick_y * speedMultiplier,
                     gamepad1.left_stick_x * speedMultiplier,
                     -gamepad1.right_stick_x * speedMultiplier,
                     !fieldCentric);
@@ -1289,13 +1286,13 @@ public abstract class Base extends LinearOpMode {
             double bestDistance = Double.MAX_VALUE;
             Pose bestPose = ROBOT_POSITIONS[0];
             for (Pose pose : ROBOT_POSITIONS) {
-                double distance = new Point(poseEstimate).distanceFrom(new Point(pose));
+                double distance = poseEstimate.distanceFrom(pose);
                 if (distance < bestDistance) {
                     bestDistance = distance;
                     bestPose = pose;
                 }
             }
-            Path path = new Path(new BezierLine(new Point(poseEstimate), new Point(bestPose)));
+            Path path = new Path(new BezierLine(poseEstimate, bestPose));
             path.setLinearHeadingInterpolation(poseEstimate.getHeading(), bestPose.getHeading());
             follower.followPath(path);
         } else if (gamepad1.a) {

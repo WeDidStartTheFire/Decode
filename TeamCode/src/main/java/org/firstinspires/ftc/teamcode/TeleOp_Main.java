@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.pedropathing.localization.Pose;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "Main", group = "Main")

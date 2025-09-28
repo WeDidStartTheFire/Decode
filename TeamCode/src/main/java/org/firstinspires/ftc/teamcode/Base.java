@@ -56,7 +56,7 @@ public abstract class Base extends LinearOpMode {
     private static final double LIFT_VEL = 1500;
     private final ElapsedTime runtime = new ElapsedTime();
     // All non-primitive data types initialize to null on default.
-    public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor, verticalMotorA, verticalMotorB;
+    public DcMotorEx lf, lb, rf, rb, liftMotor, wristMotor, verticalMotorA, verticalMotorB, sorterMotor;
     public Servo wristServoX, wristServoY, basketServo, specimenServo, intakeServo;
     public TouchSensor verticalTouchSensor, horizontalTouchSensor;
     public IMU imu;
@@ -135,9 +135,15 @@ public abstract class Base extends LinearOpMode {
 
     static double[] speeds = {0.2, 0.6, 1};
     boolean wasDpu, isDpu, isDpd, wasDpd;
+    double lastDriveInputTime = getRuntime();
 
     int liftGoal = 0;
     boolean liftRunToPos, handoff;
+
+    final static int SORTER_GEAR_RATIO = 4;
+    final static int SORTER_TICKS_PER_REV = 28 * SORTER_GEAR_RATIO;
+    int sorterGoal;
+    PIDCoefficients sorterPID = new PIDCoefficients(0, 0, 0);
 
     Pose NET_ZONE_POSITION = new Pose(144 - 12 - (ROBOT_LENGTH / 2 / sqrt(2)) + 1, 144 - 12 - (ROBOT_LENGTH / 2 / sqrt(2)) + 1, toRadians(45));
     Pose OBSERVATION_ZONE_POSITION = new Pose(128.000, 135.000, toRadians(-90));//new Pose(ROBOT_WIDTH / 2, 144 - ROBOT_LENGTH / 2, toRadians(0));
@@ -190,6 +196,11 @@ public abstract class Base extends LinearOpMode {
         }
         try {
             wristMotor = hardwareMap.get(DcMotorEx.class, "wristMotor"); // Expansion Hub 1
+        } catch (IllegalArgumentException e) {
+            except("wristMotor not connected");
+        }
+        try {
+            sorterMotor = hardwareMap.get(DcMotorEx.class, "sorterMotor"); // Not configured
         } catch (IllegalArgumentException e) {
             except("wristMotor not connected");
         }
@@ -364,6 +375,26 @@ public abstract class Base extends LinearOpMode {
         useOdometry = useOdom;
         useCam = useCamera;
         setup();
+    }
+
+    public void sorterLogic() {
+        updateSorterPower();
+        if (!gamepad1.dpadUpWasPressed() && !gamepad1.dpadDownWasPressed()) return;
+        if (gamepad1.dpadUpWasPressed()) sorterGoal += SORTER_TICKS_PER_REV / 3;
+        else sorterGoal -= SORTER_TICKS_PER_REV / 3;
+    }
+
+    public void updateSorterPower() {
+        double power = 0;
+        double sorterPosition = sorterMotor.getCurrentPosition();
+        double error = sorterPosition - sorterGoal;
+        double velocity = sorterMotor.getVelocity();
+
+        power += sorterPID.p * -error;
+
+        power += sorterPID.d * -velocity;
+
+        sorterMotor.setPower(power);
     }
 
     /**
@@ -1170,6 +1201,10 @@ public abstract class Base extends LinearOpMode {
                 following = false;
                 holding = false;
                 follower.startTeleopDrive();
+                lastDriveInputTime = getRuntime();
+            } else if (getRuntime() - lastDriveInputTime > 0.5) {
+                holding = true;
+                follower.holdPoint(follower.getPose());
             }
 
             if (!follower.isBusy() && following) {
@@ -1644,7 +1679,7 @@ public abstract class Base extends LinearOpMode {
     /** Adds information messages to telemetry and updates it */
     public void telemetryAll() {
         if (lf == null) telemetry.addData("Drive Train", "Disconnected");
-        print("Following", follower.isBusy());
+        if (follower != null) print("Following", follower.isBusy());
         if (verticalMotorA == null) print("Vertical Lift Motors", "Disconnected");
         else {
             print("Vertical Motor A Position", verticalMotorA.getCurrentPosition());

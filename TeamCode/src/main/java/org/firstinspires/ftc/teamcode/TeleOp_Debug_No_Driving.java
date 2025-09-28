@@ -4,14 +4,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name = "Test No Driving", group = "Into The Deep")
+@TeleOp(name = "Test No Driving", group = "Main")
 public class TeleOp_Debug_No_Driving extends Base {
 
     boolean wasDownA = false;
     boolean wasDownB = false;
     public Servo servoA, servoB, servoC, servoD;
     public DcMotorEx motorA, motorB;
-    public final double MOTOR_SPEED = 0.25;
+    public final int MOTOR_VEL = 5800 / 28;
     public final boolean controlHub = true;
 
     @Override
@@ -113,24 +113,38 @@ public class TeleOp_Debug_No_Driving extends Base {
 
             if (motorA != null) {
                 if (gamepad1.dpad_up) {
-                    motorA.setPower(1 * MOTOR_SPEED);
+                    motorA.setPower(1);
                 } else if (gamepad1.dpad_down) {
-                    motorA.setPower(-1 * MOTOR_SPEED);
+                    motorA.setPower(-1);
                 } else {
                     motorA.setPower(0);
                 }
+//                if (gamepad1.dpad_up) {
+//                    motorA.setVelocity(MOTOR_VEL);
+//                } else if (gamepad1.dpad_down) {
+//                    motorA.setVelocity(-MOTOR_VEL);
+//                } else {
+//                    motorA.setVelocity(0);
+//                }
             } else {
                 addLastActionTelemetry("motorA disconnected");
             }
 
             if (motorB != null) {
                 if (gamepad1.dpad_right) {
-                    motorB.setPower(1 * MOTOR_SPEED);
+                    motorB.setPower(1);
                 } else if (gamepad1.dpad_left) {
-                    motorB.setPower(-1 * MOTOR_SPEED);
+                    motorB.setPower(-1);
                 } else {
                     motorB.setPower(0);
                 }
+//                if (gamepad1.dpad_right) {
+//                    motorB.setVelocity(MOTOR_VEL);
+//                } else if (gamepad1.dpad_left) {
+//                    motorB.setVelocity(-MOTOR_VEL);
+//                } else {
+//                    motorB.setVelocity(0);
+//                }
             } else {
                 addLastActionTelemetry("motorB disconnected");
             }

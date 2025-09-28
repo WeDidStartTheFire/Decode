@@ -4,25 +4,18 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name = "Test", group = "Main")
-public class TeleOp_Debug extends Base {
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-    double axial = 0.0;
-    double lateral = 0.0;
-    double yaw = 0.0;
-    double leftFrontPower = 0.0;
-    double rightFrontPower = 0.0;
-    double leftBackPower = 0.0;
-    double rightBackPower = 0.0;
-    double max = 0.0;
-    static final double SPEED_MULTIPLIER = 0.75;
-    static final double BASE_TURN_SPEED = 2.5;
-    double slowdownMultiplier = 0.0;
+@TeleOp(name = "Test Adjustable RPM", group = "Main")
+public class TeleOp_Debug_AdjustableRPM extends Base {
+
     boolean wasDownA = false;
     boolean wasDownB = false;
     public Servo servoA, servoB, servoC, servoD;
     public DcMotorEx motorA, motorB;
-    public final double MOTOR_SPEED = 1;
+    public final int TICKS_PER_REVOLUTION = 28;
+    public int MOTOR_RPM = 5800;
+    public int MOTOR_VEL = MOTOR_RPM / TICKS_PER_REVOLUTION;
     public final boolean controlHub = true;
 
     @Override
@@ -50,51 +43,57 @@ public class TeleOp_Debug extends Base {
             } catch (Exception e) {
                 except("servoD disconnected");
             }
+            motorA = lf;
+            motorB = lb;
         } else {
             servoA = basketServo;
             servoB = specimenServo;
             servoC = wristServoX;
             servoD = intakeServo;
+            motorA = wristMotor;
+            motorB = liftMotor;
         }
 
-        motorA = wristMotor;
-        motorB = liftMotor;
-
         while (active()) {
-            // Slows down movement for better handling the more the right trigger is held down
-            slowdownMultiplier = (1.0 - gamepad1.right_trigger) * 0.7 + 0.3;
-            // f (gamepad1.left_stick_button || gamepad1.right_stick_button) {
-            // slowdownMultiplier *= 0.5; }
 
-            axial = ((-gamepad1.left_stick_y * SPEED_MULTIPLIER) * slowdownMultiplier);
-            lateral = ((gamepad1.left_stick_x * SPEED_MULTIPLIER) * slowdownMultiplier);
-            yaw = ((gamepad1.right_stick_x * BASE_TURN_SPEED) * slowdownMultiplier);
+            if (gamepad1.dpadUpWasPressed()) MOTOR_RPM += 100;
+            if (gamepad1.dpadDownWasPressed()) MOTOR_RPM -= 100;
 
-            leftFrontPower = axial + lateral + yaw;
-            rightFrontPower = axial - lateral - yaw;
-            leftBackPower = axial - lateral + yaw;
-            rightBackPower = axial + lateral - yaw;
+            print("Goal RPM", MOTOR_RPM);
 
-            max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-            max = Math.max(max, Math.abs(leftBackPower));
-            max = Math.max(max, Math.abs(rightBackPower));
+            if (motorA != null) {
+//                if (gamepad1.dpad_up) {
+//                    motorA.setPower(1);
+//                } else if (gamepad1.dpad_down) {
+//                    motorA.setPower(-1);
+//                } else {
+//                    motorA.setPower(0);
+//                }
+                if (gamepad1.left_stick_y < -.05) // Up
+                    motorA.setVelocity(MOTOR_VEL);
+                else if (gamepad1.left_stick_y > .05) // Down
+                    motorA.setVelocity(-MOTOR_VEL);
+                else motorA.setVelocity(0);
+                print("Motor A RPM", motorA.getVelocity(AngleUnit.DEGREES) / 360 * 60);
+            } else addLastActionTelemetry("motorA disconnected");
 
-            if (max > 1.0) {
-                leftFrontPower /= max;
-                rightFrontPower /= max;
-                leftBackPower /= max;
-                rightBackPower /= max;
-            }
+            if (motorB != null) {
+//                if (gamepad1.dpad_right) {
+//                    motorB.setPower(1);
+//                } else if (gamepad1.dpad_left) {
+//                    motorB.setPower(-1);
+//                } else {
+//                    motorB.setPower(0);
+//                }
+                if (gamepad1.right_stick_y < -.05) // Up
+                    motorB.setVelocity(MOTOR_VEL);
+                else if (gamepad1.right_stick_y > .05) // Down
+                    motorB.setVelocity(-MOTOR_VEL);
+                else motorB.setVelocity(0);
+                print("Motor B RPM", motorB.getVelocity(AngleUnit.DEGREES) / 360 * 60);
+            } else addLastActionTelemetry("motorB disconnected");
 
-            // Send calculated power to wheels
-            if (lf != null) {
-                lf.setPower(leftFrontPower);
-                rf.setPower(rightFrontPower);
-                lb.setPower(leftBackPower);
-                rb.setPower(rightBackPower);
-            } else {
-                print("WARNING:", "At least one drivetrain motor disconnected");
-            }
+            addLastActionTelemetry("");
 
             if (servoA != null) {
                 if (gamepad1.a && !wasDownA) {
@@ -154,30 +153,6 @@ public class TeleOp_Debug extends Base {
                 }
             } else {
                 addLastActionTelemetry("servoD disconnected");
-            }
-
-            if (motorA != null) {
-                if (gamepad1.dpad_up) {
-                    motorA.setPower(1 * MOTOR_SPEED);
-                } else if (gamepad1.dpad_down) {
-                    motorA.setPower(-1 * MOTOR_SPEED);
-                } else {
-                    motorA.setPower(0);
-                }
-            } else {
-                addLastActionTelemetry("motorA disconnected");
-            }
-
-            if (motorB != null) {
-                if (gamepad1.dpad_right) {
-                    motorB.setPower(1 * MOTOR_SPEED);
-                } else if (gamepad1.dpad_left) {
-                    motorB.setPower(-1 * MOTOR_SPEED);
-                } else {
-                    motorB.setPower(0);
-                }
-            } else {
-                addLastActionTelemetry("motorB disconnected");
             }
 
             telemetryAll();

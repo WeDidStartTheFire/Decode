@@ -4,7 +4,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name = "Test Continous Wrist Servo", group = "Into The Deep")
+@TeleOp(name = "Test Continous Wrist Servo", group = "Main")
 @Disabled
 public class TeleOp_TestContinuousWristServo extends Base {
     @Override

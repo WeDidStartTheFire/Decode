@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name = "Main", group = "Into The Deep")
+@TeleOp(name = "Main", group = "Main")
 public class TeleOp_Main extends Base {
     @Override
     public void runOpMode() throws InterruptedException {
@@ -11,7 +11,7 @@ public class TeleOp_Main extends Base {
         setup(p != null ? p : new Pose());
 
         while (active()) {
-            drivetrainLogic(p != null);
+            drivetrainLogic(p != null, false);
             wristMotorLogic();
             wristServoXLogic();
             intakeLogic();

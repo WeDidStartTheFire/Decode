@@ -14,6 +14,8 @@ public class TeleOp_StructureTest extends LinearOpMode {
         Pose p = loadOdometryPosition();
         robot = new Robot(hardwareMap, telemetry, gamepad1, gamepad2, true, false);
 
+        waitForStart();
+
         while (active()) {
             robot.drivetrain.teleop.drivetrainLogic(p != null, false);
         }

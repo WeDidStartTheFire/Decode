@@ -21,6 +21,8 @@ public class Robot {
         drivetrain = new Drivetrain(hardwareMap, telemetry, follower, useOdometry);
 
         TelemetryUtils tm = new TelemetryUtils(telemetry);
+
+        // Motors
         try {
             sorterMotor = hardwareMap.get(DcMotorEx.class, "sorterMotor"); // Not configured
         } catch (IllegalArgumentException e) {

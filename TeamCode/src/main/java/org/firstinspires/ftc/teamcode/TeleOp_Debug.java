@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "Test", group = "Main")
-public class TeleOp_Debug extends Legacy_Base {
+public class TeleOp_Debug extends OpMode {
 
     double axial = 0.0;
     double lateral = 0.0;
@@ -22,165 +23,162 @@ public class TeleOp_Debug extends Legacy_Base {
     boolean wasDownB = false;
     public Servo servoA, servoB, servoC, servoD;
     public DcMotorEx motorA, motorB;
+    public Robot robot;
     public final double MOTOR_SPEED = 1;
-    public final boolean controlHub = true;
+    public TelemetryUtils tm;
 
     @Override
-    public void runOpMode() throws InterruptedException {
-        setup();
+    public void init() {
+        robot = new Robot(hardwareMap, telemetry, false);
 
-        if (controlHub) {
-            try {
-                servoA = hardwareMap.get(Servo.class, "servoA");
-            } catch (Exception e) {
-                except("servoA disconnected");
+        tm = new TelemetryUtils(telemetry);
+        try {
+            servoA = hardwareMap.get(Servo.class, "servoA");
+        } catch (Exception e) {
+            tm.except("servoA disconnected");
+        }
+        try {
+            servoB = hardwareMap.get(Servo.class, "servoB");
+        } catch (Exception e) {
+            tm.except("servoB disconnected");
+        }
+        try {
+            servoC = hardwareMap.get(Servo.class, "servoC");
+        } catch (Exception e) {
+            tm.except("servoC disconnected");
+        }
+        try {
+            servoD = hardwareMap.get(Servo.class, "servoD");
+        } catch (Exception e) {
+            tm.except("servoD disconnected");
+        }
+
+        try {
+            motorA = hardwareMap.get(DcMotorEx.class, "intakeMotor");
+        } catch (IllegalArgumentException e) {
+            tm.except("intakeMotor disconnected");
+        }
+        try {
+            motorB = hardwareMap.get(DcMotorEx.class, "launcherMotorA");
+        } catch (IllegalArgumentException e) {
+            tm.except("launcherMotorA disconnected");
+        }
+    }
+
+    @Override
+    public void loop() {
+        // Slows down movement for better handling the more the right trigger is held down
+        slowdownMultiplier = (1.0 - gamepad1.right_trigger) * 0.7 + 0.3;
+        // f (gamepad1.left_stick_button || gamepad1.right_stick_button) {
+        // slowdownMultiplier *= 0.5; }
+
+        axial = ((-gamepad1.left_stick_y * SPEED_MULTIPLIER) * slowdownMultiplier);
+        lateral = ((gamepad1.left_stick_x * SPEED_MULTIPLIER) * slowdownMultiplier);
+        yaw = ((gamepad1.right_stick_x * BASE_TURN_SPEED) * slowdownMultiplier);
+
+        leftFrontPower = axial + lateral + yaw;
+        rightFrontPower = axial - lateral - yaw;
+        leftBackPower = axial - lateral + yaw;
+        rightBackPower = axial + lateral - yaw;
+
+        max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+        max = Math.max(max, Math.abs(leftBackPower));
+        max = Math.max(max, Math.abs(rightBackPower));
+
+        if (max > 1.0) {
+            leftFrontPower /= max;
+            rightFrontPower /= max;
+            leftBackPower /= max;
+            rightBackPower /= max;
+        }
+
+        // Send calculated power to wheels
+        robot.drivetrain.setMotorPowers(leftBackPower, rightBackPower, leftFrontPower, rightFrontPower);
+
+        if (servoA != null) {
+            if (gamepad1.a && !wasDownA) {
+                if (servoA.getPosition() > 0.95) {
+                    servoA.setPosition(0);
+                    tm.addLastActionTelemetry("Set servoA to 0");
+                } else {
+                    servoA.setPosition(1);
+                    tm.addLastActionTelemetry("Set servoA to 1");
+                }
             }
-            try {
-                servoB = hardwareMap.get(Servo.class, "servoB");
-            } catch (Exception e) {
-                except("servoB disconnected");
+            wasDownA = gamepad1.a;
+        } else {
+            tm.addLastActionTelemetry("servoA disconnected");
+        }
+
+        if (servoB != null) {
+            if (gamepad1.b && !wasDownB) {
+                if (servoB.getPosition() > 0.95) {
+                    servoB.setPosition(0);
+                    tm.addLastActionTelemetry("Set servoB to 0");
+                } else {
+                    servoB.setPosition(1);
+                    tm.addLastActionTelemetry("Set servoB to 1");
+                }
             }
-            try {
-                servoC = hardwareMap.get(Servo.class, "servoC");
-            } catch (Exception e) {
-                except("servoC disconnected");
-            }
-            try {
-                servoD = hardwareMap.get(Servo.class, "servoD");
-            } catch (Exception e) {
-                except("servoD disconnected");
+            wasDownB = gamepad1.b;
+        } else {
+            tm.addLastActionTelemetry("servoB diconnected");
+        }
+
+        if (servoC != null) {
+            if (gamepad1.x) {
+                servoC.setPosition(1);
+                tm.addLastActionTelemetry("Set servoC to 1");
+            } else if (gamepad1.y) {
+                servoC.setPosition(0);
+                tm.addLastActionTelemetry("Set servoC to 0");
+            } else {
+                servoC.setPosition(0.5);
+                tm.addLastActionTelemetry("Set servoC to 0.5");
             }
         } else {
-            servoA = basketServo;
-            servoB = specimenServo;
-            servoC = wristServoX;
-            servoD = intakeServo;
+            tm.addLastActionTelemetry("servoC disconnected");
         }
 
-        motorA = wristMotor;
-        motorB = liftMotor;
-
-        while (active()) {
-            // Slows down movement for better handling the more the right trigger is held down
-            slowdownMultiplier = (1.0 - gamepad1.right_trigger) * 0.7 + 0.3;
-            // f (gamepad1.left_stick_button || gamepad1.right_stick_button) {
-            // slowdownMultiplier *= 0.5; }
-
-            axial = ((-gamepad1.left_stick_y * SPEED_MULTIPLIER) * slowdownMultiplier);
-            lateral = ((gamepad1.left_stick_x * SPEED_MULTIPLIER) * slowdownMultiplier);
-            yaw = ((gamepad1.right_stick_x * BASE_TURN_SPEED) * slowdownMultiplier);
-
-            leftFrontPower = axial + lateral + yaw;
-            rightFrontPower = axial - lateral - yaw;
-            leftBackPower = axial - lateral + yaw;
-            rightBackPower = axial + lateral - yaw;
-
-            max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-            max = Math.max(max, Math.abs(leftBackPower));
-            max = Math.max(max, Math.abs(rightBackPower));
-
-            if (max > 1.0) {
-                leftFrontPower /= max;
-                rightFrontPower /= max;
-                leftBackPower /= max;
-                rightBackPower /= max;
-            }
-
-            // Send calculated power to wheels
-            if (lf != null) {
-                lf.setPower(leftFrontPower);
-                rf.setPower(rightFrontPower);
-                lb.setPower(leftBackPower);
-                rb.setPower(rightBackPower);
+        if (servoD != null) {
+            if (gamepad1.left_bumper) {
+                servoD.setPosition(0);
+                tm.addLastActionTelemetry("Set servoD to 0");
+            } else if (gamepad1.right_bumper) {
+                servoD.setPosition(1);
+                tm.addLastActionTelemetry("Set servoD to 1");
             } else {
-                print("WARNING:", "At least one drivetrain motor disconnected");
+                servoD.setPosition(0.5);
+                tm.addLastActionTelemetry("Set servoD to 0.5");
             }
-
-            if (servoA != null) {
-                if (gamepad1.a && !wasDownA) {
-                    if (servoA.getPosition() > 0.95) {
-                        servoA.setPosition(0);
-                        addLastActionTelemetry("Set servoA to 0");
-                    } else {
-                        servoA.setPosition(1);
-                        addLastActionTelemetry("Set servoA to 1");
-                    }
-                }
-                wasDownA = gamepad1.a;
-            } else {
-                addLastActionTelemetry("servoA disconnected");
-            }
-
-            if (servoB != null) {
-                if (gamepad1.b && !wasDownB) {
-                    if (servoB.getPosition() > 0.95) {
-                        servoB.setPosition(0);
-                        addLastActionTelemetry("Set servoB to 0");
-                    } else {
-                        servoB.setPosition(1);
-                        addLastActionTelemetry("Set servoB to 1");
-                    }
-                }
-                wasDownB = gamepad1.b;
-            } else {
-                addLastActionTelemetry("servoB diconnected");
-            }
-
-            if (servoC != null) {
-                if (gamepad1.x) {
-                    servoC.setPosition(1);
-                    addLastActionTelemetry("Set servoC to 1");
-                } else if (gamepad1.y) {
-                    servoC.setPosition(0);
-                    addLastActionTelemetry("Set servoC to 0");
-                } else {
-                    servoC.setPosition(0.5);
-                    addLastActionTelemetry("Set servoC to 0.5");
-                }
-            } else {
-                addLastActionTelemetry("servoC disconnected");
-            }
-
-            if (servoD != null) {
-                if (gamepad1.left_bumper) {
-                    servoD.setPosition(0);
-                    addLastActionTelemetry("Set servoD to 0");
-                } else if (gamepad1.right_bumper) {
-                    servoD.setPosition(1);
-                    addLastActionTelemetry("Set servoD to 1");
-                } else {
-                    servoD.setPosition(0.5);
-                    addLastActionTelemetry("Set servoD to 0.5");
-                }
-            } else {
-                addLastActionTelemetry("servoD disconnected");
-            }
-
-            if (motorA != null) {
-                if (gamepad1.dpad_up) {
-                    motorA.setPower(1 * MOTOR_SPEED);
-                } else if (gamepad1.dpad_down) {
-                    motorA.setPower(-1 * MOTOR_SPEED);
-                } else {
-                    motorA.setPower(0);
-                }
-            } else {
-                addLastActionTelemetry("motorA disconnected");
-            }
-
-            if (motorB != null) {
-                if (gamepad1.dpad_right) {
-                    motorB.setPower(1 * MOTOR_SPEED);
-                } else if (gamepad1.dpad_left) {
-                    motorB.setPower(-1 * MOTOR_SPEED);
-                } else {
-                    motorB.setPower(0);
-                }
-            } else {
-                addLastActionTelemetry("motorB disconnected");
-            }
-
-            telemetryAll();
+        } else {
+            tm.addLastActionTelemetry("servoD disconnected");
         }
+
+        if (motorA != null) {
+            if (gamepad1.dpad_up) {
+                motorA.setPower(1 * MOTOR_SPEED);
+            } else if (gamepad1.dpad_down) {
+                motorA.setPower(-1 * MOTOR_SPEED);
+            } else {
+                motorA.setPower(0);
+            }
+        } else {
+            tm.addLastActionTelemetry("motorA disconnected");
+        }
+
+        if (motorB != null) {
+            if (gamepad1.dpad_right) {
+                motorB.setPower(1 * MOTOR_SPEED);
+            } else if (gamepad1.dpad_left) {
+                motorB.setPower(-1 * MOTOR_SPEED);
+            } else {
+                motorB.setPower(0);
+            }
+        } else {
+            tm.addLastActionTelemetry("motorB disconnected");
+        }
+
+        telemetry.update();
     }
 }

@@ -21,11 +21,8 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.paths.Path;
-import com.qualcomm.hardware.rev.*;
 import com.qualcomm.robotcore.eventloop.opmode.*;
 import com.qualcomm.robotcore.hardware.*;
-import com.qualcomm.robotcore.util.*;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.vision.*;
@@ -45,7 +42,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.geometry.BezierLine;
 
 import pedroPathing.constants.Constants;
 
@@ -71,8 +67,7 @@ public abstract class Legacy_Base extends LinearOpMode {
      - For gearing UP, use a gear ratio less than 1.0. Note this will affect the direction of wheel rotation.
     */
     public String hubName;
-
-    int wristIndex = 0;
+    public static double TAU = PI * 2;
 
     public boolean useOdometry = true, useCam = true;
     double velocity = DEFAULT_VELOCITY;
@@ -85,8 +80,6 @@ public abstract class Legacy_Base extends LinearOpMode {
 
     public volatile boolean loop = false;
     public volatile boolean running = true;
-    public volatile boolean hold = false;
-    public volatile boolean holdWrist = false;
     public boolean following = false;
     public boolean holding = false;
 
@@ -94,14 +87,7 @@ public abstract class Legacy_Base extends LinearOpMode {
 
     double goalAngle = 0;
 
-    int vertGoal;
-    boolean vertRunToPos, vertStopped;
-    double verticalLiftTimer = 0;
-    double wristServoTimer = 0;
-
-    boolean wasIntakeServoButtonPressed, wasWristServoButtonPressed;
-    boolean wasSpecimenServoButtonPressed, wasBasketServoButtonPressed;
-    int wristMotorTicksStopped = 0, wristMotorStopPos = 0, ticksPowered = 0;
+    boolean vertRunToPos;
 
     static double baseSpeedMultiplier = 0.75;
     static double baseTurnSpeed = 2.5;
@@ -110,7 +96,7 @@ public abstract class Legacy_Base extends LinearOpMode {
     double lastDriveInputTime = getRuntime();
 
     int liftGoal = 0;
-    boolean liftRunToPos, handoff;
+    boolean liftRunToPos;
 
     int sorterGoal;
     PIDCoefficients sorterPID = new PIDCoefficients(0, 0, 0);
@@ -192,7 +178,7 @@ public abstract class Legacy_Base extends LinearOpMode {
             except("wristServoX not connected");
         }
         try {
-            feederServoB = hardwareMap.get(Servo.class, "feederServoB"); // Expansion Hub 2
+            feederServoB = hardwareMap.get(Servo.class, "feederServoB"); // Expansion Hub 1
         } catch (IllegalArgumentException e) {
             except("wristServoY not connected");
         }

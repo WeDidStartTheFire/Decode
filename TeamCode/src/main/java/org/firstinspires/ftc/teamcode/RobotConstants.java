@@ -4,6 +4,7 @@ import static java.lang.Math.PI;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class RobotConstants {
@@ -32,6 +33,8 @@ public class RobotConstants {
 
     final static double baseSpeedMultiplier = 0.75;
     final static double baseTurnSpeed = 2.5;
+
+    final static PIDFCoefficients sorterPID = new PIDFCoefficients();
 
     /** Directions. Options: LEFT, RIGHT, FORWARD, BACKWARD */
     public enum Dir {

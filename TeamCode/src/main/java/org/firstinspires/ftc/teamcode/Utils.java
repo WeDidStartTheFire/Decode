@@ -1,16 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
-import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
 import static java.lang.Math.PI;
-import static java.lang.Math.TAU;
 
 import android.os.Environment;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.pedropathing.localization.Pose;
+import com.pedropathing.geometry.Pose;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
@@ -21,6 +19,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class Utils {
+    static double TAU = PI * 2;
 
     /**
      * Simplifies an angle in degrees to be between -180 and 180 degrees
@@ -88,10 +87,6 @@ public class Utils {
         sleep((long) seconds * 1000);
     }
 
-    public static double getRuntime() {
-        return runtime.milliseconds();
-    }
-
     /**
      * Saves the current pose to a file.
      *
@@ -101,8 +96,7 @@ public class Utils {
         File file = new File(Environment.getExternalStorageDirectory(), "odometryPosition.txt");
         try (FileWriter writer = new FileWriter(file, false)) {
             writer.write(pos.getX() + "," + pos.getY() + "," + pos.getHeading()); // Write the latest position
-        } catch (IOException e) {
-            return;
+        } catch (IOException ignored) {
         }
     }
 
@@ -122,7 +116,7 @@ public class Utils {
                     double x = Double.parseDouble(values[0]); // X
                     double y = Double.parseDouble(values[1]); // Y
                     double h = Double.parseDouble(values[2]); // Heading
-                    file.delete();
+                    boolean ignored = file.delete();
                     return new Pose(x, y, h);
                 }
             } catch (IOException e) {

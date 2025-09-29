@@ -9,9 +9,9 @@ import static org.firstinspires.ftc.teamcode.RobotState.*;
 public class Auto_StructureTest extends LinearOpMode {
     public Robot robot;
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         auto = true;
-        robot = new Robot(hardwareMap, telemetry, gamepad1, gamepad2, false);
+        robot = new Robot(hardwareMap, telemetry, false);
         waitForStart();
         robot.drivetrain.drive(5);
     }

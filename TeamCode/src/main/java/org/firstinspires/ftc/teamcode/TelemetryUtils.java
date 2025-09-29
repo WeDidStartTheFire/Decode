@@ -5,8 +5,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class TelemetryUtils {
     public Telemetry telemetry;
 
-    public TelemetryUtils(Telemetry tm) {
-        telemetry = tm;
+    public TelemetryUtils(Telemetry telemetry) {
+        this.telemetry = telemetry;
     }
 
     /**

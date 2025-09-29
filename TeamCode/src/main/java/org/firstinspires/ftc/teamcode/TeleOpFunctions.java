@@ -15,23 +15,26 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
 
-public class DrivetrainTeleOpFunctions {
+public class TeleOpFunctions {
     DcMotor lf, lb, rf, rb;
     IMU imu;
-    Gamepad gamepad1;
+    Gamepad gamepad1, gamepad2;
+    Robot robot;
     public Follower follower;
     boolean useOdometry;
     double lastDriveInputTime = runtime.milliseconds();
 
-    public DrivetrainTeleOpFunctions(DcMotor leftFront, DcMotor leftBack, DcMotor rightFront, DcMotor rightBack, IMU imu1, Gamepad gp1, Follower follower1, boolean useOdom){
-        lf = leftFront;
-        lb = leftBack;
-        rf = rightFront;
-        rb = rightBack;
-        imu = imu1;
-        gamepad1 = gp1;
-        follower = follower1;
-        useOdometry = useOdom;
+    public TeleOpFunctions(Robot robot, Gamepad gamepad1, Gamepad gamepad2){
+        this.robot = robot;
+        lf = robot.drivetrain.lf;
+        lb = robot.drivetrain.lb;
+        rf = robot.drivetrain.rf;
+        rb = robot.drivetrain.rb;
+        imu = robot.drivetrain.imu;
+        this.gamepad1 = gamepad1;
+        this.gamepad2 = gamepad2;
+        follower = robot.follower;
+        useOdometry = robot.drivetrain.useOdometry;
     }
 
     /**
@@ -71,7 +74,7 @@ public class DrivetrainTeleOpFunctions {
                 follower.holdPoint(follower.getPose());
             }
 
-            follower.setTeleOpMovementVectors(gamepad1.left_stick_y * speedMultiplier,
+            follower.setTeleOpDrive(gamepad1.left_stick_y * speedMultiplier,
                     gamepad1.left_stick_x * speedMultiplier,
                     -gamepad1.right_stick_x * speedMultiplier,
                     !fieldCentric);
@@ -126,4 +129,48 @@ public class DrivetrainTeleOpFunctions {
             rb.setPower(rightBackPower * 5000 * speedMultiplier);
         }
     }
+
+    public void updateSorterPower() {
+        double power = 0;
+        double sorterPosition = robot.sorterMotor.getCurrentPosition();
+        double error = sorterPosition - sorterGoal;
+        double velocity = robot.sorterMotor.getVelocity();
+
+        power += RobotConstants.sorterPID.p * -error;
+
+        power += sorterPID.d * -velocity;
+
+        robot.sorterMotor.setPower(power);
+    }
+
+    public void sorterLogic() {
+        updateSorterPower();
+        if (!gamepad1.dpadUpWasPressed() && !gamepad1.dpadDownWasPressed()) return;
+        if (gamepad1.dpadUpWasPressed()) sorterGoal += SORTER_TICKS_PER_REV / 3;
+        else sorterGoal -= SORTER_TICKS_PER_REV / 3;
+    }
+
+    public void intakeLogic() {
+        if (robot.intakeMotor == null) return;
+        robot.intakeMotor.setPower(-gamepad1.right_trigger);
+    }
+
+    public void launcherLogic() {
+        if (robot.launcherMotorA == null) return;
+        if (gamepad1.right_bumper) {
+            robot.launcherMotorA.setPower(1);
+            robot.launcherMotorB.setPower(-1);
+        } else {
+            robot.launcherMotorA.setPower(0);
+            robot.launcherMotorB.setPower(0);
+        }
+    }
+
+    public void feederLogic() {
+        if (gamepad1.xWasPressed()) {
+            robot.feederServoA.setPosition(robot.feederServoA.getPosition() == 0 ? 1 : 0);
+            robot.feederServoB.setPosition(robot.feederServoA.getPosition() == 0 ? 1 : 0);
+        }
+    }
+
 }

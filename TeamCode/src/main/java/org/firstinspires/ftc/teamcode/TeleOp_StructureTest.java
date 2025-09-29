@@ -1,25 +1,28 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.pedropathing.localization.Pose;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.pedropathing.geometry.Pose;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import static org.firstinspires.ftc.teamcode.Utils.*;
 import static org.firstinspires.ftc.teamcode.RobotState.*;
 
 @TeleOp(name = "Structure Test", group = "Main")
-public class TeleOp_StructureTest extends LinearOpMode {
+public class TeleOp_StructureTest extends OpMode {
     Robot robot;
+    TeleOpFunctions teleop;
+    Pose pose;
+
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void init() {
         auto = false;
-        Pose p = loadOdometryPosition();
-        robot = new Robot(hardwareMap, telemetry, gamepad1, gamepad2, false);
+        pose = loadOdometryPosition();
+        robot = new Robot(hardwareMap, telemetry, false);
+        teleop = new TeleOpFunctions(robot, gamepad1, gamepad2);
+    }
 
-        waitForStart();
-
-        while (active()) {
-            robot.drivetrain.teleop.drivetrainLogic(p != null, false);
-        }
+    @Override
+    public void loop() {
+        teleop.drivetrainLogic(pose != null, false);
     }
 }

@@ -1,15 +1,18 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Autonomous(name = "Basic", group = "!!!Primary", preselectTeleOp = "Main")
-public class Auto_Basic extends Legacy_Base {
-    @Override
-    public void runOpMode() throws InterruptedException {
-        auto = true;
-        useOdometry = false;
-        setup();
+public class Auto_Basic extends LinearOpMode {
+    public Robot robot;
 
-        drive(15);
+    @Override
+    public void runOpMode() {
+        RobotState.auto = true;
+        robot = new Robot(hardwareMap, telemetry, false);
+        waitForStart();
+
+        robot.drivetrain.drive(15);
     }
 }

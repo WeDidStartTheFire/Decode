@@ -275,6 +275,14 @@ public class Drivetrain {
         rb.setVelocity(rbPower);
     }
 
+    public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior) {
+        if (lb == null) return;
+        lf.setZeroPowerBehavior(behavior);
+        lb.setZeroPowerBehavior(behavior);
+        rf.setZeroPowerBehavior(behavior);
+        rb.setZeroPowerBehavior(behavior);
+    }
+
     /**
      * Strafes left or right for a specified number of inches. An inches value of zero will cause
      * the robot to strafe until manually stopped.

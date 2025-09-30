@@ -3,58 +3,59 @@ package org.firstinspires.ftc.teamcode;
 import static java.lang.Math.abs;
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 @TeleOp(name = "Slow (.7)", group = "Main")
-public class TeleOp_Slow_Point7 extends Legacy_Base {
+public class TeleOp_Slow_Point7 extends OpMode {
+    public TelemetryUtils tm = new TelemetryUtils(telemetry);
+    public Robot robot;
+    public double baseSpeedMultiplier = .7;
+    public double baseTurnSpeed = .625;
+
     @Override
-    public void runOpMode() throws InterruptedException {
-        auto = true;
-        setup();
-        baseSpeedMultiplier = .7;
-        baseTurnSpeed = .625;
-        while (active()) {
-            double axial, lateral, yaw, xMove, yMove;
-            double speedMultiplier = gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1];
+    public void init() {
+        RobotState.auto = false;
+        robot = new Robot(hardwareMap, telemetry, false);
+        robot.drivetrain.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
 
-            xMove = gamepad1.left_stick_x;
-            yMove = gamepad1.left_stick_y;
+    @Override
+    public void loop() {
+        double axial, lateral, yaw, xMove, yMove;
+        double speedMultiplier = gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1];
 
-            axial = yMove * baseSpeedMultiplier;
-            lateral = -xMove * baseSpeedMultiplier;
-            yaw = gamepad1.right_stick_x * baseTurnSpeed;
+        xMove = gamepad1.left_stick_x;
+        yMove = gamepad1.left_stick_y;
 
-            double leftFrontPower = axial + lateral + yaw;
-            double rightFrontPower = axial - lateral - yaw;
-            double leftBackPower = axial - lateral + yaw;
-            double rightBackPower = axial + lateral - yaw;
+        axial = yMove * baseSpeedMultiplier;
+        lateral = -xMove * baseSpeedMultiplier;
+        yaw = gamepad1.right_stick_x * baseTurnSpeed;
 
-            double max = Math.max(abs(leftFrontPower), abs(rightFrontPower));
-            max = Math.max(max, abs(leftBackPower));
-            max = Math.max(max, abs(rightBackPower));
+        double leftFrontPower = axial + lateral + yaw;
+        double rightFrontPower = axial - lateral - yaw;
+        double leftBackPower = axial - lateral + yaw;
+        double rightBackPower = axial + lateral - yaw;
 
-            if (max > 1.0) {
-                leftFrontPower /= max;
-                rightFrontPower /= max;
-                leftBackPower /= max;
-                rightBackPower /= max;
-            }
+        double max = Math.max(abs(leftFrontPower), abs(rightFrontPower));
+        max = Math.max(max, abs(leftBackPower));
+        max = Math.max(max, abs(rightBackPower));
 
-            // Send calculated power to wheels
-            if (lf != null) {
-                lf.setPower(leftFrontPower * baseSpeedMultiplier);
-                rf.setPower(rightFrontPower * baseSpeedMultiplier);
-                lb.setPower(leftBackPower * baseSpeedMultiplier);
-                rb.setPower(rightBackPower * baseSpeedMultiplier);
-            }
-
-            if (abs(leftFrontPower) > .05 || abs(rightFrontPower) > .05 || abs(leftBackPower) > .05 || abs(rightBackPower) > .05) {
-                if (follower.isBusy()) follower.breakFollowing();
-            }
-
-            print("Speed Multiplier", speedMultiplier);
-
-            telemetryAll();
+        if (max > 1.0) {
+            leftFrontPower /= max;
+            rightFrontPower /= max;
+            leftBackPower /= max;
+            rightBackPower /= max;
         }
+
+        leftFrontPower *= baseSpeedMultiplier;
+        rightFrontPower *= baseSpeedMultiplier;
+        leftBackPower *= baseSpeedMultiplier;
+        rightBackPower *= baseSpeedMultiplier;
+
+        robot.drivetrain.setMotorPowers(leftBackPower, rightBackPower, leftFrontPower, rightFrontPower);
+
+        tm.print("Speed Multiplier", speedMultiplier);
     }
 }

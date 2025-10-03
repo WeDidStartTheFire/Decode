@@ -10,7 +10,13 @@ import static java.lang.Math.abs;
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 import static org.firstinspires.ftc.teamcode.RobotState.*;
 
+import androidx.annotation.NonNull;
+
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Vector;
+import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -24,7 +30,7 @@ public class TeleOpFunctions {
     boolean useOdometry;
     double lastDriveInputTime = runtime.milliseconds();
 
-    public TeleOpFunctions(Robot robot, Gamepad gamepad1, Gamepad gamepad2){
+    public TeleOpFunctions(Robot robot, Gamepad gamepad1, Gamepad gamepad2) {
         this.robot = robot;
         lf = robot.drivetrain.lf;
         lb = robot.drivetrain.lb;
@@ -54,6 +60,8 @@ public class TeleOpFunctions {
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
         if (usePedro) {
             follower.update();
+            Pose pose = follower.getPose();
+            Vector vel = follower.getVelocity();
             double speedMultiplier = 1.5 * (gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1]);
             speedMultiplier *= baseSpeedMultiplier;
 
@@ -74,10 +82,22 @@ public class TeleOpFunctions {
                 follower.holdPoint(follower.getPose());
             }
 
+            double turn;
+            aiming = aiming && abs(gamepad1.right_stick_x) <= .05;
+            if (aiming) {
+                ProjectileSolver.LaunchSolution sol = ProjectileSolver.solveLaunch(pose.getX(),
+                        pose.getY(), LAUNCHER_HEIGHT, vel.getXComponent(), vel.getYComponent(),
+                        GOAL_POSE.getPosition().x, GOAL_POSE.getPosition().y,
+                        GOAL_POSE.getPosition().z, LAUNCHER_ANGLE);
+                if (sol != null) {
+                    double error = pose.getHeading() - sol.phi;
+                    double angVel = follower.getAngularVelocity();
+                    turn = teleopHeadingPID.p * error + teleopHeadingPID.d * angVel;
+                } else turn = -gamepad1.right_stick_x * speedMultiplier;
+            } else turn = -gamepad1.right_stick_x * speedMultiplier;
+
             follower.setTeleOpDrive(gamepad1.left_stick_y * speedMultiplier,
-                    gamepad1.left_stick_x * speedMultiplier,
-                    -gamepad1.right_stick_x * speedMultiplier,
-                    !fieldCentric);
+                    gamepad1.left_stick_x * speedMultiplier, turn, !fieldCentric);
 
             return;
         }
@@ -130,6 +150,45 @@ public class TeleOpFunctions {
         }
     }
 
+    /**
+     * Logic for automatically moving during TeleOp
+     *
+     * @param validPose Whether the robot recieved a valid pose from Auto
+     */
+    public void autoMovementLogic(boolean validPose) {
+        if (!validPose || !useOdometry) return;
+        follower.update();
+        if (gamepad1.y) {
+            following = true;
+            follower.followPath(getShortestPath(follower.getPose()));
+        } else if (gamepad1.a) {
+            holding = true;
+            follower.holdPoint(follower.getPose());
+        } else if (gamepad1.b) aiming = !aiming;
+    }
+
+    /**
+     * Returns the path that gets to the closest point in a set of waypoints
+     *
+     * @param poseEstimate your pose
+     * @return the path to the nearest point in a set of waypoints
+     */
+    @NonNull
+    private static Path getShortestPath(Pose poseEstimate) {
+        double bestDistance = Double.MAX_VALUE;
+        Pose bestPose = ROBOT_POSITIONS[0];
+        for (Pose pose : ROBOT_POSITIONS) {
+            double distance = poseEstimate.distanceFrom(pose);
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                bestPose = pose;
+            }
+        }
+        Path path = new Path(new BezierLine(poseEstimate, bestPose));
+        path.setLinearHeadingInterpolation(poseEstimate.getHeading(), bestPose.getHeading());
+        return path;
+    }
+
     public void updateSorterPower() {
         double power = 0;
         double sorterPosition = robot.sorterMotor.getCurrentPosition();
@@ -172,5 +231,4 @@ public class TeleOpFunctions {
             robot.feederServoB.setPosition(robot.feederServoA.getPosition() == 0 ? 1 : 0);
         }
     }
-
 }

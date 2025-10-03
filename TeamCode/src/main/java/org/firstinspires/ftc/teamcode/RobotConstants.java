@@ -1,11 +1,22 @@
 package org.firstinspires.ftc.teamcode;
 
 import static java.lang.Math.PI;
+import static java.lang.Math.toRadians;
 
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 public class RobotConstants {
     public static final ElapsedTime runtime = new ElapsedTime();
@@ -35,6 +46,14 @@ public class RobotConstants {
     final static double baseTurnSpeed = 2.5;
 
     final static PIDFCoefficients sorterPID = new PIDFCoefficients();
+    final static PIDFCoefficients teleopHeadingPID = new PIDFCoefficients();
+
+    final static double LAUNCHER_HEIGHT = 12;
+    final static double LAUNCHER_ANGLE = toRadians(30);
+    final static Pose3D GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 132, 132, 43, 0),
+            new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
+
+    final static Pose[] ROBOT_POSITIONS = {};
 
     /** Directions. Options: LEFT, RIGHT, FORWARD, BACKWARD */
     public enum Dir {

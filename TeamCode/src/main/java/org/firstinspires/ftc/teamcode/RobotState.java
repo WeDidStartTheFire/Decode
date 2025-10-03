@@ -10,4 +10,5 @@ public class RobotState {
     static volatile boolean holding = false;
     static int sorterGoal;
     static Pose pose;
+    static boolean aiming;
 }

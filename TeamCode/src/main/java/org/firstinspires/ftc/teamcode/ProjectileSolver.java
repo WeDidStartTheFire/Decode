@@ -30,7 +30,7 @@ public class ProjectileSolver {
      * @param xt    Target x (in)
      * @param yt    Target y (in)
      * @param zt    Target z (in)
-     * @param theta Robot angle (radians; x-y plane)
+     * @param theta Robot angle (radians; launch angle with ground)
      * @return speed, angle, and time of flight of launch in a LaunchSolution object or null if shot
      * is not possible
      */

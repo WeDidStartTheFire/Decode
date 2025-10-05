@@ -29,7 +29,7 @@ public class TeleOp_Main extends OpMode {
 
     @Override
     public void loop() {
-        teleop.update();
+        teleop.update(tm);
         teleop.drivetrainLogic(validStartPose);
         teleop.feederLogic();
         teleop.launcherLogic();

@@ -6,7 +6,6 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 import static org.firstinspires.ftc.teamcode.RobotConstants.speeds;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
-import static java.lang.Runtime.getRuntime;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 import static org.firstinspires.ftc.teamcode.RobotState.*;
@@ -17,7 +16,6 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -44,7 +42,8 @@ public class TeleOpFunctions {
         useOdometry = robot.drivetrain.useOdometry;
     }
 
-    public void update() {
+    public void update(TelemetryUtils tm) {
+        tm.update();
         follower.update();
         pose = follower.getPose();
         vel = follower.getVelocity();
@@ -219,6 +218,8 @@ public class TeleOpFunctions {
             robot.launcherMotorA.setPower(1);
             robot.launcherMotorB.setPower(-1);
         } else {
+            robot.feederServoA.setPosition(1);
+            robot.feederServoB.setPosition(0);
             robot.launcherMotorA.setPower(0);
             robot.launcherMotorB.setPower(0);
         }
@@ -226,8 +227,8 @@ public class TeleOpFunctions {
 
     public void feederLogic() {
         if (gamepad2.rightBumperWasPressed()) {
-            robot.feederServoA.setPosition(robot.feederServoA.getPosition() == 0 ? 1 : 0);
-            robot.feederServoB.setPosition(robot.feederServoA.getPosition() == 0 ? 1 : 0);
+            robot.feederServoA.setPosition(0);
+            robot.feederServoB.setPosition(1);
         }
     }
 }

@@ -34,7 +34,7 @@ public class TeleOp_TestAutoMovement extends OpMode {
 
     @Override
     public void loop() {
-        teleop.update();
+        teleop.update(tm);
         teleop.autoMovementLogic(validStartPose);
         tm.print("aiming", RobotState.aiming);
         ProjectileSolver.LaunchSolution sol = ProjectileSolver.solveLaunch(pose.getX(),
@@ -43,7 +43,6 @@ public class TeleOp_TestAutoMovement extends OpMode {
                 GOAL_POSE.getPosition().z, LAUNCHER_ANGLE);
         tm.print("angle", toDegrees(pose.getHeading()));
         if (sol != null) tm.print("goal", toDegrees(sol.phi));
-        tm.update();
         teleop.drivetrainLogic(validStartPose);
         teleop.feederLogic();
         teleop.launcherLogic();

@@ -12,7 +12,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name = "Main", group = "Test")
+@TeleOp(name = "Test Auto Movement", group = "Test")
 public class TeleOp_TestAutoMovement extends OpMode {
     public TeleOpFunctions teleop;
     public Robot robot;
@@ -24,6 +24,10 @@ public class TeleOp_TestAutoMovement extends OpMode {
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
         robot = new Robot(hardwareMap, telemetry, validStartPose);
+        if (validStartPose) {
+            robot.follower.setPose(pose);
+            robot.follower.startTeleopDrive();
+        }
         teleop = new TeleOpFunctions(robot, gamepad1, gamepad2);
         tm = new TelemetryUtils(telemetry);
     }
@@ -39,6 +43,7 @@ public class TeleOp_TestAutoMovement extends OpMode {
                 GOAL_POSE.getPosition().z, LAUNCHER_ANGLE);
         tm.print("angle", toDegrees(pose.getHeading()));
         if (sol != null) tm.print("goal", toDegrees(sol.phi));
+        tm.update();
         teleop.drivetrainLogic(validStartPose);
         teleop.feederLogic();
         teleop.launcherLogic();

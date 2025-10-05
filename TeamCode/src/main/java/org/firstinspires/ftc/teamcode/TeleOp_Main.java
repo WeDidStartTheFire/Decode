@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class TeleOp_Main extends OpMode {
     public TeleOpFunctions teleop;
     public Robot robot;
-    public Pose pose;
+    public TelemetryUtils tm;
 
     @Override
     public void init() {
@@ -19,13 +19,18 @@ public class TeleOp_Main extends OpMode {
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
         robot = new Robot(hardwareMap, telemetry, validStartPose);
+        if (validStartPose) {
+            robot.follower.setPose(pose);
+            robot.follower.startTeleopDrive();
+        }
         teleop = new TeleOpFunctions(robot, gamepad1, gamepad2);
+        tm = new TelemetryUtils(telemetry);
     }
 
     @Override
     public void loop() {
         teleop.update();
-        teleop.drivetrainLogic(pose != null);
+        teleop.drivetrainLogic(validStartPose);
         teleop.feederLogic();
         teleop.launcherLogic();
         teleop.intakeLogic();

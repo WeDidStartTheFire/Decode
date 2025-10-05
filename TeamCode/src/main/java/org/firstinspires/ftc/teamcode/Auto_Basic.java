@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -11,9 +12,11 @@ public class Auto_Basic extends LinearOpMode {
     public void runOpMode() {
         RobotState.auto = true;
         robot = new Robot(hardwareMap, telemetry, false);
+        robot.follower.setPose(new Pose());
         waitForStart();
 
-        robot.drivetrain.drive(15);
+        robot.drivetrain.velocityDrive(15, RobotConstants.Dir.FORWARD);
+        robot.follower.update();
         Utils.saveOdometryPosition(robot.follower.getPose());
     }
 }

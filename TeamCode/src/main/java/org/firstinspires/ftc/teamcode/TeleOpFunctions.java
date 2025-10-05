@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 import static org.firstinspires.ftc.teamcode.RobotConstants.speeds;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
+import static java.lang.Runtime.getRuntime;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 import static org.firstinspires.ftc.teamcode.RobotState.*;
@@ -17,11 +18,12 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
 
 public class TeleOpFunctions {
-    DcMotor lf, lb, rf, rb;
+    DcMotorEx lf, lb, rf, rb;
     IMU imu;
     Gamepad gamepad1, gamepad2;
     Robot robot;
@@ -57,6 +59,10 @@ public class TeleOpFunctions {
         drivetrainLogic(fieldCentric, true);
     }
 
+    public double lerp(double t, double a, double b) {
+        return (b - a) * t + a;
+    }
+
     /**
      * Logic for the drivetrain during TeleOp
      *
@@ -65,7 +71,8 @@ public class TeleOpFunctions {
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
         if (usePedro) {
             follower.update();
-            double speedMultiplier = 1.5 * (gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1]);
+            double speedMultiplier = 1.5 * (gamepad1.left_bumper ? speeds[2] :
+                    lerp(gamepad1.left_trigger, speeds[1], speeds[0]));
             speedMultiplier *= baseSpeedMultiplier;
 
             if ((following || holding) && (abs(gamepad1.left_stick_y) > .05 ||
@@ -73,8 +80,8 @@ public class TeleOpFunctions {
                 following = false;
                 holding = false;
                 follower.startTeleopDrive();
-                lastDriveInputTime = runtime.milliseconds();
-            } else if (runtime.milliseconds() - lastDriveInputTime > 0.5) {
+                lastDriveInputTime = runtime.seconds();
+            } else if (runtime.seconds() - lastDriveInputTime > 0.5) {
                 holding = true;
                 follower.holdPoint(follower.getPose());
             }
@@ -85,22 +92,10 @@ public class TeleOpFunctions {
                 follower.holdPoint(follower.getPose());
             }
 
-            double turn;
-            aiming = aiming && abs(gamepad1.right_stick_x) <= .05;
-            if (aiming) {
-                ProjectileSolver.LaunchSolution sol = ProjectileSolver.solveLaunch(pose.getX(),
-                        pose.getY(), LAUNCHER_HEIGHT, vel.getXComponent(), vel.getYComponent(),
-                        GOAL_POSE.getPosition().x, GOAL_POSE.getPosition().y,
-                        GOAL_POSE.getPosition().z, LAUNCHER_ANGLE);
-                if (sol != null) {
-                    double error = pose.getHeading() - sol.phi;
-                    double angVel = follower.getAngularVelocity();
-                    turn = teleopHeadingPID.p * error + teleopHeadingPID.d * angVel;
-                } else turn = -gamepad1.right_stick_x * speedMultiplier;
-            } else turn = -gamepad1.right_stick_x * speedMultiplier;
-
             follower.setTeleOpDrive(gamepad1.left_stick_y * speedMultiplier,
-                    gamepad1.left_stick_x * speedMultiplier, turn, !fieldCentric);
+                    gamepad1.left_stick_x * speedMultiplier,
+                    -gamepad1.right_stick_x * speedMultiplier,
+                    !fieldCentric);
 
             return;
         }
@@ -109,7 +104,8 @@ public class TeleOpFunctions {
         double speedMultiplier = gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1];
 
         if (fieldCentric) {
-            double angle = PI / 2 + (useOdometry ? -follower.getPose().getHeading() : -imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle);
+            double angle = PI / 2 + (useOdometry ? -follower.getPose().getHeading() :
+                    -imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle);
 
             double joystickAngle = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
             double moveAngle = joystickAngle - angle;
@@ -141,15 +137,15 @@ public class TeleOpFunctions {
             rightBackPower /= max;
         }
 
-        if (abs(leftFrontPower) > .05 || abs(rightFrontPower) > .05 || abs(leftBackPower) > .05 || abs(rightBackPower) > .05)
-            follower.breakFollowing();
+        if (abs(leftFrontPower) > .05 || abs(rightFrontPower) > .05 || abs(leftBackPower) > .05 ||
+                abs(rightBackPower) > .05) follower.breakFollowing();
 
         // Send calculated power to wheels
-        if (!follower.isBusy()) {
-            lf.setPower(leftFrontPower * 5000 * speedMultiplier);
-            rf.setPower(rightFrontPower * 5000 * speedMultiplier);
-            lb.setPower(leftBackPower * 5000 * speedMultiplier);
-            rb.setPower(rightBackPower * 5000 * speedMultiplier);
+        if (lf != null && !follower.isBusy()) {
+            lf.setVelocity(leftFrontPower * 5000 * speedMultiplier);
+            rf.setVelocity(rightFrontPower * 5000 * speedMultiplier);
+            lb.setVelocity(leftBackPower * 5000 * speedMultiplier);
+            rb.setVelocity(rightBackPower * 5000 * speedMultiplier);
         }
     }
 

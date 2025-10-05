@@ -26,7 +26,7 @@ public class TeleOp_TestFieldCentric_No_Pedro extends OpMode {
     public void loop() {
         teleop.drivetrainLogic(pose != null, false);
         teleop.feederLogic();
-        teleop.launcherLogic(tm);
+        teleop.launcherLogic();
         teleop.intakeLogic();
     }
 }

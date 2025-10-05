@@ -24,17 +24,15 @@ public class TeleOp_TestAutoMovement extends OpMode {
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
         robot = new Robot(hardwareMap, telemetry, validStartPose);
-        if (validStartPose) {
-            robot.follower.setPose(pose);
-            robot.follower.startTeleopDrive();
-        }
+        robot.follower.setPose(pose);
+        robot.follower.startTeleopDrive();
         teleop = new TeleOpFunctions(robot, gamepad1, gamepad2);
         tm = new TelemetryUtils(telemetry);
     }
 
     @Override
     public void loop() {
-        teleop.update(tm);
+        teleop.update();
         teleop.autoMovementLogic(validStartPose);
         tm.print("aiming", RobotState.aiming);
         ProjectileSolver.LaunchSolution sol = ProjectileSolver.solveLaunch(pose.getX(),
@@ -45,7 +43,7 @@ public class TeleOp_TestAutoMovement extends OpMode {
         if (sol != null) tm.print("goal", toDegrees(sol.phi));
         teleop.drivetrainLogic(validStartPose);
         teleop.feederLogic();
-        teleop.launcherLogic(tm);
+        teleop.launcherLogic();
         teleop.intakeLogic();
     }
 }

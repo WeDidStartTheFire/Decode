@@ -19,20 +19,18 @@ public class TeleOp_Main extends OpMode {
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
         robot = new Robot(hardwareMap, telemetry, validStartPose);
-        if (validStartPose) {
-            robot.follower.setPose(pose);
-            robot.follower.startTeleopDrive();
-        }
+        robot.follower.setPose(RobotState.pose);
+        robot.follower.startTeleopDrive();
         teleop = new TeleOpFunctions(robot, gamepad1, gamepad2);
-        tm = new TelemetryUtils(telemetry);
+        tm = robot.drivetrain.tm;
     }
 
     @Override
     public void loop() {
-        teleop.update(tm);
+        teleop.update();
         teleop.drivetrainLogic(validStartPose);
         teleop.feederLogic();
-        teleop.launcherLogic(tm);
+        teleop.launcherLogic();
         teleop.intakeLogic();
     }
 }

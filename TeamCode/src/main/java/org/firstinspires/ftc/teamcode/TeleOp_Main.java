@@ -32,7 +32,7 @@ public class TeleOp_Main extends OpMode {
         teleop.update(tm);
         teleop.drivetrainLogic(validStartPose);
         teleop.feederLogic();
-        teleop.launcherLogic();
+        teleop.launcherLogic(tm);
         teleop.intakeLogic();
     }
 }

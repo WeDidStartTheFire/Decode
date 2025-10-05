@@ -11,6 +11,7 @@ public class TeleOp_TestFieldCentric_No_Pedro extends OpMode {
     public TeleOpFunctions teleop;
     public Robot robot;
     public Pose pose;
+    public TelemetryUtils tm;
 
     @Override
     public void init() {
@@ -18,13 +19,14 @@ public class TeleOp_TestFieldCentric_No_Pedro extends OpMode {
         RobotState.pose = pose != null ? pose : new Pose();
         robot = new Robot(hardwareMap, telemetry, pose != null);
         teleop = new TeleOpFunctions(robot, gamepad1, gamepad2);
+        tm = new TelemetryUtils(telemetry);
     }
 
     @Override
     public void loop() {
         teleop.drivetrainLogic(pose != null, false);
         teleop.feederLogic();
-        teleop.launcherLogic();
+        teleop.launcherLogic(tm);
         teleop.intakeLogic();
     }
 }

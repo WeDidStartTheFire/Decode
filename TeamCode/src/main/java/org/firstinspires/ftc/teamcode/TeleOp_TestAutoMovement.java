@@ -45,7 +45,7 @@ public class TeleOp_TestAutoMovement extends OpMode {
         if (sol != null) tm.print("goal", toDegrees(sol.phi));
         teleop.drivetrainLogic(validStartPose);
         teleop.feederLogic();
-        teleop.launcherLogic();
+        teleop.launcherLogic(tm);
         teleop.intakeLogic();
     }
 }

@@ -39,6 +39,8 @@ public class RobotConstants {
 
     final static double[] speeds = {0.2, 0.6, 1};
 
+    final static int TICKS_PER_REVOLUTION = 28;
+
     final static double baseSpeedMultiplier = 0.75;
     final static double baseTurnSpeed = 2.5;
 

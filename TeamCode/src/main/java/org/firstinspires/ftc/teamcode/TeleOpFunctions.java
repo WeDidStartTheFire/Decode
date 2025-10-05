@@ -20,6 +20,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
 public class TeleOpFunctions {
     DcMotorEx lf, lb, rf, rb;
     IMU imu;
@@ -212,17 +214,24 @@ public class TeleOpFunctions {
         robot.intakeMotor.setPower(-gamepad1.right_trigger);
     }
 
-    public void launcherLogic() {
+    public void launcherLogic(TelemetryUtils tm) {
+
+        if (gamepad1.dpadUpWasPressed()) motorRPM += 100;
+        if (gamepad1.dpadDownWasPressed()) motorRPM -= 100;
+        double motorVel = motorRPM / TICKS_PER_REVOLUTION;
+
         if (robot.launcherMotorA == null) return;
         if (gamepad2.right_trigger >= 0.5) {
-            robot.launcherMotorA.setPower(1);
-            robot.launcherMotorB.setPower(-1);
+            robot.launcherMotorA.setVelocity(motorVel);
+            robot.launcherMotorB.setVelocity(-motorVel);
         } else {
             robot.feederServoA.setPosition(1);
             robot.feederServoB.setPosition(0);
-            robot.launcherMotorA.setPower(0);
-            robot.launcherMotorB.setPower(0);
+            robot.launcherMotorA.setVelocity(0);
+            robot.launcherMotorB.setVelocity(0);
         }
+        tm.print("Motor A RPM", robot.launcherMotorA.getVelocity(AngleUnit.DEGREES) / 360 * 60);
+        tm.print("Motor B RPM", robot.launcherMotorB.getVelocity(AngleUnit.DEGREES) / 360 * 60);
     }
 
     public void feederLogic() {

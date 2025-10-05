@@ -10,10 +10,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
@@ -46,7 +43,7 @@ public class RobotConstants {
     final static double baseTurnSpeed = 2.5;
 
     final static PIDFCoefficients sorterPID = new PIDFCoefficients();
-    final static PIDFCoefficients teleopHeadingPID = new PIDFCoefficients();
+    public final static PIDFCoefficients teleopHeadingPID = new PIDFCoefficients(.2, 0, .02, 0);
 
     final static double LAUNCHER_HEIGHT = 12;
     final static double LAUNCHER_ANGLE = toRadians(30);

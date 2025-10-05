@@ -15,7 +15,6 @@ import androidx.annotation.NonNull;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.math.Vector;
 import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -43,6 +42,12 @@ public class TeleOpFunctions {
         useOdometry = robot.drivetrain.useOdometry;
     }
 
+    public void update() {
+        follower.update();
+        pose = follower.getPose();
+        vel = follower.getVelocity();
+    }
+
     /**
      * Logic for the drivetrain during TeleOp
      *
@@ -60,8 +65,6 @@ public class TeleOpFunctions {
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
         if (usePedro) {
             follower.update();
-            Pose pose = follower.getPose();
-            Vector vel = follower.getVelocity();
             double speedMultiplier = 1.5 * (gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1]);
             speedMultiplier *= baseSpeedMultiplier;
 
@@ -157,13 +160,12 @@ public class TeleOpFunctions {
      */
     public void autoMovementLogic(boolean validPose) {
         if (!validPose || !useOdometry) return;
-        follower.update();
         if (gamepad1.y) {
             following = true;
-            follower.followPath(getShortestPath(follower.getPose()));
+            follower.followPath(getShortestPath(pose));
         } else if (gamepad1.a) {
             holding = true;
-            follower.holdPoint(follower.getPose());
+            follower.holdPoint(pose);
         } else if (gamepad1.b) aiming = !aiming;
     }
 
@@ -175,6 +177,7 @@ public class TeleOpFunctions {
      */
     @NonNull
     private static Path getShortestPath(Pose poseEstimate) {
+        if (ROBOT_POSITIONS.length == 0) return new Path();
         double bestDistance = Double.MAX_VALUE;
         Pose bestPose = ROBOT_POSITIONS[0];
         for (Pose pose : ROBOT_POSITIONS) {

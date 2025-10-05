@@ -6,9 +6,12 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 import static org.firstinspires.ftc.teamcode.RobotConstants.speeds;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
+import static java.lang.Math.toDegrees;
+import static java.lang.Math.toRadians;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 import static org.firstinspires.ftc.teamcode.RobotState.*;
+import static org.firstinspires.ftc.teamcode.Utils.TAU;
 
 import androidx.annotation.NonNull;
 
@@ -29,7 +32,8 @@ public class TeleOpFunctions {
     Robot robot;
     public Follower follower;
     boolean useOdometry;
-    double lastDriveInputTime = runtime.milliseconds();
+    double lastDriveInputTime = runtime.seconds();
+    TelemetryUtils tm;
 
     public TeleOpFunctions(Robot robot, Gamepad gamepad1, Gamepad gamepad2) {
         this.robot = robot;
@@ -42,9 +46,10 @@ public class TeleOpFunctions {
         this.gamepad2 = gamepad2;
         follower = robot.follower;
         useOdometry = robot.drivetrain.useOdometry;
+        tm = robot.drivetrain.tm;
     }
 
-    public void update(TelemetryUtils tm) {
+    public void update() {
         tm.update();
         follower.update();
         pose = follower.getPose();
@@ -76,12 +81,14 @@ public class TeleOpFunctions {
                     lerp(gamepad1.left_trigger, speeds[1], speeds[0]));
             speedMultiplier *= baseSpeedMultiplier;
 
-            if ((following || holding) && (abs(gamepad1.left_stick_y) > .05 ||
+            if ((abs(gamepad1.left_stick_y) > .05 ||
                     abs(gamepad1.left_stick_x) > .05 || abs(gamepad1.right_stick_x) > .05)) {
-                following = false;
-                holding = false;
-                follower.startTeleopDrive();
                 lastDriveInputTime = runtime.seconds();
+                if ((following || holding)) {
+                    following = false;
+                    holding = false;
+                    follower.startTeleopDrive();
+                }
             } else if (runtime.seconds() - lastDriveInputTime > 0.5) {
                 holding = true;
                 follower.holdPoint(follower.getPose());
@@ -93,10 +100,30 @@ public class TeleOpFunctions {
                 follower.holdPoint(follower.getPose());
             }
 
-            follower.setTeleOpDrive(gamepad1.left_stick_y * speedMultiplier,
-                    -gamepad1.left_stick_x * speedMultiplier,
-                    -gamepad1.right_stick_x * speedMultiplier,
-                    !fieldCentric);
+            double turn;
+            aiming = aiming && abs(gamepad1.right_stick_x) <= .05;
+            if (aiming) {
+                ProjectileSolver.LaunchSolution sol = ProjectileSolver.solveLaunch(pose.getX(),
+                        pose.getY(), LAUNCHER_HEIGHT, vel.getXComponent(), vel.getYComponent(),
+                        GOAL_POSE.getPosition().x, GOAL_POSE.getPosition().y,
+                        GOAL_POSE.getPosition().z, LAUNCHER_ANGLE);
+                if (sol != null) {
+                    double error = pose.getHeading() - sol.phi;
+                    while (error > PI) error -= TAU;
+                    while (error < -PI) error += TAU;
+                    double angVel = follower.getAngularVelocity();
+                    turn = teleopHeadingPID.p * error - teleopHeadingPID.d * angVel;
+                    tm.print("error", error);
+                    tm.print("error deg", toDegrees(error));
+                    tm.print("turn", turn);
+                    tm.print("angVel", angVel);
+                    tm.print("angVel rad", toRadians(angVel));
+                    tm.print("angVel deg", toDegrees(angVel));
+                } else turn = -gamepad1.right_stick_x * speedMultiplier;
+            } else turn = -gamepad1.right_stick_x * speedMultiplier;
+
+            follower.setTeleOpDrive(-gamepad1.left_stick_y * speedMultiplier,
+                    -gamepad1.left_stick_x * speedMultiplier, turn, !fieldCentric);
 
             return;
         }
@@ -163,7 +190,7 @@ public class TeleOpFunctions {
         } else if (gamepad1.a) {
             holding = true;
             follower.holdPoint(pose);
-        } else if (gamepad1.b) aiming = !aiming;
+        } else if (gamepad1.bWasPressed()) aiming = !aiming;
     }
 
     /**
@@ -214,7 +241,7 @@ public class TeleOpFunctions {
         robot.intakeMotor.setPower(-gamepad1.right_trigger);
     }
 
-    public void launcherLogic(TelemetryUtils tm) {
+    public void launcherLogic() {
 
         if (gamepad1.dpadUpWasPressed()) motorRPM += 100;
         if (gamepad1.dpadDownWasPressed()) motorRPM -= 100;

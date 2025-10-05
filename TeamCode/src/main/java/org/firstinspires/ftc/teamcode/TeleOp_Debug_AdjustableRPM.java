@@ -59,6 +59,7 @@ public class TeleOp_Debug_AdjustableRPM extends OpMode {
 
         if (gamepad1.dpadUpWasPressed()) MOTOR_RPM += 100;
         if (gamepad1.dpadDownWasPressed()) MOTOR_RPM -= 100;
+        MOTOR_VEL = MOTOR_RPM / TICKS_PER_REVOLUTION;
 
         tm.print("Goal RPM", MOTOR_RPM);
 

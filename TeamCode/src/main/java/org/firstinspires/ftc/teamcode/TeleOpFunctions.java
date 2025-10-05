@@ -215,7 +215,7 @@ public class TeleOpFunctions {
 
     public void launcherLogic() {
         if (robot.launcherMotorA == null) return;
-        if (gamepad1.right_bumper) {
+        if (gamepad2.right_trigger >= 0.5) {
             robot.launcherMotorA.setPower(1);
             robot.launcherMotorB.setPower(-1);
         } else {
@@ -225,7 +225,7 @@ public class TeleOpFunctions {
     }
 
     public void feederLogic() {
-        if (gamepad1.xWasPressed()) {
+        if (gamepad2.rightBumperWasPressed()) {
             robot.feederServoA.setPosition(robot.feederServoA.getPosition() == 0 ? 1 : 0);
             robot.feederServoB.setPosition(robot.feederServoA.getPosition() == 0 ? 1 : 0);
         }

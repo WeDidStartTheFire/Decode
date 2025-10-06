@@ -75,7 +75,6 @@ public class TeleOpFunctions {
      */
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
         if (usePedro) {
-            follower.update();
             double speedMultiplier = 1.5 * (gamepad1.left_bumper ? speeds[2] :
                     lerp(gamepad1.left_trigger, speeds[1], speeds[0]));
             speedMultiplier *= baseSpeedMultiplier;
@@ -90,19 +89,35 @@ public class TeleOpFunctions {
                 }
             } else if (runtime.seconds() - lastDriveInputTime > 0.5) {
                 holding = true;
-                follower.holdPoint(follower.getPose());
+                Pose holdPose;
+                if (aiming) {
+                    ProjectileSolver.LaunchSolution sol = ProjectileSolver.solveLaunch(pose.getX(),
+                            pose.getY(), LAUNCHER_HEIGHT, vel.getXComponent(), vel.getYComponent(),
+                            GOAL_POSE.getPosition().x, GOAL_POSE.getPosition().y,
+                            GOAL_POSE.getPosition().z, LAUNCHER_ANGLE);
+                    holdPose = sol == null ? pose : new Pose(pose.getX(), pose.getY(), sol.phi);
+                } else holdPose = pose;
+                follower.holdPoint(holdPose);
             }
 
             if (!follower.isBusy() && following) {
                 following = false;
                 holding = true;
-                follower.holdPoint(follower.getPose());
+                Pose holdPose;
+                if (aiming) {
+                    ProjectileSolver.LaunchSolution sol = ProjectileSolver.solveLaunch(pose.getX(),
+                            pose.getY(), LAUNCHER_HEIGHT, vel.getXComponent(), vel.getYComponent(),
+                            GOAL_POSE.getPosition().x, GOAL_POSE.getPosition().y,
+                            GOAL_POSE.getPosition().z, LAUNCHER_ANGLE);
+                    holdPose = sol == null ? pose : new Pose(pose.getX(), pose.getY(), sol.phi);
+                } else holdPose = pose;
+                follower.holdPoint(holdPose);
             }
 
             double turn;
             aiming = aiming && abs(gamepad1.right_stick_x) <= .05;
             tm.print("aiming", RobotState.aiming);
-            if (aiming) {
+            if (aiming && !holding) {
                 ProjectileSolver.LaunchSolution sol = ProjectileSolver.solveLaunch(pose.getX(),
                         pose.getY(), LAUNCHER_HEIGHT, vel.getXComponent(), vel.getYComponent(),
                         GOAL_POSE.getPosition().x, GOAL_POSE.getPosition().y,

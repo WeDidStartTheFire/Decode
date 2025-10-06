@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name = "Slow (.7)", group = "Main")
+@TeleOp(name = "Slow (.7)", group = "Other")
 public class TeleOp_Slow_Point7 extends OpMode {
     public TelemetryUtils tm = new TelemetryUtils(telemetry);
     public Robot robot;

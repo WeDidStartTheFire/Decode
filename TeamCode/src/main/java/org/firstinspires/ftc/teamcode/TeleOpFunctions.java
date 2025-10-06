@@ -7,7 +7,6 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.speeds;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 import static java.lang.Math.toDegrees;
-import static java.lang.Math.toRadians;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 import static org.firstinspires.ftc.teamcode.RobotState.*;
@@ -102,6 +101,7 @@ public class TeleOpFunctions {
 
             double turn;
             aiming = aiming && abs(gamepad1.right_stick_x) <= .05;
+            tm.print("aiming", RobotState.aiming);
             if (aiming) {
                 ProjectileSolver.LaunchSolution sol = ProjectileSolver.solveLaunch(pose.getX(),
                         pose.getY(), LAUNCHER_HEIGHT, vel.getXComponent(), vel.getYComponent(),
@@ -113,12 +113,11 @@ public class TeleOpFunctions {
                     while (error < -PI) error += TAU;
                     double angVel = follower.getAngularVelocity();
                     turn = teleopHeadingPID.p * error - teleopHeadingPID.d * angVel;
-                    tm.print("error", error);
+                    tm.print("curr angle", toDegrees(pose.getHeading()));
+                    tm.print("goal angle", toDegrees(sol.phi));
                     tm.print("error deg", toDegrees(error));
-                    tm.print("turn", turn);
-                    tm.print("angVel", angVel);
-                    tm.print("angVel rad", toRadians(angVel));
                     tm.print("angVel deg", toDegrees(angVel));
+                    tm.print("turn", turn);
                 } else turn = -gamepad1.right_stick_x * speedMultiplier;
             } else turn = -gamepad1.right_stick_x * speedMultiplier;
 

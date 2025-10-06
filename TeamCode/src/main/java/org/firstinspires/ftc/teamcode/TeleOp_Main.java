@@ -23,6 +23,8 @@ public class TeleOp_Main extends OpMode {
         robot.follower.startTeleopDrive();
         teleop = new TeleOpFunctions(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
+        if (!validStartPose) tm.print("⚠️WARNING⚠️", "Robot Centric driving will be used");
+        else tm.print("Field Centric Driving", "✅");
     }
 
     @Override

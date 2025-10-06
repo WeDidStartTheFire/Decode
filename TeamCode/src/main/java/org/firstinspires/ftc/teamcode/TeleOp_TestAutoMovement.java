@@ -28,19 +28,14 @@ public class TeleOp_TestAutoMovement extends OpMode {
         robot.follower.startTeleopDrive();
         teleop = new TeleOpFunctions(robot, gamepad1, gamepad2);
         tm = new TelemetryUtils(telemetry);
+        if (!validStartPose) tm.print("⚠️WARNING⚠️", "Robot Centric driving will be used");
+        else tm.print("Field Centric Driving", "✅");
     }
 
     @Override
     public void loop() {
         teleop.update();
         teleop.autoMovementLogic(validStartPose);
-        tm.print("aiming", RobotState.aiming);
-        ProjectileSolver.LaunchSolution sol = ProjectileSolver.solveLaunch(pose.getX(),
-                pose.getY(), LAUNCHER_HEIGHT, 0, 0,
-                GOAL_POSE.getPosition().x, GOAL_POSE.getPosition().y,
-                GOAL_POSE.getPosition().z, LAUNCHER_ANGLE);
-        tm.print("angle", toDegrees(pose.getHeading()));
-        if (sol != null) tm.print("goal", toDegrees(sol.phi));
         teleop.drivetrainLogic(validStartPose);
         teleop.feederLogic();
         teleop.launcherLogic();

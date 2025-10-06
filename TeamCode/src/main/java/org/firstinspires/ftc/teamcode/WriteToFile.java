@@ -7,7 +7,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name = "Write To File", group = "Test", preselectTeleOp = "Test Odometry")
+@Autonomous(name = "Write To File", group = "Test", preselectTeleOp = "Main")
 public class WriteToFile extends LinearOpMode {
     @Override
     public void runOpMode() {

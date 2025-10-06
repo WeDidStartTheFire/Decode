@@ -19,7 +19,7 @@ public class Robot {
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, boolean useOdometry) {
         follower = Constants.createFollower(hardwareMap);
 
-        drivetrain = new Drivetrain(hardwareMap, telemetry, follower, useOdometry);
+        drivetrain = new Drivetrain(hardwareMap, telemetry, useOdometry);
 
         TelemetryUtils tm = new TelemetryUtils(telemetry);
 

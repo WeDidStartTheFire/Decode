@@ -47,7 +47,7 @@ public class Drivetrain {
     
     public TelemetryUtils tm;
 
-    public Drivetrain(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, boolean useOdom) {
+    public Drivetrain(HardwareMap hardwareMap, Telemetry telemetry, boolean useOdom) {
         tm = new TelemetryUtils(telemetry);
 
         imu = hardwareMap.get(IMU.class, "imu");

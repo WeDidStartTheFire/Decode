@@ -19,7 +19,7 @@ public class TeleOp_TestFieldCentric_No_Pedro extends OpMode {
         Pose pose = loadOdometryPosition();
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
-        robot = new Robot(hardwareMap, telemetry, validStartPose);
+        robot = new Robot(hardwareMap, telemetry, false);
         robot.follower.setPose(RobotState.pose);
         robot.follower.startTeleopDrive();
         teleop = new TeleOpFunctions(robot, gamepad1, gamepad2);

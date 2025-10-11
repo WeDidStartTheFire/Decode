@@ -52,6 +52,5 @@ public class Robot {
         } catch (IllegalArgumentException e) {
             tm.except("wristServoY not connected");
         }
-
     }
 }

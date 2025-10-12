@@ -7,31 +7,60 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name = "Blue Far", group = "!!!Primary", preselectTeleOp = "Main")
-public class Auto_BlueFar extends LinearOpMode {
+@Autonomous(name = "Red Far", group = "!!!Primary", preselectTeleOp = "Main")
+public class Auto_RedFar extends LinearOpMode {
     public Robot robot;
-    public PathChain path1;
+    public PathChain path1, path2, path3;
 
-    public void buildPaths() {
+    public void buildPaths(){
         PathBuilder builder = new PathBuilder(robot.follower);
 
-        builder.addPath(
-                // Path 1
-                new BezierLine(new Pose(59.233, 10.047), new Pose(59.860, 85.814))
-        );
-        builder.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(-40));
-        path1 = builder.build();
+        path1 = builder
+                .addPath(
+                        // Path 1
+                        new BezierLine(new Pose(85.395, 10.465), new Pose(102.140, 35.163))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(245), Math.toRadians(0))
+                .build();
+        builder = new PathBuilder(robot.follower);
+        path2 = builder
+                .addPath(
+                        // Path 2
+                        new BezierLine(new Pose(102.140, 35.163), new Pose(124.744, 35.163))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .build();
+        builder = new PathBuilder(robot.follower);
+        path3 = builder
+                .addPath(
+                        // Path 3
+                        new BezierLine(new Pose(124.744, 35.163), new Pose(85.395, 10.465))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(245))
+                .build();
     }
     @Override
     public void runOpMode() {
         RobotState.auto = true;
         robot = new Robot(hardwareMap, telemetry, true);
-        robot.follower.setStartingPose(new Pose(59.233, 10.047, 90));
+        robot.follower.setStartingPose(new Pose(85.395, 10.465, 295));
         buildPaths();
         waitForStart();
+        robot.launch();
         robot.follower.followPath(path1);
-        while (opModeIsActive()){
+        while (robot.follower.isBusy()){
             robot.follower.update();
         }
+        robot.intakeMotor.setPower(1);
+        robot.follower.followPath(path2);
+        while (robot.follower.isBusy()){
+            robot.follower.update();
+        }
+        robot.intakeMotor.setPower(0);
+        robot.follower.followPath(path3);
+        while (robot.follower.isBusy()){
+            robot.follower.update();
+        }
+        robot.launch();
     }
 }

@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.TICKS_PER_REVOLUTION;
+import static org.firstinspires.ftc.teamcode.RobotState.motorRPM;
+import static org.firstinspires.ftc.teamcode.Utils.s;
+
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -53,5 +57,19 @@ public class Robot {
             tm.except("wristServoY not connected");
         }
 
+    }
+
+    public void launch(){
+        double motorVel = motorRPM / TICKS_PER_REVOLUTION;
+        launcherMotorA.setVelocity(motorVel);
+        launcherMotorB.setVelocity(-motorVel);
+        s(.5);
+        feederServoA.setPosition(0);
+        feederServoB.setPosition(1);
+        s(1);
+        feederServoA.setPosition(1);
+        feederServoB.setPosition(0);
+        launcherMotorA.setVelocity(0);
+        launcherMotorB.setVelocity(0);
     }
 }

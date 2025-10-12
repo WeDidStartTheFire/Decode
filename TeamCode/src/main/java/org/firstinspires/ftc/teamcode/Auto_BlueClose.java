@@ -7,8 +7,8 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name = "Blue Far", group = "!!!Primary", preselectTeleOp = "Main")
-public class Auto_BlueFar extends LinearOpMode {
+@Autonomous(name = "Blue Close", group = "!!!Primary", preselectTeleOp = "Main")
+public class Auto_BlueClose extends LinearOpMode {
     public Robot robot;
     public PathChain path1;
 
@@ -17,21 +17,22 @@ public class Auto_BlueFar extends LinearOpMode {
 
         builder.addPath(
                 // Path 1
-                new BezierLine(new Pose(59.233, 10.047), new Pose(59.860, 85.814))
+                new BezierLine(new Pose(20.721, 123.279), new Pose(50.233, 93.140))
         );
-        builder.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(-40));
+        builder.setLinearHeadingInterpolation(Math.toRadians(-38), Math.toRadians(-45));
         path1 = builder.build();
     }
     @Override
     public void runOpMode() {
         RobotState.auto = true;
         robot = new Robot(hardwareMap, telemetry, true);
-        robot.follower.setStartingPose(new Pose(59.233, 10.047, 90));
+        robot.follower.setStartingPose(new Pose(20.721, 123.279, -38));
         buildPaths();
         waitForStart();
         robot.follower.followPath(path1);
-        while (opModeIsActive()){
+        while (robot.follower.isBusy()){
             robot.follower.update();
         }
+        robot.launch();
     }
 }

@@ -7,6 +7,8 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.ftc.FollowerBuilder;
 import com.pedropathing.ftc.drivetrains.MecanumConstants;
+import com.pedropathing.ftc.localization.Encoder;
+import com.pedropathing.ftc.localization.constants.DriveEncoderConstants;
 import com.pedropathing.ftc.localization.constants.OTOSConstants;
 import com.pedropathing.paths.PathConstraints;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
@@ -15,6 +17,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+import pedroPathing.localizers.RedundantLocalizer;
 
 @Configurable
 public class Constants {
@@ -43,13 +47,29 @@ public class Constants {
             .xVelocity(60.4469319341)
             .yVelocity(44.8106780766);
 
-    public static OTOSConstants localizerConstants = new OTOSConstants()
+    public static OTOSConstants otosConstants = new OTOSConstants()
             .hardwareMapName("sensorOtos")
             .offset(new SparkFunOTOS.Pose2D(-6.25, -0.21, Math.toRadians(90)))
             .linearScalar(1.06828)
             .angularScalar(.9871)
             .linearUnit(DistanceUnit.INCH)
             .angleUnit(AngleUnit.RADIANS);
+
+    public static DriveEncoderConstants driveEncoderConstants = new DriveEncoderConstants()
+            .leftFrontMotorName("leftFront")
+            .leftRearMotorName("leftBack")
+            .rightFrontMotorName("rightFront")
+            .rightRearMotorName("rightBack")
+            .leftFrontEncoderDirection(Encoder.FORWARD)
+            .leftRearEncoderDirection(Encoder.FORWARD)
+            .rightFrontEncoderDirection(Encoder.FORWARD)
+            .rightRearEncoderDirection(Encoder.FORWARD)
+            .robotLength(16.2677165354)// TODO: Confirm (dist from wheel centers)
+            .robotWidth(13.228) // TODO: Confirm (dist from wheel centers)
+            // .forwardTicksToInches(multiplier) // TODO: Find this number
+            // .strafeTicksToInches(multiplier) // TODO: Find this number
+            // .turnTicksToInches(multiplier) // TODO: Find this number
+    ;
 
     public static PathConstraints pathConstraints = new PathConstraints(
             0.995,
@@ -58,11 +78,31 @@ public class Constants {
             1
     );
 
-    public static Follower createFollower(HardwareMap hardwareMap) {
-        return new  FollowerBuilder(followerConstants, hardwareMap)
+    public static Follower createRedundantFollower(HardwareMap hardwareMap) {
+        return new FollowerBuilder(followerConstants, hardwareMap)
                 .mecanumDrivetrain(driveConstants)
-                .OTOSLocalizer(localizerConstants)
+                .setLocalizer(new RedundantLocalizer(hardwareMap))
                 .pathConstraints(pathConstraints)
                 .build();
+    }
+
+    public static Follower createDriveEncoderFollower(HardwareMap hardwareMap) {
+        return new FollowerBuilder(followerConstants, hardwareMap)
+                .mecanumDrivetrain(driveConstants)
+                .driveEncoderLocalizer(driveEncoderConstants)
+                .pathConstraints(pathConstraints)
+                .build();
+    }
+
+    public static Follower createOTOSFollower(HardwareMap hardwareMap) {
+        return new  FollowerBuilder(followerConstants, hardwareMap)
+                .mecanumDrivetrain(driveConstants)
+                .OTOSLocalizer(otosConstants)
+                .pathConstraints(pathConstraints)
+                .build();
+    }
+
+    public static Follower createFollower(HardwareMap hardwareMap) {
+        return createOTOSFollower(hardwareMap);
     }
 }

@@ -33,11 +33,15 @@ dependencies {
     implementation 'org.ftclib.ftclib:core:2.1.1'
     implementation 'org.ftclib.ftclib:vision:2.1.0'
 
+    // EJML, for Kalman filter
+    implementation 'org.ejml:ejml-simple:0.44.0'
+
     // NetworkTables client
 //    implementation "edu.wpi.first:networktables-java:2025.3.2"
 
     // WPIMath for Pose2d/Pose3d, Units, etc.
 //    implementation "edu.wpi.first.wpimath:wpimath-java:2025.3.2"
+//    implementation "edu.wpi.first.units.measure:wpimath-java:2025.3.2"
 
     // Add ntcore-java
     implementation "edu.wpi.first.ntcore:ntcore-java:2025.3.2"

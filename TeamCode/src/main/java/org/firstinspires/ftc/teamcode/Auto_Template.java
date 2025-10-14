@@ -22,7 +22,7 @@ public class Auto_Template extends OpMode {
         // (0,0) bottom left to (144,144) top right; 0 heading is pointed from blue to red
         RobotState.pose = new Pose(0,0,0);
         robot = new Robot(hardwareMap, telemetry, validStartPose);
-        robot.follower.setPose(RobotState.pose);
+        robot.follower.setStartingPose(RobotState.pose);
         tm = robot.drivetrain.tm;
         buildPaths();
     }

@@ -57,6 +57,24 @@ public class Robot {
         }
     }
 
+    public void spinMotors() {
+        double motorVel = motorRPM / TICKS_PER_REVOLUTION;
+        launcherMotorA.setVelocity(motorVel);
+        launcherMotorB.setVelocity(-motorVel);
+    }
+
+    public void pushArtifactToLaunch() {
+        feederServoA.setPosition(0);
+        feederServoB.setPosition(1);
+    }
+
+    public void endLaunch() {
+        feederServoA.setPosition(1);
+        feederServoB.setPosition(0);
+        launcherMotorA.setVelocity(0);
+        launcherMotorB.setVelocity(0);
+    }
+
     public void launch(){
         double motorVel = motorRPM / TICKS_PER_REVOLUTION;
         launcherMotorA.setVelocity(motorVel);

@@ -50,9 +50,10 @@ public class Auto_BlueClose extends OpMode {
     @Override
     public void loop() {
         robot.follower.update();
+        tm.print("Path State", pathState);
         switch (pathState) {
             case -1:
-                saveOdometryPosition(robot.follower.getCurrentPath().endPoint);
+                saveOdometryPosition(robot.follower.getCurrentPath().endPose());
                 setPathState(-2); // Let it loop till auto finishes
                 break;
             case 0:

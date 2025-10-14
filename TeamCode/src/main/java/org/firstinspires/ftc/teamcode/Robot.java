@@ -57,7 +57,7 @@ public class Robot {
         }
     }
 
-    private void getLaunchMotorRPM() {
+    private double getLaunchMotorRPM() {
         return LAUNCHER_RPM / TICKS_PER_REVOLUTION;
     }
 

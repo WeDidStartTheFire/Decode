@@ -15,5 +15,4 @@ public class RobotState {
     static Pose pose;
     static Vector vel;
     static boolean aiming;
-    static float motorRPM = 5800;
 }

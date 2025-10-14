@@ -53,6 +53,7 @@ public class RobotConstants {
             new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
 
     final static Pose[] ROBOT_POSITIONS = {};
+    static float LAUNCHER_RPM = 5800;
 
     /** Directions. Options: LEFT, RIGHT, FORWARD, BACKWARD */
     public enum Dir {

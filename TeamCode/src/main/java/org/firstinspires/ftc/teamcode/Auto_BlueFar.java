@@ -1,20 +1,28 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
+
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathBuilder;
 import com.pedropathing.paths.PathChain;
+import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name = "Blue Far", group = "!!!Primary", preselectTeleOp = "Main")
-public class Auto_BlueFar extends LinearOpMode {
-    public Robot robot;
-    public PathBuilder builder;
-    public PathChain path1, path2, path3;
 
-    public void buildPaths(){
-        builder = new PathBuilder(robot.follower);
+@Autonomous(name = "Blue Far", group = "!!!Primary", preselectTeleOp = "Main")
+public class Auto_BlueFar extends OpMode {
+    private Robot robot;
+
+    private int pathState;
+    private final Timer pathStateTimer = new Timer();
+
+    private PathChain path1, path2, path3;
+    private TelemetryUtils tm;
+
+    private void buildPaths() {
+        PathBuilder builder = new PathBuilder(robot.follower);
 
         path1 = builder
                 .addPath(
@@ -40,28 +48,89 @@ public class Auto_BlueFar extends LinearOpMode {
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(-65))
                 .build();
     }
+
     @Override
-    public void runOpMode() {
+    public void init() {
         RobotState.auto = true;
         robot = new Robot(hardwareMap, telemetry, true);
         robot.follower.setStartingPose(new Pose(85.395, 10.465, 245));
+        tm = robot.drivetrain.tm;
         buildPaths();
-        waitForStart();
-        robot.launch();
-        robot.follower.followPath(path1);
-        while (robot.follower.isBusy()){
-            robot.follower.update();
+        setPathState(0);
+    }
+
+    public void setPathState(int pathState) {
+        this.pathState = pathState;
+        this.pathStateTimer.resetTimer();
+    }
+
+    @Override
+    public void loop() {
+        robot.follower.update();
+        switch (pathState) {
+            case -1:
+                saveOdometryPosition(robot.follower.getCurrentPath().endPoint);
+                setPathState(-2); // Let it loop till auto finishes
+                break;
+            case 0:
+                robot.follower.holdPoint(path1.endPoint());
+                robot.spinMotors();
+                setPathState(1);
+                break;
+            case 1:
+                if (pathStateTimer.getElapsedTimeSeconds() > .5) {
+                    robot.pushArtifactToLaunch();
+                    setPathState(2);
+                }
+                break;
+            case 2:
+                if (pathStateTimer.getElapsedTimeSeconds() > 1) {
+                    robot.endLaunch();
+                    robot.follower.breakFollowing();
+                    robot.follower.followPath(path1)
+                    setPathState(3);
+                }
+                break;
+            case 3:
+                if (!follower.isBusy()) {
+                    robot.intakeMotor.setPower(1);
+                    robot.follower.followPath(path2);
+                    setPathState(4);
+                }
+                break;
+            case 4:
+                if (!robot.isBusy()) {
+                    robot.intakeMotor.setPower(0);
+                    robot.follower.followPath(path3);
+                    setPathState(5);
+                }
+                break;
+            case 5:
+                if (!follower.isBusy()) {
+                    robot.follower.holdPoint(path3.endPoint());
+                    robot.spinMotors();
+                    setPathState(6);
+                }
+                break;
+            case 6:
+                if (pathStateTimer.getElapsedTimeSeconds() > .5) {
+                    robot.pushArtifactToLaunch();
+                    setPathState(7);
+                }
+                break;
+            case 7:
+                if (pathStateTimer.getElapsedTimeSeconds > 1) {
+                    robot.endLaunch();
+                    setPathState(-1);
+                }
+                break;
         }
-        robot.intakeMotor.setPower(1);
-        robot.follower.followPath(path2);
-        while (robot.follower.isBusy()){
-            robot.follower.update();
-        }
-        robot.intakeMotor.setPower(0);
-        robot.follower.followPath(path3);
-        while (robot.follower.isBusy()){
-            robot.follower.update();
-        }
-        robot.launch();
+    }
+
+    @Override
+    public void stop() {
+        robot.follower.update();
+        robot.follower.breakFollowing();
+        saveOdometryPosition(robot.follower.getPose());
     }
 }

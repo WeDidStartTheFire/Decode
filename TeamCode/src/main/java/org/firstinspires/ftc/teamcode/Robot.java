@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.TICKS_PER_REVOLUTION;
-import static org.firstinspires.ftc.teamcode.RobotState.motorRPM;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_RPM;
 import static org.firstinspires.ftc.teamcode.Utils.s;
 
 import com.pedropathing.follower.Follower;
@@ -57,8 +57,12 @@ public class Robot {
         }
     }
 
+    private void getLaunchMotorRPM() {
+        return LAUNCHER_RPM / TICKS_PER_REVOLUTION;
+    }
+
     public void spinMotors() {
-        double motorVel = motorRPM / TICKS_PER_REVOLUTION;
+        double motorVel = getLaunchMotorRPM();
         launcherMotorA.setVelocity(motorVel);
         launcherMotorB.setVelocity(-motorVel);
     }
@@ -75,8 +79,8 @@ public class Robot {
         launcherMotorB.setVelocity(0);
     }
 
-    public void launch(){
-        double motorVel = motorRPM / TICKS_PER_REVOLUTION;
+    public void launch() {
+        double motorVel = getLaunchMotorRPM();
         launcherMotorA.setVelocity(motorVel);
         launcherMotorB.setVelocity(-motorVel);
         s(.5);

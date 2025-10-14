@@ -13,15 +13,15 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 @Autonomous(name = "Blue Close", group = "!!!Primary", preselectTeleOp = "Main")
 public class Auto_BlueClose extends OpMode {
-    public Robot robot;
+    private Robot robot;
 
-    public int pathState;
+    private int pathState;
     private final Timer pathStateTimer = new Timer();
 
-    public PathChain path1;
-    public TelemetryUtils tm;
+    private PathChain path1;
+    private TelemetryUtils tm;
 
-    public void buildPaths() {
+    private void buildPaths() {
         PathBuilder builder = new PathBuilder(robot.follower);
 
         builder.addPath(
@@ -42,33 +42,37 @@ public class Auto_BlueClose extends OpMode {
         setPathState(0);
     }
 
+    public void setPathState(int pathState) {
+        this.pathState = pathState;
+        this.pathStateTimer.resetTimer();
+    }
+
     @Override
     public void loop() {
         robot.follower.update();
         switch (pathState) {
             case -1:
-                terminateOpModeNow();
+                saveOdometryPosition(robot.follower.getCurrentPath().endPoint);
+                setPathState(-2); // Let it loop till auto finishes
+                break;
             case 0:
                 robot.follower.followPath(path1);
+                robot.spinMotors();
                 setPathState(1);
                 break;
             case 1:
                 if (!robot.follower.isBusy()) {
                     robot.follower.holdPoint(path1.endPoint());
-                    robot.spinMotors();
+                    robot.pushArtifactToLaunch();
                     setPathState(2);
                 }
                 break;
             case 2:
-                if (pathStateTimer.getElapsedTimeSeconds() > .5) {
-                    robot.pushArtifactToLaunch();
-                    setPathState(3);
-                }
-            case 3:
                 if (pathStateTimer.getElapsedTimeSeconds() > 1) {
                     robot.endLaunch();
                     setPathState(-1);
                 }
+                break;
         }
     }
 
@@ -78,10 +82,5 @@ public class Auto_BlueClose extends OpMode {
         robot.follower.breakFollowing();
         RobotState.pose = robot.follower.getPose();
         saveOdometryPosition(RobotState.pose);
-    }
-
-    public void setPathState(int pathState) {
-        this.pathState = pathState;
-        this.pathStateTimer.resetTimer();
     }
 }

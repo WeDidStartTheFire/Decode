@@ -22,6 +22,7 @@ public class Auto_RedClose extends LinearOpMode {
         builder.setLinearHeadingInterpolation(Math.toRadians(218), Math.toRadians(225));
         path1 = builder.build();
     }
+
     @Override
     public void runOpMode() {
         RobotState.auto = true;
@@ -30,7 +31,7 @@ public class Auto_RedClose extends LinearOpMode {
         buildPaths();
         waitForStart();
         robot.follower.followPath(path1);
-        while (robot.follower.isBusy()){
+        while (robot.follower.isBusy()) {
             robot.follower.update();
         }
         robot.launch();

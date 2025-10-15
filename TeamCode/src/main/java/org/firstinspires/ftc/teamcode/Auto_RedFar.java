@@ -12,7 +12,7 @@ public class Auto_RedFar extends LinearOpMode {
     public Robot robot;
     public PathChain path1, path2, path3;
 
-    public void buildPaths(){
+    public void buildPaths() {
         PathBuilder builder = new PathBuilder(robot.follower);
 
         path1 = builder
@@ -39,6 +39,7 @@ public class Auto_RedFar extends LinearOpMode {
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(245))
                 .build();
     }
+
     @Override
     public void runOpMode() {
         RobotState.auto = true;
@@ -48,17 +49,17 @@ public class Auto_RedFar extends LinearOpMode {
         waitForStart();
         robot.launch();
         robot.follower.followPath(path1);
-        while (robot.follower.isBusy()){
+        while (robot.follower.isBusy()) {
             robot.follower.update();
         }
         robot.intakeMotor.setPower(1);
         robot.follower.followPath(path2);
-        while (robot.follower.isBusy()){
+        while (robot.follower.isBusy()) {
             robot.follower.update();
         }
         robot.intakeMotor.setPower(0);
         robot.follower.followPath(path3);
-        while (robot.follower.isBusy()){
+        while (robot.follower.isBusy()) {
             robot.follower.update();
         }
         robot.launch();

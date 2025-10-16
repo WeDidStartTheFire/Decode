@@ -9,7 +9,6 @@ import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 import static java.lang.Math.*;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
@@ -28,7 +27,6 @@ import android.os.Environment;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import com.pedropathing.geometry.Pose;
 
@@ -56,7 +54,6 @@ public abstract class Legacy_Base extends LinearOpMode {
 
     public boolean useOdometry = true, useCam = true;
     public VisionPortal visionPortal;
-    private AprilTagProcessor tagProcessor;
     public Follower follower;
     public Pose currentPose = new Pose();
     public int updates = 0;
@@ -263,35 +260,6 @@ public abstract class Legacy_Base extends LinearOpMode {
     }
 
     /**
-     * Returns information about a tag with the specified ID if it is currently detected.
-     *
-     * @param id ID of tag to detect.
-     * @return Information about the tag detected.
-     */
-    @Nullable
-    public AprilTagDetection detectTag(int id) {
-        ArrayList<AprilTagDetection> t = tagProcessor.getDetections();
-        for (int i = 0; i < t.size(); i++) if (t.get(i).id == id) return t.get(i);
-        return null;
-    }
-
-    /**
-     * Returns information about a tag with the specified ID if it is detected within a designated
-     * timeout period.
-     *
-     * @param id      ID of tag to detect.
-     * @param timeout Detection timeout (seconds).
-     * @return Information about the tag detected.
-     */
-    @Nullable
-    public AprilTagDetection detectTag(int id, double timeout) {
-        AprilTagDetection a;
-        while (active() && (runtime.milliseconds() < runtime.milliseconds() + timeout))
-            if ((a = detectTag(id)) != null) return a;
-        return null;
-    }
-
-    /**
      * Moves the vertical lift motor a to a specified encoder mark
      *
      * @param encoders Number of encoders from zero position to turn the motor to
@@ -450,7 +418,7 @@ public abstract class Legacy_Base extends LinearOpMode {
      * @param camera The camera to use.
      */
     private void initProcessors(WebcamName camera) {
-        tagProcessor = new AprilTagProcessor.Builder()
+        AprilTagProcessor tagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
                 .setDrawTagID(true)

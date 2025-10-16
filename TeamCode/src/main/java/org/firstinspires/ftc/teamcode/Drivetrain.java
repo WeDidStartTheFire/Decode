@@ -26,8 +26,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
-import com.pedropathing.follower.Follower;
-
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 import static org.firstinspires.ftc.teamcode.Utils.*;
 import static org.firstinspires.ftc.teamcode.RobotState.*;
@@ -44,7 +42,7 @@ public class Drivetrain {
     public volatile boolean loop = false;
 
     public boolean useOdometry;
-    
+
     public TelemetryUtils tm;
 
     public Drivetrain(HardwareMap hardwareMap, Telemetry telemetry, boolean useOdom) {
@@ -53,7 +51,7 @@ public class Drivetrain {
         imu = hardwareMap.get(IMU.class, "imu");
         if (!imu.initialize(IMU_PARAMS)) throw new RuntimeException("IMU initialization failed");
         imu.resetYaw();
-        
+
         // The following try catch statements "check" if a motor is connected. If it isn't, it sets
         // that motor's value to null. Later, we check if that value is null. If it is, we don't
         // run the motor.
@@ -102,8 +100,8 @@ public class Drivetrain {
      * @param inches    Amount of inches to drive.
      * @param direction (opt.) Direction to drive if inches is zero.*
      */
-    void velocityDrive(double inches, RobotConstants.Dir direction) {
-        if (!active() || lf == null) return;
+    void drive(double inches, RobotConstants.Dir direction) {
+        if (lf == null) return;
 
         int lfTarget = 0;
         int rfTarget = 0;
@@ -138,7 +136,7 @@ public class Drivetrain {
      * @param degrees   The amount of degrees to turn.
      * @param direction Direction to turn if degrees is zero.
      */
-    public void IMUTurn(double degrees, RobotConstants.Dir direction) {
+    public void turn(double degrees, RobotConstants.Dir direction) {
         double direct = direction == LEFT ? -1 : direction == RIGHT ? 1 : 0;
         sleep(100);
         degrees *= -1;
@@ -179,7 +177,7 @@ public class Drivetrain {
      * @param degrees   The amount of degrees to turn.
      * @param direction Direction to turn if degrees is zero.
      */
-    public void newIMUTurn(double degrees, RobotConstants.Dir direction) {
+    public void newTurn(double degrees, RobotConstants.Dir direction) {
         double direct = direction == LEFT ? -1 : direction == RIGHT ? 1 : 0;
         goalAngle = simplifyAngle(goalAngle - degrees);
         degrees = simplifyAngle(-degrees - imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
@@ -202,28 +200,6 @@ public class Drivetrain {
         }
         stop();
     }
-    /**
-     * Turns the robot a specified number of degrees. Positive values turn right, negative values
-     * turn left.
-     *
-     * @param degrees   The amount of degrees to turn.
-     * @param direction (opt.) Direction to turn if degrees is zero.
-     */
-    public void turn(double degrees, Dir direction) {
-        if (useOdometry)
-            throw new UnsupportedOperationException("Use explicit Pedro Pathing functions or IMUTurn instead.");
-        IMUTurn(degrees, direction);
-    }
-
-    /**
-     * Turns the robot a specified number of degrees. Positive values turn right, negative values
-     * turn left. A degrees value of zero will cause the robot to turn until manually stopped.
-     *
-     * @param degrees The amount of degrees to turn.
-     */
-    public void turn(double degrees) {
-        turn(degrees, RIGHT);
-    }
 
     /**
      * Sets the mode of all drive train motors to the same mode.
@@ -236,6 +212,10 @@ public class Drivetrain {
         lb.setMode(mode);
         rf.setMode(mode);
         rb.setMode(mode);
+    }
+
+    public void setMotorPowers(double power) {
+        setMotorPowers(power, power, power, power);
     }
 
     /**
@@ -261,10 +241,7 @@ public class Drivetrain {
      */
     public void setMotorVelocities(double velocity) {
         if (lb == null) return;
-        lf.setVelocity(velocity);
-        lb.setVelocity(velocity);
-        rf.setVelocity(velocity);
-        rb.setVelocity(velocity);
+        setMotorVelocities(velocity, velocity, velocity, velocity);
     }
 
     public void setMotorVelocities(double lbPower, double rbPower, double lfPower, double rfPower) {
@@ -290,7 +267,7 @@ public class Drivetrain {
      * @param inches    Amount of inches to strafe.
      * @param direction Direction to strafe in.*
      */
-    public void velocityStrafe(double inches, Dir direction) {
+    public void strafe(double inches, Dir direction) {
         if (!active() || lf == null) return;
         setMotorModes(STOP_AND_RESET_ENCODER);
 
@@ -319,77 +296,11 @@ public class Drivetrain {
         if (!loop) tm.update();
     }
 
-    /**
-     * Strafes left or right for a specified number of inches. An inches value of zero will cause
-     * the robot to strafe until manually stopped.
-     *
-     * @param inches    Amount of inches to strafe.
-     * @param direction Direction to strafe in.*
-     */
-    public void strafe(double inches, Dir direction) {
-        if (useOdometry)
-            throw new UnsupportedOperationException("Use explicit Pedro Pathing functions or velocityStrafe instead.");
-        velocityStrafe(inches, direction);
-    }
-
-    /**
-     * Strafes right for a specified number of inches. An inches value of zero will cause the robot
-     * to strafe until manually stopped.
-     *
-     * @param inches Amount of inches to strafe.
-     */
-    public void strafe(double inches) {
-        strafe(inches, RIGHT);
-    }
-
-    /**
-     * Drives the specified number of inches. Negative values will drive backwards.
-     *
-     * @param inches    Amount of inches to drive.
-     * @param direction Direction to drive in.*
-     */
-    public void drive(double inches, Dir direction) {
-        if (useOdometry) {
-            throw new UnsupportedOperationException("Use explicit Pedro Pathing functions or velocityDrive instead.");
-        }
-
-        int checks = 1;
-        if (inches == 0) {
-            velocityDrive(0, direction);
-            return;
-        }
-
-        for (int i = 0; i < checks; i++) velocityDrive(inches / checks, direction);
-        stop();
-    }
-
-    /**
-     * Drives the specified number of inches. Negative values will drive backwards.
-     *
-     * @param inches Amount of inches to drive.
-     */
-    public void drive(double inches) {
-        drive(inches, FORWARD);
-    }
-
-    /**
-     * Drives the specified number of inches. Negative values will drive backwards.
-     *
-     * @param inches    Amount of inches to drive.
-     * @param direction Direction to drive in.*
-     */
-    public void drive(Dir direction, double inches) {
-        drive(inches, direction);
-    }
-
     /** Stops all drive train motors on the robot. */
     public void stop() {
         if (lb == null) return;
-        setMotorPowers(0, 0, 0, 0);
-        lb.setVelocity(0);
-        rb.setVelocity(0);
-        lf.setVelocity(0);
-        rf.setVelocity(0);
+        setMotorPowers(0);
+        setMotorVelocities(0);
 
         // Set target position to avoid an error
         lb.setTargetPosition(lb.getCurrentPosition());

@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode;
+
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.Vector;
 
-
+@Configurable
 public class RobotState {
     static boolean auto = false;
     static Color color;
@@ -15,4 +17,5 @@ public class RobotState {
     static Pose pose;
     static Vector vel;
     static boolean aiming;
+    static float LAUNCHER_RPM = 5800;
 }

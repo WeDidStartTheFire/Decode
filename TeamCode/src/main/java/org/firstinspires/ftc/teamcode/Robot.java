@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.TICKS_PER_REVOLUTION;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_RPM;
+import static org.firstinspires.ftc.teamcode.RobotState.LAUNCHER_RPM;
 import static org.firstinspires.ftc.teamcode.Utils.s;
 
 import com.pedropathing.follower.Follower;

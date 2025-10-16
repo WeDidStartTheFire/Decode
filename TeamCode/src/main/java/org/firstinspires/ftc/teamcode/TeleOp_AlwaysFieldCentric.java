@@ -15,6 +15,7 @@ public class TeleOp_AlwaysFieldCentric extends OpMode {
 
     @Override
     public void init() {
+        RobotState.color = RobotConstants.Color.BLUE;
         Pose pose = loadOdometryPosition();
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
@@ -26,14 +27,17 @@ public class TeleOp_AlwaysFieldCentric extends OpMode {
         if (!validStartPose)
             tm.print("Field Centric Driving️", "☑️Will be used without valid position");
         else tm.print("Field Centric Driving", "✅");
+        tm.print("Color", "\uD83D\uDFE6Blue\uD83D\uDFE6 (Default)");
     }
 
     @Override
     public void loop() {
         teleop.update();
+        teleop.autoMovementLogic(validStartPose);
         teleop.drivetrainLogic(true);
-        teleop.feederLogic();
-        teleop.launcherLogic();
         teleop.intakeLogic();
+        teleop.feederLogic();
+        teleop.indexerLogic();
+        teleop.launcherLogic();
     }
 }

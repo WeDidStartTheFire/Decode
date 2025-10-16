@@ -11,11 +11,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class TeleOp_TestFieldCentric_No_Pedro extends OpMode {
     public TeleOpFunctions teleop;
     public Robot robot;
-    public Pose pose;
     public TelemetryUtils tm;
 
     @Override
     public void init() {
+        RobotState.color = RobotConstants.Color.BLUE;
         Pose pose = loadOdometryPosition();
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
@@ -26,13 +26,16 @@ public class TeleOp_TestFieldCentric_No_Pedro extends OpMode {
         tm = robot.drivetrain.tm;
         if (!validStartPose) tm.print("⚠️WARNING⚠️", "Field centric driving without valid position");
         else tm.print("Field Centric Driving", "✅");
+        tm.print("Color", "\uD83D\uDFE6Blue\uD83D\uDFE6 (Default)");
     }
 
     @Override
     public void loop() {
+        teleop.update();
         teleop.drivetrainLogic(true, false);
-        teleop.feederLogic();
-        teleop.launcherLogic();
         teleop.intakeLogic();
+        teleop.feederLogic();
+        teleop.indexerLogic();
+        teleop.launcherLogic();
     }
 }

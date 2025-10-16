@@ -28,7 +28,7 @@ public class Auto_BlueClose extends OpMode {
                 // Path 1
                 new BezierLine(new Pose(20.721, 123.279), new Pose(50.233, 93.140))
         );
-        builder.setLinearHeadingInterpolation(Math.toRadians(-38), Math.toRadians(-45));
+        builder.setLinearHeadingInterpolation(Math.toRadians(142), Math.toRadians(135));
         path1 = builder.build();
     }
 
@@ -36,7 +36,7 @@ public class Auto_BlueClose extends OpMode {
     public void init() {
         RobotState.auto = true;
         robot = new Robot(hardwareMap, telemetry, true);
-        robot.follower.setStartingPose(new Pose(20.721, 123.279, -38));
+        robot.follower.setStartingPose(new Pose(20.721, 123.279, 142));
         tm = robot.drivetrain.tm;
         buildPaths();
         setPathState(0);

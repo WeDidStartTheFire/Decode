@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
 
+import static java.lang.Math.toRadians;
+
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathBuilder;
@@ -29,7 +31,7 @@ public class Auto_BlueFar extends OpMode {
                         // Path 1
                         new BezierLine(new Pose(59.860, 10.674), new Pose(39.767, 35.791))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(-65), Math.toRadians(180))
+                .setLinearHeadingInterpolation(toRadians(115), toRadians(180))
                 .build();
         builder = new PathBuilder(robot.follower);
         path2 = builder
@@ -37,7 +39,7 @@ public class Auto_BlueFar extends OpMode {
                         // Path 2
                         new BezierLine(new Pose(39.767, 35.791), new Pose(11.093, 35.791))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                .setLinearHeadingInterpolation(toRadians(180), toRadians(180))
                 .build();
         builder = new PathBuilder(robot.follower);
         path3 = builder
@@ -45,7 +47,7 @@ public class Auto_BlueFar extends OpMode {
                         // Path 3
                         new BezierLine(new Pose(11.093, 35.791), new Pose(59.860, 10.465))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(-65))
+                .setLinearHeadingInterpolation(toRadians(180), toRadians(115))
                 .build();
     }
 
@@ -53,7 +55,7 @@ public class Auto_BlueFar extends OpMode {
     public void init() {
         RobotState.auto = true;
         robot = new Robot(hardwareMap, telemetry, true);
-        robot.follower.setStartingPose(new Pose(85.395, 10.465, 245));
+        robot.follower.setStartingPose(new Pose(59.860, 10.674, toRadians(115)));
         tm = robot.drivetrain.tm;
         buildPaths();
         setPathState(0);

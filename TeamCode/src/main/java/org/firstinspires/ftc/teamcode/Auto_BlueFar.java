@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 
-@Autonomous(name = "Blue Far", group = "!!!Primary", preselectTeleOp = "Main")
+@Autonomous(name = "Blue Far", group = "!!!Primary", preselectTeleOp = "Blue Main")
 public class Auto_BlueFar extends OpMode {
     private Robot robot;
 

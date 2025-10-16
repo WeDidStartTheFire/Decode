@@ -10,7 +10,7 @@ public class RobotState {
     static Color color;
     static volatile boolean following = false;
     static volatile boolean holding = false;
-    static int sorterGoal;
+    static int indexerGoal;
     static boolean validStartPose;
     static Pose pose;
     static Vector vel;

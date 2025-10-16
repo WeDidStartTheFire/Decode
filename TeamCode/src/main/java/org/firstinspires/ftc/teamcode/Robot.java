@@ -16,7 +16,7 @@ import pedroPathing.constants.Constants;
 public class Robot {
     public Drivetrain drivetrain;
     public Follower follower;
-    public DcMotorEx sorterMotor, intakeMotor, launcherMotorA, launcherMotorB;
+    public DcMotorEx indexerMotor, intakeMotor, launcherMotorA, launcherMotorB;
     public Servo feederServoA, feederServoB;
 
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, boolean useOdometry) {
@@ -28,7 +28,7 @@ public class Robot {
 
         // Motors
         try {
-            sorterMotor = hardwareMap.get(DcMotorEx.class, "sorterMotor"); // Not configured
+            indexerMotor = hardwareMap.get(DcMotorEx.class, "indexerMotor"); // Not configured
         } catch (IllegalArgumentException e) {
             tm.except("sorterMotor not connected");
         }

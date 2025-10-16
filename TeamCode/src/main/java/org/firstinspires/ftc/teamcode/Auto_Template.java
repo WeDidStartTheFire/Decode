@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-@Autonomous(name="Auto Template", group="Template")
+@Autonomous(name = "Auto Template", group = "Template")
 @Disabled // Remove this for an actual auto
 public class Auto_Template extends OpMode {
     Robot robot;
@@ -20,7 +20,7 @@ public class Auto_Template extends OpMode {
     @Override
     public void init() {
         // (0,0) bottom left to (144,144) top right; 0 heading is pointed from blue to red
-        RobotState.pose = new Pose(0,0,0);
+        RobotState.pose = new Pose(0, 0, 0);
         robot = new Robot(hardwareMap, telemetry, validStartPose);
         robot.follower.setStartingPose(RobotState.pose);
         tm = robot.drivetrain.tm;

@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.speeds;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
@@ -10,10 +12,10 @@ import static java.lang.Math.toDegrees;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 import static org.firstinspires.ftc.teamcode.RobotState.*;
-import static org.firstinspires.ftc.teamcode.Utils.TAU;
 
 import androidx.annotation.NonNull;
 
+import com.pedropathing.control.PIDFController;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -23,6 +25,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 public class TeleOpFunctions {
     DcMotorEx lf, lb, rf, rb;
@@ -33,6 +36,8 @@ public class TeleOpFunctions {
     boolean useOdometry;
     double lastDriveInputTime = runtime.seconds();
     TelemetryUtils tm;
+    PIDFController indexerPIDController = new PIDFController(indexerPID);
+    PIDFController headingPIDController = new PIDFController(teleopHeadingPID);
 
     public TeleOpFunctions(Robot robot, Gamepad gamepad1, Gamepad gamepad2) {
         this.robot = robot;
@@ -64,8 +69,28 @@ public class TeleOpFunctions {
         drivetrainLogic(fieldCentric, true);
     }
 
-    public double lerp(double t, double a, double b) {
+    private double lerp(double t, double a, double b) {
         return (b - a) * t + a;
+    }
+
+    private ProjectileSolver.LaunchSolution getLaunchSolution() {
+        Pose3D goalPose = RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE;
+        return  ProjectileSolver.solveLaunch(pose.getX(),
+                pose.getY(), LAUNCHER_HEIGHT, vel.getXComponent(), vel.getYComponent(),
+                goalPose.getPosition().x, goalPose.getPosition().y,
+                goalPose.getPosition().z, LAUNCHER_ANGLE);
+
+    }
+
+    private void holdCurrentPose() {
+        following = false;
+        holding = true;
+        Pose holdPose;
+        if (aiming) {
+            ProjectileSolver.LaunchSolution sol = getLaunchSolution();
+            holdPose = sol == null ? pose : new Pose(pose.getX(), pose.getY(), sol.phi);
+        } else holdPose = pose;
+        follower.holdPoint(holdPose);
     }
 
     /**
@@ -87,51 +112,23 @@ public class TeleOpFunctions {
                     holding = false;
                     follower.startTeleopDrive();
                 }
-            } else if (runtime.seconds() - lastDriveInputTime > 0.5) {
-                holding = true;
-                Pose holdPose;
-                if (aiming) {
-                    ProjectileSolver.LaunchSolution sol = ProjectileSolver.solveLaunch(pose.getX(),
-                            pose.getY(), LAUNCHER_HEIGHT, vel.getXComponent(), vel.getYComponent(),
-                            GOAL_POSE.getPosition().x, GOAL_POSE.getPosition().y,
-                            GOAL_POSE.getPosition().z, LAUNCHER_ANGLE);
-                    holdPose = sol == null ? pose : new Pose(pose.getX(), pose.getY(), sol.phi);
-                } else holdPose = pose;
-                follower.holdPoint(holdPose);
-            }
+            } else if (runtime.seconds() - lastDriveInputTime > 0.5) holdCurrentPose();
 
-            if (!follower.isBusy() && following) {
-                following = false;
-                holding = true;
-                Pose holdPose;
-                if (aiming) {
-                    ProjectileSolver.LaunchSolution sol = ProjectileSolver.solveLaunch(pose.getX(),
-                            pose.getY(), LAUNCHER_HEIGHT, vel.getXComponent(), vel.getYComponent(),
-                            GOAL_POSE.getPosition().x, GOAL_POSE.getPosition().y,
-                            GOAL_POSE.getPosition().z, LAUNCHER_ANGLE);
-                    holdPose = sol == null ? pose : new Pose(pose.getX(), pose.getY(), sol.phi);
-                } else holdPose = pose;
-                follower.holdPoint(holdPose);
-            }
+            if (!follower.isBusy() && following) holdCurrentPose();
 
             double turn;
             aiming = aiming && abs(gamepad1.right_stick_x) <= .05;
             tm.print("aiming", RobotState.aiming);
             if (aiming && !holding) {
-                ProjectileSolver.LaunchSolution sol = ProjectileSolver.solveLaunch(pose.getX(),
-                        pose.getY(), LAUNCHER_HEIGHT, vel.getXComponent(), vel.getYComponent(),
-                        GOAL_POSE.getPosition().x, GOAL_POSE.getPosition().y,
-                        GOAL_POSE.getPosition().z, LAUNCHER_ANGLE);
+                ProjectileSolver.LaunchSolution sol =  getLaunchSolution();
                 if (sol != null) {
-                    double error = pose.getHeading() - sol.phi;
-                    while (error > PI) error -= TAU;
-                    while (error < -PI) error += TAU;
-                    double angVel = follower.getAngularVelocity();
-                    turn = teleopHeadingPID.p * error - teleopHeadingPID.d * angVel;
+                    double error = normalizeRadians(pose.getHeading() - sol.phi);
+                    headingPIDController.updateError(error);
+                    turn = headingPIDController.run();
                     tm.print("curr angle", toDegrees(pose.getHeading()));
-                    tm.print("goal angle", toDegrees(sol.phi));
-                    tm.print("error deg", toDegrees(error));
-                    tm.print("angVel deg", toDegrees(angVel));
+                    tm.print("goal angle", toDegrees(headingPIDController.getTargetPosition()));
+                    tm.print("error deg", toDegrees(headingPIDController.getError()));
+                    tm.print("angVel deg", toDegrees(headingPIDController.getErrorDerivative()));
                     tm.print("turn", turn);
                 } else turn = -gamepad1.right_stick_x * speedMultiplier;
             } else turn = -gamepad1.right_stick_x * speedMultiplier;
@@ -230,24 +227,19 @@ public class TeleOpFunctions {
         return path;
     }
 
-    public void updateSorterPower() {
-        double power = 0;
-        double sorterPosition = robot.sorterMotor.getCurrentPosition();
-        double error = sorterPosition - sorterGoal;
-        double velocity = robot.sorterMotor.getVelocity();
-
-        power += RobotConstants.sorterPID.p * -error;
-
-        power += sorterPID.d * -velocity;
-
-        robot.sorterMotor.setPower(power);
+    private void updateIndexerPower() {
+        double indexerPosition = robot.indexerMotor.getCurrentPosition();
+        indexerPIDController.updatePosition(indexerPosition);
+        robot.indexerMotor.setPower(indexerPIDController.run());
     }
 
-    public void sorterLogic() {
-        updateSorterPower();
-        if (!gamepad1.dpadUpWasPressed() && !gamepad1.dpadDownWasPressed()) return;
-        if (gamepad1.dpadUpWasPressed()) sorterGoal += SORTER_TICKS_PER_REV / 3;
-        else sorterGoal -= SORTER_TICKS_PER_REV / 3;
+    public void indexerLogic() {
+        if (robot.indexerMotor == null) return;
+        updateIndexerPower();
+        if (gamepad1.dpadUpWasPressed() == gamepad1.dpadDownWasPressed()) return;
+        if (gamepad1.dpadUpWasPressed()) indexerGoal += INDEXER_TICKS_PER_REV / 3;
+        else indexerGoal -= INDEXER_TICKS_PER_REV / 3;
+        indexerPIDController.setTargetPosition(indexerGoal);
     }
 
     public void intakeLogic() {

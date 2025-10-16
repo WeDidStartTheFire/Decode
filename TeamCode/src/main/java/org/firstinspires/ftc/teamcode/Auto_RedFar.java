@@ -7,7 +7,7 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name = "Red Far", group = "!!!Primary", preselectTeleOp = "Main")
+@Autonomous(name = "Red Far", group = "!!!Primary", preselectTeleOp = "Red Main")
 public class Auto_RedFar extends LinearOpMode {
     public Robot robot;
     public PathChain path1, path2, path3;

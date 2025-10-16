@@ -16,6 +16,12 @@ public class ProjectileSolver {
         public double w; // Launch speed magnitude (relative to robot motion)
         public double phi; // Horizontal azimuth (radians, degrees?)
         public double t; // Time from launch for artifact to reach target
+
+        LaunchSolution(double w, double phi, double t) {
+            this.w = w;
+            this.phi = phi;
+            this.t = t;
+        }
     }
 
     /**
@@ -67,11 +73,7 @@ public class ProjectileSolver {
         // Horizontal launch angle phi (atan2 gives correct quadrant)
         double phi = Math.atan2(uy, ux);
         // Package solution into container object
-        LaunchSolution sol = new LaunchSolution();
-        sol.w = w;
-        sol.phi = phi;
-        sol.t = t;
-        return sol;
+        return new LaunchSolution(w, phi, t);
     }
 
     /**

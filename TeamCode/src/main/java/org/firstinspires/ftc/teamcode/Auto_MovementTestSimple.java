@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
-
 import static java.lang.Math.toRadians;
 
 import com.pedropathing.geometry.BezierCurve;
@@ -12,8 +11,8 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-@Autonomous(name="Auto Movement Test")
-public class Auto_MovementTest extends OpMode {
+@Autonomous(name="Auto Movement Test Simple")
+public class Auto_MovementTestSimple extends OpMode {
     private Robot robot;
 
     private int pathState;

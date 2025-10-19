@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
 
+import static java.lang.Math.toRadians;
+
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathBuilder;
@@ -28,7 +30,7 @@ public class Auto_BlueClose extends OpMode {
                 // Path 1
                 new BezierLine(new Pose(20.721, 123.279), new Pose(50.233, 93.140))
         );
-        builder.setLinearHeadingInterpolation(Math.toRadians(142), Math.toRadians(135));
+        builder.setLinearHeadingInterpolation(toRadians(142), toRadians(135));
         path1 = builder.build();
     }
 
@@ -36,7 +38,7 @@ public class Auto_BlueClose extends OpMode {
     public void init() {
         RobotState.auto = true;
         robot = new Robot(hardwareMap, telemetry, true);
-        robot.follower.setStartingPose(new Pose(20.721, 123.279, 142));
+        robot.follower.setStartingPose(new Pose(20.721, 123.279, toRadians(142)));
         tm = robot.drivetrain.tm;
         buildPaths();
         setPathState(0);

@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
 
+import static java.lang.Math.toRadians;
+
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -32,7 +34,7 @@ public class Auto_MovementTest extends OpMode {
                                 new Pose(74.309, 70.123)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(50))
+                .setLinearHeadingInterpolation(toRadians(90), toRadians(50))
                 .addPath(
                         new BezierCurve(
                                 new Pose(74.309, 70.123),
@@ -41,7 +43,7 @@ public class Auto_MovementTest extends OpMode {
                                 new Pose(91.371, 117.213)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(50), Math.toRadians(131))
+                .setLinearHeadingInterpolation(toRadians(50), toRadians(131))
                 .addPath(
                         new BezierCurve(
                                 new Pose(91.371, 117.213),
@@ -50,7 +52,7 @@ public class Auto_MovementTest extends OpMode {
                                 new Pose(80.622, 8.019)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(131), Math.toRadians(90))
+                .setLinearHeadingInterpolation(toRadians(131), toRadians(90))
                 .build();
 
         path2 = robot.follower
@@ -58,7 +60,7 @@ public class Auto_MovementTest extends OpMode {
                 .addPath(
                         new BezierLine(new Pose(80.451, 8.190), new Pose(80.451, 63.000))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(180))
+                .setLinearHeadingInterpolation(toRadians(90), toRadians(180))
                 .build();
 
         path3 = robot.follower
@@ -66,7 +68,7 @@ public class Auto_MovementTest extends OpMode {
                 .addPath(
                         new BezierLine(new Pose(80.451, 63.000), new Pose(32.849, 63.000))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(45))
+                .setLinearHeadingInterpolation(toRadians(180), toRadians(45))
                 .build();
 
         path4 = robot.follower
@@ -78,7 +80,7 @@ public class Auto_MovementTest extends OpMode {
                                 new Pose(80.451, 8.190)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(90))
+                .setLinearHeadingInterpolation(toRadians(45), toRadians(90))
                 .build();
     }
 
@@ -87,7 +89,7 @@ public class Auto_MovementTest extends OpMode {
     public void init() {
         RobotState.auto = true;
         robot = new Robot(hardwareMap, telemetry, true);
-        robot.follower.setStartingPose(new Pose(20.721, 123.279, 142));
+        robot.follower.setStartingPose(new Pose(80.451, 8.190, toRadians(90)));
         tm = robot.drivetrain.tm;
         buildPaths();
         setPathState(0);

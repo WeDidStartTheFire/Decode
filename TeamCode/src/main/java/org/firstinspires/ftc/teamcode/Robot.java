@@ -79,17 +79,24 @@ public class Robot {
         feederServoB.setPosition(1);
     }
 
+    public void retractFeeder() {
+        if (feederServoA == null) return;
+        feederServoA.setPosition(1);
+        feederServoB.setPosition(0);
+    }
+
+    public void stopLauncherMotors() {
+        if (launcherMotorA == null) return;
+        launcherMotorA.setVelocity(0);
+        launcherMotorB.setVelocity(0);
+    }
+
     public void endLaunch() {
         if (feederServoA == null || launcherMotorA == null) return;
         feederServoA.setPosition(1);
         feederServoB.setPosition(0);
         launcherMotorA.setVelocity(0);
         launcherMotorB.setVelocity(0);
-    }
-
-    public void retractFeeder() {
-        feederServoA.setPosition(1);
-        feederServoB.setPosition(0);
     }
 
     public void fullLaunch() {

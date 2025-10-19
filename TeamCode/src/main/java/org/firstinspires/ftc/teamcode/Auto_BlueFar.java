@@ -6,7 +6,6 @@ import static java.lang.Math.toRadians;
 
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.PathBuilder;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -20,34 +19,29 @@ public class Auto_BlueFar extends OpMode {
     private int pathState;
     private final Timer pathStateTimer = new Timer();
 
-    private PathChain path1, path2, path3;
+    private PathChain path1, path2;
     private TelemetryUtils tm;
 
     private void buildPaths() {
-        PathBuilder builder = new PathBuilder(robot.follower);
-
-        path1 = builder
+        path1 = robot.follower
+                .pathBuilder()
                 .addPath(
-                        // Path 1
-                        new BezierLine(new Pose(59.860, 10.674), new Pose(39.767, 35.791))
+                        new BezierLine(new Pose(63.500, 8.500), new Pose(60.000, 20.000))
                 )
-                .setLinearHeadingInterpolation(toRadians(115), toRadians(180))
+                .setLinearHeadingInterpolation(
+                        toRadians(90),
+                        toRadians(113.1985905136482)
+                )
                 .build();
-        builder = new PathBuilder(robot.follower);
-        path2 = builder
+        path2 = robot.follower
+                .pathBuilder()
                 .addPath(
-                        // Path 2
-                        new BezierLine(new Pose(39.767, 35.791), new Pose(11.093, 35.791))
+                        new BezierLine(new Pose(60.000, 20.000), new Pose(40.500, 35.000))
                 )
-                .setLinearHeadingInterpolation(toRadians(180), toRadians(180))
-                .build();
-        builder = new PathBuilder(robot.follower);
-        path3 = builder
-                .addPath(
-                        // Path 3
-                        new BezierLine(new Pose(11.093, 35.791), new Pose(59.860, 10.465))
+                .setLinearHeadingInterpolation(
+                        toRadians(113.1985905136482),
+                        toRadians(180)
                 )
-                .setLinearHeadingInterpolation(toRadians(180), toRadians(115))
                 .build();
     }
 
@@ -55,7 +49,7 @@ public class Auto_BlueFar extends OpMode {
     public void init() {
         RobotState.auto = true;
         robot = new Robot(hardwareMap, telemetry, true);
-        robot.follower.setStartingPose(new Pose(59.860, 10.674, toRadians(115)));
+        robot.follower.setStartingPose(new Pose(63.500, 8.500, toRadians(90)));
         tm = robot.drivetrain.tm;
         buildPaths();
         setPathState(0);
@@ -76,54 +70,44 @@ public class Auto_BlueFar extends OpMode {
                 setPathState(-2); // Let it loop till auto finishes
                 break;
             case 0:
-                robot.follower.holdPoint(path1.endPoint());
+                robot.indexerServo.setPosition(0);
+                robot.follower.followPath(path1);
                 robot.spinLaunchMotors();
                 setPathState(1);
                 break;
             case 1:
-                if (pathStateTimer.getElapsedTimeSeconds() > .5) {
+                if (!robot.follower.isBusy()) {
+                    robot.follower.holdPoint(path1.endPose());
                     robot.pushArtifactToLaunch();
                     setPathState(2);
                 }
                 break;
             case 2:
-                if (pathStateTimer.getElapsedTimeSeconds() > 1) {
-                    robot.endLaunch();
-                    robot.follower.breakFollowing();
-                    robot.follower.followPath(path1);
+                if (pathStateTimer.getElapsedTimeSeconds() > .75) {
+                    robot.retractFeeder();
                     setPathState(3);
                 }
                 break;
             case 3:
-                if (!robot.follower.isBusy()) {
-                    robot.intakeMotor.setPower(1);
-                    robot.follower.followPath(path2);
-                    setPathState(4);
+                if (pathStateTimer.getElapsedTimeSeconds() > .75) {
+                    if (robot.indexerServo.getPosition() == 1) {
+                        robot.follower.followPath(path2);
+                        setPathState(5);
+                    } else {
+                        robot.indexerServo.setPosition(robot.indexerServo.getPosition() + 0.5);
+                        setPathState(4);
+                    }
                 }
                 break;
             case 4:
-                if (!robot.follower.isBusy()) {
-                    robot.intakeMotor.setPower(0);
-                    robot.follower.followPath(path3);
-                    setPathState(5);
-                }
-                break;
-            case 5:
-                if (!robot.follower.isBusy()) {
-                    robot.follower.holdPoint(path3.endPoint());
-                    robot.spinLaunchMotors();
-                    setPathState(6);
-                }
-                break;
-            case 6:
                 if (pathStateTimer.getElapsedTimeSeconds() > .5) {
                     robot.pushArtifactToLaunch();
-                    setPathState(7);
+                    setPathState(2);
                 }
-                break;
-            case 7:
-                if (pathStateTimer.getElapsedTimeSeconds() > 1) {
-                    robot.endLaunch();
+            case 5:
+                if (!robot.follower.isBusy()) {
+                    robot.follower.holdPoint(path2.endPose());
+                    robot.stopLauncherMotors();
                     setPathState(-1);
                 }
                 break;

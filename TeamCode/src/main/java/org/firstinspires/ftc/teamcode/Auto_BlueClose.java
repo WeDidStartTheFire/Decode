@@ -99,7 +99,7 @@ public class Auto_BlueClose extends OpMode {
             case 5:
                 if (!robot.follower.isBusy()) {
                     robot.follower.holdPoint(path2.endPose());
-                    robot.endLaunch();
+                    robot.stopLauncherMotors();
                     setPathState(-1);
                 }
                 break;

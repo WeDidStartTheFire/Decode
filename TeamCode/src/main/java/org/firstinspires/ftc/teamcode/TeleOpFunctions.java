@@ -75,7 +75,7 @@ public class TeleOpFunctions {
 
     private ProjectileSolver.LaunchSolution getLaunchSolution() {
         Pose3D goalPose = RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE;
-        return  ProjectileSolver.solveLaunch(pose.getX(),
+        return ProjectileSolver.solveLaunch(pose.getX(),
                 pose.getY(), LAUNCHER_HEIGHT, vel.getXComponent(), vel.getYComponent(),
                 goalPose.getPosition().x, goalPose.getPosition().y,
                 goalPose.getPosition().z, LAUNCHER_ANGLE);
@@ -120,7 +120,7 @@ public class TeleOpFunctions {
             aiming = aiming && abs(gamepad1.right_stick_x) <= .05;
             tm.print("aiming", RobotState.aiming);
             if (aiming && !holding) {
-                ProjectileSolver.LaunchSolution sol =  getLaunchSolution();
+                ProjectileSolver.LaunchSolution sol = getLaunchSolution();
                 if (sol != null) {
                     double error = normalizeRadians(pose.getHeading() - sol.phi);
                     headingPIDController.updateError(error);
@@ -248,7 +248,6 @@ public class TeleOpFunctions {
     }
 
     public void launcherLogic() {
-
         if (gamepad1.dpadUpWasPressed()) LAUNCHER_RPM += 100;
         if (gamepad1.dpadDownWasPressed()) LAUNCHER_RPM -= 100;
         double motorVel = LAUNCHER_RPM / TICKS_PER_REVOLUTION;

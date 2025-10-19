@@ -6,7 +6,6 @@ import static java.lang.Math.toRadians;
 
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.PathBuilder;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -34,9 +33,9 @@ public class Auto_BlueClose extends OpMode {
         path2 = robot.follower.pathBuilder()
                 .addPath(
                         // Path 2
-                        new BezierLine(new Pose(58.291, 84.630), new Pose(45.553, 74.483))
+                        new BezierLine(new Pose(58.291, 84.630), new Pose(40.804, 60.018))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(90))
+                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
                 .build();
     }
 

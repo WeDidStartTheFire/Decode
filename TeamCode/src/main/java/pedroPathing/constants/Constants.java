@@ -22,10 +22,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class Constants {
 
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(5.44310844)
+            .mass(6.80388555)
             .centripetalScaling(0.0004)
-            .forwardZeroPowerAcceleration(-37.30993063)
-            .lateralZeroPowerAcceleration(-63.25810803)
+            .forwardZeroPowerAcceleration(-36.835087)
+            .lateralZeroPowerAcceleration(-44.409589)
+//            .forwardZeroPowerAcceleration(-37.30993063)
+//            .lateralZeroPowerAcceleration(-63.25810803)
             .translationalPIDFCoefficients(new PIDFCoefficients(0.25, 0, 0.024, 0))
             .headingPIDFCoefficients(new PIDFCoefficients(2, 0, 0.13, 0))
             .drivePIDFCoefficients(
@@ -42,8 +44,10 @@ public class Constants {
             .leftRearMotorDirection(Direction.REVERSE)
             .rightFrontMotorDirection(Direction.FORWARD)
             .rightRearMotorDirection(Direction.FORWARD)
-            .xVelocity(60.4469319341)
-            .yVelocity(44.8106780766);
+            .xVelocity(65.83987)
+            .yVelocity(51.128357);
+//            .xVelocity(60.4469319341)
+//            .yVelocity(44.8106780766);
 
     public static OTOSConstants otosConstants = new OTOSConstants()
             .hardwareMapName("sensorOtos")

@@ -237,7 +237,7 @@ public class TeleOpFunctions {
 
     public void indexerLogic() {
         if (robot.indexerServo == null) return;
-        if (gamepad1.dpadUpWasPressed()){
+        if (gamepad1.dpadRightWasPressed()){
             if (robot.indexerServo.getPosition() == 0) {
                 robot.indexerServo.setPosition(0.5);
             }
@@ -245,7 +245,7 @@ public class TeleOpFunctions {
                 robot.indexerServo.setPosition(1);
             }
         }
-        if (gamepad1.dpadDownWasPressed()){
+        if (gamepad1.dpadLeftWasPressed()){
             if (robot.indexerServo.getPosition() == 1) {
                 robot.indexerServo.setPosition(0.5);
             }

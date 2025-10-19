@@ -17,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 @Configurable
-public final class RobotConstants {
+public class RobotConstants {
     static final ElapsedTime runtime = new ElapsedTime();
     static final double SMALL_WHEEL_DIAMETER = 3.77953;
     static final double WHEEL_DIAMETER_INCHES = SMALL_WHEEL_DIAMETER;
@@ -46,8 +46,8 @@ public final class RobotConstants {
     static final double baseSpeedMultiplier = 0.75;
     static final double baseTurnSpeed = 2.5;
 
-    static final PIDFCoefficients indexerPID = new PIDFCoefficients(0, 0, 0, 0);
-    static final PIDFCoefficients teleopHeadingPID = new PIDFCoefficients(.2, 0, .02, 0);
+    static PIDFCoefficients indexerPID = new PIDFCoefficients(0, 0, 0, 0);
+    static PIDFCoefficients teleopHeadingPID = new PIDFCoefficients(.2, 0, .02, 0);
 
     static final double LAUNCHER_HEIGHT = 12;
     static final double LAUNCHER_ANGLE = toRadians(30);

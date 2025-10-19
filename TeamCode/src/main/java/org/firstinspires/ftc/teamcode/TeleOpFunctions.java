@@ -262,7 +262,11 @@ public class TeleOpFunctions {
         if (gamepad1.dpadDownWasPressed()) LAUNCHER_RPM -= 100;
         double motorVel = LAUNCHER_RPM / TICKS_PER_REVOLUTION;
 
-        if (robot.launcherMotorA == null) return;
+        if (robot.launcherMotorA == null) {
+            robot.feederServoA.setPosition(1);
+            robot.feederServoB.setPosition(0);
+            return;
+        }
         if (gamepad2.right_trigger >= 0.5) {
             robot.launcherMotorA.setVelocity(motorVel);
             robot.launcherMotorB.setVelocity(-motorVel);

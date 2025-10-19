@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
 
-import static java.lang.Math.toRadians;
-
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -43,7 +41,7 @@ public class Auto_BlueClose extends OpMode {
     public void init() {
         RobotState.auto = true;
         robot = new Robot(hardwareMap, telemetry, true);
-        robot.follower.setStartingPose(new Pose(20.721, 123.279, toRadians(142)));
+        robot.follower.setStartingPose(new Pose(17.271, 121.115, 143));
         tm = robot.drivetrain.tm;
         buildPaths();
         setPathState(0);
@@ -77,13 +75,13 @@ public class Auto_BlueClose extends OpMode {
                 }
                 break;
             case 2:
-                if (pathStateTimer.getElapsedTimeSeconds() > 1) {
+                if (pathStateTimer.getElapsedTimeSeconds() > .75) {
                     robot.retractFeeder();
                     setPathState(3);
                 }
                 break;
             case 3:
-                if (pathStateTimer.getElapsedTimeSeconds() > 1) {
+                if (pathStateTimer.getElapsedTimeSeconds() > .75) {
                     if (robot.indexerServo.getPosition() == 1) {
                         robot.follower.followPath(path2);
                         setPathState(5);
@@ -101,6 +99,7 @@ public class Auto_BlueClose extends OpMode {
             case 5:
                 if (!robot.follower.isBusy()) {
                     robot.follower.holdPoint(path2.endPose());
+                    robot.endLaunch();
                     setPathState(-1);
                 }
                 break;

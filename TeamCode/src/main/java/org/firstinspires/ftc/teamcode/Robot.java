@@ -61,7 +61,7 @@ public class Robot {
         return LAUNCHER_RPM / TICKS_PER_REVOLUTION;
     }
 
-    public void spinMotors() {
+    public void spinLaunchMotors() {
         double motorVel = getLaunchMotorRPM();
         launcherMotorA.setVelocity(motorVel);
         launcherMotorB.setVelocity(-motorVel);
@@ -79,17 +79,11 @@ public class Robot {
         launcherMotorB.setVelocity(0);
     }
 
-    public void launch() {
-        double motorVel = getLaunchMotorRPM();
-        launcherMotorA.setVelocity(motorVel);
-        launcherMotorB.setVelocity(-motorVel);
+    public void fullLaunch() {
+        spinLaunchMotors();
         s(.5);
-        feederServoA.setPosition(0);
-        feederServoB.setPosition(1);
+        pushArtifactToLaunch();
         s(1);
-        feederServoA.setPosition(1);
-        feederServoB.setPosition(0);
-        launcherMotorA.setVelocity(0);
-        launcherMotorB.setVelocity(0);
+        endLaunch();
     }
 }

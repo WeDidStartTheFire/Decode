@@ -47,7 +47,7 @@ public class Auto_RedFar extends LinearOpMode {
         robot.follower.setStartingPose(new Pose(85.395, 10.465, 295));
         buildPaths();
         waitForStart();
-        robot.launch();
+        robot.fullLaunch();
         robot.follower.followPath(path1);
         while (robot.follower.isBusy()) {
             robot.follower.update();
@@ -62,6 +62,6 @@ public class Auto_RedFar extends LinearOpMode {
         while (robot.follower.isBusy()) {
             robot.follower.update();
         }
-        robot.launch();
+        robot.fullLaunch();
     }
 }

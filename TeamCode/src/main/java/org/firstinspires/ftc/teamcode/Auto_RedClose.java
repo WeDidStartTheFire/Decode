@@ -34,6 +34,6 @@ public class Auto_RedClose extends LinearOpMode {
         while (robot.follower.isBusy()) {
             robot.follower.update();
         }
-        robot.launch();
+        robot.fullLaunch();
     }
 }

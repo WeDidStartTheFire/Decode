@@ -237,22 +237,11 @@ public class TeleOpFunctions {
 
     public void indexerLogic() {
         if (robot.indexerServo == null) return;
-        if (gamepad1.dpadRightWasPressed()){
-            if (robot.indexerServo.getPosition() == 0) {
-                robot.indexerServo.setPosition(0.5);
-            }
-            else {
-                robot.indexerServo.setPosition(1);
-            }
-        }
-        if (gamepad1.dpadLeftWasPressed()){
-            if (robot.indexerServo.getPosition() == 1) {
-                robot.indexerServo.setPosition(0.5);
-            }
-            else {
-                robot.indexerServo.setPosition(0);
-            }
-        }
+        if (gamepad1.dpadRightWasPressed())
+            robot.indexerServo.setPosition((robot.indexerServo.getPosition() + 0.5) % 1.5);
+        if (gamepad1.dpadLeftWasPressed())
+            robot.indexerServo.setPosition((robot.indexerServo.getPosition() + 1) % 1.5);
+
         /*
         if (robot.indexerMotor == null) return;
         updateIndexerPower();

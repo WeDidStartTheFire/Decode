@@ -20,18 +20,24 @@ public class Auto_BlueClose extends OpMode {
     private int pathState;
     private final Timer pathStateTimer = new Timer();
 
-    private PathChain path1;
+    private PathChain path1, path2;
     private TelemetryUtils tm;
 
     private void buildPaths() {
-        PathBuilder builder = new PathBuilder(robot.follower);
-
-        builder.addPath(
-                // Path 1
-                new BezierLine(new Pose(20.721, 123.279), new Pose(50.233, 93.140))
-        );
-        builder.setLinearHeadingInterpolation(toRadians(142), toRadians(135));
-        path1 = builder.build();
+        path1 = robot.follower.pathBuilder()
+                .addPath(
+                        // Path 1
+                        new BezierLine(new Pose(17.271, 121.115), new Pose(58.291, 84.630))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(143), Math.toRadians(134.339))
+                .build();
+        path2 = robot.follower.pathBuilder()
+                .addPath(
+                        // Path 2
+                        new BezierLine(new Pose(58.291, 84.630), new Pose(45.553, 74.483))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(90))
+                .build();
     }
 
     @Override
@@ -59,20 +65,43 @@ public class Auto_BlueClose extends OpMode {
                 setPathState(-2); // Let it loop till auto finishes
                 break;
             case 0:
+                robot.indexerServo.setPosition(0);
                 robot.follower.followPath(path1);
                 robot.spinLaunchMotors();
                 setPathState(1);
                 break;
             case 1:
                 if (!robot.follower.isBusy()) {
-                    robot.follower.holdPoint(path1.endPoint());
+                    robot.follower.holdPoint(path1.endPose());
                     robot.pushArtifactToLaunch();
                     setPathState(2);
                 }
                 break;
             case 2:
                 if (pathStateTimer.getElapsedTimeSeconds() > 1) {
-                    robot.endLaunch();
+                    robot.retractFeeder();
+                    setPathState(3);
+                }
+                break;
+            case 3:
+                if (pathStateTimer.getElapsedTimeSeconds() > 1) {
+                    if (robot.indexerServo.getPosition() == 1) {
+                        robot.follower.followPath(path2);
+                        setPathState(5);
+                    } else {
+                        robot.indexerServo.setPosition(robot.indexerServo.getPosition() + 0.5);
+                        setPathState(4);
+                    }
+                }
+                break;
+            case 4:
+                if (pathStateTimer.getElapsedTimeSeconds() > .5) {
+                    robot.pushArtifactToLaunch();
+                    setPathState(2);
+                }
+            case 5:
+                if (!robot.follower.isBusy()) {
+                    robot.follower.holdPoint(path2.endPose());
                     setPathState(-1);
                 }
                 break;

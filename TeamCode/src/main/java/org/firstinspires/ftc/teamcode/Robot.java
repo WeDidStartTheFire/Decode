@@ -84,6 +84,11 @@ public class Robot {
         launcherMotorB.setVelocity(0);
     }
 
+    public void retractFeeder() {
+        feederServoA.setPosition(1);
+        feederServoB.setPosition(0);
+    }
+
     public void fullLaunch() {
         spinLaunchMotors();
         s(.5);

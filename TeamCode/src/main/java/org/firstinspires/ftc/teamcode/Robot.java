@@ -17,7 +17,7 @@ public class Robot {
     public Drivetrain drivetrain;
     public Follower follower;
     public DcMotorEx indexerMotor, intakeMotor, launcherMotorA, launcherMotorB;
-    public Servo feederServoA, feederServoB;
+    public Servo feederServoA, feederServoB, indexerServo;
 
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, boolean useOdometry) {
         follower = Constants.createFollower(hardwareMap);
@@ -54,6 +54,11 @@ public class Robot {
             feederServoB = hardwareMap.get(Servo.class, "feederServoB"); // Expansion Hub 1
         } catch (IllegalArgumentException e) {
             tm.except("wristServoY not connected");
+        }
+        try {
+            indexerServo = hardwareMap.get(Servo.class, "indexerServo");
+        } catch (IllegalArgumentException e) {
+            tm.except("indexerServo not connected");
         }
     }
 

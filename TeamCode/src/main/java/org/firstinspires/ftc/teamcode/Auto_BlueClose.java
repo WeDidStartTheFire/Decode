@@ -60,7 +60,7 @@ public class Auto_BlueClose extends OpMode {
                 break;
             case 0:
                 robot.follower.followPath(path1);
-                robot.spinMotors();
+                robot.spinLaunchMotors();
                 setPathState(1);
                 break;
             case 1:

@@ -77,7 +77,7 @@ public class Auto_BlueFar extends OpMode {
                 break;
             case 0:
                 robot.follower.holdPoint(path1.endPoint());
-                robot.spinMotors();
+                robot.spinLaunchMotors();
                 setPathState(1);
                 break;
             case 1:
@@ -111,7 +111,7 @@ public class Auto_BlueFar extends OpMode {
             case 5:
                 if (!robot.follower.isBusy()) {
                     robot.follower.holdPoint(path3.endPoint());
-                    robot.spinMotors();
+                    robot.spinLaunchMotors();
                     setPathState(6);
                 }
                 break;

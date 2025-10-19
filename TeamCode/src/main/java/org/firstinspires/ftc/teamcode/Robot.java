@@ -67,17 +67,20 @@ public class Robot {
     }
 
     public void spinLaunchMotors() {
+        if (launcherMotorA == null) return;
         double motorVel = getLaunchMotorRPM();
         launcherMotorA.setVelocity(motorVel);
         launcherMotorB.setVelocity(-motorVel);
     }
 
     public void pushArtifactToLaunch() {
+        if (feederServoA == null) return;
         feederServoA.setPosition(0);
         feederServoB.setPosition(1);
     }
 
     public void endLaunch() {
+        if (feederServoA == null || launcherMotorA == null) return;
         feederServoA.setPosition(1);
         feederServoB.setPosition(0);
         launcherMotorA.setVelocity(0);

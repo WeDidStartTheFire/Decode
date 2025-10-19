@@ -234,12 +234,25 @@ public class TeleOpFunctions {
     }
 
     public void indexerLogic() {
-        if (robot.indexerMotor == null) return;
-        updateIndexerPower();
+        if (robot.indexerServo == null) return;
+
         if (gamepad1.dpadUpWasPressed() == gamepad1.dpadDownWasPressed()) return;
-        if (gamepad1.dpadUpWasPressed()) indexerGoal += INDEXER_TICKS_PER_REV / 3;
-        else indexerGoal -= INDEXER_TICKS_PER_REV / 3;
-        indexerPIDController.setTargetPosition(indexerGoal);
+
+        if (gamepad1.dpadUpWasPressed()) {
+            if (robot.indexerServo.getPosition() == 1) robot.indexerServo.setPosition(0);
+            else robot.indexerServo.setPosition(robot.indexerServo.getPosition() + 0.5);
+        }
+        if (gamepad1.dpadDownWasPressed()) {
+            if (robot.indexerServo.getPosition() == 0) robot.indexerServo.setPosition(1);
+            else robot.indexerServo.setPosition(robot.indexerServo.getPosition() - 0.5);
+        }
+
+//        if (robot.indexerMotor == null) return;
+//        updateIndexerPower();
+//        if (gamepad1.dpadUpWasPressed() == gamepad1.dpadDownWasPressed()) return;
+//        if (gamepad1.dpadUpWasPressed()) indexerGoal += INDEXER_TICKS_PER_REV / 3;
+//        else indexerGoal -= INDEXER_TICKS_PER_REV / 3;
+//        indexerPIDController.setTargetPosition(indexerGoal);
     }
 
     public void intakeLogic() {

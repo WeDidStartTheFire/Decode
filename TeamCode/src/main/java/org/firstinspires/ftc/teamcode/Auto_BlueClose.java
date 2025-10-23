@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
 
+import static java.lang.Math.toRadians;
+
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -26,14 +28,14 @@ public class Auto_BlueClose extends OpMode {
                         // Path 1
                         new BezierLine(new Pose(17.271, 121.115), new Pose(58.291, 84.630))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(143), Math.toRadians(134.339))
+                .setLinearHeadingInterpolation(toRadians(143), toRadians(134.339))
                 .build();
         path2 = robot.follower.pathBuilder()
                 .addPath(
                         // Path 2
                         new BezierLine(new Pose(58.291, 84.630), new Pose(40.804, 60.018))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+                .setLinearHeadingInterpolation(toRadians(135), toRadians(180))
                 .build();
     }
 
@@ -41,7 +43,7 @@ public class Auto_BlueClose extends OpMode {
     public void init() {
         RobotState.auto = true;
         robot = new Robot(hardwareMap, telemetry, true);
-        robot.follower.setStartingPose(new Pose(17.271, 121.115, 143));
+        robot.follower.setStartingPose(new Pose(17.271, 121.115, toRadians(143)));
         tm = robot.drivetrain.tm;
         buildPaths();
         setPathState(0);
@@ -56,6 +58,7 @@ public class Auto_BlueClose extends OpMode {
     public void loop() {
         robot.follower.update();
         tm.print("Path State", pathState);
+        tm.print("Indexer Pos", robot.indexerServo.getPosition());
         switch (pathState) {
             case -1:
                 saveOdometryPosition(robot.follower.getCurrentPath().endPose());
@@ -75,13 +78,13 @@ public class Auto_BlueClose extends OpMode {
                 }
                 break;
             case 2:
-                if (pathStateTimer.getElapsedTimeSeconds() > .75) {
+                if (pathStateTimer.getElapsedTimeSeconds() > 1) {
                     robot.retractFeeder();
                     setPathState(3);
                 }
                 break;
             case 3:
-                if (pathStateTimer.getElapsedTimeSeconds() > .75) {
+                if (pathStateTimer.getElapsedTimeSeconds() > 1) {
                     if (robot.indexerServo.getPosition() == 1) {
                         robot.follower.followPath(path2);
                         setPathState(5);
@@ -92,10 +95,11 @@ public class Auto_BlueClose extends OpMode {
                 }
                 break;
             case 4:
-                if (pathStateTimer.getElapsedTimeSeconds() > .5) {
+                if (pathStateTimer.getElapsedTimeSeconds() > 1) {
                     robot.pushArtifactToLaunch();
                     setPathState(2);
                 }
+                break;
             case 5:
                 if (!robot.follower.isBusy()) {
                     robot.follower.holdPoint(path2.endPose());

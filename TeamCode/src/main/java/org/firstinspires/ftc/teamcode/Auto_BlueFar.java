@@ -64,6 +64,7 @@ public class Auto_BlueFar extends OpMode {
     public void loop() {
         robot.follower.update();
         tm.print("Path State", pathState);
+        tm.print("Indexer Pos", robot.indexerServo.getPosition());
         switch (pathState) {
             case -1:
                 saveOdometryPosition(robot.follower.getCurrentPath().endPose());
@@ -83,13 +84,13 @@ public class Auto_BlueFar extends OpMode {
                 }
                 break;
             case 2:
-                if (pathStateTimer.getElapsedTimeSeconds() > .75) {
+                if (pathStateTimer.getElapsedTimeSeconds() > 1) {
                     robot.retractFeeder();
                     setPathState(3);
                 }
                 break;
             case 3:
-                if (pathStateTimer.getElapsedTimeSeconds() > .75) {
+                if (pathStateTimer.getElapsedTimeSeconds() > 1) {
                     if (robot.indexerServo.getPosition() == 1) {
                         robot.follower.followPath(path2);
                         setPathState(5);
@@ -100,10 +101,11 @@ public class Auto_BlueFar extends OpMode {
                 }
                 break;
             case 4:
-                if (pathStateTimer.getElapsedTimeSeconds() > .5) {
+                if (pathStateTimer.getElapsedTimeSeconds() > 1) {
                     robot.pushArtifactToLaunch();
                     setPathState(2);
                 }
+                break;
             case 5:
                 if (!robot.follower.isBusy()) {
                     robot.follower.holdPoint(path2.endPose());

@@ -85,11 +85,14 @@ public class Auto_BlueClose extends OpMode {
                 break;
             case 3:
                 if (pathStateTimer.getElapsedTimeSeconds() > 1) {
-                    if (robot.indexerServo.getPosition() == 1) {
+                    double pos = robot.indexerServo.getPosition();
+                    if (pos == 1) {
                         robot.follower.followPath(path2);
                         setPathState(5);
                     } else {
-                        robot.indexerServo.setPosition(robot.indexerServo.getPosition() + 0.5);
+                        if (pos == 0) pos = 0.48;
+                        else pos = 1;
+                        robot.indexerServo.setPosition(pos);
                         setPathState(4);
                     }
                 }

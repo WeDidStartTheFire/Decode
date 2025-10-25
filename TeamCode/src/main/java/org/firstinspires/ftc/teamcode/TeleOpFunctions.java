@@ -37,7 +37,7 @@ public class TeleOpFunctions {
     boolean useOdometry;
     double lastDriveInputTime = runtime.seconds();
     TelemetryUtils tm;
-    PIDFController indexerPIDController = new PIDFController(indexerPID);
+//    PIDFController indexerPIDController = new PIDFController(indexerPID);
     PIDFController headingPIDController = new PIDFController(teleopHeadingPID);
 
     public TeleOpFunctions(Robot robot, Gamepad gamepad1, Gamepad gamepad2) {
@@ -238,12 +238,27 @@ public class TeleOpFunctions {
 
     public void indexerLogic() {
         if (robot.indexerServo == null) return;
+        boolean right = gamepad1.dpadRightWasPressed(), left = gamepad1.dpadLeftWasPressed();
+        boolean up = gamepad1.dpadUpWasPressed(), down = gamepad1.dpadDownWasPressed();
+        int pressedCount = (right ? 1 : 0) + (left ? 1 : 0) + (up ? 1 : 0) + (down ? 1 : 0);
+        if (pressedCount == 0) return;
+        if (pressedCount > 1) { // Filters input to one arrow so code works as intended
+            if (right) left = up = down = false;
+            else if (left) up = down = false;
+            else down = false;
+        }
         double pos = robot.indexerServo.getPosition();
-        if (gamepad1.dpadRightWasPressed()) pos += 0.5;
-        if (gamepad1.dpadLeftWasPressed()) pos += 1;
-        pos %= 1.5;
-        if (pos == 0.5) pos = 0.48;
-        else if (pos * 2 % 1 != 0 && pos != .48) pos = round(pos);
+        double vel = 0;
+        boolean isOffset = (pos * 2) % 1 != 0 && pos != .48; // 1e-6 b/c floating pt errors
+        if (right) vel = 0.5;
+        if (left || down) vel = 1;
+        if (left && isOffset) vel += .25;
+        if (right && isOffset) vel -= .25;
+        if ((down || up) && !isOffset) vel += .25;
+        pos = (pos + vel) % 1.5;
+        if (pos > 1) pos = up ? .25 : .75;
+        if (pos == 0.5) pos = 0.48; // Adjust for slight offset in middle
+        else if (pos * 4 % 1 != 0 && pos != .48) pos = (round(pos * 4) / 4.0) % 1.5;
         robot.indexerServo.setPosition(pos);
 
         /*

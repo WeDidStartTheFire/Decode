@@ -8,6 +8,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.speeds;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
+import static java.lang.Math.round;
 import static java.lang.Math.toDegrees;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
@@ -237,10 +238,13 @@ public class TeleOpFunctions {
 
     public void indexerLogic() {
         if (robot.indexerServo == null) return;
-        if (gamepad1.dpadRightWasPressed())
-            robot.indexerServo.setPosition((robot.indexerServo.getPosition() + 0.5) % 1.5);
-        if (gamepad1.dpadLeftWasPressed())
-            robot.indexerServo.setPosition((robot.indexerServo.getPosition() + 1) % 1.5);
+        double pos = robot.indexerServo.getPosition();
+        if (gamepad1.dpadRightWasPressed()) pos += 0.5;
+        if (gamepad1.dpadLeftWasPressed()) pos += 1;
+        pos %= 1.5;
+        if (pos == 0.5) pos = 0.48;
+        else if (pos * 2 % 1 != 0 && pos != .48) pos = round(pos);
+        robot.indexerServo.setPosition(pos);
 
         /*
         if (robot.indexerMotor == null) return;

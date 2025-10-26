@@ -6,7 +6,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_ANGLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_HEIGHT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.RED_GOAL_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TICKS_PER_REVOLUTION;
-import static org.firstinspires.ftc.teamcode.RobotState.LAUNCHER_RPM;
+import static org.firstinspires.ftc.teamcode.RobotState.launcherRPM;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 
@@ -88,7 +88,7 @@ public class Robot {
         ProjectileSolver.LaunchSolution sol = ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT,
                 vel, RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
         double ignore = sol != null ? ballVelToMotorVel(sol.w) : 0;
-        return LAUNCHER_RPM / TICKS_PER_REVOLUTION;
+        return launcherRPM / TICKS_PER_REVOLUTION;
     }
 
     public void spinLaunchMotors() {

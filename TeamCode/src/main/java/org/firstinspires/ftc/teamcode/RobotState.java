@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color;
+import static org.firstinspires.ftc.teamcode.RobotConstants.DEFAULT_LAUNCHER_RPM;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.geometry.Pose;
@@ -17,5 +18,5 @@ public class RobotState {
     static Pose pose;
     static Vector vel;
     static boolean aiming;
-    static float LAUNCHER_RPM = 5800;
+    static float launcherRPM = DEFAULT_LAUNCHER_RPM;
 }

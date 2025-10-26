@@ -9,7 +9,6 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.speeds;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 import static java.lang.Math.hypot;
-import static java.lang.Math.round;
 import static java.lang.Math.toDegrees;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
@@ -237,17 +236,20 @@ public class TeleOpFunctions {
     */
 
     public void indexerLogic() {
+        if (!robot.isIndexerServoConnected()) {
+            tm.print("Indexer Servo not connected");
+            return;
+        }
+
         double[] POS   = {0.00, 0.25, 0.50, 0.75, 1.00, 1.25};
         double[] DOWN  = {0.75, 0.75, 0.25, 0.25, 0.75, 0.75};
-        double[] UP    = {0.25, 0.25, 0.75, 0.75, 0.25, 0.25};
+        double[] UP    = {0.25, 0.75, 0.75, 0.25, 0.25, 0.25};
         double[] RIGHT = {0.48, 0.48, 1.00, 1.00, 0.00, 0.00};
         double[] LEFT  = {1.00, 0.00, 0.00, 0.48, 0.48, 1.00};
 
-        // Defensive: make sure servo exists
-        if (!robot.isIndexerServoConnected()) return;
-
         // Read current servo position
         double curPos = robot.getIndexerServoPos();
+        if (curPos == -1) tm.print("Got -1 for indexer pos");
 
         // Find exact match (within a tiny tolerance) or fallback to nearest POS index
         final double TOL = 1e-6;
@@ -312,7 +314,7 @@ public class TeleOpFunctions {
 
     public void intakeLogic() {
         if (robot.intakeMotor == null) return;
-        robot.intakeMotor.setPower(-gamepad1.right_trigger);
+        robot.intakeMotor.setPower(gamepad1.right_trigger);
     }
 
     public void launcherLogic() {

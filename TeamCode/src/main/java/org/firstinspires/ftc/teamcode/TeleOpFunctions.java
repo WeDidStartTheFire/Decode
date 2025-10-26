@@ -296,6 +296,7 @@ public class TeleOpFunctions {
         }
         tm.print("Motor A RPM", robot.launcherMotorA.getVelocity(AngleUnit.DEGREES) / 360 * 60);
         tm.print("Motor B RPM", robot.launcherMotorB.getVelocity(AngleUnit.DEGREES) / 360 * 60);
+        tm.print("Launch Motor Vel", motorVel);
     }
 
     public void feederLogic() {

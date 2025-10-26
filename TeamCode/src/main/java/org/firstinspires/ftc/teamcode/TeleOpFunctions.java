@@ -80,14 +80,14 @@ public class TeleOpFunctions {
     }
 
     private void holdCurrentPose() {
-        following = false;
-        holding = true;
-        Pose holdPose;
+        Pose holdPose = holding ? follower.getCurrentPath().endPose() : pose;
         if (aiming) {
             ProjectileSolver.LaunchSolution sol = getLaunchSolution();
-            holdPose = sol == null ? pose : new Pose(pose.getX(), pose.getY(), sol.phi);
-        } else holdPose = pose;
+            holdPose = sol == null ? holdPose : holdPose.withHeading(sol.phi);
+        }
         follower.holdPoint(holdPose);
+        following = false;
+        holding = true;
     }
 
     /**

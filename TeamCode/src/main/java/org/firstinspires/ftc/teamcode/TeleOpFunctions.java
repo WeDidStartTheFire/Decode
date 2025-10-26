@@ -123,7 +123,7 @@ public class TeleOpFunctions {
             if (aiming && !holding) {
                 ProjectileSolver.LaunchSolution sol = getLaunchSolution();
                 if (sol != null) {
-                    double error = normalizeRadians(pose.getHeading() - sol.phi);
+                    double error = normalizeRadians(sol.phi - pose.getHeading());
                     headingPIDController.updateError(error);
                     turn = headingPIDController.run();
                     tm.print("curr angle", toDegrees(pose.getHeading()));
@@ -249,7 +249,7 @@ public class TeleOpFunctions {
         }
         double pos = robot.getIndexerServoPos();
         double vel = 0;
-        boolean isOffset = (pos * 2) % 1 != 0 && pos != .48; // 1e-6 b/c floating pt errors
+        boolean isOffset = (pos * 2) % 1 != 0 && pos != .49; // 1e-6 b/c floating pt errors
         if (right) vel = 0.5;
         if (left || down) vel = 1;
         if (left && isOffset) vel += .25;
@@ -257,8 +257,8 @@ public class TeleOpFunctions {
         if ((down || up) && !isOffset) vel += .25;
         pos = (pos + vel) % 1.5;
         if (pos > 1) pos = up ? .25 : .75;
-        if (pos == 0.5) pos = 0.48; // Adjust for slight offset in middle
-        else if (pos * 4 % 1 != 0 && pos != .48) pos = (round(pos * 4) / 4.0) % 1.5;
+        if (pos == 0.5) pos = 0.49; // Adjust for slight offset in middle
+        else if (pos * 4 % 1 != 0 && pos != .49) pos = (round(pos * 4) / 4.0) % 1.5;
         robot.setIndexerServoPos(pos);
 
         /*

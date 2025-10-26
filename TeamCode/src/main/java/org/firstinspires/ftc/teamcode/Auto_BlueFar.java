@@ -97,7 +97,7 @@ public class Auto_BlueFar extends OpMode {
                         robot.follower.followPath(path2);
                         setPathState(5);
                     } else {
-                        if (pos == 0) pos = 0.48;
+                        if (pos == 0) pos = 0.49;
                         else pos = 1;
                         robot.setIndexerServoPos(pos);
                         setPathState(4);

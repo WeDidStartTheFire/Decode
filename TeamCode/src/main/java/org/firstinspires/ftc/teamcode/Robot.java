@@ -48,19 +48,17 @@ public class Robot {
             launcherMotorA = hardwareMap.get(DcMotorEx.class, "launcherMotorA"); // Expansion Hub 1
             launcherMotorB = hardwareMap.get(DcMotorEx.class, "launcherMotorB"); // Expansion Hub 2
         } catch (IllegalArgumentException e) {
-            tm.except("One of the launcherMotors not connected");
+            launcherMotorA = null;
+            tm.except("At least one launcherMotor not connected");
         }
 
         // Servos
         try {
             feederServoA = hardwareMap.get(Servo.class, "feederServoA"); // Expansion Hub 0
-        } catch (IllegalArgumentException e) {
-            tm.except("wristServoX not connected");
-        }
-        try {
             feederServoB = hardwareMap.get(Servo.class, "feederServoB"); // Expansion Hub 1
         } catch (IllegalArgumentException e) {
-            tm.except("wristServoY not connected");
+            feederServoA = null;
+            tm.except("At least one feeder servo not connected");
         }
         try {
             indexerServo = hardwareMap.get(Servo.class, "indexerServo");

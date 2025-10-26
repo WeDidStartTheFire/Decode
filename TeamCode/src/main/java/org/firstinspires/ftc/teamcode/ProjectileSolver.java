@@ -5,6 +5,11 @@ import static java.lang.Math.sqrt;
 
 import androidx.annotation.Nullable;
 
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Vector;
+
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+
 import java.util.Random;
 
 // Filename: ProjectileSolver
@@ -22,6 +27,15 @@ public class ProjectileSolver {
             this.phi = phi;
             this.t = t;
         }
+    }
+
+    public static @Nullable LaunchSolution solveLaunch(
+            Pose robotPose, double launcherHeight, Vector robotVel, Pose3D targetPose,
+            double launcherAngle
+    ) {
+        return solveLaunch(robotPose.getX(), robotPose.getY(), launcherHeight,
+                robotVel.getXComponent(), robotVel.getYComponent(), targetPose.getPosition().x,
+                targetPose.getPosition().y, targetPose.getPosition().z, launcherAngle);
     }
 
     /**

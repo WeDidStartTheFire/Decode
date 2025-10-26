@@ -26,7 +26,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 public class TeleOpFunctions {
     DcMotorEx lf, lb, rf, rb;
@@ -75,12 +74,8 @@ public class TeleOpFunctions {
     }
 
     private ProjectileSolver.LaunchSolution getLaunchSolution() {
-        Pose3D goalPose = RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE;
-        return ProjectileSolver.solveLaunch(pose.getX(),
-                pose.getY(), LAUNCHER_HEIGHT, vel.getXComponent(), vel.getYComponent(),
-                goalPose.getPosition().x, goalPose.getPosition().y,
-                goalPose.getPosition().z, LAUNCHER_ANGLE);
-
+        return ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT, vel,
+                RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
     }
 
     private void holdCurrentPose() {

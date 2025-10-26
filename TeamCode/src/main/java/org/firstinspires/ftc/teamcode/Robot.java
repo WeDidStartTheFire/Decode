@@ -1,8 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_GOAL_POSE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_ANGLE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_HEIGHT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.RED_GOAL_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TICKS_PER_REVOLUTION;
 import static org.firstinspires.ftc.teamcode.RobotState.LAUNCHER_RPM;
-import static org.firstinspires.ftc.teamcode.Utils.s;
+import static org.firstinspires.ftc.teamcode.RobotState.pose;
+import static org.firstinspires.ftc.teamcode.RobotState.vel;
 
 import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -62,13 +68,20 @@ public class Robot {
         }
     }
 
-    private double getLaunchMotorRPM() {
+    private double ballVelToMotorVel(double ballVel) {
+        return ballVel;
+    }
+
+    private double getLaunchMotorVel() {
+        ProjectileSolver.LaunchSolution sol = ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT,
+                vel, RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
+        double ignore = sol != null ? ballVelToMotorVel(sol.w) : 0;
         return LAUNCHER_RPM / TICKS_PER_REVOLUTION;
     }
 
     public void spinLaunchMotors() {
         if (launcherMotorA == null) return;
-        double motorVel = getLaunchMotorRPM();
+        double motorVel = getLaunchMotorVel();
         launcherMotorA.setVelocity(motorVel);
         launcherMotorB.setVelocity(-motorVel);
     }
@@ -89,21 +102,5 @@ public class Robot {
         if (launcherMotorA == null) return;
         launcherMotorA.setVelocity(0);
         launcherMotorB.setVelocity(0);
-    }
-
-    public void endLaunch() {
-        if (feederServoA == null || launcherMotorA == null) return;
-        feederServoA.setPosition(1);
-        feederServoB.setPosition(0);
-        launcherMotorA.setVelocity(0);
-        launcherMotorB.setVelocity(0);
-    }
-
-    public void fullLaunch() {
-        spinLaunchMotors();
-        s(.5);
-        pushArtifactToLaunch();
-        s(1);
-        endLaunch();
     }
 }

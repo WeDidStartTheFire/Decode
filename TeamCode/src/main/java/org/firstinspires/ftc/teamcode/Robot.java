@@ -23,8 +23,7 @@ public class Robot {
     public Drivetrain drivetrain;
     public Follower follower;
     public DcMotorEx indexerMotor, intakeMotor, launcherMotorA, launcherMotorB;
-    public Servo feederServoA, feederServoB;
-    private Servo indexerServo;
+    public Servo feederServoA, feederServoB, indexerServo;
 
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, boolean useOdometry) {
         follower = Constants.createFollower(hardwareMap);

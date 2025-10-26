@@ -237,7 +237,7 @@ public class TeleOpFunctions {
     */
 
     public void indexerLogic() {
-        if (robot.isIndexerServoConnected()) return;
+        if (!robot.isIndexerServoConnected()) return;
         boolean right = gamepad2.dpadRightWasPressed(), left = gamepad2.dpadLeftWasPressed();
         boolean up = gamepad2.dpadUpWasPressed(), down = gamepad2.dpadDownWasPressed();
         int pressedCount = (right ? 1 : 0) + (left ? 1 : 0) + (up ? 1 : 0) + (down ? 1 : 0);

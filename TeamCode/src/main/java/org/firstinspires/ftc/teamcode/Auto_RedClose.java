@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.RobotState.pose;
+import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
 import static java.lang.Math.toRadians;
 
@@ -55,15 +57,18 @@ public class Auto_RedClose extends OpMode {
     @Override
     public void loop() {
         robot.follower.update();
+        pose = robot.follower.getPose();
+        vel = robot.follower.getVelocity();
         tm.print("Path State", pathState);
         tm.print("Indexer Pos", robot.getIndexerServoPos());
+        tm.print("Pose", pose);
         switch (pathState) {
             case -1:
                 saveOdometryPosition(robot.follower.getCurrentPath().endPose());
                 setPathState(-2); // Let it loop till auto finishes
                 break;
             case 0:
-                robot.setIndexerServoPos(0);
+//                robot.setIndexerServoPos(0);
                 robot.follower.followPath(path1);
                 robot.spinLaunchMotors();
                 setPathState(1);
@@ -83,16 +88,17 @@ public class Auto_RedClose extends OpMode {
                 break;
             case 3:
                 if (pathStateTimer.getElapsedTimeSeconds() > 1) {
-                    double pos = robot.getIndexerServoPos();
-                    if (pos == 1 || pos == -1) {
-                        robot.follower.followPath(path2);
-                        setPathState(5);
-                    } else {
-                        if (pos == 0) pos = 0.49;
-                        else pos = 1;
-                        robot.setIndexerServoPos(pos);
-                        setPathState(4);
-                    }
+//                    double pos = robot.getIndexerServoPos();
+//                    if (pos == 1 || pos == -1) {
+                    robot.stopLauncherMotors();
+                    robot.follower.followPath(path2);
+                    setPathState(5);
+//                    } else {
+//                        if (pos == 0) pos = 0.49;
+//                        else pos = 1;
+//                        robot.setIndexerServoPos(pos);
+//                        setPathState(4);
+//                    }
                 }
                 break;
             case 4:

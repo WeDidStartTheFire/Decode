@@ -47,7 +47,7 @@ public class RobotConstants {
     static final double baseTurnSpeed = 2.5;
 
 //    static PIDFCoefficients indexerPID = new PIDFCoefficients(0, 0, 0, 0);
-    static PIDFCoefficients teleopHeadingPID = new PIDFCoefficients(.2, 0, .02, 0);
+    static PIDFCoefficients teleopHeadingPID = new PIDFCoefficients(1, 0, .05, 0);
 
     static final double LAUNCHER_HEIGHT = 15.5;
     static final double LAUNCHER_ANGLE = toRadians(40);

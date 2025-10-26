@@ -237,6 +237,53 @@ public class TeleOpFunctions {
     */
 
     public void indexerLogic() {
+        double[] POS   = {0.00, 0.25, 0.50, 0.75, 1.00, 1.25};
+        double[] DOWN  = {0.75, 0.75, 0.25, 0.25, 0.75, 0.75};
+        double[] UP    = {0.25, 0.25, 0.75, 0.75, 0.25, 0.25};
+        double[] RIGHT = {0.48, 0.48, 1.00, 1.00, 0.00, 0.00};
+        double[] LEFT  = {1.00, 0.00, 0.00, 0.48, 0.48, 1.00};
+
+        // Defensive: make sure servo exists
+        if (!robot.isIndexerServoConnected()) return;
+
+        // Read current servo position
+        double curPos = robot.getIndexerServoPos();
+
+        // Find exact match (within a tiny tolerance) or fallback to nearest POS index
+        final double TOL = 1e-6;
+        int idx = -1;
+        for (int i = 0; i < POS.length; i++) {
+            if (Math.abs(curPos - POS[i]) <= TOL) {
+                idx = i;
+                break;
+            }
+        }
+        if (idx == -1) {
+            // no exact match: pick nearest
+            double bestDiff = Double.MAX_VALUE;
+            for (int i = 0; i < POS.length; i++) {
+                double d = Math.abs(curPos - POS[i]);
+                if (d < bestDiff) {
+                    bestDiff = d;
+                    idx = i;
+                }
+            }
+        }
+
+        // Apply mapping based on dpad input (gamepad1 assumed available in OpMode)
+        if (gamepad1.dpad_left) {
+            robot.setIndexerServoPos(LEFT[idx]);
+        } else if (gamepad1.dpad_right) {
+            robot.setIndexerServoPos(RIGHT[idx]);
+        } else if (gamepad1.dpad_up) {
+            robot.setIndexerServoPos(UP[idx]);
+        } else if (gamepad1.dpad_down) {
+            robot.setIndexerServoPos(DOWN[idx]);
+        }
+    }
+
+    /*
+    public void indexerLogic() {
         if (robot.isIndexerServoConnected()) return;
         boolean right = gamepad2.dpadRightWasPressed(), left = gamepad2.dpadLeftWasPressed();
         boolean up = gamepad2.dpadUpWasPressed(), down = gamepad2.dpadDownWasPressed();
@@ -260,16 +307,8 @@ public class TeleOpFunctions {
         if (pos == 0.5) pos = 0.49; // Adjust for slight offset in middle
         else if (pos * 4 % 1 != 0 && pos != .49) pos = (round(pos * 4) / 4.0) % 1.5;
         robot.setIndexerServoPos(pos);
-
-        /*
-        if (robot.indexerMotor == null) return;
-        updateIndexerPower();
-        if (gamepad1.dpadUpWasPressed() == gamepad1.dpadDownWasPressed()) return;
-        if (gamepad1.dpadUpWasPressed()) indexerGoal += INDEXER_TICKS_PER_REV / 3;
-        else indexerGoal -= INDEXER_TICKS_PER_REV / 3;
-        indexerPIDController.setTargetPosition(indexerGoal);
-        */
     }
+    */
 
     public void intakeLogic() {
         if (robot.intakeMotor == null) return;

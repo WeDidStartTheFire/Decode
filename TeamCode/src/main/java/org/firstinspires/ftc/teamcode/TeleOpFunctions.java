@@ -134,8 +134,8 @@ public class TeleOpFunctions {
                 } else turn = -gamepad1.right_stick_x * speedMultiplier;
             } else turn = -gamepad1.right_stick_x * speedMultiplier;
 
-            follower.setTeleOpDrive(-gamepad1.left_stick_y * speedMultiplier,
-                    -gamepad1.left_stick_x * speedMultiplier, turn, !fieldCentric);
+            follower.setTeleOpDrive(gamepad1.left_stick_y * speedMultiplier * (color == Color.RED ? 1 : -1),
+                    gamepad1.left_stick_x * speedMultiplier * (color == Color.RED ? 1 : -1), turn, !fieldCentric);
 
             return;
         }

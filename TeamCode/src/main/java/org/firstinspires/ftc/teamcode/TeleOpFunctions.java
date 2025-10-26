@@ -238,8 +238,8 @@ public class TeleOpFunctions {
 
     public void indexerLogic() {
         if (robot.indexerServo == null) return;
-        boolean right = gamepad1.dpadRightWasPressed(), left = gamepad1.dpadLeftWasPressed();
-        boolean up = gamepad1.dpadUpWasPressed(), down = gamepad1.dpadDownWasPressed();
+        boolean right = gamepad2.dpadRightWasPressed(), left = gamepad2.dpadLeftWasPressed();
+        boolean up = gamepad2.dpadUpWasPressed(), down = gamepad2.dpadDownWasPressed();
         int pressedCount = (right ? 1 : 0) + (left ? 1 : 0) + (up ? 1 : 0) + (down ? 1 : 0);
         if (pressedCount == 0) return;
         if (pressedCount > 1) { // Filters input to one arrow so code works as intended

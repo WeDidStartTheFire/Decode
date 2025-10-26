@@ -123,7 +123,7 @@ public class TeleOpFunctions {
             if (aiming && !holding) {
                 ProjectileSolver.LaunchSolution sol = getLaunchSolution();
                 if (sol != null) {
-                    double error = normalizeRadians(pose.getHeading() - sol.phi);
+                    double error = normalizeRadians(sol.phi - pose.getHeading());
                     headingPIDController.updateError(error);
                     turn = headingPIDController.run();
                     tm.print("curr angle", toDegrees(pose.getHeading()));

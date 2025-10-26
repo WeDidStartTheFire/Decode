@@ -270,7 +270,7 @@ public class TeleOpFunctions {
             }
         }
 
-        // Apply mapping based on dpad input (gamepad1 assumed available in OpMode)
+        // Apply mapping based on dpad input
         if (gamepad2.dpadLeftWasPressed()) {
             robot.setIndexerServoPos(LEFT[idx]);
         } else if (gamepad2.dpadRightWasPressed()) {

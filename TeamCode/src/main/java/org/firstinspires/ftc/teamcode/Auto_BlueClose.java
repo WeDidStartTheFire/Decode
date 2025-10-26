@@ -28,14 +28,14 @@ public class Auto_BlueClose extends OpMode {
                         // Path 1
                         new BezierLine(new Pose(17.271, 121.115), new Pose(58.291, 84.630))
                 )
-                .setLinearHeadingInterpolation(toRadians(143), toRadians(134.339))
+                .setLinearHeadingInterpolation(toRadians(143), toRadians(132.0229330904))
                 .build();
         path2 = robot.follower.pathBuilder()
                 .addPath(
                         // Path 2
                         new BezierLine(new Pose(58.291, 84.630), new Pose(40.804, 60.018))
                 )
-                .setLinearHeadingInterpolation(toRadians(135), toRadians(180))
+                .setLinearHeadingInterpolation(toRadians(132.0229330904), toRadians(180))
                 .build();
     }
 

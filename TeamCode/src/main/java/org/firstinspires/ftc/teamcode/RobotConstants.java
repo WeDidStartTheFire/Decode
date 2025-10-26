@@ -34,8 +34,8 @@ public class RobotConstants {
             new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                     RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
 
-    static final int SORTER_GEAR_RATIO = 4;
-    static final int INDEXER_TICKS_PER_REV = 28 * SORTER_GEAR_RATIO;
+//    static final int INDEXER_GEAR_RATIO = 4;
+//    static final int INDEXER_TICKS_PER_REV = 28 * INDEXER_GEAR_RATIO;
 
     static final double DEFAULT_VELOCITY = 2000;
 
@@ -46,14 +46,14 @@ public class RobotConstants {
     static final double baseSpeedMultiplier = 0.75;
     static final double baseTurnSpeed = 2.5;
 
-    static PIDFCoefficients indexerPID = new PIDFCoefficients(0, 0, 0, 0);
+//    static PIDFCoefficients indexerPID = new PIDFCoefficients(0, 0, 0, 0);
     static PIDFCoefficients teleopHeadingPID = new PIDFCoefficients(.2, 0, .02, 0);
 
     static final double LAUNCHER_HEIGHT = 12;
     static final double LAUNCHER_ANGLE = toRadians(30);
-    static final Pose3D RED_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 132, 132, 43, 0),
+    static final Pose3D RED_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 132, 136, 43, 0),
             new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
-    static final Pose3D BLUE_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 12, 132, 43, 0),
+    static final Pose3D BLUE_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 12, 136, 43, 0),
             new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
 
     static final Pose[] ROBOT_POSITIONS = {};

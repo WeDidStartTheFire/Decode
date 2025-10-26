@@ -30,7 +30,7 @@ public class Auto_BlueFar extends OpMode {
                 )
                 .setLinearHeadingInterpolation(
                         toRadians(90),
-                        toRadians(113.1985905136482)
+                        toRadians(112.4794343971)
                 )
                 .build();
         path2 = robot.follower
@@ -39,7 +39,7 @@ public class Auto_BlueFar extends OpMode {
                         new BezierLine(new Pose(60.000, 20.000), new Pose(40.500, 35.000))
                 )
                 .setLinearHeadingInterpolation(
-                        toRadians(113.1985905136482),
+                        toRadians(112.4794343971),
                         toRadians(180)
                 )
                 .build();

@@ -26,14 +26,14 @@ public class Auto_RedClose extends OpMode {
                         // Path 1
                         new BezierLine(new Pose(126.729, 121.115), new Pose(85.709, 84.630))
                 )
-                .setLinearHeadingInterpolation(toRadians(37), toRadians(45.661))
+                .setLinearHeadingInterpolation(toRadians(37), toRadians(47.97706690962158))
                 .build();
         path2 = robot.follower.pathBuilder()
                 .addPath(
                         // Path 2
                         new BezierLine(new Pose(85.709, 84.630), new Pose(103.196, 60.018))
                 )
-                .setLinearHeadingInterpolation(toRadians(45.661), toRadians(0))
+                .setLinearHeadingInterpolation(toRadians(47.97706690962158), toRadians(0))
                 .build();
     }
 

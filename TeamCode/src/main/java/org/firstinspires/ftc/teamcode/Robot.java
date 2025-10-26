@@ -23,7 +23,8 @@ public class Robot {
     public Drivetrain drivetrain;
     public Follower follower;
     public DcMotorEx indexerMotor, intakeMotor, launcherMotorA, launcherMotorB;
-    public Servo feederServoA, feederServoB, indexerServo;
+    public Servo feederServoA, feederServoB;
+    private Servo indexerServo;
 
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, boolean useOdometry) {
         follower = Constants.createFollower(hardwareMap);
@@ -79,6 +80,10 @@ public class Robot {
     public double getIndexerServoPos() {
         if (indexerServo != null) return indexerServo.getPosition();
         return -1;
+    }
+
+    public boolean isIndexerServoConnected() {
+        return indexerServo != null;
     }
 
     private double getLaunchMotorVel() {

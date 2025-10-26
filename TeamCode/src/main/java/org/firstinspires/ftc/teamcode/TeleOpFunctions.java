@@ -237,7 +237,7 @@ public class TeleOpFunctions {
     */
 
     public void indexerLogic() {
-        if (robot.indexerServo == null) return;
+        if (robot.isIndexerServoConnected()) return;
         boolean right = gamepad2.dpadRightWasPressed(), left = gamepad2.dpadLeftWasPressed();
         boolean up = gamepad2.dpadUpWasPressed(), down = gamepad2.dpadDownWasPressed();
         int pressedCount = (right ? 1 : 0) + (left ? 1 : 0) + (up ? 1 : 0) + (down ? 1 : 0);
@@ -247,7 +247,7 @@ public class TeleOpFunctions {
             else if (left) up = down = false;
             else down = false;
         }
-        double pos = robot.indexerServo.getPosition();
+        double pos = robot.getIndexerServoPos();
         double vel = 0;
         boolean isOffset = (pos * 2) % 1 != 0 && pos != .48; // 1e-6 b/c floating pt errors
         if (right) vel = 0.5;
@@ -259,7 +259,7 @@ public class TeleOpFunctions {
         if (pos > 1) pos = up ? .25 : .75;
         if (pos == 0.5) pos = 0.48; // Adjust for slight offset in middle
         else if (pos * 4 % 1 != 0 && pos != .48) pos = (round(pos * 4) / 4.0) % 1.5;
-        robot.indexerServo.setPosition(pos);
+        robot.setIndexerServoPos(pos);
 
         /*
         if (robot.indexerMotor == null) return;

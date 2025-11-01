@@ -104,6 +104,12 @@ public class Robot {
         feederServoB.setPosition(1);
     }
 
+    public void feederHalfway() {
+        if (feederServoA == null) return;
+        feederServoA.setPosition(0.5);
+        feederServoB.setPosition(0.5);
+    }
+
     public void retractFeeder() {
         if (feederServoA == null) return;
         feederServoA.setPosition(1);

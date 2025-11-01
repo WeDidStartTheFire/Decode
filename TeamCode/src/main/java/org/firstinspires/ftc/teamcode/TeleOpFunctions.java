@@ -80,7 +80,7 @@ public class TeleOpFunctions {
     }
 
     private void holdCurrentPose() {
-        Pose holdPose = holding ? follower.getCurrentPath().endPose() : pose;
+        Pose holdPose = holding ? follower.getCurrentPath() != null ? follower.getCurrentPath().endPose() : pose : pose;
         if (aiming) {
             ProjectileSolver.LaunchSolution sol = getLaunchSolution();
             holdPose = sol == null ? holdPose : holdPose.withHeading(sol.phi);
@@ -133,8 +133,8 @@ public class TeleOpFunctions {
                 } else turn = -gamepad1.right_stick_x * speedMultiplier;
             } else turn = -gamepad1.right_stick_x * speedMultiplier;
 
-            follower.setTeleOpDrive(gamepad1.left_stick_y * speedMultiplier * (color == Color.RED ? 1 : -1),
-                    gamepad1.left_stick_x * speedMultiplier * (color == Color.RED ? 1 : -1), turn, !fieldCentric);
+            follower.setTeleOpDrive(gamepad1.left_stick_y * speedMultiplier * (color == Color.RED ? -1 : 1),
+                    gamepad1.left_stick_x * speedMultiplier * (color == Color.RED ? -1 : 1), turn, !fieldCentric);
 
             return;
         }

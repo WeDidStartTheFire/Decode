@@ -318,8 +318,8 @@ public class TeleOpFunctions {
     }
 
     public void launcherLogic() {
-        if (gamepad1.dpadUpWasPressed()) launcherRPM += gamepad1.x ? 10 : 100;
-        if (gamepad1.dpadDownWasPressed()) launcherRPM -= gamepad1.x ? 10 : 100;
+        if (gamepad1.dpadUpWasPressed()) launcherRPM += gamepad1.x ? 350 : 3500;
+        if (gamepad1.dpadDownWasPressed()) launcherRPM -= gamepad1.x ? 350 : 3500;
         double motorVel = launcherRPM / TICKS_PER_REVOLUTION;
 
         if (robot.launcherMotorA == null) {

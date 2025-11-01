@@ -78,50 +78,38 @@ public class Auto_BlueClose extends OpMode {
             case 1:
                 if (!robot.follower.isBusy()) {
                     robot.follower.holdPoint(path1.endPose());
-                    robot.feederHalfway();
+                    robot.pushArtifactToLaunch();
                     setPathState(2);
                 }
                 break;
             case 2:
-                if (pathStateTimer.getElapsedTimeSeconds() > .67) {
-                    robot.pushArtifactToLaunch();
+                if (pathStateTimer.getElapsedTimeSeconds() > 1) {
+                    robot.retractFeeder();
                     setPathState(3);
                 }
                 break;
             case 3:
-                if (pathStateTimer.getElapsedTimeSeconds() > .75) {
-                    robot.feederHalfway();
-                    setPathState(4);
-                }
-                break;
-            case 4:
-                if (pathStateTimer.getElapsedTimeSeconds() > .67) {
-                    robot.retractFeeder();
-                    setPathState(5);
-                }
-                break;
-            case 5:
                 if (pathStateTimer.getElapsedTimeSeconds() > 1) {
                     double pos = robot.getIndexerServoPos();
                     if (pos == 1 || pos == -1) {
                         robot.stopLauncherMotors();
                         robot.follower.followPath(path2);
-                        setPathState(7);
+                        setPathState(5);
                     } else {
                         if (pos == 0) pos = 0.49;
                         else pos = 1;
                         robot.setIndexerServoPos(pos);
-                        setPathState(6);
+                        setPathState(4);
                     }
                 }
                 break;
-            case 6:
+            case 4:
                 if (pathStateTimer.getElapsedTimeSeconds() > 1) {
-                    robot.feederHalfway();
+                    robot.pushArtifactToLaunch();
                     setPathState(2);
                 }
                 break;
-            case 7:
+            case 5:
                 if (!robot.follower.isBusy()) {
                     robot.follower.holdPoint(path2.endPose());
                     setPathState(-1);

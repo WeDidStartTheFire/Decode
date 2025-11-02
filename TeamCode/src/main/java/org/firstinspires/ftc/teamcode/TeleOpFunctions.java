@@ -22,12 +22,15 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
 import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+
+import java.util.List;
 
 public class TeleOpFunctions {
     DcMotorEx lf, lb, rf, rb;
@@ -38,7 +41,7 @@ public class TeleOpFunctions {
     boolean useOdometry;
     double lastDriveInputTime = runtime.seconds();
     TelemetryUtils tm;
-//    PIDFController indexerPIDController = new PIDFController(indexerPID);
+    //    PIDFController indexerPIDController = new PIDFController(indexerPID);
     PIDFController headingPIDController = new PIDFController(teleopHeadingPID);
 
     public TeleOpFunctions(Robot robot, Gamepad gamepad1, Gamepad gamepad2) {
@@ -242,11 +245,11 @@ public class TeleOpFunctions {
             return;
         }
 
-        double[] POS   = {0.00, 0.25, 0.50, 0.75, 1.00, 1.25};
-        double[] DOWN  = {0.75, 0.75, 0.25, 0.25, 0.75, 0.75};
-        double[] UP    = {0.25, 0.75, 0.75, 0.25, 0.25, 0.25};
+        double[] POS = {0.00, 0.25, 0.50, 0.75, 1.00, 1.25};
+        double[] DOWN = {0.75, 0.75, 0.25, 0.25, 0.75, 0.75};
+        double[] UP = {0.25, 0.75, 0.75, 0.25, 0.25, 0.25};
         double[] RIGHT = {0.48, 0.48, 1.00, 1.00, 0.00, 0.00};
-        double[] LEFT  = {1.00, 0.00, 0.00, 0.48, 0.48, 1.00};
+        double[] LEFT = {1.00, 0.00, 0.00, 0.48, 0.48, 1.00};
 
         // Read current servo position
         double curPos = robot.getIndexerServoPos();
@@ -360,8 +363,15 @@ public class TeleOpFunctions {
     }
 
     public void limelightLogic(LLResult result) {
-        tm.print("tx", result.getTx());
-        tm.print("ty", result.getTy());
-        return;
+        if (result != null && result.isValid()) {
+            List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
+
+            if (fiducials != null && !fiducials.isEmpty()) {
+                for (LLResultTypes.FiducialResult fiducial : fiducials) {
+                    int aprilTagId = (int) fiducial.getFiducialId();
+                    tm.print("April Tag ID", aprilTagId);
+                }
+            }
+        }
     }
 }

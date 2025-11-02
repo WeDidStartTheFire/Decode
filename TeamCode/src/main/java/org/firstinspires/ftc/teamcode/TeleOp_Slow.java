@@ -7,11 +7,11 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name = "Slow (.5)", group = "Other")
+@TeleOp(name = "Slow", group = "Other")
 public class TeleOp_Slow extends OpMode {
     public TelemetryUtils tm = new TelemetryUtils(telemetry);
     public Robot robot;
-    public double baseSpeedMultiplier = .5;
+    public double baseSpeedMultiplier = .7;
     public double baseTurnSpeed = .625;
 
     @Override

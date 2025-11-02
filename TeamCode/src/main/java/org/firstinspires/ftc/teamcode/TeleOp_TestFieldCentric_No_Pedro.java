@@ -4,10 +4,12 @@ import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "Test Field Centric No Pedro", group = "Test")
+@Disabled
 public class TeleOp_TestFieldCentric_No_Pedro extends OpMode {
     public TeleOpFunctions teleop;
     public Robot robot;

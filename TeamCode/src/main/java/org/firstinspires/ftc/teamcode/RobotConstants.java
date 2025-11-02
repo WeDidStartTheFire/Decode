@@ -34,9 +34,6 @@ public class RobotConstants {
             new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                     RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
 
-//    static final int INDEXER_GEAR_RATIO = 4;
-//    static final int INDEXER_TICKS_PER_REV = 28 * INDEXER_GEAR_RATIO;
-
     static final double DEFAULT_VELOCITY = 2000;
 
     public static final double[] speeds = {0.2, 0.6, 1};
@@ -47,7 +44,6 @@ public class RobotConstants {
     static final double baseSpeedMultiplier = 0.75;
     static final double baseTurnSpeed = 2.5;
 
-    //    static PIDFCoefficients indexerPID = new PIDFCoefficients(0, 0, 0, 0);
     static PIDFCoefficients teleopHeadingPID = new PIDFCoefficients(1, 0, .05, 0);
 
     static final double LAUNCHER_HEIGHT = 15.5;
@@ -59,7 +55,6 @@ public class RobotConstants {
 
     static final Pose[] ROBOT_POSITIONS = {};
 
-    /** Directions. Options: LEFT, RIGHT, FORWARD, BACKWARD */
     public enum Dir {
         LEFT, RIGHT, FORWARD, BACKWARD
     }

@@ -14,7 +14,6 @@ public class RobotState {
     public static Color color;
     public static volatile boolean following = false;
     public static volatile boolean holding = false;
-//    public static int indexerGoal;
     public static boolean validStartPose;
     public static Pose pose;
     public static Vector vel;

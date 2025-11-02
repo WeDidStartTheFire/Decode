@@ -11,11 +11,15 @@ import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 
 import com.pedropathing.follower.Follower;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+
+import java.util.List;
 
 import pedroPathing.constants.Constants;
 
@@ -121,5 +125,32 @@ public class Robot {
         if (launcherMotorA == null) return;
         launcherMotorA.setVelocity(0);
         launcherMotorB.setVelocity(0);
+    }
+
+    public RobotConstants.Motif getMotif(LLResult result) {
+        if (result != null && result.isValid()) {
+            List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
+
+            if (fiducials != null && !fiducials.isEmpty()) {
+                for (LLResultTypes.FiducialResult fiducial : fiducials) {
+                    int aprilTagID = (int) fiducial.getFiducialId();
+
+                    switch (aprilTagID){
+                        case 21:
+                            return RobotConstants.Motif.GPP;
+                            break;
+                        case 22:
+                            return RobotConstants.Motif.PGP;
+                            break;
+                        case 23:
+                            return RobotConstants.Motif.PPG;
+                            break;
+                        default:
+                            return RobotConstants.Motif.NONE;
+                            break;
+                    }
+                }
+            }
+        }
     }
 }

@@ -44,6 +44,17 @@ public class TeleOp_Limelight_Test extends OpMode {
         teleop.feederLogic();
         teleop.indexerLogic();
         teleop.launcherLogic();
-        teleop.limelightLogic(result);
+
+        switch (robot.getMotif(result)){
+            case GPP:
+                tm.addLastActionTelemetry("Motif ID: 21");
+                break;
+            case PGP:
+                tm.addLastActionTelemetry("Motif ID: 22");
+                break;
+            case PPG:
+                tm.addLastActionTelemetry("Motif ID: 23");
+                break;
+        }
     }
 }

@@ -65,4 +65,8 @@ public class RobotConstants {
     }
 
     enum Color {RED, BLUE}
+
+    enum Motif {
+        GPP, PPG, PGP, NONE
+    }
 }

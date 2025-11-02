@@ -38,13 +38,12 @@ public class TeleOp_Limelight_Test extends OpMode {
         LLResult result = limelight.getLatestResult();
 
         teleop.update();
-        tm.print("tx", result.getTx());
-        tm.print("ty", result.getTy());
         teleop.autoMovementLogic(validStartPose);
         teleop.drivetrainLogic(validStartPose);
         teleop.intakeLogic();
         teleop.feederLogic();
         teleop.indexerLogic();
         teleop.launcherLogic();
+        teleop.limelightLogic(result);
     }
 }

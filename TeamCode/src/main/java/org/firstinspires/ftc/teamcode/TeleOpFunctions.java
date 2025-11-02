@@ -21,6 +21,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
+import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -195,13 +196,13 @@ public class TeleOpFunctions {
      */
     public void autoMovementLogic(boolean validPose) {
         if (!validPose || !useOdometry) return;
-        if (gamepad1.y) {
+        if (gamepad1.y) { // Nothing
             following = true;
             follower.followPath(getShortestPath(pose));
-        } else if (gamepad1.a) {
+        } else if (gamepad1.a) { // Hold pos
             holding = true;
             follower.holdPoint(pose);
-        } else if (gamepad1.bWasPressed()) aiming = !aiming;
+        } else if (gamepad1.bWasPressed()) aiming = !aiming; //aim robot at goal (not very well tho)
     }
 
     /**
@@ -356,5 +357,11 @@ public class TeleOpFunctions {
             if (feederEnd == 1) robot.pushArtifactToLaunch();
             else robot.retractFeeder();
         }
+    }
+
+    public void limelightLogic(LLResult result) {
+        tm.print("tx", result.getTx());
+        tm.print("ty", result.getTy());
+        return;
     }
 }

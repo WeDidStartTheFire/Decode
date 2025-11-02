@@ -47,13 +47,13 @@ public class TeleOp_Limelight_Test extends OpMode {
 
         switch (robot.getMotif(result)){
             case GPP:
-                tm.addLastActionTelemetry("Motif ID: 21");
+                tm.addLastActionTelemetry("Motif: 🟢🟣🟣");
                 break;
             case PGP:
-                tm.addLastActionTelemetry("Motif ID: 22");
+                tm.addLastActionTelemetry("Motif: 🟣🟢🟣");
                 break;
             case PPG:
-                tm.addLastActionTelemetry("Motif ID: 23");
+                tm.addLastActionTelemetry("Motif: 🟣🟣🟢");
                 break;
         }
     }

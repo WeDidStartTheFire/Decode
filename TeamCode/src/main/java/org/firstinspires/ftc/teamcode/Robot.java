@@ -11,15 +11,20 @@ import static org.firstinspires.ftc.teamcode.RobotState.launcherRPM;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 
+import androidx.annotation.Nullable;
+
 import com.pedropathing.follower.Follower;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.opencv.core.Scalar;
 
 import java.util.List;
 
@@ -31,6 +36,7 @@ public class Robot {
     public DcMotorEx indexerMotor, intakeMotor, launcherMotorA, launcherMotorB;
     public Servo feederServoA, feederServoB;
     private Servo indexerServo;
+    public NormalizedColorSensor colorSensor;
     public Limelight3A limelight;
 
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, boolean useOdometry) {
@@ -72,6 +78,12 @@ public class Robot {
             indexerServo = hardwareMap.get(Servo.class, "indexerServo");
         } catch (IllegalArgumentException e) {
             tm.except("indexerServo not connected");
+        }
+
+        try {
+            colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
+        } catch (IllegalArgumentException e) {
+            tm.except("colorSensor not connected");
         }
         try {
             limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -137,6 +149,7 @@ public class Robot {
 
     /**
      * Returns the Motif Enum.
+     *
      * @return Motif Enum, if it doesn't detect a valid ID, will return none.
      */
     public Motif getMotif() {
@@ -147,21 +160,49 @@ public class Robot {
 
             if (fiducials != null && !fiducials.isEmpty()) {
                 for (LLResultTypes.FiducialResult fiducial : fiducials) {
-                    int aprilTagID = (int) fiducial.getFiducialId();
-
+                    int aprilTagID = fiducial.getFiducialId();
                     switch (aprilTagID) {
-                        case 21:
-                            return RobotConstants.Motif.GPP;
-                        case 22:
-                            return RobotConstants.Motif.PGP;
-                        case 23:
-                            return RobotConstants.Motif.PPG;
-                        default:
-                            return RobotConstants.Motif.NONE;
+                        case 21: return RobotConstants.Motif.GPP;
+                        case 22: return RobotConstants.Motif.PGP;
+                        case 23: return RobotConstants.Motif.PPG;
+                        default: return RobotConstants.Motif.UNKNOWN;
                     }
                 }
             }
         }
-        return RobotConstants.Motif.NONE;
+        return RobotConstants.Motif.UNKNOWN;
+    }
+
+    @Nullable
+    public Scalar getRGB() {
+        if (colorSensor == null) return null;
+        NormalizedRGBA colors = colorSensor.getNormalizedColors();
+
+        float r = colors.red / colors.alpha;
+        float g = colors.green / colors.alpha;
+        float b = colors.blue / colors.alpha;
+
+        return new Scalar(r, g, b);
+    }
+
+    @Nullable
+    public Scalar getYCrCb() {
+        Scalar rgb = getRGB();
+        if (rgb == null) return null;
+        int R = (int) (rgb.val[0] * 255);
+        int G = (int) (rgb.val[1] * 255);
+        int B = (int) (rgb.val[2] * 255);
+        int Y = (int) (0.299 * R + 0.587 * G + 0.114 * B);
+        int Cr = (int) (128 + 0.5 * (R - Y));
+        int Cb = (int) (128 + 0.5 * (B - Y));
+        return new Scalar(Y, Cr, Cb);
+    }
+
+    public RobotConstants.Artifact getArtifact() {
+        Scalar color = getYCrCb();
+        if (color == null) return RobotConstants.Artifact.UNKNOWN;
+        if (ColorRange.ARTIFACT_GREEN.contains(color)) return RobotConstants.Artifact.GREEN;
+        if (ColorRange.ARTIFACT_PURPLE.contains(color)) return RobotConstants.Artifact.PURPLE;
+        return RobotConstants.Artifact.UNKNOWN;
     }
 }

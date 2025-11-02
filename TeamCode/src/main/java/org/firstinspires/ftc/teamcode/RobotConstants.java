@@ -47,7 +47,7 @@ public class RobotConstants {
     static final double baseSpeedMultiplier = 0.75;
     static final double baseTurnSpeed = 2.5;
 
-//    static PIDFCoefficients indexerPID = new PIDFCoefficients(0, 0, 0, 0);
+    //    static PIDFCoefficients indexerPID = new PIDFCoefficients(0, 0, 0, 0);
     static PIDFCoefficients teleopHeadingPID = new PIDFCoefficients(1, 0, .05, 0);
 
     static final double LAUNCHER_HEIGHT = 15.5;
@@ -60,13 +60,19 @@ public class RobotConstants {
     static final Pose[] ROBOT_POSITIONS = {};
 
     /** Directions. Options: LEFT, RIGHT, FORWARD, BACKWARD */
-    enum Dir {
+    public enum Dir {
         LEFT, RIGHT, FORWARD, BACKWARD
     }
 
-    enum Color {RED, BLUE}
+    public enum Color {
+        RED, BLUE
+    }
 
-    enum Motif {
-        GPP, PPG, PGP, NONE
+    public enum Motif {
+        GPP, PPG, PGP, UNKNOWN
+    }
+
+    public enum Artifact {
+        GREEN, PURPLE, UNKNOWN
     }
 }

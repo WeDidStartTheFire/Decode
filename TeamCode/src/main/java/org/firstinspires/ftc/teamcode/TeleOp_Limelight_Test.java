@@ -45,7 +45,7 @@ public class TeleOp_Limelight_Test extends OpMode {
         teleop.indexerLogic();
         teleop.launcherLogic();
 
-        switch (robot.getMotif(result)){
+        switch (robot.getMotif()){
             case GPP:
                 tm.addLastActionTelemetry("Motif: 🟢🟣🟣");
                 break;

@@ -56,7 +56,7 @@ public class Auto_BlueFar extends OpMode {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.pipelineSwitch(0);
         limelight.start();
-        RobotState.motif = robot.getMotif(limelight.getLatestResult());
+        RobotState.motif = robot.getMotif();
         tm = robot.drivetrain.tm;
         buildPaths();
         setPathState(0);

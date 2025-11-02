@@ -13,6 +13,7 @@ import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import com.pedropathing.follower.Follower;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -29,6 +30,7 @@ public class Robot {
     public DcMotorEx indexerMotor, intakeMotor, launcherMotorA, launcherMotorB;
     public Servo feederServoA, feederServoB;
     private Servo indexerServo;
+    public Limelight3A limelight;
 
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, boolean useOdometry) {
         follower = Constants.createFollower(hardwareMap);
@@ -69,6 +71,11 @@ public class Robot {
             indexerServo = hardwareMap.get(Servo.class, "indexerServo");
         } catch (IllegalArgumentException e) {
             tm.except("indexerServo not connected");
+        }
+        try {
+            limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        } catch (IllegalArgumentException e) {
+            tm.except("limelight not connected");
         }
     }
 
@@ -132,7 +139,9 @@ public class Robot {
      * @param result The LLResult of the limelight
      * @return Motif Enum, if it doesn't detect a valid ID, will return none.
      */
-    public RobotConstants.Motif getMotif(LLResult result) {
+    public RobotConstants.Motif getMotif() {
+        LLResult result = limelight.getLatestResult();
+
         if (result != null && result.isValid()) {
             List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
 

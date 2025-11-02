@@ -136,7 +136,6 @@ public class Robot {
 
     /**
      * Returns the Motif Enum.
-     * @param result The LLResult of the limelight
      * @return Motif Enum, if it doesn't detect a valid ID, will return none.
      */
     public RobotConstants.Motif getMotif() {

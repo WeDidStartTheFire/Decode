@@ -127,6 +127,11 @@ public class Robot {
         launcherMotorB.setVelocity(0);
     }
 
+    /**
+     * Returns the Motif Enum.
+     * @param result The LLResult of the limelight
+     * @return Motif Enum, if it doesn't detect a valid ID, will return none.
+     */
     public RobotConstants.Motif getMotif(LLResult result) {
         if (result != null && result.isValid()) {
             List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();

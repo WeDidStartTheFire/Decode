@@ -362,16 +362,4 @@ public class TeleOpFunctions {
         }
     }
 
-    public void limelightLogic(LLResult result) {
-        if (result != null && result.isValid()) {
-            List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
-
-            if (fiducials != null && !fiducials.isEmpty()) {
-                for (LLResultTypes.FiducialResult fiducial : fiducials) {
-                    int aprilTagId = (int) fiducial.getFiducialId();
-                    tm.print("April Tag ID", aprilTagId);
-                }
-            }
-        }
-    }
 }

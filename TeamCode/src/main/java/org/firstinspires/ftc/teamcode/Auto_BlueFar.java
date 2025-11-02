@@ -10,6 +10,7 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -20,8 +21,8 @@ public class Auto_BlueFar extends OpMode {
 
     private int pathState;
     private final Timer pathStateTimer = new Timer();
-
     private PathChain path1, path2;
+    private Limelight3A limelight;
     private TelemetryUtils tm;
 
     private void buildPaths() {
@@ -52,6 +53,10 @@ public class Auto_BlueFar extends OpMode {
         RobotState.auto = true;
         robot = new Robot(hardwareMap, telemetry, true);
         robot.follower.setStartingPose(new Pose(63.500, 8.500, toRadians(90)));
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight.pipelineSwitch(0);
+        limelight.start();
+        RobotState.motif = robot.getMotif(limelight.getLatestResult());
         tm = robot.drivetrain.tm;
         buildPaths();
         setPathState(0);

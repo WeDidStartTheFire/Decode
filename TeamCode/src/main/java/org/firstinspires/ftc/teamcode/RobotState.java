@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color;
 import static org.firstinspires.ftc.teamcode.RobotConstants.DEFAULT_LAUNCHER_RPM;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Motif;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.geometry.Pose;
@@ -21,4 +22,5 @@ public class RobotState {
     static float launcherRPM = DEFAULT_LAUNCHER_RPM;
     static double feederMoveStartTime = 0;
     static double feederEnd = 0;
+    static Motif motif;
 }

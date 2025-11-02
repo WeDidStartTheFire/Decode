@@ -89,6 +89,21 @@ public class KalmanFilterOperations implements KalmanFilter {
     }
 
     @Override
+    public void setH(DMatrixRMaj H) {
+        this.H = H;
+
+        int dimenX = F.numCols;
+        int dimenZ = H.numRows;
+
+        y = new DMatrixRMaj(dimenZ, 1);
+        S = new DMatrixRMaj(dimenZ, dimenZ);
+        S_inv = new DMatrixRMaj(dimenZ, dimenZ);
+        c = new DMatrixRMaj(dimenZ, dimenX);
+        d = new DMatrixRMaj(dimenX, dimenZ);
+        K = new DMatrixRMaj(dimenX, dimenZ);
+    }
+
+    @Override
     public void update(DMatrixRMaj z, DMatrixRMaj R) {
         // y = z - H x
         mult(H, x, y);

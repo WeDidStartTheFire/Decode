@@ -79,7 +79,7 @@ public interface KalmanFilter {
      */
     DMatrixRMaj getCovariance();
 
-
+    void setH(DMatrixRMaj H);
 
     // -----------------------
     // Kalman helper methods

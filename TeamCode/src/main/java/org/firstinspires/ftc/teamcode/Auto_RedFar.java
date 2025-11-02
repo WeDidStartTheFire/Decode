@@ -74,16 +74,18 @@ public class Auto_RedFar extends OpMode {
                 setPathState(-2); // Let it loop till auto finishes
                 break;
             case 0:
-                robot.setIndexerServoPos(0);
+//                robot.setIndexerServoPos(0);
                 robot.follower.followPath(path1);
-                robot.spinLaunchMotors();
+//                robot.spinLaunchMotors();
                 setPathState(1);
                 break;
             case 1:
                 if (!robot.follower.isBusy()) {
-                    robot.follower.holdPoint(path1.endPose());
-                    robot.pushArtifactToLaunch();
-                    setPathState(2);
+                    robot.follower.followPath(path2);
+                    setPathState(5);
+//                    robot.follower.holdPoint(path1.endPose());
+//                    robot.pushArtifactToLaunch();
+//                    setPathState(2);
                 }
                 break;
             case 2:

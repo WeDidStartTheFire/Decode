@@ -56,6 +56,7 @@ public class Robot {
         try {
             feederServoA = hardwareMap.get(Servo.class, "feederServoA"); // Expansion Hub 0
             feederServoB = hardwareMap.get(Servo.class, "feederServoB"); // Expansion Hub 1
+            feederServoA.setDirection(Servo.Direction.REVERSE);
         } catch (IllegalArgumentException e) {
             feederServoA = null;
             tm.except("At least one feeder servo not connected");
@@ -100,13 +101,19 @@ public class Robot {
 
     public void pushArtifactToLaunch() {
         if (feederServoA == null) return;
-        feederServoA.setPosition(0);
+        feederServoA.setPosition(1);
         feederServoB.setPosition(1);
+    }
+
+    public void feederHalfway() {
+        if (feederServoA == null) return;
+        feederServoA.setPosition(0.5);
+        feederServoB.setPosition(0.5);
     }
 
     public void retractFeeder() {
         if (feederServoA == null) return;
-        feederServoA.setPosition(1);
+        feederServoA.setPosition(0);
         feederServoB.setPosition(0);
     }
 

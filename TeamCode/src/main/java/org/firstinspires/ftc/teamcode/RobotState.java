@@ -13,10 +13,12 @@ public class RobotState {
     static Color color;
     static volatile boolean following = false;
     static volatile boolean holding = false;
-    static int indexerGoal;
+//    static int indexerGoal;
     static boolean validStartPose;
     static Pose pose;
     static Vector vel;
     static boolean aiming;
     static float launcherRPM = DEFAULT_LAUNCHER_RPM;
+    static double feederMoveStartTime = 0;
+    static double feederEnd = 0;
 }

@@ -80,7 +80,7 @@ public class TeleOpFunctions {
     }
 
     private void holdCurrentPose() {
-        Pose holdPose = holding ? follower.getCurrentPath().endPose() : pose;
+        Pose holdPose = holding ? follower.getCurrentPath() != null ? follower.getCurrentPath().endPose() : pose : pose;
         if (aiming) {
             ProjectileSolver.LaunchSolution sol = getLaunchSolution();
             holdPose = sol == null ? holdPose : holdPose.withHeading(sol.phi);
@@ -133,8 +133,8 @@ public class TeleOpFunctions {
                 } else turn = -gamepad1.right_stick_x * speedMultiplier;
             } else turn = -gamepad1.right_stick_x * speedMultiplier;
 
-            follower.setTeleOpDrive(gamepad1.left_stick_y * speedMultiplier * (color == Color.RED ? 1 : -1),
-                    gamepad1.left_stick_x * speedMultiplier * (color == Color.RED ? 1 : -1), turn, !fieldCentric);
+            follower.setTeleOpDrive(gamepad1.left_stick_y * speedMultiplier * (color == Color.RED ? -1 : 1),
+                    gamepad1.left_stick_x * speedMultiplier * (color == Color.RED ? -1 : 1), turn, !fieldCentric);
 
             return;
         }
@@ -318,8 +318,8 @@ public class TeleOpFunctions {
     }
 
     public void launcherLogic() {
-        if (gamepad1.dpadUpWasPressed()) launcherRPM += gamepad1.x ? 10 : 100;
-        if (gamepad1.dpadDownWasPressed()) launcherRPM -= gamepad1.x ? 10 : 100;
+        if (gamepad1.dpadUpWasPressed()) launcherRPM += gamepad1.x ? 350 : 3500;
+        if (gamepad1.dpadDownWasPressed()) launcherRPM -= gamepad1.x ? 350 : 3500;
         double motorVel = launcherRPM / TICKS_PER_REVOLUTION;
 
         if (robot.launcherMotorA == null) {
@@ -330,8 +330,12 @@ public class TeleOpFunctions {
             robot.launcherMotorA.setVelocity(motorVel);
             robot.launcherMotorB.setVelocity(-motorVel);
         } else {
-            robot.feederServoA.setPosition(1);
-            robot.feederServoB.setPosition(0);
+            if (robot.feederServoA != null && robot.feederServoA.getPosition() > 0) {
+                feederEnd = 0;
+                if (robot.feederServoA.getPosition() != .5) feederMoveStartTime = runtime.seconds();
+                if (runtime.seconds() - feederMoveStartTime < .5) robot.feederHalfway();
+                else robot.retractFeeder();
+            }
             robot.launcherMotorA.setVelocity(0);
             robot.launcherMotorB.setVelocity(0);
         }
@@ -340,10 +344,17 @@ public class TeleOpFunctions {
         tm.print("Motor Velocity", motorVel);
     }
 
+
     public void feederLogic() {
-        if (gamepad2.rightBumperWasPressed()) {
-            robot.feederServoA.setPosition(0);
-            robot.feederServoB.setPosition(1);
+        if (robot.feederServoA == null) return;
+        if (gamepad2.rightBumperWasPressed() && gamepad2.right_trigger >= 0.5 && robot.feederServoA.getPosition() < 1) {
+            feederEnd = 1;
+            if (robot.feederServoA.getPosition() != 0.5) feederMoveStartTime = runtime.seconds();
+            robot.feederHalfway();
+        }
+        if (robot.feederServoA.getPosition() == 0.5 && runtime.seconds() - feederMoveStartTime > 0.5) {
+            if (feederEnd == 1) robot.pushArtifactToLaunch();
+            else robot.retractFeeder();
         }
     }
 }

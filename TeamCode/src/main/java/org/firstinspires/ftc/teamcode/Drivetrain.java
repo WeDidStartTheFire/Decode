@@ -100,7 +100,7 @@ public class Drivetrain {
      * @param inches    Amount of inches to drive.
      * @param direction (opt.) Direction to drive if inches is zero.*
      */
-    void drive(double inches, RobotConstants.Dir direction) {
+    public void drive(double inches, RobotConstants.Dir direction) {
         if (lf == null) return;
 
         int lfTarget = 0;

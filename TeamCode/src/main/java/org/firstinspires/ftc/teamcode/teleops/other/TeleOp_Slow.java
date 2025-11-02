@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.teleops.other;
 
 import static java.lang.Math.abs;
 import static org.firstinspires.ftc.teamcode.RobotConstants.*;
@@ -6,6 +6,10 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.*;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.RobotState;
+import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 @TeleOp(name = "Slow", group = "Other")
 public class TeleOp_Slow extends OpMode {

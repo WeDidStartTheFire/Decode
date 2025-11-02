@@ -80,6 +80,7 @@ public class Robot {
             tm.except("indexerServo not connected");
         }
 
+        // Other
         try {
             colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
         } catch (IllegalArgumentException e) {
@@ -87,6 +88,8 @@ public class Robot {
         }
         try {
             limelight = hardwareMap.get(Limelight3A.class, "limelight");
+            limelight.pipelineSwitch(0);
+            limelight.start();
         } catch (IllegalArgumentException e) {
             tm.except("limelight not connected");
         }

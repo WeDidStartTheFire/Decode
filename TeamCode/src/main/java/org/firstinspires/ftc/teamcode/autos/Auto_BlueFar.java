@@ -1,8 +1,9 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.autos;
 
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
+
 import static java.lang.Math.toRadians;
 
 import com.pedropathing.geometry.BezierLine;
@@ -12,30 +13,40 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-@Autonomous(name = "Red Close", group = "!!!Primary", preselectTeleOp = "Red Main")
-public class Auto_RedClose extends OpMode {
+import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.RobotState;
+import org.firstinspires.ftc.teamcode.TelemetryUtils;
+
+
+@Autonomous(name = "Blue Far", group = "!!!Primary", preselectTeleOp = "Blue Main")
+public class Auto_BlueFar extends OpMode {
     private Robot robot;
 
     private int pathState;
     private final Timer pathStateTimer = new Timer();
-
     private PathChain path1, path2;
     private TelemetryUtils tm;
 
     private void buildPaths() {
-        path1 = robot.follower.pathBuilder()
+        path1 = robot.follower
+                .pathBuilder()
                 .addPath(
-                        // Path 1
-                        new BezierLine(new Pose(126.729, 121.115), new Pose(85.709, 84.630))
+                        new BezierLine(new Pose(63.500, 8.500), new Pose(60.000, 20.000))
                 )
-                .setLinearHeadingInterpolation(toRadians(37), toRadians(47.97706690962158))
+                .setLinearHeadingInterpolation(
+                        toRadians(90),
+                        toRadians(112.4794343971)
+                )
                 .build();
-        path2 = robot.follower.pathBuilder()
+        path2 = robot.follower
+                .pathBuilder()
                 .addPath(
-                        // Path 2
-                        new BezierLine(new Pose(85.709, 84.630), new Pose(103.196, 60.018))
+                        new BezierLine(new Pose(60.000, 20.000), new Pose(40.500, 35.000))
                 )
-                .setLinearHeadingInterpolation(toRadians(47.97706690962158), toRadians(0))
+                .setLinearHeadingInterpolation(
+                        toRadians(112.4794343971),
+                        toRadians(180)
+                )
                 .build();
     }
 
@@ -43,7 +54,8 @@ public class Auto_RedClose extends OpMode {
     public void init() {
         RobotState.auto = true;
         robot = new Robot(hardwareMap, telemetry, true);
-        robot.follower.setStartingPose(new Pose(126.729, 121.115, toRadians(37)));
+        robot.follower.setStartingPose(new Pose(63.500, 8.500, toRadians(90)));
+        RobotState.motif = robot.getMotif();
         tm = robot.drivetrain.tm;
         buildPaths();
         setPathState(0);
@@ -68,58 +80,48 @@ public class Auto_RedClose extends OpMode {
                 setPathState(-2); // Let it loop till auto finishes
                 break;
             case 0:
-                robot.setIndexerServoPos(0);
+//                robot.setIndexerServoPos(0);
                 robot.follower.followPath(path1);
-                robot.spinLaunchMotors();
+//                robot.spinLaunchMotors();
                 setPathState(1);
                 break;
             case 1:
                 if (!robot.follower.isBusy()) {
-                    robot.follower.holdPoint(path1.endPose());
-                    robot.feederHalfway();
-                    setPathState(2);
+                    robot.follower.followPath(path2);
+                    setPathState(5);
+//                    robot.follower.holdPoint(path1.endPose());
+//                    robot.pushArtifactToLaunch();
+//                    setPathState(2);
                 }
                 break;
             case 2:
-                if (pathStateTimer.getElapsedTimeSeconds() > .67) {
-                    robot.pushArtifactToLaunch();
+                if (pathStateTimer.getElapsedTimeSeconds() > 1) {
+                    robot.retractFeeder();
                     setPathState(3);
                 }
                 break;
             case 3:
-                if (pathStateTimer.getElapsedTimeSeconds() > .75) {
-                    robot.feederHalfway();
-                    setPathState(4);
-                }
-                break;
-            case 4:
-                if (pathStateTimer.getElapsedTimeSeconds() > .67) {
-                    robot.retractFeeder();
-                    setPathState(5);
-                }
-                break;
-            case 5:
                 if (pathStateTimer.getElapsedTimeSeconds() > 1) {
                     double pos = robot.getIndexerServoPos();
                     if (pos == 1 || pos == -1) {
                         robot.stopLauncherMotors();
                         robot.follower.followPath(path2);
-                        setPathState(7);
+                        setPathState(5);
                     } else {
                         if (pos == 0) pos = 0.49;
                         else pos = 1;
                         robot.setIndexerServoPos(pos);
-                        setPathState(6);
+                        setPathState(4);
                     }
                 }
                 break;
-            case 6:
+            case 4:
                 if (pathStateTimer.getElapsedTimeSeconds() > 1) {
-                    robot.feederHalfway();
+                    robot.pushArtifactToLaunch();
                     setPathState(2);
                 }
                 break;
-            case 7:
+            case 5:
                 if (!robot.follower.isBusy()) {
                     robot.follower.holdPoint(path2.endPose());
                     setPathState(-1);
@@ -132,7 +134,6 @@ public class Auto_RedClose extends OpMode {
     public void stop() {
         robot.follower.update();
         robot.follower.breakFollowing();
-        RobotState.pose = robot.follower.getPose();
-        saveOdometryPosition(RobotState.pose);
+        saveOdometryPosition(robot.follower.getPose());
     }
 }

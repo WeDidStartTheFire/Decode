@@ -1,42 +1,42 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.teleops;
 
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
 import com.pedropathing.geometry.Pose;
-import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
-@TeleOp(name = "Limelight Test", group = "Test")
-public class TeleOp_Limelight_Test extends OpMode {
+import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.RobotConstants;
+import org.firstinspires.ftc.teamcode.RobotState;
+import org.firstinspires.ftc.teamcode.TeleOpFunctions;
+import org.firstinspires.ftc.teamcode.TelemetryUtils;
+
+@TeleOp(name = "Blue Main", group = "Main")
+public class TeleOp_Main_Blue extends OpMode {
     public TeleOpFunctions teleop;
     public Robot robot;
     public TelemetryUtils tm;
-    private Limelight3A limelight;
 
     @Override
     public void init() {
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(0);
-        limelight.start();
         RobotState.color = RobotConstants.Color.BLUE;
         Pose pose = loadOdometryPosition();
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
-        robot = new Robot(hardwareMap, telemetry, false);
+        robot = new Robot(hardwareMap, telemetry, validStartPose);
         robot.follower.setPose(RobotState.pose);
         robot.follower.startTeleopDrive();
         teleop = new TeleOpFunctions(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
+        if (!validStartPose) tm.print("⚠️WARNING⚠️", "Robot Centric driving will be used");
+        else tm.print("Field Centric Driving", "✅");
+        tm.print("Color", "\uD83D\uDFE6\uD83D\uDFE6Blue\uD83D\uDFE6\uD83D\uDFE6");
     }
 
     @Override
     public void loop() {
-        LLResult result = limelight.getLatestResult();
-
         teleop.update();
         teleop.autoMovementLogic(validStartPose);
         teleop.drivetrainLogic(validStartPose);
@@ -44,17 +44,5 @@ public class TeleOp_Limelight_Test extends OpMode {
         teleop.feederLogic();
         teleop.indexerLogic();
         teleop.launcherLogic();
-
-        switch (robot.getMotif()){
-            case GPP:
-                tm.addLastActionTelemetry("Motif: 🟢🟣🟣");
-                break;
-            case PGP:
-                tm.addLastActionTelemetry("Motif: 🟣🟢🟣");
-                break;
-            case PPG:
-                tm.addLastActionTelemetry("Motif: 🟣🟣🟢");
-                break;
-        }
     }
 }

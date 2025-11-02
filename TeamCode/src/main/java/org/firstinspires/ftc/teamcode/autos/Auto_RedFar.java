@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.autos;
 
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
@@ -11,6 +11,10 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+
+import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.RobotState;
+import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 @Autonomous(name = "Red Far", group = "!!!Primary", preselectTeleOp = "Red Main")
 public class Auto_RedFar extends OpMode {

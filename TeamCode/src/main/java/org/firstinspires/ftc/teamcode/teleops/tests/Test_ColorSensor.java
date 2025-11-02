@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.teleops.tests;
 
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
@@ -6,6 +6,12 @@ import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.RobotConstants;
+import org.firstinspires.ftc.teamcode.RobotState;
+import org.firstinspires.ftc.teamcode.TeleOpFunctions;
+import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 
 @TeleOp(name = "Test Color Sensor", group = "Test")

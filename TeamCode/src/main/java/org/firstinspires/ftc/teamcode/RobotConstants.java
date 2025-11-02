@@ -39,7 +39,7 @@ public class RobotConstants {
 
     static final double DEFAULT_VELOCITY = 2000;
 
-    static final double[] speeds = {0.2, 0.6, 1};
+    public static final double[] speeds = {0.2, 0.6, 1};
 
     static final int TICKS_PER_REVOLUTION = 28;
     static final int DEFAULT_LAUNCHER_RPM = 64400;

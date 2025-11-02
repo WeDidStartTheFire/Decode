@@ -10,17 +10,17 @@ import com.pedropathing.math.Vector;
 
 @Configurable
 public class RobotState {
-    static boolean auto = false;
-    static Color color;
-    static volatile boolean following = false;
-    static volatile boolean holding = false;
-//    static int indexerGoal;
-    static boolean validStartPose;
-    static Pose pose;
-    static Vector vel;
-    static boolean aiming;
-    static float launcherRPM = DEFAULT_LAUNCHER_RPM;
-    static double feederMoveStartTime = 0;
-    static double feederEnd = 0;
-    static Motif motif;
+    public static boolean auto = false;
+    public static Color color;
+    public static volatile boolean following = false;
+    public static volatile boolean holding = false;
+//    public static int indexerGoal;
+    public static boolean validStartPose;
+    public static Pose pose;
+    public static Vector vel;
+    public static boolean aiming;
+    public static float launcherRPM = DEFAULT_LAUNCHER_RPM;
+    public static double feederMoveStartTime = 0;
+    public static double feederEnd = 0;
+    public static Motif motif;
 }

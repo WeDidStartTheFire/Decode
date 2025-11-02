@@ -1,9 +1,8 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.autos;
 
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
-
 import static java.lang.Math.toRadians;
 
 import com.pedropathing.geometry.BezierLine;
@@ -13,9 +12,12 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.RobotState;
+import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
-@Autonomous(name = "Blue Close", group = "!!!Primary", preselectTeleOp = "Blue Main")
-public class Auto_BlueClose extends OpMode {
+@Autonomous(name = "Red Close", group = "!!!Primary", preselectTeleOp = "Red Main")
+public class Auto_RedClose extends OpMode {
     private Robot robot;
 
     private int pathState;
@@ -28,16 +30,16 @@ public class Auto_BlueClose extends OpMode {
         path1 = robot.follower.pathBuilder()
                 .addPath(
                         // Path 1
-                        new BezierLine(new Pose(17.271, 121.115), new Pose(58.291, 84.630))
+                        new BezierLine(new Pose(126.729, 121.115), new Pose(85.709, 84.630))
                 )
-                .setLinearHeadingInterpolation(toRadians(143), toRadians(132.0229330904))
+                .setLinearHeadingInterpolation(toRadians(37), toRadians(47.97706690962158))
                 .build();
         path2 = robot.follower.pathBuilder()
                 .addPath(
                         // Path 2
-                        new BezierLine(new Pose(58.291, 84.630), new Pose(40.804, 60.018))
+                        new BezierLine(new Pose(85.709, 84.630), new Pose(103.196, 60.018))
                 )
-                .setLinearHeadingInterpolation(toRadians(132.0229330904), toRadians(180))
+                .setLinearHeadingInterpolation(toRadians(47.97706690962158), toRadians(0))
                 .build();
     }
 
@@ -45,7 +47,7 @@ public class Auto_BlueClose extends OpMode {
     public void init() {
         RobotState.auto = true;
         robot = new Robot(hardwareMap, telemetry, true);
-        robot.follower.setStartingPose(new Pose(17.271, 121.115, toRadians(143)));
+        robot.follower.setStartingPose(new Pose(126.729, 121.115, toRadians(37)));
         tm = robot.drivetrain.tm;
         buildPaths();
         setPathState(0);
@@ -134,7 +136,7 @@ public class Auto_BlueClose extends OpMode {
     public void stop() {
         robot.follower.update();
         robot.follower.breakFollowing();
-        pose = robot.follower.getPose();
-        saveOdometryPosition(pose);
+        RobotState.pose = robot.follower.getPose();
+        saveOdometryPosition(RobotState.pose);
     }
 }

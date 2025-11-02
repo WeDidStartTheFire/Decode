@@ -114,41 +114,5 @@ public class ProjectileSolver {
     public static double quarticDerivative(double t, double a, double b, double c) {
         return (4 * a * t * t * t) + (2 * b * t) + c;
     }
-
-    // Example use
-    public static void main(String[] args) {
-        Random r = new Random();
-        double xr = r.nextDouble() * 144;
-        double yr = r.nextDouble() * 144;
-        double zr = 7;
-        double vx = r.nextDouble() * 20 - 10;
-        double vy = r.nextDouble() * 20 - 10;
-        double xt = 132;
-        double yt = 132;
-        double zt = 43;
-        double theta = Math.random() * Math.PI / 2;
-        System.out.println("Params:");
-        System.out.println("double xr = " + xr + ";");
-        System.out.println("double yr = " + yr + ";");
-        System.out.println("double zr = " + zr + ";");
-        System.out.println("double vx = " + vx + ";");
-        System.out.println("double vy = " + vy + ";");
-        System.out.println("double xt = " + xt + ";");
-        System.out.println("double yt = " + yt + ";");
-        System.out.println("double zt = " + zt + ";");
-        System.out.println("double theta = " + theta + ";");
-        System.out.println();
-        LaunchSolution sol = solveLaunch(
-                xr, yr, zr,             // robot position (xr, yr, zr)
-                vx, vy,                 // robot velocity (vx, vy)
-                xt, yt, zt,             // target position (xt, yt, zt)
-                theta                   // vertical launch angle theta
-        );
-        if (sol != null) {
-            System.out.println("Required launch speed w in inches per second = " + sol.w);
-            System.out.println("Azimuth angle phi (in degrees) = " + Math.toDegrees(sol.phi));
-            System.out.println("Time of flight in seconds = " + sol.t);
-        }
-    }
 }
 

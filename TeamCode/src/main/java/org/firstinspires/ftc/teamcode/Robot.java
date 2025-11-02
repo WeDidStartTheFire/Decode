@@ -135,22 +135,19 @@ public class Robot {
                 for (LLResultTypes.FiducialResult fiducial : fiducials) {
                     int aprilTagID = (int) fiducial.getFiducialId();
 
-                    switch (aprilTagID){
+                    switch (aprilTagID) {
                         case 21:
                             return RobotConstants.Motif.GPP;
-                            break;
                         case 22:
                             return RobotConstants.Motif.PGP;
-                            break;
                         case 23:
                             return RobotConstants.Motif.PPG;
-                            break;
                         default:
                             return RobotConstants.Motif.NONE;
-                            break;
                     }
                 }
             }
         }
+        return RobotConstants.Motif.NONE;
     }
 }

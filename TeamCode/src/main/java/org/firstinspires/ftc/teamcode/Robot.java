@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_ANGLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_HEIGHT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.RED_GOAL_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TICKS_PER_REVOLUTION;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Motif;
 import static org.firstinspires.ftc.teamcode.RobotState.launcherRPM;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
@@ -138,7 +139,7 @@ public class Robot {
      * Returns the Motif Enum.
      * @return Motif Enum, if it doesn't detect a valid ID, will return none.
      */
-    public RobotConstants.Motif getMotif() {
+    public Motif getMotif() {
         LLResult result = limelight.getLatestResult();
 
         if (result != null && result.isValid()) {

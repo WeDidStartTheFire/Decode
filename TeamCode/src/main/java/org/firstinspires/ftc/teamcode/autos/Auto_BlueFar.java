@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.autos;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
-
 import static java.lang.Math.toRadians;
 
 import com.pedropathing.geometry.BezierLine;
@@ -104,7 +103,7 @@ public class Auto_BlueFar extends OpMode {
                 if (pathStateTimer.getElapsedTimeSeconds() > 1) {
                     double pos = robot.getIndexerServoPos();
                     if (pos == 1 || pos == -1) {
-                        robot.stopLauncherMotors();
+                        robot.stopLaunchMotors();
                         robot.follower.followPath(path2);
                         setPathState(5);
                     } else {

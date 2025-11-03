@@ -4,9 +4,9 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_GOAL_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_ANGLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_HEIGHT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Motif;
 import static org.firstinspires.ftc.teamcode.RobotConstants.RED_GOAL_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TICKS_PER_REVOLUTION;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Motif;
 import static org.firstinspires.ftc.teamcode.RobotState.launcherRPM;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
@@ -18,6 +18,7 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
@@ -33,7 +34,7 @@ import pedroPathing.constants.Constants;
 public class Robot {
     public Drivetrain drivetrain;
     public Follower follower;
-    public DcMotorEx indexerMotor, intakeMotor, launcherMotorA, launcherMotorB;
+    public DcMotorEx intakeMotor, launcherMotorA, launcherMotorB;
     public Servo feederServoA, feederServoB;
     private Servo indexerServo;
     public NormalizedColorSensor colorSensor;
@@ -48,11 +49,6 @@ public class Robot {
 
         // Motors
         try {
-            indexerMotor = hardwareMap.get(DcMotorEx.class, "indexerMotor"); // Not configured
-        } catch (IllegalArgumentException e) {
-            tm.except("sorterMotor not connected");
-        }
-        try {
             intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor"); // Expansion Hub 0
         } catch (IllegalArgumentException e) {
             tm.except("intakeMotor not connected");
@@ -60,6 +56,7 @@ public class Robot {
         try {
             launcherMotorA = hardwareMap.get(DcMotorEx.class, "launcherMotorA"); // Expansion Hub 1
             launcherMotorB = hardwareMap.get(DcMotorEx.class, "launcherMotorB"); // Expansion Hub 2
+            launcherMotorB.setDirection(DcMotorSimple.Direction.REVERSE);
         } catch (IllegalArgumentException e) {
             launcherMotorA = null;
             tm.except("At least one launcherMotor not connected");
@@ -123,13 +120,19 @@ public class Robot {
         if (launcherMotorA == null) return;
         double motorVel = getLaunchMotorVel();
         launcherMotorA.setVelocity(motorVel);
-        launcherMotorB.setVelocity(-motorVel);
+        launcherMotorB.setVelocity(motorVel);
     }
 
     public void pushArtifactToLaunch() {
         if (feederServoA == null) return;
         feederServoA.setPosition(1);
         feederServoB.setPosition(1);
+    }
+
+    public boolean launchMotorsToSpeed() {
+        if (launcherMotorA == null) return false;
+        double motorVel = getLaunchMotorVel();
+        return launcherMotorA.getVelocity() >= motorVel && launcherMotorB.getVelocity() >= motorVel;
     }
 
     public void feederHalfway() {
@@ -144,7 +147,7 @@ public class Robot {
         feederServoB.setPosition(0);
     }
 
-    public void stopLauncherMotors() {
+    public void stopLaunchMotors() {
         if (launcherMotorA == null) return;
         launcherMotorA.setVelocity(0);
         launcherMotorB.setVelocity(0);

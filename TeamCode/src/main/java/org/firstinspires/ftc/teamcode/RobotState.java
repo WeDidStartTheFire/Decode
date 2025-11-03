@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color;
 import static org.firstinspires.ftc.teamcode.RobotConstants.DEFAULT_LAUNCHER_RPM;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Motif;
@@ -7,6 +9,8 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.Motif;
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.Vector;
+
+import java.util.ArrayList;
 
 @Configurable
 public class RobotState {
@@ -19,7 +23,9 @@ public class RobotState {
     public static Vector vel;
     public static boolean aiming;
     public static float launcherRPM = DEFAULT_LAUNCHER_RPM;
-    public static double feederMoveStartTime = 0;
-    public static double feederEnd = 0;
     public static Motif motif;
+    public static ArrayList<Artifact> launchQueue = new ArrayList<>();
+    public static Artifact[] artifacts = {UNKNOWN, UNKNOWN, UNKNOWN};
+    public static double indexerMoveStartTime = 0;
+    public static double launchStartTime = 0;
 }

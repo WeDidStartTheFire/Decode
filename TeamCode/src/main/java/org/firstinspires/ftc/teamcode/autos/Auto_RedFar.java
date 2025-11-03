@@ -102,7 +102,7 @@ public class Auto_RedFar extends OpMode {
                 if (pathStateTimer.getElapsedTimeSeconds() > 1) {
                     double pos = robot.getIndexerServoPos();
                     if (pos == 1 || pos == -1) {
-                        robot.stopLauncherMotors();
+                        robot.stopLaunchMotors();
                         robot.follower.followPath(path2);
                         setPathState(5);
                     } else {

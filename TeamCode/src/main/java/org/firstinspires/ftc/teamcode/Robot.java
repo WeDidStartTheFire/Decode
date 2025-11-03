@@ -149,8 +149,8 @@ public class Robot {
 
     public void stopLaunchMotors() {
         if (launcherMotorA == null) return;
-        launcherMotorA.setVelocity(0);
-        launcherMotorB.setVelocity(0);
+        launcherMotorA.setPower(0);
+        launcherMotorB.setPower(0);
     }
 
     /**

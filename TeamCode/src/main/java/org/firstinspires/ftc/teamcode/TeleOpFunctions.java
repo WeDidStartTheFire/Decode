@@ -298,6 +298,7 @@ public class TeleOpFunctions {
         if (gamepad2.xWasPressed()) {
             launchStartTime = 0;
             launchQueue.clear();
+            robot.stopLaunchMotors();
         }
         if (runtime.seconds() - launchStartTime < 1.5) {
             robot.spinLaunchMotors();
@@ -310,16 +311,18 @@ public class TeleOpFunctions {
             if (launchQueue.get(0) == artifacts[0]) robot.setIndexerServoPos(0);
             else if (launchQueue.get(0) == artifacts[1]) robot.setIndexerServoPos(0.5);
             else if (launchQueue.get(0) == artifacts[2]) robot.setIndexerServoPos(1);
-            else launchQueue.remove(0);
+            else {
+                launchQueue.remove(0);
+                continue;
+            }
             indexerMoveStartTime = runtime.seconds();
         }
-        if (!launchQueue.isEmpty()) {
-            robot.spinLaunchMotors();
-            if (robot.launchMotorsToSpeed() && runtime.seconds() - indexerMoveStartTime > 0.5) {
-                robot.pushArtifactToLaunch();
-                launchStartTime = runtime.seconds();
-                artifacts[(int) (robot.getIndexerServoPos() * 2)] = Artifact.UNKNOWN;
-            }
+        if (launchQueue.isEmpty()) return;
+        robot.spinLaunchMotors();
+        if (robot.launchMotorsToSpeed() && runtime.seconds() - indexerMoveStartTime > 0.5) {
+            robot.pushArtifactToLaunch();
+            launchStartTime = runtime.seconds();
+            artifacts[(int) (robot.getIndexerServoPos() * 2)] = Artifact.UNKNOWN;
         }
     }
 
@@ -352,13 +355,10 @@ public class TeleOpFunctions {
             robot.retractFeeder();
             return;
         }
-        if (gamepad2.right_trigger >= 0.5) {
-            robot.launcherMotorA.setVelocity(motorVel);
-            robot.launcherMotorB.setVelocity(motorVel);
-        } else {
+        if (gamepad2.right_trigger >= 0.5) robot.spinLaunchMotors();
+        else if (launchQueue.isEmpty && runtime.seconds() - launchStartTime > 1.5) {
             robot.retractFeeder();
-            robot.launcherMotorA.setVelocity(0);
-            robot.launcherMotorB.setVelocity(0);
+            robot.stopLaunchMotors();
         }
         tm.print("Motor A RPM", robot.launcherMotorA.getVelocity(AngleUnit.DEGREES) / 360 * 60);
         tm.print("Motor B RPM", robot.launcherMotorB.getVelocity(AngleUnit.DEGREES) / 360 * 60);

@@ -293,6 +293,13 @@ public class TeleOpFunctions {
     }
 
     public void autoLaunchLogic() {
+        tm.print("launchStartTime", launchStartTime);
+        tm.print("indexerMoveStartTime", indexerMoveStartTime);
+        tm.print("Queue length", launchQueue.toArray().length);
+        tm.print("Queue", launchQueue);
+        tm.print("Artifact 1", artifacts[0]);
+        tm.print("Artifact 2", artifacts[1]);
+        tm.print("Artifact 3", artifacts[2]);
         if (gamepad2.aWasPressed()) launchQueue.add(Artifact.GREEN);
         if (gamepad2.bWasPressed()) launchQueue.add(Artifact.PURPLE);
         if (gamepad2.xWasPressed()) {

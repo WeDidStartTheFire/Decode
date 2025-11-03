@@ -161,22 +161,20 @@ public class Robot {
     public Motif getMotif() {
         LLResult result = limelight.getLatestResult();
 
-        if (result != null && result.isValid()) {
-            List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
+        if (result == null || !result.isValid()) return RobotConstants.Motif.UNKNOWN;
 
-            if (fiducials != null && !fiducials.isEmpty()) {
-                for (LLResultTypes.FiducialResult fiducial : fiducials) {
-                    int aprilTagID = fiducial.getFiducialId();
-                    switch (aprilTagID) {
-                        case 21: return RobotConstants.Motif.GPP;
-                        case 22: return RobotConstants.Motif.PGP;
-                        case 23: return RobotConstants.Motif.PPG;
-                        default: return RobotConstants.Motif.UNKNOWN;
-                    }
-                }
+        List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
+        if (fiducials == null || fiducials.isEmpty()) return RobotConstants.Motif.UNKNOWN;
+
+        for (LLResultTypes.FiducialResult fiducial : fiducials) {
+            int aprilTagID = fiducial.getFiducialId();
+            switch (aprilTagID) {
+                case 21: return RobotConstants.Motif.GPP;
+                case 22: return RobotConstants.Motif.PGP;
+                case 23: return RobotConstants.Motif.PPG;
+                default: return RobotConstants.Motif.UNKNOWN;
             }
         }
-        return RobotConstants.Motif.UNKNOWN;
     }
 
     @Nullable

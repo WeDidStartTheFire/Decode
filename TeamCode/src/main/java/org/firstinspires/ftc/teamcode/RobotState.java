@@ -27,5 +27,5 @@ public class RobotState {
     public static ArrayList<Artifact> launchQueue = new ArrayList<>();
     public static Artifact[] artifacts = {UNKNOWN, UNKNOWN, UNKNOWN};
     public static double indexerMoveStartTime = 0;
-    public static double launchStartTime = 0;
+    public static double launchStartTime = -10;
 }

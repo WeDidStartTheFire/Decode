@@ -296,7 +296,7 @@ public class TeleOpFunctions {
         if (gamepad2.aWasPressed()) launchQueue.add(Artifact.GREEN);
         if (gamepad2.bWasPressed()) launchQueue.add(Artifact.PURPLE);
         if (gamepad2.xWasPressed()) {
-            launchStartTime = 0;
+            launchStartTime = -10;
             launchQueue.clear();
             robot.stopLaunchMotors();
         }
@@ -356,7 +356,7 @@ public class TeleOpFunctions {
             return;
         }
         if (gamepad2.right_trigger >= 0.5) robot.spinLaunchMotors();
-        else if (launchQueue.isEmpty && runtime.seconds() - launchStartTime > 1.5) {
+        else if (launchQueue.isEmpty() && runtime.seconds() - launchStartTime > 1.5) {
             robot.retractFeeder();
             robot.stopLaunchMotors();
         }

@@ -20,8 +20,18 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 public class Auto_RedClose extends OpMode {
     private Robot robot;
 
-    private int pathState;
-    private final Timer pathStateTimer = new Timer();
+    private final Timer stateTimer = new Timer();
+    private State state;
+
+    @Override
+    public void init() {
+        RobotState.auto = true;
+        robot = new Robot(hardwareMap, telemetry, true);
+        robot.follower.setStartingPose(new Pose(126.729, 121.115, toRadians(37)));
+        tm = robot.drivetrain.tm;
+        buildPaths();
+        setState(State.FOLLOW_PATH_1);
+    }
 
     private PathChain path1, path2;
     private TelemetryUtils tm;
@@ -43,19 +53,9 @@ public class Auto_RedClose extends OpMode {
                 .build();
     }
 
-    @Override
-    public void init() {
-        RobotState.auto = true;
-        robot = new Robot(hardwareMap, telemetry, true);
-        robot.follower.setStartingPose(new Pose(126.729, 121.115, toRadians(37)));
-        tm = robot.drivetrain.tm;
-        buildPaths();
-        setPathState(0);
-    }
-
-    public void setPathState(int pathState) {
-        this.pathState = pathState;
-        this.pathStateTimer.resetTimer();
+    private void setState(State state) {
+        this.state = state;
+        this.stateTimer.resetTimer();
     }
 
     @Override
@@ -63,73 +63,82 @@ public class Auto_RedClose extends OpMode {
         robot.follower.update();
         pose = robot.follower.getPose();
         vel = robot.follower.getVelocity();
-        tm.print("Path State", pathState);
+        tm.print("Path State", state);
         tm.print("Indexer Pos", robot.getIndexerServoPos());
         tm.print("Pose", pose);
-        switch (pathState) {
-            case -1:
-                saveOdometryPosition(robot.follower.getCurrentPath().endPose());
-                setPathState(-2); // Let it loop till auto finishes
-                break;
-            case 0:
+        switch (state) {
+            case FOLLOW_PATH_1:
                 robot.setIndexerServoPos(0);
                 robot.follower.followPath(path1);
                 robot.spinLaunchMotors();
-                setPathState(1);
+                setState(State.FEEDER_HALFWAY_AND_HOLD_POINT);
                 break;
-            case 1:
+            case FEEDER_HALFWAY_AND_HOLD_POINT:
                 if (!robot.follower.isBusy()) {
                     robot.follower.holdPoint(path1.endPose());
                     robot.feederHalfway();
-                    setPathState(2);
+                    setState(State.PUSH_ARTIFACT);
                 }
                 break;
-            case 2:
-                if (pathStateTimer.getElapsedTimeSeconds() > .67) {
+            case PUSH_ARTIFACT:
+                if (stateTimer.getElapsedTimeSeconds() > .67) {
                     robot.pushArtifactToLaunch();
-                    setPathState(3);
+                    setState(State.FEEDER_HALFWAY_BACK);
                 }
                 break;
-            case 3:
-                if (pathStateTimer.getElapsedTimeSeconds() > .75) {
+            case FEEDER_HALFWAY_BACK:
+                if (stateTimer.getElapsedTimeSeconds() > .75) {
                     robot.feederHalfway();
-                    setPathState(4);
+                    setState(State.RETRACT_FEEDER);
                 }
                 break;
-            case 4:
-                if (pathStateTimer.getElapsedTimeSeconds() > .67) {
+            case RETRACT_FEEDER:
+                if (stateTimer.getElapsedTimeSeconds() > .67) {
                     robot.retractFeeder();
-                    setPathState(5);
+                    setState(State.ROTATE_INDEXER);
                 }
                 break;
-            case 5:
-                if (pathStateTimer.getElapsedTimeSeconds() > 1) {
+            case ROTATE_INDEXER:
+                if (stateTimer.getElapsedTimeSeconds() > 1) {
                     double pos = robot.getIndexerServoPos();
                     if (pos == 1 || pos == -1) {
                         robot.stopLaunchMotors();
                         robot.follower.followPath(path2);
-                        setPathState(7);
+                        setState(State.FINISH_PATH_2);
                     } else {
                         if (pos == 0) pos = 0.49;
                         else pos = 1;
                         robot.setIndexerServoPos(pos);
-                        setPathState(6);
+                        setState(State.FEEDER_HALFWAY_UP);
                     }
                 }
                 break;
-            case 6:
-                if (pathStateTimer.getElapsedTimeSeconds() > 1) {
+            case FEEDER_HALFWAY_UP:
+                if (stateTimer.getElapsedTimeSeconds() > 1) {
                     robot.feederHalfway();
-                    setPathState(2);
+                    setState(State.PUSH_ARTIFACT);
                 }
                 break;
-            case 7:
+            case FINISH_PATH_2:
                 if (!robot.follower.isBusy()) {
                     robot.follower.holdPoint(path2.endPose());
-                    setPathState(-1);
+                    saveOdometryPosition(robot.follower.getCurrentPath().endPose());
+                    setState(State.FINISHED);
                 }
                 break;
         }
+    }
+
+    private enum State {
+        FINISHED,
+        FOLLOW_PATH_1,
+        FEEDER_HALFWAY_AND_HOLD_POINT,
+        PUSH_ARTIFACT,
+        FEEDER_HALFWAY_BACK,
+        RETRACT_FEEDER,
+        ROTATE_INDEXER,
+        FEEDER_HALFWAY_UP,
+        FINISH_PATH_2,
     }
 
     @Override

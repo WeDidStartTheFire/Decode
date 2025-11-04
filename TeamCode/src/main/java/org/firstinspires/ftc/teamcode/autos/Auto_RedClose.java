@@ -71,24 +71,17 @@ public class Auto_RedClose extends OpMode {
                 robot.setIndexerServoPos(0);
                 robot.follower.followPath(path1);
                 robot.spinLaunchMotors();
-                setState(State.FEEDER_HALFWAY_AND_HOLD_POINT);
+                setState(State.HOLD_POINT);
                 break;
-            case FEEDER_HALFWAY_AND_HOLD_POINT:
+            case HOLD_POINT:
                 if (!robot.follower.isBusy()) {
                     robot.follower.holdPoint(path1.endPose());
-                    robot.feederHalfway();
                     setState(State.PUSH_ARTIFACT);
                 }
                 break;
             case PUSH_ARTIFACT:
                 if (stateTimer.getElapsedTimeSeconds() > .67) {
                     robot.pushArtifactToLaunch();
-                    setState(State.FEEDER_HALFWAY_BACK);
-                }
-                break;
-            case FEEDER_HALFWAY_BACK:
-                if (stateTimer.getElapsedTimeSeconds() > .75) {
-                    robot.feederHalfway();
                     setState(State.RETRACT_FEEDER);
                 }
                 break;
@@ -109,14 +102,8 @@ public class Auto_RedClose extends OpMode {
                         if (pos == 0) pos = 0.49;
                         else pos = 1;
                         robot.setIndexerServoPos(pos);
-                        setState(State.FEEDER_HALFWAY_UP);
+                        setState(State.PUSH_ARTIFACT);
                     }
-                }
-                break;
-            case FEEDER_HALFWAY_UP:
-                if (stateTimer.getElapsedTimeSeconds() > 1) {
-                    robot.feederHalfway();
-                    setState(State.PUSH_ARTIFACT);
                 }
                 break;
             case FINISH_PATH_2:
@@ -132,12 +119,10 @@ public class Auto_RedClose extends OpMode {
     private enum State {
         FINISHED,
         FOLLOW_PATH_1,
-        FEEDER_HALFWAY_AND_HOLD_POINT,
+        HOLD_POINT,
         PUSH_ARTIFACT,
-        FEEDER_HALFWAY_BACK,
         RETRACT_FEEDER,
         ROTATE_INDEXER,
-        FEEDER_HALFWAY_UP,
         FINISH_PATH_2,
     }
 

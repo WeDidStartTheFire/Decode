@@ -21,22 +21,21 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 public class Auto_BlueFar extends OpMode {
     private Robot robot;
 
+    private PathChain path1, path2;
+    private TelemetryUtils tm;
+
     private final Timer stateTimer = new Timer();
     private State state;
 
-    @Override
-    public void init() {
-        RobotState.auto = true;
-        robot = new Robot(hardwareMap, telemetry, true);
-        robot.follower.setStartingPose(new Pose(63.500, 8.500, toRadians(90)));
-        RobotState.motif = robot.getMotif();
-        tm = robot.drivetrain.tm;
-        buildPaths();
-        setState(State.FOLLOW_PATH_1);
+    private enum State {
+        FINISHED,
+        FOLLOW_PATH_1,
+        HOLD_POINT,
+        PUSH_ARTIFACT,
+        RETRACT_FEEDER,
+        ROTATE_INDEXER,
+        FINISH_PATH_2,
     }
-
-    private PathChain path1, path2;
-    private TelemetryUtils tm;
 
     private void buildPaths() {
         path1 = robot.follower
@@ -59,6 +58,17 @@ public class Auto_BlueFar extends OpMode {
                         toRadians(180)
                 )
                 .build();
+    }
+
+    @Override
+    public void init() {
+        RobotState.auto = true;
+        robot = new Robot(hardwareMap, telemetry, true);
+        robot.follower.setStartingPose(new Pose(63.500, 8.500, toRadians(90)));
+        RobotState.motif = robot.getMotif();
+        tm = robot.drivetrain.tm;
+        buildPaths();
+        setState(State.FOLLOW_PATH_1);
     }
 
     private void setState(State state) {
@@ -122,16 +132,6 @@ public class Auto_BlueFar extends OpMode {
                 }
                 break;
         }
-    }
-
-    private enum State {
-        FINISHED,
-        FOLLOW_PATH_1,
-        HOLD_POINT,
-        PUSH_ARTIFACT,
-        RETRACT_FEEDER,
-        ROTATE_INDEXER,
-        FINISH_PATH_2,
     }
 
     @Override

@@ -20,21 +20,21 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 public class Auto_RedClose extends OpMode {
     private Robot robot;
 
+    private PathChain path1, path2;
+    private TelemetryUtils tm;
+
     private final Timer stateTimer = new Timer();
     private State state;
 
-    @Override
-    public void init() {
-        RobotState.auto = true;
-        robot = new Robot(hardwareMap, telemetry, true);
-        robot.follower.setStartingPose(new Pose(126.729, 121.115, toRadians(37)));
-        tm = robot.drivetrain.tm;
-        buildPaths();
-        setState(State.FOLLOW_PATH_1);
+    private enum State {
+        FINISHED,
+        FOLLOW_PATH_1,
+        HOLD_POINT,
+        PUSH_ARTIFACT,
+        RETRACT_FEEDER,
+        ROTATE_INDEXER,
+        FINISH_PATH_2,
     }
-
-    private PathChain path1, path2;
-    private TelemetryUtils tm;
 
     private void buildPaths() {
         path1 = robot.follower.pathBuilder()
@@ -51,6 +51,16 @@ public class Auto_RedClose extends OpMode {
                 )
                 .setLinearHeadingInterpolation(toRadians(47.97706690962158), toRadians(0))
                 .build();
+    }
+
+    @Override
+    public void init() {
+        RobotState.auto = true;
+        robot = new Robot(hardwareMap, telemetry, true);
+        robot.follower.setStartingPose(new Pose(126.729, 121.115, toRadians(37)));
+        tm = robot.drivetrain.tm;
+        buildPaths();
+        setState(State.FOLLOW_PATH_1);
     }
 
     private void setState(State state) {
@@ -114,16 +124,6 @@ public class Auto_RedClose extends OpMode {
                 }
                 break;
         }
-    }
-
-    private enum State {
-        FINISHED,
-        FOLLOW_PATH_1,
-        HOLD_POINT,
-        PUSH_ARTIFACT,
-        RETRACT_FEEDER,
-        ROTATE_INDEXER,
-        FINISH_PATH_2,
     }
 
     @Override

@@ -21,8 +21,53 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 public class Auto_BlueClose extends OpMode {
     private Robot robot;
 
+    private PathChain path1, path2;
+    private TelemetryUtils tm;
+
     private final Timer stateTimer = new Timer();
     private State state;
+
+    private enum State {
+        FINISHED,
+        FOLLOW_PATH_1,
+        HOLD_POINT,
+        PUSH_ARTIFACT,
+        RETRACT_FEEDER,
+        ROTATE_INDEXER,
+        FINISH_PATH_2,
+    }
+
+    private void buildPaths() {
+        path1 = robot.follower.pathBuilder()
+                .addPath(
+                        // Path 1
+                        new BezierLine(new Pose(17.271, 121.115), new Pose(58.291, 84.630))
+                )
+                .setLinearHeadingInterpolation(toRadians(143), toRadians(132.0229330904))
+                .build();
+        path2 = robot.follower.pathBuilder()
+                .addPath(
+                        // Path 2
+                        new BezierLine(new Pose(58.291, 84.630), new Pose(40.804, 60.018))
+                )
+                .setLinearHeadingInterpolation(toRadians(132.0229330904), toRadians(180))
+                .build();
+    }
+
+    @Override
+    public void init() {
+        RobotState.auto = true;
+        robot = new Robot(hardwareMap, telemetry, true);
+        robot.follower.setStartingPose(new Pose(17.271, 121.115, toRadians(143)));
+        tm = robot.drivetrain.tm;
+        buildPaths();
+        setState(State.FOLLOW_PATH_1);
+    }
+
+    private void setState(State state) {
+        this.state = state;
+        this.stateTimer.resetTimer();
+    }
 
     @Override
     public void loop() {
@@ -80,51 +125,6 @@ public class Auto_BlueClose extends OpMode {
                 }
                 break;
         }
-    }
-
-    @Override
-    public void init() {
-        RobotState.auto = true;
-        robot = new Robot(hardwareMap, telemetry, true);
-        robot.follower.setStartingPose(new Pose(17.271, 121.115, toRadians(143)));
-        tm = robot.drivetrain.tm;
-        buildPaths();
-        setState(State.FOLLOW_PATH_1);
-    }
-
-    private PathChain path1, path2;
-    private TelemetryUtils tm;
-
-    private void buildPaths() {
-        path1 = robot.follower.pathBuilder()
-                .addPath(
-                        // Path 1
-                        new BezierLine(new Pose(17.271, 121.115), new Pose(58.291, 84.630))
-                )
-                .setLinearHeadingInterpolation(toRadians(143), toRadians(132.0229330904))
-                .build();
-        path2 = robot.follower.pathBuilder()
-                .addPath(
-                        // Path 2
-                        new BezierLine(new Pose(58.291, 84.630), new Pose(40.804, 60.018))
-                )
-                .setLinearHeadingInterpolation(toRadians(132.0229330904), toRadians(180))
-                .build();
-    }
-
-    private void setState(State state) {
-        this.state = state;
-        this.stateTimer.resetTimer();
-    }
-
-    private enum State {
-        FINISHED,
-        FOLLOW_PATH_1,
-        HOLD_POINT,
-        PUSH_ARTIFACT,
-        RETRACT_FEEDER,
-        ROTATE_INDEXER,
-        FINISH_PATH_2,
     }
 
     @Override

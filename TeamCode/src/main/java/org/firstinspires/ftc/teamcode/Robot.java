@@ -135,12 +135,6 @@ public class Robot {
         return launcherMotorA.getVelocity() >= motorVel && launcherMotorB.getVelocity() >= motorVel;
     }
 
-    public void feederHalfway() {
-        if (feederServoA == null) return;
-        feederServoA.setPosition(0.5);
-        feederServoB.setPosition(0.5);
-    }
-
     public void retractFeeder() {
         if (feederServoA == null) return;
         feederServoA.setPosition(0);
@@ -164,7 +158,7 @@ public class Robot {
         if (result == null || !result.isValid()) return RobotConstants.Motif.UNKNOWN;
 
         List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
-        if (fiducials == null || fiducials.isEmpty()) return RobotConstants.Motif.UNKNOWN;
+        if (fiducials == null) return RobotConstants.Motif.UNKNOWN;
 
         for (LLResultTypes.FiducialResult fiducial : fiducials) {
             int aprilTagID = fiducial.getFiducialId();
@@ -175,6 +169,7 @@ public class Robot {
                 default: return RobotConstants.Motif.UNKNOWN;
             }
         }
+        return Motif.UNKNOWN;
     }
 
     @Nullable

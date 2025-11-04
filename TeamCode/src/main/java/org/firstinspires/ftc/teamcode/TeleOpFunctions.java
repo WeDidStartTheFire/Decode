@@ -307,17 +307,18 @@ public class TeleOpFunctions {
             launchQueue.clear();
             robot.stopLaunchMotors();
         }
-        if (runtime.seconds() - launchStartTime < 1.5) {
+        if (runtime.seconds() - launchStartTime < 1.25) {
             robot.spinLaunchMotors();
-            if (runtime.seconds() - launchStartTime > .75) robot.retractFeeder();
-            if (launchQueue.isEmpty() && runtime.seconds() - launchStartTime > 1.25)
+            if (runtime.seconds() - launchStartTime > .67) robot.retractFeeder();
+            if (launchQueue.isEmpty() && runtime.seconds() - launchStartTime > 1)
                 robot.stopLaunchMotors();
             return;
         }
         while (!launchQueue.isEmpty() && getCurrentArtifact() != launchQueue.get(0)) {
-            if (launchQueue.get(0) == artifacts[0]) robot.setIndexerServoPos(0);
-            else if (launchQueue.get(0) == artifacts[1]) robot.setIndexerServoPos(0.5);
-            else if (launchQueue.get(0) == artifacts[2]) robot.setIndexerServoPos(1);
+            Artifact desired = launchQueue.get(0);
+            if (desired == artifacts[0]) robot.setIndexerServoPos(0);
+            else if (desired == artifacts[1]) robot.setIndexerServoPos(0.5);
+            else if (desired == artifacts[2]) robot.setIndexerServoPos(1);
             else {
                 launchQueue.remove(0);
                 continue;

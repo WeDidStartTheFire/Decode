@@ -155,18 +155,18 @@ public class Robot {
     public Motif getMotif() {
         LLResult result = limelight.getLatestResult();
 
-        if (result == null || !result.isValid()) return RobotConstants.Motif.UNKNOWN;
+        if (result == null || !result.isValid()) return Motif.UNKNOWN;
 
         List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
-        if (fiducials == null) return RobotConstants.Motif.UNKNOWN;
+        if (fiducials == null) return Motif.UNKNOWN;
 
         for (LLResultTypes.FiducialResult fiducial : fiducials) {
             int aprilTagID = fiducial.getFiducialId();
             switch (aprilTagID) {
-                case 21: return RobotConstants.Motif.GPP;
-                case 22: return RobotConstants.Motif.PGP;
-                case 23: return RobotConstants.Motif.PPG;
-                default: return RobotConstants.Motif.UNKNOWN;
+                case 21: return Motif.GPP;
+                case 22: return Motif.PGP;
+                case 23: return Motif.PPG;
+                default: return Motif.UNKNOWN;
             }
         }
         return Motif.UNKNOWN;

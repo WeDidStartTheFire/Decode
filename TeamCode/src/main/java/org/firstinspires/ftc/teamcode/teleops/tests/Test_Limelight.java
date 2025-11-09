@@ -4,7 +4,6 @@ import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
 import com.pedropathing.geometry.Pose;
-
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -22,7 +21,7 @@ public class Test_Limelight extends OpMode {
     public TeleOpFunctions teleop;
     public Robot robot;
     public TelemetryUtils tm;
-    LimelightHelpers.LimelightTarget_Fiducial limelightTargetFiducial;
+    LimelightHelpers.LimelightTarget_Fiducial limelightTargetFiducial = new LimelightHelpers.LimelightTarget_Fiducial();
 
     @Override
     public void init() {

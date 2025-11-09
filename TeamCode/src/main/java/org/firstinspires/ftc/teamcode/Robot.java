@@ -172,6 +172,19 @@ public class Robot {
         return Motif.UNKNOWN;
     }
 
+    public int getTagID() {
+        LLResult result = limelight.getLatestResult();
+
+        if (result == null || !result.isValid()) return -1;
+
+        List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
+        if (fiducials == null) return -1;
+
+        for (LLResultTypes.FiducialResult fiducial : fiducials) return fiducial.getFiducialId();
+
+        return -1;
+    }
+
     @Nullable
     public Scalar getRGB() {
         if (colorSensor == null) return null;

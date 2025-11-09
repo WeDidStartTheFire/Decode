@@ -61,5 +61,7 @@ public class Test_Limelight extends OpMode {
                 tm.addLastActionTelemetry("Motif: 🟣🟣🟢");
                 break;
         }
+
+        tm.addLastActionTelemetry("April Tag ID: "+ robot.getTagID());
     }
 }

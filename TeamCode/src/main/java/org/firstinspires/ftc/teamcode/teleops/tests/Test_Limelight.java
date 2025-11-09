@@ -15,6 +15,8 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TeleOpFunctions;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
+import pedroPathing.localizers.LimelightHelpers;
+
 @TeleOp(name = "Limelight Test", group = "Test")
 public class Test_Limelight extends OpMode {
     public TeleOpFunctions teleop;
@@ -50,14 +52,16 @@ public class Test_Limelight extends OpMode {
             case PPG:
                 tm.print("Motif: ","🟣🟣🟢");
                 break;
+            case UNKNOWN:
+                tm.print("Motif: ", "Not Detected ⚫⚫⚫");
+                break;
         }
+        tm.print("Tag Position: ", LimelightHelpers.getTargetPose_CameraSpace("limelight"));
         teleop.autoMovementLogic(validStartPose);
         teleop.drivetrainLogic(validStartPose);
         teleop.intakeLogic();
         teleop.feederLogic();
         teleop.indexerLogic();
         teleop.launcherLogic();
-
-
     }
 }

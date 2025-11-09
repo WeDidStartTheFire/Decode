@@ -22,6 +22,7 @@ public class Test_Limelight extends OpMode {
     public TeleOpFunctions teleop;
     public Robot robot;
     public TelemetryUtils tm;
+    LimelightHelpers.LimelightTarget_Fiducial limelightTargetFiducial;
 
     @Override
     public void init() {
@@ -56,11 +57,7 @@ public class Test_Limelight extends OpMode {
                 tm.print("Motif: ", "Not Detected ⚫⚫⚫");
                 break;
         }
-        try {
-            tm.print("Tag Position: ", LimelightHelpers.getTargetPose_CameraSpace("limelight"));
-        } catch (Exception e) {
-            tm.print("⚠️ Something broke :(", e.getMessage());
-        }
+        tm.print("Target", limelightTargetFiducial.getCameraPose_TargetSpace2D());
         teleop.autoMovementLogic(validStartPose);
         teleop.drivetrainLogic(validStartPose);
         teleop.intakeLogic();

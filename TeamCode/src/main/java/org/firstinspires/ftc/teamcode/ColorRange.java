@@ -16,15 +16,15 @@ public class ColorRange
     protected final Scalar max;
 
     public static final ColorRange ARTIFACT_GREEN = new ColorRange(
-            ColorSpace.YCrCb,
-            new Scalar( 32,  50, 118),
-            new Scalar(255, 105, 145)
+            ColorSpace.RGB,
+            new Scalar(0.4, 1.25, .95),
+            new Scalar(0.7, 1.60, 1.2)
     );
 
     public static final ColorRange ARTIFACT_PURPLE = new ColorRange(
-            ColorSpace.YCrCb,
-            new Scalar( 32, 135, 135),
-            new Scalar(255, 155, 169)
+            ColorSpace.RGB,
+            new Scalar(0.7, 0.50, 1.1),
+            new Scalar(0.8, 1.25, 5.0)
     );
 
     // -----------------------------------------------------------------------------

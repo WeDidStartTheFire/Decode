@@ -13,6 +13,8 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TeleOpFunctions;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
+import java.util.Objects;
+
 
 @TeleOp(name = "Test Color Sensor", group = "Test")
 public class Test_ColorSensor extends OpMode {
@@ -36,8 +38,9 @@ public class Test_ColorSensor extends OpMode {
     @Override
     public void loop() {
         if (robot.colorSensor != null) {
-            tm.print("RGB Scalar", robot.getRGB());
-            tm.print("YCrCb Scalar", robot.getYCrCb());
+            tm.print("R", ((int) (Objects.requireNonNull(robot.getRGB()).val[0] * 10000)) / 10000.0);
+            tm.print("G", ((int) (Objects.requireNonNull(robot.getRGB()).val[1] * 10000)) / 10000.0);
+            tm.print("B", ((int) (Objects.requireNonNull(robot.getRGB()).val[2] * 10000)) / 10000.0);
             tm.print("Color", robot.getArtifact());
         }
         tm.update();

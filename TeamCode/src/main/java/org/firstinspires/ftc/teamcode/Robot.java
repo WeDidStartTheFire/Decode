@@ -17,11 +17,10 @@ import com.pedropathing.follower.Follower;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -37,7 +36,7 @@ public class Robot {
     public DcMotorEx intakeMotor, launcherMotorA, launcherMotorB;
     public Servo feederServoA, feederServoB;
     private Servo indexerServo;
-    public NormalizedColorSensor colorSensor;
+    public ColorSensor colorSensor;
     public Limelight3A limelight;
 
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, boolean useOdometry) {
@@ -79,7 +78,7 @@ public class Robot {
 
         // Other
         try {
-            colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
+            colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
         } catch (IllegalArgumentException e) {
             tm.except("colorSensor not connected");
         }
@@ -188,30 +187,21 @@ public class Robot {
     @Nullable
     public Scalar getRGB() {
         if (colorSensor == null) return null;
-        NormalizedRGBA colors = colorSensor.getNormalizedColors();
+//        NormalizedRGBA colors = colorSensor.getNormalizedColors();
 
-        float r = colors.red / colors.alpha;
-        float g = colors.green / colors.alpha;
-        float b = colors.blue / colors.alpha;
+//        float r = colors.red / colors.alpha;
+//        float g = colors.green / colors.alpha;
+//        float b = colors.blue / colors.alpha;
+        float a = colorSensor.alpha();
+        float r = colorSensor.red() / a;
+        float g = colorSensor.green() / a;
+        float b = colorSensor.blue() / a;
 
         return new Scalar(r, g, b);
     }
 
-    @Nullable
-    public Scalar getYCrCb() {
-        Scalar rgb = getRGB();
-        if (rgb == null) return null;
-        int R = (int) (rgb.val[0] * 255);
-        int G = (int) (rgb.val[1] * 255);
-        int B = (int) (rgb.val[2] * 255);
-        int Y = (int) (0.299 * R + 0.587 * G + 0.114 * B);
-        int Cr = (int) (128 + 0.5 * (R - Y));
-        int Cb = (int) (128 + 0.5 * (B - Y));
-        return new Scalar(Y, Cr, Cb);
-    }
-
     public RobotConstants.Artifact getArtifact() {
-        Scalar color = getYCrCb();
+        Scalar color = getRGB();
         if (color == null) return RobotConstants.Artifact.UNKNOWN;
         if (ColorRange.ARTIFACT_GREEN.contains(color)) return RobotConstants.Artifact.GREEN;
         if (ColorRange.ARTIFACT_PURPLE.contains(color)) return RobotConstants.Artifact.PURPLE;

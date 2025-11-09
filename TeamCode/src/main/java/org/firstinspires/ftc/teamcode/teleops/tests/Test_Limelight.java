@@ -40,9 +40,18 @@ public class Test_Limelight extends OpMode {
 
     @Override
     public void loop() {
-        LLResult result = limelight.getLatestResult();
-
         teleop.update();
+        switch (robot.getMotif()){
+            case GPP:
+                tm.print("Motif: ", "🟢🟣🟣");
+                break;
+            case PGP:
+                tm.print("Motif: ","🟣🟢🟣");
+                break;
+            case PPG:
+                tm.print("Motif: ","🟣🟣🟢");
+                break;
+        }
         teleop.autoMovementLogic(validStartPose);
         teleop.drivetrainLogic(validStartPose);
         teleop.intakeLogic();
@@ -50,18 +59,6 @@ public class Test_Limelight extends OpMode {
         teleop.indexerLogic();
         teleop.launcherLogic();
 
-        switch (robot.getMotif()){
-            case GPP:
-                tm.addLastActionTelemetry("Motif: 🟢🟣🟣");
-                break;
-            case PGP:
-                tm.addLastActionTelemetry("Motif: 🟣🟢🟣");
-                break;
-            case PPG:
-                tm.addLastActionTelemetry("Motif: 🟣🟣🟢");
-                break;
-        }
 
-        tm.addLastActionTelemetry("April Tag ID: "+ robot.getTagID());
     }
 }

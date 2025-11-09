@@ -7,6 +7,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
@@ -42,6 +43,7 @@ public class Test_ColorSensor extends OpMode {
             tm.print("G", ((int) (Objects.requireNonNull(robot.getRGB()).val[1] * 10000)) / 10000.0);
             tm.print("B", ((int) (Objects.requireNonNull(robot.getRGB()).val[2] * 10000)) / 10000.0);
             tm.print("Color", robot.getArtifact());
+            tm.print("Distance (in)", robot.distanceSensor.getDistance(DistanceUnit.INCH));
         }
         tm.update();
     }

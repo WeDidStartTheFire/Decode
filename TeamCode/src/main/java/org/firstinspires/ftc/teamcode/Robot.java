@@ -20,10 +20,12 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.opencv.core.Scalar;
 
 import java.util.List;
@@ -37,6 +39,7 @@ public class Robot {
     public Servo feederServoA, feederServoB;
     private Servo indexerServo;
     public ColorSensor colorSensor;
+    public DistanceSensor distanceSensor;
     public Limelight3A limelight;
 
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, boolean useOdometry) {
@@ -79,7 +82,9 @@ public class Robot {
         // Other
         try {
             colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
+            distanceSensor = hardwareMap.get(DistanceSensor.class, "colorSensor");
         } catch (IllegalArgumentException e) {
+            colorSensor = null;
             tm.except("colorSensor not connected");
         }
         try {
@@ -198,6 +203,10 @@ public class Robot {
         float b = colorSensor.blue() / a;
 
         return new Scalar(r, g, b);
+    }
+
+    public double getInches() {
+        return distanceSensor.getDistance(DistanceUnit.INCH);
     }
 
     public RobotConstants.Artifact getArtifact() {

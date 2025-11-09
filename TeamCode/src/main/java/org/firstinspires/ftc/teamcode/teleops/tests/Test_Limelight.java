@@ -56,7 +56,11 @@ public class Test_Limelight extends OpMode {
                 tm.print("Motif: ", "Not Detected ⚫⚫⚫");
                 break;
         }
-        tm.print("Tag Position: ", LimelightHelpers.getTargetPose_CameraSpace("limelight"));
+        try {
+            tm.print("Tag Position: ", LimelightHelpers.getTargetPose_CameraSpace("limelight"));
+        } catch (Exception e) {
+            tm.print("⚠️ Something broke :(", e.getMessage());
+        }
         teleop.autoMovementLogic(validStartPose);
         teleop.drivetrainLogic(validStartPose);
         teleop.intakeLogic();

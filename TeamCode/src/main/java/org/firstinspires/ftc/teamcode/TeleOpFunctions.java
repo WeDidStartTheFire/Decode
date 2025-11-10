@@ -21,12 +21,13 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.teleopHeadingPID;
 import static org.firstinspires.ftc.teamcode.RobotState.aiming;
 import static org.firstinspires.ftc.teamcode.RobotState.artifacts;
 import static org.firstinspires.ftc.teamcode.RobotState.color;
+import static org.firstinspires.ftc.teamcode.RobotState.feederRetractStartTime;
 import static org.firstinspires.ftc.teamcode.RobotState.following;
 import static org.firstinspires.ftc.teamcode.RobotState.holding;
 import static org.firstinspires.ftc.teamcode.RobotState.indexerMoveStartTime;
 import static org.firstinspires.ftc.teamcode.RobotState.launchQueue;
-import static org.firstinspires.ftc.teamcode.RobotState.launchStartTime;
 import static org.firstinspires.ftc.teamcode.RobotState.launcherRPM;
+import static org.firstinspires.ftc.teamcode.RobotState.launching;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static java.lang.Math.PI;
@@ -293,7 +294,7 @@ public class TeleOpFunctions {
     }
 
     public void autoLaunchLogic() {
-        tm.print("launchStartTime", launchStartTime);
+        tm.print("launching", launching);
         tm.print("indexerMoveStartTime", indexerMoveStartTime);
         tm.print("Queue length", launchQueue.toArray().length);
         tm.print("Queue", launchQueue);
@@ -303,17 +304,21 @@ public class TeleOpFunctions {
         if (gamepad2.aWasPressed()) launchQueue.add(Artifact.GREEN);
         if (gamepad2.bWasPressed()) launchQueue.add(Artifact.PURPLE);
         if (gamepad2.xWasPressed()) {
-            launchStartTime = -10;
+            launching = false;
             launchQueue.clear();
             robot.stopLaunchMotors();
         }
-        if (runtime.seconds() - launchStartTime < 1.25) {
+        if (launching) {
             robot.spinLaunchMotors();
-            if (runtime.seconds() - launchStartTime > .67) robot.retractFeeder();
-            if (launchQueue.isEmpty() && runtime.seconds() - launchStartTime > 1)
+            if (getCurrentArtifact() == Artifact.UNKNOWN) {
+                feederRetractStartTime = runtime.seconds();
+                robot.retractFeeder();
                 robot.stopLaunchMotors();
+            }
             return;
         }
+        if (runtime.seconds() - feederRetractStartTime > 0.5) return;
+        double pos = robot.getIndexerServoPos();
         while (!launchQueue.isEmpty() && getCurrentArtifact() != launchQueue.get(0)) {
             Artifact desired = launchQueue.get(0);
             if (desired == artifacts[0]) robot.setIndexerServoPos(0);
@@ -323,14 +328,13 @@ public class TeleOpFunctions {
                 launchQueue.remove(0);
                 continue;
             }
-            indexerMoveStartTime = runtime.seconds();
+            if (pos != robot.getIndexerServoPos()) indexerMoveStartTime = runtime.seconds();
         }
         if (launchQueue.isEmpty()) return;
         robot.spinLaunchMotors();
         if (robot.launchMotorsToSpeed() && runtime.seconds() - indexerMoveStartTime > 0.5) {
             robot.pushArtifactToLaunch();
-            launchStartTime = runtime.seconds();
-            artifacts[(int) (robot.getIndexerServoPos() * 2)] = Artifact.UNKNOWN;
+            launching = true;
         }
     }
 
@@ -367,7 +371,7 @@ public class TeleOpFunctions {
             return;
         }
         if (gamepad2.right_trigger >= 0.5) robot.spinLaunchMotors();
-        else if (launchQueue.isEmpty() && runtime.seconds() - launchStartTime > 1.5) {
+        else if (launchQueue.isEmpty() && !launching) {
             robot.retractFeeder();
             robot.stopLaunchMotors();
         }

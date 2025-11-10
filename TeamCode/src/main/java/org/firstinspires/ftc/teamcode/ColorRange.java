@@ -27,10 +27,6 @@ public class ColorRange
             new Scalar(0.8, 1.25, 5.0)
     );
 
-    // -----------------------------------------------------------------------------
-    // ROLL YOUR OWN
-    // -----------------------------------------------------------------------------
-
     public ColorRange(ColorSpace colorSpace, Scalar min, Scalar max) {
         this.colorSpace = colorSpace;
         this.min = min;

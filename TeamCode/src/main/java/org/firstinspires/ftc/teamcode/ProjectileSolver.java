@@ -10,8 +10,6 @@ import com.pedropathing.math.Vector;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
-import java.util.Random;
-
 // Filename: ProjectileSolver
 // Owen White
 public class ProjectileSolver {

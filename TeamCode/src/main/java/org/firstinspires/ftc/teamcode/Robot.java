@@ -185,16 +185,10 @@ public class Robot {
     @Nullable
     public Scalar getRGB() {
         if (colorSensor == null) return null;
-//        NormalizedRGBA colors = colorSensor.getNormalizedColors();
-
-//        float r = colors.red / colors.alpha;
-//        float g = colors.green / colors.alpha;
-//        float b = colors.blue / colors.alpha;
         float a = colorSensor.alpha();
         float r = colorSensor.red() / a;
         float g = colorSensor.green() / a;
         float b = colorSensor.blue() / a;
-
         return new Scalar(r, g, b);
     }
 

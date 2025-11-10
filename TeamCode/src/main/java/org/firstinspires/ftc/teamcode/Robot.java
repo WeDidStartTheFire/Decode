@@ -157,23 +157,16 @@ public class Robot {
      * @return Motif Enum, if it doesn't detect a valid ID, will return none.
      */
     public Motif getMotif() {
-        LLResult result = limelight.getLatestResult();
-
-        if (result == null || !result.isValid()) return Motif.UNKNOWN;
-
-        List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
-        if (fiducials == null) return Motif.UNKNOWN;
-
-        for (LLResultTypes.FiducialResult fiducial : fiducials) {
-            int aprilTagID = fiducial.getFiducialId();
-            switch (aprilTagID) {
-                case 21: return Motif.GPP;
-                case 22: return Motif.PGP;
-                case 23: return Motif.PPG;
-                default: return Motif.UNKNOWN;
-            }
+        switch (getTagID()) {
+            case 21:
+                return Motif.GPP;
+            case 22:
+                return Motif.PGP;
+            case 23:
+                return Motif.PPG;
+            default:
+                return Motif.UNKNOWN;
         }
-        return Motif.UNKNOWN;
     }
 
     public int getTagID() {

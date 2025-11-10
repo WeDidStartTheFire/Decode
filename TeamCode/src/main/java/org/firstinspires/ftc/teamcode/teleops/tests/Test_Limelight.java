@@ -42,20 +42,7 @@ public class Test_Limelight extends OpMode {
     @Override
     public void loop() {
         teleop.update();
-        switch (robot.getMotif()){
-            case GPP:
-                tm.print("Motif: ", "🟢🟣🟣");
-                break;
-            case PGP:
-                tm.print("Motif: ","🟣🟢🟣");
-                break;
-            case PPG:
-                tm.print("Motif: ","🟣🟣🟢");
-                break;
-            case UNKNOWN:
-                tm.print("Motif: ", "Not Detected ⚫⚫⚫");
-                break;
-        }
+        tm.print("Motif", robot.getMotif());
         tm.print("Target", limelightTargetFiducial.getCameraPose_TargetSpace2D());
         teleop.autoMovementLogic(validStartPose);
         teleop.drivetrainLogic(validStartPose);

@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import static java.lang.Math.PI;
 import static java.lang.Math.toRadians;
 
+import androidx.annotation.NonNull;
+
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.geometry.Pose;
@@ -64,10 +66,42 @@ public class RobotConstants {
     }
 
     public enum Motif {
-        GPP, PPG, PGP, UNKNOWN
+        GPP, PPG, PGP, UNKNOWN;
+
+        @NonNull
+        @Override
+        public String toString() {
+            switch (this) {
+                case GPP:
+                    return "🟢🟣🟣";
+                case PGP:
+                    return "🟣🟢🟣";
+                case PPG:
+                    return "🟣🟣🟢";
+                case UNKNOWN:
+                    return "Not Detected ⚫⚫⚫";
+                default:
+                    return super.toString();
+            }
+        }
     }
 
     public enum Artifact {
-        GREEN, PURPLE, UNKNOWN
+        GREEN, PURPLE, UNKNOWN;
+
+        @NonNull
+        @Override
+        public String toString() {
+            switch (this) {
+                case GREEN:
+                    return "\uD83D\uDFE2Green\uD83D\uDFE2";
+                case PURPLE:
+                    return "\uD83D\uDFE3Purple\uD83D\uDFE3";
+                case UNKNOWN:
+                    return "◌Empty◌";
+                default:
+                    return super.toString();
+            }
+        }
     }
 }

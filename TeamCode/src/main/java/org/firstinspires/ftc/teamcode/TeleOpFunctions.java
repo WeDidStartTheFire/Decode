@@ -334,9 +334,11 @@ public class TeleOpFunctions {
         if (launching) {
             robot.spinLaunchMotors();
             if (getCurrentArtifact() == Artifact.UNKNOWN) {
+                launchQueue.remove(0);
                 feederRetractStartTime = runtime.seconds();
                 robot.retractFeeder();
-                robot.stopLaunchMotors();
+                if (launchQueue.isEmpty()) robot.stopLaunchMotors();
+                launching = false;
             }
             return;
         }
@@ -376,7 +378,7 @@ public class TeleOpFunctions {
     }
 
     private Artifact getCurrentArtifact() {
-        return getArtifactAtPos(robot.getIndexerServoPos);
+        return getArtifactAtPos(robot.getIndexerServoPos());
     }
 
     public void intakeLogic() {
@@ -411,4 +413,3 @@ public class TeleOpFunctions {
                 runtime.seconds() - indexerMoveStartTime > 0.5) robot.pushArtifactToLaunch();
     }
 }
-Isaac was here

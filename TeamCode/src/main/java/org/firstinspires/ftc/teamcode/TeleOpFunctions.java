@@ -294,11 +294,11 @@ public class TeleOpFunctions {
     }
 
     private boolean rotateIndexerTo(Artifact artifact) {
-        pos = robot.getIndexerServoPos();
+        double pos = robot.getIndexerServoPos();
 
-        first = Math.round(pos * 2) / 2.0;
-        second = (first + 0.5) % 1;
-        third = Math.round(1-pos);
+        double first = Math.round(pos * 2) / 2.0;
+        double second = (first + 0.5) % 1;
+        double third = Math.round(1 - pos);
 
         if (getArtifactAtPos(first) == artifact) {
             robot.setIndexerServoPos(first);

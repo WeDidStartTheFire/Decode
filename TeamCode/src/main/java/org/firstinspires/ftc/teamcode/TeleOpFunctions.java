@@ -293,6 +293,29 @@ public class TeleOpFunctions {
         indexerMoveStartTime = runtime.seconds();
     }
 
+    private boolean rotateIndexerTo(Artifact artifact) {
+        pos = robot.getIndexerServoPos();
+
+        first = Math.round(pos * 2) / 2.0;
+        second = (first + 0.5) % 1;
+        third = Math.round(1-pos);
+
+        if (getArtifactAtPos(first) == artifact) {
+            robot.setIndexerServoPos(first);
+            return true;
+        }
+        if (getArtifactAtPos(second) == artifact) {
+            robot.setIndexerServoPos(second);
+            return true;
+        }
+        if (getArtifactAtPos(third) == artifact) {
+            robot.setIndexerServoPos(third);
+            return true;
+        }
+
+        return false;
+    }
+
     public void autoLaunchLogic() {
         tm.print("launching", launching);
         tm.print("indexerMoveStartTime", indexerMoveStartTime);
@@ -320,15 +343,11 @@ public class TeleOpFunctions {
         if (runtime.seconds() - feederRetractStartTime > 0.5) return;
         double pos = robot.getIndexerServoPos();
         while (!launchQueue.isEmpty() && getCurrentArtifact() != launchQueue.get(0)) {
-            Artifact desired = launchQueue.get(0);
-            if (desired == artifacts[0]) robot.setIndexerServoPos(0);
-            else if (desired == artifacts[1]) robot.setIndexerServoPos(0.5);
-            else if (desired == artifacts[2]) robot.setIndexerServoPos(1);
-            else {
-                launchQueue.remove(0);
-                continue;
+            if (rotateIndexerTo(launchQueue.get(0))) {
+                if (pos != robot.getIndexerServoPos()) indexerMoveStartTime = runtime.seconds();
+                break;
             }
-            if (pos != robot.getIndexerServoPos()) indexerMoveStartTime = runtime.seconds();
+            launchQueue.remove(0);
         }
         if (launchQueue.isEmpty()) return;
         robot.spinLaunchMotors();
@@ -349,16 +368,21 @@ public class TeleOpFunctions {
         else if (robot.getIndexerServoPos() == 1) artifacts[2] = artifact;
     }
 
-    private Artifact getCurrentArtifact() {
-        if (robot.getIndexerServoPos() == 0) return artifacts[0];
-        if (robot.getIndexerServoPos() == 0.5) return artifacts[1];
-        if (robot.getIndexerServoPos() == 1) return artifacts[2];
+    private Artifact getArtifactAtPos(double pos) {
+        if (pos == 0) return artifacts[0];
+        if (pos == 0.5) return artifacts[1];
+        if (pos == 1) return artifacts[2];
         return Artifact.UNKNOWN;
+    }
+
+    private Artifact getCurrentArtifact() {
+        return getArtifactAtPos(robot.getIndexerServoPos);
     }
 
     public void intakeLogic() {
         if (robot.intakeMotor == null) return;
-        robot.intakeMotor.setPower(gamepad1.right_trigger);
+        if (gamepad1.right_trigger > 0.5 && rotateIndexerTo(Artifact.UNKNOWN))
+            robot.intakeMotor.setPower(gamepad1.right_trigger);
     }
 
     public void launcherLogic() {
@@ -375,6 +399,7 @@ public class TeleOpFunctions {
             robot.retractFeeder();
             robot.stopLaunchMotors();
         }
+        if (gamepad2.left_trigger <= 0.5 && rotateIndexerTo(Artifact.UNKNOWN)) robot.intakeLaunchMotors();
         tm.print("Motor A RPM", robot.launcherMotorA.getVelocity(AngleUnit.DEGREES) / 360 * 60);
         tm.print("Motor B RPM", robot.launcherMotorB.getVelocity(AngleUnit.DEGREES) / 360 * 60);
         tm.print("Motor Velocity", motorVel);
@@ -386,3 +411,4 @@ public class TeleOpFunctions {
                 runtime.seconds() - indexerMoveStartTime > 0.5) robot.pushArtifactToLaunch();
     }
 }
+Isaac was here

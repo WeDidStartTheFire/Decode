@@ -127,6 +127,13 @@ public class Robot {
         launcherMotorB.setVelocity(motorVel);
     }
 
+    public void intakeLaunchMotors() {
+        if (launcherMotorA == null) return;
+        launcherMotorA.setPower(-.05);
+        launcherMotorB.setPower(-.05);
+    }
+
+
     public void pushArtifactToLaunch() {
         if (feederServoA == null) return;
         feederServoA.setPosition(1);

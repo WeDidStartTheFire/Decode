@@ -129,8 +129,8 @@ public class Robot {
 
     public void intakeLaunchMotors() {
         if (launcherMotorA == null) return;
-        launcherMotorA.setPower(-.05);
-        launcherMotorB.setPower(-.05);
+        launcherMotorA.setPower(-0.16657);
+        launcherMotorB.setPower(-0.16657);
     }
 
 

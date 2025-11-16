@@ -101,6 +101,7 @@ public class Robot {
     }
 
     public void setIndexerServoPos(double pos) {
+        if (pos == .5) pos = .48;
         if (indexerServo != null) indexerServo.setPosition(pos);
     }
 

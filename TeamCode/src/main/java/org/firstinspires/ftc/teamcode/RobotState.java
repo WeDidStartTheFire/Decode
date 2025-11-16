@@ -28,5 +28,5 @@ public class RobotState {
     public static Artifact[] artifacts = {UNKNOWN, UNKNOWN, UNKNOWN};
     public static double indexerMoveStartTime = 0;
     public static double feederRetractStartTime = 0;
-    public static boolean launching = true;
+    public static boolean launching = false;
 }

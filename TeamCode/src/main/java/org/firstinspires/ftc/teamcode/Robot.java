@@ -106,7 +106,7 @@ public class Robot {
     }
 
     public double getIndexerServoPos() {
-        if (indexerServo != null) return indexerServo.getPosition();
+        if (indexerServo != null) return (indexerServo.getPosition() == .48 ? .5 : indexerServo.getPosition());
         return -1;
     }
 

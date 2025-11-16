@@ -319,6 +319,7 @@ public class TeleOpFunctions {
     public void autoLaunchLogic() {
         tm.print("launching", launching);
         tm.print("indexerMoveStartTime", indexerMoveStartTime);
+        tm.print("runtime.seconds()", runtime.seconds());
         tm.print("Queue length", launchQueue.toArray().length);
         tm.print("Queue", launchQueue);
         tm.print("Artifact 1", artifacts[0]);
@@ -353,7 +354,7 @@ public class TeleOpFunctions {
         }
         if (launchQueue.isEmpty()) return;
         robot.spinLaunchMotors();
-        if (robot.launchMotorsToSpeed() && runtime.seconds() - indexerMoveStartTime > 0.5) {
+        if (robot.launchMotorsToSpeed() && runtime.seconds() - indexerMoveStartTime > 0.67) {
             robot.pushArtifactToLaunch();
             launching = true;
         }
@@ -362,18 +363,19 @@ public class TeleOpFunctions {
     public void colorSensorLogic() {
         Artifact artifact = robot.getArtifact();
         tm.print("Color", artifact);
-        tm.print("Distance", artifact);
-        if (runtime.seconds() - indexerMoveStartTime < 0.5) return;
+        tm.print("Distance", robot.getInches());
+        if (runtime.seconds() - indexerMoveStartTime < 0.67) return;
         if (artifact == Artifact.UNKNOWN && robot.getInches() < 6) return;
+        if (artifact == Artifact.PURPLE && robot.getInches() == 6) artifact = Artifact.UNKNOWN;
         double pos = robot.getIndexerServoPos();
         if (pos == 0) artifacts[0] = artifact;
-        else if (pos == 0.5) artifacts[1] = artifact;
+        else if (.475 <= pos && pos <= .505) artifacts[1] = artifact;
         else if (pos == 1) artifacts[2] = artifact;
     }
 
     private Artifact getArtifactAtPos(double pos) {
         if (pos == 0) return artifacts[0];
-        if (pos == 0.5 || pos == 0.48) return artifacts[1];
+        if (.475 <= pos && pos <= .505) return artifacts[1];
         if (pos == 1) return artifacts[2];
         return Artifact.UNKNOWN;
     }
@@ -405,11 +407,14 @@ public class TeleOpFunctions {
         if (gamepad2.left_trigger >= 0.5 && rotateIndexerTo(Artifact.UNKNOWN)) robot.intakeLaunchMotors();
         tm.print("Motor A RPM", robot.launcherMotorA.getVelocity(AngleUnit.DEGREES) / 360 * 60);
         tm.print("Motor B RPM", robot.launcherMotorB.getVelocity(AngleUnit.DEGREES) / 360 * 60);
+        tm.print("Motor A Vel", robot.launcherMotorA.getVelocity());
+        tm.print("Motor B Vel", robot.launcherMotorB.getVelocity());
+        tm.print("Goal", robot.getLaunchMotorVel());
         tm.print("Motor Velocity", motorVel);
     }
 
     public void feederLogic() {
         if (gamepad2.rightBumperWasPressed() && gamepad2.right_trigger >= 0.5 &&
-                runtime.seconds() - indexerMoveStartTime > 0.5) robot.pushArtifactToLaunch();
+                runtime.seconds() - indexerMoveStartTime > 0.67) robot.pushArtifactToLaunch();
     }
 }

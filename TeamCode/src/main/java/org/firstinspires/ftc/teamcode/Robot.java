@@ -59,6 +59,8 @@ public class Robot {
             launcherMotorA = hardwareMap.get(DcMotorEx.class, "launcherMotorA"); // Expansion Hub 1
             launcherMotorB = hardwareMap.get(DcMotorEx.class, "launcherMotorB"); // Expansion Hub 2
             launcherMotorB.setDirection(DcMotorSimple.Direction.REVERSE);
+            launcherMotorA.setTargetPosition(0);
+            launcherMotorB.setTargetPosition(0);
         } catch (IllegalArgumentException e) {
             launcherMotorA = null;
             tm.except("At least one launcherMotor not connected");
@@ -106,15 +108,15 @@ public class Robot {
     }
 
     public double getIndexerServoPos() {
-        if (indexerServo != null) return (indexerServo.getPosition() == .48 ? .5 : indexerServo.getPosition());
-        return -1;
+        if (indexerServo == null) return -1;
+        return indexerServo.getPosition() == .48 ? .5 : indexerServo.getPosition();
     }
 
     public boolean isIndexerServoConnected() {
         return indexerServo != null;
     }
 
-    private double getLaunchMotorVel() {
+    public double getLaunchMotorVel() {
         ProjectileSolver.LaunchSolution sol = ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT,
                 vel, RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
         double ignore = sol != null ? ballVelToMotorVel(sol.w) : 0;
@@ -136,8 +138,8 @@ public class Robot {
 
     public void pushArtifactToLaunch() {
         if (feederServoA == null) return;
-        feederServoA.setPosition(.95);
         feederServoB.setPosition(1);
+        feederServoA.setPosition(.95);
     }
 
     public boolean launchMotorsToSpeed() {

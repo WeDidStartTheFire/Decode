@@ -254,11 +254,11 @@ public class TeleOpFunctions {
             return;
         }
 
-        double[] POS = {0.00, 0.25, 0.50, 0.75, 1.00, 1.25};
+        double[] POS = {0.00, 0.25, 0.48, 0.75, 1.00, 1.25};
         double[] DOWN = {0.75, 0.75, 0.25, 0.25, 0.75, 0.75};
         double[] UP = {0.25, 0.75, 0.75, 0.25, 0.25, 0.25};
-        double[] RIGHT = {0.5, 0.5, 1.00, 1.00, 0.00, 0.00};
-        double[] LEFT = {1.00, 0.00, 0.00, 0.5, 0.5, 1.00};
+        double[] RIGHT = {0.48, 0.48, 1.00, 1.00, 0.00, 0.00};
+        double[] LEFT = {1.00, 0.00, 0.00, 0.48, 0.48, 1.00};
 
         // Read current servo position
         double curPos = robot.getIndexerServoPos();
@@ -372,7 +372,7 @@ public class TeleOpFunctions {
 
     private Artifact getArtifactAtPos(double pos) {
         if (pos == 0) return artifacts[0];
-        if (pos == 0.5) return artifacts[1];
+        if (pos == 0.5 || pos == 0.48) return artifacts[1];
         if (pos == 1) return artifacts[2];
         return Artifact.UNKNOWN;
     }
@@ -408,7 +408,6 @@ public class TeleOpFunctions {
     }
 
     public void feederLogic() {
-        if (robot.feederServoA == null) return;
         if (gamepad2.rightBumperWasPressed() && gamepad2.right_trigger >= 0.5 &&
                 runtime.seconds() - indexerMoveStartTime > 0.5) robot.pushArtifactToLaunch();
     }

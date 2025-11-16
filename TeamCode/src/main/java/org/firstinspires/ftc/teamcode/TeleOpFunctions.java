@@ -342,7 +342,7 @@ public class TeleOpFunctions {
             }
             return;
         }
-        if (runtime.seconds() - feederRetractStartTime > 0.5) return;
+        if (runtime.seconds() - feederRetractStartTime < 0.5) return;
         double pos = robot.getIndexerServoPos();
         while (!launchQueue.isEmpty() && getCurrentArtifact() != launchQueue.get(0)) {
             if (rotateIndexerTo(launchQueue.get(0))) {

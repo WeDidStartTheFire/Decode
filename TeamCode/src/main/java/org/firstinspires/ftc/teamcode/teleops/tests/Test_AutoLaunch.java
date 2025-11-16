@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.teleops.tests;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
+import static org.firstinspires.ftc.teamcode.RobotState.auto;
+import static org.firstinspires.ftc.teamcode.RobotState.following;
+import static org.firstinspires.ftc.teamcode.RobotState.holding;
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
@@ -46,5 +50,16 @@ public class Test_AutoLaunch extends OpMode {
         teleop.feederLogic();
         teleop.indexerLogic();
         teleop.launcherLogic();
+    }
+
+    @Override
+    public void stop() {
+        RobotState.launching = false;
+        auto = false;
+        following = false;
+        holding = false;
+        robot.follower.breakFollowing();
+        RobotState.launchQueue.clear();
+        RobotState.artifacts = new RobotConstants.Artifact[]{UNKNOWN, UNKNOWN, UNKNOWN};
     }
 }

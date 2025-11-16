@@ -3,20 +3,12 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static java.lang.Math.PI;
 
-import android.os.Environment;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.pedropathing.geometry.Pose;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 
 public class Utils {
     static double TAU = PI * 2;

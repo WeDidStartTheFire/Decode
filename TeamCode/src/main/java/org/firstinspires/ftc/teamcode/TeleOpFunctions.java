@@ -365,9 +365,10 @@ public class TeleOpFunctions {
         tm.print("Distance", artifact);
         if (runtime.seconds() - indexerMoveStartTime < 0.5) return;
         if (artifact == Artifact.UNKNOWN && robot.getInches() < 6) return;
-        if (robot.getIndexerServoPos() == 0) artifacts[0] = artifact;
-        else if (robot.getIndexerServoPos() == 0.5) artifacts[1] = artifact;
-        else if (robot.getIndexerServoPos() == 1) artifacts[2] = artifact;
+        double pos = robot.getIndexerServoPos();
+        if (pos == 0) artifacts[0] = artifact;
+        else if (pos == 0.5) artifacts[1] = artifact;
+        else if (pos == 1) artifacts[2] = artifact;
     }
 
     private Artifact getArtifactAtPos(double pos) {

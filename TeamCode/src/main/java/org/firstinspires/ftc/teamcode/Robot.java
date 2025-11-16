@@ -36,7 +36,7 @@ public class Robot {
     public Drivetrain drivetrain;
     public Follower follower;
     public DcMotorEx intakeMotor, launcherMotorA, launcherMotorB;
-    public Servo feederServoA, feederServoB;
+    private Servo feederServoA, feederServoB;
     private Servo indexerServo;
     public ColorSensor colorSensor;
     public DistanceSensor distanceSensor;
@@ -133,10 +133,9 @@ public class Robot {
         launcherMotorB.setPower(-0.16657);
     }
 
-
     public void pushArtifactToLaunch() {
         if (feederServoA == null) return;
-        feederServoA.setPosition(1);
+        feederServoA.setPosition(.95);
         feederServoB.setPosition(1);
     }
 

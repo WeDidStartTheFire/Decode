@@ -20,7 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 @Configurable
 public class RobotConstants {
-    static final ElapsedTime runtime = new ElapsedTime();
+    public static final ElapsedTime runtime = new ElapsedTime();
     static final double SMALL_WHEEL_DIAMETER = 3.77953;
     static final double WHEEL_DIAMETER_INCHES = SMALL_WHEEL_DIAMETER;
     static final double COUNTS_PER_MOTOR_REV = 537.6898395722;  // ((((1.0 + (46.0 / 17.0))) * (1.0 + (46.0 / 11.0))) * 28.0);
@@ -83,6 +83,39 @@ public class RobotConstants {
                 default:
                     return super.toString();
             }
+        }
+
+        public Artifact getNthArtifact(int n) {
+            switch (this) {
+                case GPP:
+                    switch (n) {
+                        case 0:
+                            return Artifact.GREEN;
+                        case 1:
+                        case 2:
+                            return Artifact.PURPLE;
+                    }
+                    break;
+                case PGP:
+                    switch (n) {
+                        case 1:
+                            return Artifact.GREEN;
+                        case 0:
+                        case 2:
+                            return Artifact.PURPLE;
+                    }
+                    break;
+                case PPG:
+                    switch (n) {
+                        case 2:
+                            return Artifact.GREEN;
+                        case 1:
+                        case 0:
+                            return Artifact.PURPLE;
+                    }
+                    break;
+            }
+            return Artifact.UNKNOWN;
         }
     }
 

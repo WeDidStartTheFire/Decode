@@ -93,11 +93,7 @@ public class Utils {
      * @param pos Pose to save
      */
     public static void saveOdometryPosition(@NonNull Pose pos) {
-        File file = new File(Environment.getExternalStorageDirectory(), "odometryPosition.txt");
-        try (FileWriter writer = new FileWriter(file, false)) {
-            writer.write(pos.getX() + "," + pos.getY() + "," + pos.getHeading()); // Write the latest position
-        } catch (IOException ignored) {
-        }
+        RobotState.savedPose = pos;
     }
 
     /**
@@ -107,23 +103,7 @@ public class Utils {
      */
     @Nullable
     public static Pose loadOdometryPosition() {
-        File file = new File(Environment.getExternalStorageDirectory(), "odometryPosition.txt");
-        if (file.exists()) {
-            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                String line = reader.readLine();
-                if (line != null) {
-                    String[] values = line.split(",");
-                    double x = Double.parseDouble(values[0]); // X
-                    double y = Double.parseDouble(values[1]); // Y
-                    double h = Double.parseDouble(values[2]); // Heading
-                    boolean ignored = file.delete();
-                    return new Pose(x, y, h);
-                }
-            } catch (IOException e) {
-                return null;
-            }
-        }
-        return null;
+        return RobotState.savedPose;
     }
 
     @Deprecated

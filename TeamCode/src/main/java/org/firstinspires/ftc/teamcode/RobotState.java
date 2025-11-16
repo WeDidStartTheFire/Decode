@@ -20,6 +20,7 @@ public class RobotState {
     public static volatile boolean holding = false;
     public static boolean validStartPose;
     public static Pose pose;
+    public static Pose savedPose;
     public static Vector vel;
     public static boolean aiming;
     public static float launcherRPM = DEFAULT_LAUNCHER_RPM;

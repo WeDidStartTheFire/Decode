@@ -385,9 +385,8 @@ public class TeleOpFunctions {
     }
 
     public void intakeLogic() {
-        if (robot.intakeMotor == null) return;
         if (gamepad1.right_trigger > 0.5 && rotateIndexerTo(Artifact.UNKNOWN))
-            robot.intakeMotor.setPower(gamepad1.right_trigger);
+            robot.powerIntake(gamepad1.right_trigger);
     }
 
     public void launcherLogic() {

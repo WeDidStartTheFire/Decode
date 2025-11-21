@@ -35,7 +35,8 @@ import pedroPathing.constants.Constants;
 public class Robot {
     public Drivetrain drivetrain;
     public Follower follower;
-    public DcMotorEx intakeMotor, launcherMotorA, launcherMotorB;
+    private DcMotorEx intakeMotor;
+    public DcMotorEx launcherMotorA, launcherMotorB;
     private Servo feederServoA, feederServoB;
     private Servo indexerServo;
     public ColorSensor colorSensor;
@@ -134,6 +135,11 @@ public class Robot {
         if (launcherMotorA == null) return;
         launcherMotorA.setPower(-0.16657);
         launcherMotorB.setPower(-0.16657);
+    }
+
+    public void powerIntake(double power) {
+        if (intakeMotor == null) return;
+        intakeMotor.setPower(power);
     }
 
     public void pushArtifactToLaunch() {

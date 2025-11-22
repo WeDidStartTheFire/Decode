@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
@@ -63,6 +64,7 @@ public class Auto_BlueFar extends OpMode {
     @Override
     public void init() {
         RobotState.auto = true;
+        RobotState.color = RobotConstants.Color.BLUE;
         robot = new Robot(hardwareMap, telemetry, true);
         robot.follower.setStartingPose(new Pose(63.500, 8.500, toRadians(90)));
         RobotState.motif = robot.getMotif();

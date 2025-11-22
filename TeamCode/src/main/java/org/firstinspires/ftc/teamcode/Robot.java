@@ -151,8 +151,8 @@ public class Robot {
 
     public void intakeLaunchMotors() {
         if (launcherMotorA == null) return;
-        launcherMotorA.setPower(-0.16657);
-        launcherMotorB.setPower(-0.16657);
+        launcherMotorA.setPower(-0.25);
+        launcherMotorB.setPower(-0.25);
     }
 
     public void powerIntake(double power) {
@@ -205,6 +205,7 @@ public class Robot {
     }
 
     public int getTagID() {
+        if (limelight == null) return -1;
         LLResult result = limelight.getLatestResult();
 
         if (result == null || !result.isValid()) return -1;

@@ -17,8 +17,8 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 
-@Autonomous(name = "Shooting Test", group = "Test", preselectTeleOp = "Blue Main")
-public class Auto_NoMovementTest extends OpMode {
+@Autonomous(name = "Indexer and Feeder Test", group = "Test", preselectTeleOp = "Blue Main")
+public class Auto_IndexerTest extends OpMode {
     private Robot robot;
 
     private PathChain path1, path2;
@@ -80,11 +80,11 @@ public class Auto_NoMovementTest extends OpMode {
             case FOLLOW_PATH_1:
                 robot.follower.holdPoint(path1.endPose());
                 robot.setIndexerServoPos(0);
-                robot.spinLaunchMotors();
+//                robot.spinLaunchMotors();
                 setState(State.HOLD_POINT);
                 break;
             case HOLD_POINT:
-                if (stateTimer.getElapsedTimeSeconds() > 0.5) {
+                if (stateTimer.getElapsedTimeSeconds() > 0.67) {
                     setState(State.PUSH_ARTIFACT);
                 }
                 break;

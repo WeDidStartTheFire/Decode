@@ -364,6 +364,9 @@ public class TeleOpFunctions {
         Artifact artifact = robot.getArtifact();
         tm.print("Color", artifact);
         tm.print("Distance", robot.getInches());
+        tm.print("Artifact 1", artifacts[0]);
+        tm.print("Artifact 2", artifacts[1]);
+        tm.print("Artifact 3", artifacts[2]);
         if (runtime.seconds() - indexerMoveStartTime < 0.67) return;
         if (artifact == Artifact.UNKNOWN && robot.getInches() < 6) return;
         if (artifact == Artifact.PURPLE && robot.getInches() == 6) artifact = Artifact.UNKNOWN;
@@ -385,8 +388,9 @@ public class TeleOpFunctions {
     }
 
     public void intakeLogic() {
-        if (gamepad1.right_trigger > 0.5 && rotateIndexerTo(Artifact.UNKNOWN))
-            robot.powerIntake(gamepad1.right_trigger);
+        if (gamepad1.right_trigger > 0.3 && rotateIndexerTo(Artifact.UNKNOWN))
+            robot.powerIntake(-gamepad1.right_trigger);
+        else robot.powerIntake(0);
     }
 
     public void launcherLogic() {

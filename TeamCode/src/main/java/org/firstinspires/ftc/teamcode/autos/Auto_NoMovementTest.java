@@ -17,8 +17,8 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 
-@Autonomous(name = "Blue Far", group = "!!!Primary", preselectTeleOp = "Blue Main")
-public class Auto_BlueFar extends OpMode {
+@Autonomous(name = "Shooting Test", group = "Test", preselectTeleOp = "Blue Main")
+public class Auto_NoMovementTest extends OpMode {
     private Robot robot;
 
     private PathChain path1, path2;
@@ -38,25 +38,19 @@ public class Auto_BlueFar extends OpMode {
     }
 
     private void buildPaths() {
-        path1 = robot.follower
-                .pathBuilder()
+        path1 = robot.follower.pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(63.500, 8.500), new Pose(60.000, 20.000))
+                        // Path 1
+                        new BezierLine(new Pose(17.271, 121.115), new Pose(58.291, 84.630))
                 )
-                .setLinearHeadingInterpolation(
-                        toRadians(90),
-                        toRadians(112.4794343971)
-                )
+                .setLinearHeadingInterpolation(toRadians(143), toRadians(132.0229330904))
                 .build();
-        path2 = robot.follower
-                .pathBuilder()
+        path2 = robot.follower.pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(60.000, 20.000), new Pose(40.500, 35.000))
+                        // Path 2
+                        new BezierLine(new Pose(58.291, 84.630), new Pose(40.804, 60.018))
                 )
-                .setLinearHeadingInterpolation(
-                        toRadians(112.4794343971),
-                        toRadians(180)
-                )
+                .setLinearHeadingInterpolation(toRadians(132.0229330904), toRadians(180))
                 .build();
     }
 
@@ -64,10 +58,9 @@ public class Auto_BlueFar extends OpMode {
     public void init() {
         RobotState.auto = true;
         robot = new Robot(hardwareMap, telemetry, true);
-        robot.follower.setStartingPose(new Pose(63.500, 8.500, toRadians(90)));
-        RobotState.motif = robot.getMotif();
-        tm = robot.drivetrain.tm;
+        robot.follower.setStartingPose(new Pose(58.291, 84.630, toRadians(132.0229330904)));
         buildPaths();
+        tm = robot.drivetrain.tm;
         setState(State.FOLLOW_PATH_1);
     }
 
@@ -83,17 +76,15 @@ public class Auto_BlueFar extends OpMode {
         vel = robot.follower.getVelocity();
         tm.print("Path State", state);
         tm.print("Indexer Pos", robot.getIndexerServoPos());
-        tm.print("Pose", pose);
         switch (state) {
             case FOLLOW_PATH_1:
+                robot.follower.holdPoint(path1.endPose());
                 robot.setIndexerServoPos(0);
-                robot.follower.followPath(path1);
                 robot.spinLaunchMotors();
                 setState(State.HOLD_POINT);
                 break;
             case HOLD_POINT:
-                if (!robot.follower.isBusy()) {
-                    robot.follower.holdPoint(path1.endPose());
+                if (stateTimer.getElapsedTimeSeconds() > 0.5) {
                     setState(State.PUSH_ARTIFACT);
                 }
                 break;
@@ -114,8 +105,8 @@ public class Auto_BlueFar extends OpMode {
                     double pos = robot.getIndexerServoPos();
                     if (pos == 1 || pos == -1) {
                         robot.stopLaunchMotors();
-                        robot.follower.followPath(path2);
-                        setState(State.FINISH_PATH_2);
+//                        robot.follower.followPath(path2);
+                        setState(State.FINISHED);
                     } else {
                         if (pos == 0) pos = 0.48;
                         else pos = 1;
@@ -138,6 +129,7 @@ public class Auto_BlueFar extends OpMode {
     public void stop() {
         robot.follower.update();
         robot.follower.breakFollowing();
-        saveOdometryPosition(robot.follower.getPose());
+        pose = robot.follower.getPose();
+        saveOdometryPosition(pose);
     }
 }

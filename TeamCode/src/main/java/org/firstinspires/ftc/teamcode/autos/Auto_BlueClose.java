@@ -110,7 +110,7 @@ public class Auto_BlueClose extends OpMode {
                         robot.follower.followPath(path2);
                         setState(State.FINISH_PATH_2);
                     } else {
-                        if (pos == 0) pos = 0.49;
+                        if (pos == 0) pos = 0.48;
                         else pos = 1;
                         robot.setIndexerServoPos(pos);
                         setState(State.PUSH_ARTIFACT);

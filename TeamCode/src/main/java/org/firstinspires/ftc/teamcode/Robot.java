@@ -17,6 +17,7 @@ import com.pedropathing.follower.Follower;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -39,6 +40,7 @@ public class Robot {
     public DcMotorEx launcherMotorA, launcherMotorB;
     private Servo feederServoA, feederServoB;
     private Servo indexerServo;
+    private CRServo intakeServoA, intakeServoB, intakeServoC;
     public ColorSensor colorSensor;
     public DistanceSensor distanceSensor;
     public Limelight3A limelight;
@@ -77,9 +79,25 @@ public class Robot {
             tm.except("At least one feeder servo not connected");
         }
         try {
-            indexerServo = hardwareMap.get(Servo.class, "indexerServo");
+            indexerServo = hardwareMap.get(Servo.class, "indexerServo"); // Expansion Hub 2
         } catch (IllegalArgumentException e) {
             tm.except("indexerServo not connected");
+        }
+        try {
+            intakeServoA = hardwareMap.get(CRServo.class, "intakeServoA"); // Expansion Hub 3
+            intakeServoA.setDirection(DcMotorSimple.Direction.REVERSE);
+        } catch (IllegalArgumentException e) {
+            tm.except("intakeServoA not connected");
+        }
+        try {
+            intakeServoB = hardwareMap.get(CRServo.class, "intakeServoB"); // Expansion Hub 4
+        } catch (IllegalArgumentException e) {
+            tm.except("intakeServoB not connected");
+        }
+        try {
+            intakeServoC = hardwareMap.get(CRServo.class, "intakeServoC"); // Expansion Hub 5
+        } catch (IllegalArgumentException e) {
+            tm.except("intakeServoC not connected");
         }
 
         // Other
@@ -138,8 +156,10 @@ public class Robot {
     }
 
     public void powerIntake(double power) {
-        if (intakeMotor == null) return;
-        intakeMotor.setPower(power);
+        if (intakeMotor != null) intakeMotor.setPower(power);
+        if (intakeServoA != null) intakeServoA.setPower(power);
+        if (intakeServoB != null) intakeServoB.setPower(power);
+        if (intakeServoC != null) intakeServoC.setPower(power);
     }
 
     public void pushArtifactToLaunch() {

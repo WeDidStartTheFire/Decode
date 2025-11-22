@@ -130,7 +130,7 @@ public class TeleOpFunctions {
                     holding = false;
                     follower.startTeleopDrive();
                 }
-            } else if (runtime.seconds() - lastDriveInputTime > 0.5) holdCurrentPose();
+            } else if (runtime.seconds() - lastDriveInputTime > 0.5 && !holding) holdCurrentPose();
 
             if (!follower.isBusy() && following) holdCurrentPose();
 
@@ -219,10 +219,9 @@ public class TeleOpFunctions {
         if (gamepad1.y) { // Nothing
             following = true;
             follower.followPath(getShortestPath(pose));
-        } else if (gamepad1.a) { // Hold pos
-            holding = true;
-            follower.holdPoint(pose);
-        } else if (gamepad1.bWasPressed()) aiming = !aiming; //aim robot at goal (not very well tho)
+        } else if (gamepad1.aWasPressed()) { // Hold pos
+            holdCurrentPose();
+        } else if (gamepad1.bWasPressed()) aiming = !aiming; // Aim robot at goal
     }
 
     /**

@@ -41,6 +41,8 @@ public class TeleOp_TestFieldCentric_No_Pedro extends OpMode {
     public void loop() {
         teleop.update();
         teleop.drivetrainLogic(true, false);
+        teleop.colorSensorLogic();
+        teleop.autoLaunchLogic();
         teleop.intakeLogic();
         teleop.feederLogic();
         teleop.indexerLogic();

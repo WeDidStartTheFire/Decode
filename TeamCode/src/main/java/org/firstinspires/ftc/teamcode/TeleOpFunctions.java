@@ -334,6 +334,7 @@ public class TeleOpFunctions {
         }
         if (launching) {
             robot.spinLaunchMotors();
+            robot.pushArtifactToLaunch();
             if (getCurrentArtifact() == Artifact.UNKNOWN) {
                 launchQueue.remove(0);
                 feederRetractStartTime = runtime.seconds();
@@ -354,7 +355,7 @@ public class TeleOpFunctions {
         }
         if (launchQueue.isEmpty()) return;
         robot.spinLaunchMotors();
-        if (robot.launchMotorsToSpeed() && runtime.seconds() - indexerMoveStartTime > 0.67) {
+        if (robot.launchMotorsToSpeed() && runtime.seconds() - indexerMoveStartTime > 1.1) {
             robot.pushArtifactToLaunch();
             launching = true;
         }
@@ -406,6 +407,7 @@ public class TeleOpFunctions {
         else if (launchQueue.isEmpty() && !launching) {
             robot.retractFeeder();
             robot.stopLaunchMotors();
+            tm.print("Retracting feeder and stopping motors");
         }
         if (gamepad2.left_trigger >= 0.5) robot.intakeLaunchMotors();
         tm.print("Motor A RPM", robot.launcherMotorA.getVelocity(AngleUnit.DEGREES) / 360 * 60);
@@ -414,6 +416,7 @@ public class TeleOpFunctions {
         tm.print("Motor B Vel", robot.launcherMotorB.getVelocity());
         tm.print("Goal", robot.getLaunchMotorVel());
         tm.print("Motor Velocity", motorVel);
+        tm.print("To Speed", robot.launchMotorsToSpeed());
     }
 
     public void feederLogic() {

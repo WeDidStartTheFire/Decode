@@ -41,6 +41,8 @@ public class TeleOp_AlwaysFieldCentric extends OpMode {
         teleop.update();
         teleop.autoMovementLogic(validStartPose);
         teleop.drivetrainLogic(true);
+        teleop.colorSensorLogic();
+        teleop.autoLaunchLogic();
         teleop.intakeLogic();
         teleop.feederLogic();
         teleop.indexerLogic();

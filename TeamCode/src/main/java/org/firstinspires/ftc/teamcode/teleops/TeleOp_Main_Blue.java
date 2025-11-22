@@ -45,6 +45,7 @@ public class TeleOp_Main_Blue extends OpMode {
         teleop.autoMovementLogic(validStartPose);
         teleop.drivetrainLogic(validStartPose);
         teleop.colorSensorLogic();
+        teleop.autoLaunchLogic();
         teleop.intakeLogic();
         teleop.feederLogic();
         teleop.indexerLogic();

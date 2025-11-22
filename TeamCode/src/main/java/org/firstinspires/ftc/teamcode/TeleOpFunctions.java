@@ -161,7 +161,8 @@ public class TeleOpFunctions {
         }
 
         double axial, lateral, yaw, xMove, yMove;
-        double speedMultiplier = gamepad1.left_bumper ? speeds[0] : gamepad1.right_bumper ? speeds[2] : speeds[1];
+        double speedMultiplier = gamepad1.left_bumper ? speeds[2] :
+                lerp(gamepad1.left_trigger, speeds[1], speeds[0]);
 
         if (fieldCentric) {
             double angle = PI / 2 + (useOdometry ? -follower.getPose().getHeading() :
@@ -388,6 +389,7 @@ public class TeleOpFunctions {
 
     public void intakeLogic() {
         if (gamepad1.right_trigger > 0.3) robot.powerIntake(-gamepad1.right_trigger);
+        else if (gamepad1.right_bumper) robot.powerIntake(1);
         else robot.powerIntake(0);
     }
 

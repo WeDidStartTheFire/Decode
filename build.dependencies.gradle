@@ -20,13 +20,13 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.1'
 
     // Pedro Pathing
-    implementation 'com.pedropathing:ftc:2.0.3'
+    implementation 'com.pedropathing:ftc:2.0.4'
     implementation 'com.pedropathing:telemetry:1.0.0'
-    implementation 'com.bylazar:fullpanels:1.0.6'
+    implementation 'com.bylazar:fullpanels:1.0.10'
 
     // Jackson JSON parser; used in LimelightHelpers
-    implementation "com.fasterxml.jackson.core:jackson-core:2.20.0"
-    implementation "com.fasterxml.jackson.core:jackson-databind:2.20.0"
+    implementation "com.fasterxml.jackson.core:jackson-core:2.20.1"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.20.1"
     implementation "com.fasterxml.jackson.core:jackson-annotations:2.20"
 
     // FTCLib; used in LimelightHelpers

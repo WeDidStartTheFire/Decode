@@ -90,7 +90,7 @@ public class Auto_BlueFar extends OpMode {
             case FOLLOW_PATH_1:
                 robot.setIndexerServoPos(0);
                 robot.follower.followPath(path1);
-                robot.spinLaunchMotors();
+                robot.spinLaunchMotorsFar();
                 setState(State.HOLD_POINT);
                 break;
             case HOLD_POINT:

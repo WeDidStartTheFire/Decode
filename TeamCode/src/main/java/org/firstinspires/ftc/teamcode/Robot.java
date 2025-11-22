@@ -145,9 +145,20 @@ public class Robot {
         return launcherRPM / TICKS_PER_REVOLUTION;
     }
 
+    public double getFarLaunchMotorVel() {
+        return launcherRPM / TICKS_PER_REVOLUTION * 1.3;
+    }
+
     public void spinLaunchMotors() {
         if (launcherMotorA == null) return;
         double motorVel = getLaunchMotorVel();
+        launcherMotorA.setVelocity(motorVel);
+        launcherMotorB.setVelocity(motorVel);
+    }
+
+    public void spinLaunchMotorsFar() {
+        if (launcherMotorA == null) return;
+        double motorVel = getFarLaunchMotorVel();
         launcherMotorA.setVelocity(motorVel);
         launcherMotorB.setVelocity(motorVel);
     }

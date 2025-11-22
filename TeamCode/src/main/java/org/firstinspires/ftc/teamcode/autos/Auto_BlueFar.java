@@ -94,13 +94,13 @@ public class Auto_BlueFar extends OpMode {
                 setState(State.HOLD_POINT);
                 break;
             case HOLD_POINT:
-                if (!robot.follower.isBusy()) {
+                if (!robot.follower.isBusy() && stateTimer.getElapsedTimeSeconds() > 1.267) {
                     robot.follower.holdPoint(path1.endPose());
                     setState(State.PUSH_ARTIFACT);
                 }
                 break;
             case PUSH_ARTIFACT:
-                if (stateTimer.getElapsedTimeSeconds() > .67) {
+                if (stateTimer.getElapsedTimeSeconds() > 1) {
                     robot.pushArtifactToLaunch();
                     setState(State.RETRACT_FEEDER);
                 }

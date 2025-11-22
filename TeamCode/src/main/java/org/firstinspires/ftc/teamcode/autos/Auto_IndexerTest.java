@@ -84,7 +84,7 @@ public class Auto_IndexerTest extends OpMode {
                 setState(State.HOLD_POINT);
                 break;
             case HOLD_POINT:
-                if (stateTimer.getElapsedTimeSeconds() > 0.67) {
+                if (stateTimer.getElapsedTimeSeconds() > 1.267) {
                     setState(State.PUSH_ARTIFACT);
                 }
                 break;

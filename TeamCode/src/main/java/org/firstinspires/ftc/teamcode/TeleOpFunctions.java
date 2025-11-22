@@ -388,8 +388,7 @@ public class TeleOpFunctions {
     }
 
     public void intakeLogic() {
-        if (gamepad1.right_trigger > 0.3 && rotateIndexerTo(Artifact.UNKNOWN))
-            robot.powerIntake(-gamepad1.right_trigger);
+        if (gamepad1.right_trigger > 0.3) robot.powerIntake(-gamepad1.right_trigger);
         else robot.powerIntake(0);
     }
 
@@ -407,7 +406,7 @@ public class TeleOpFunctions {
             robot.retractFeeder();
             robot.stopLaunchMotors();
         }
-        if (gamepad2.left_trigger >= 0.5 && rotateIndexerTo(Artifact.UNKNOWN)) robot.intakeLaunchMotors();
+        if (gamepad2.left_trigger >= 0.5) robot.intakeLaunchMotors();
         tm.print("Motor A RPM", robot.launcherMotorA.getVelocity(AngleUnit.DEGREES) / 360 * 60);
         tm.print("Motor B RPM", robot.launcherMotorB.getVelocity(AngleUnit.DEGREES) / 360 * 60);
         tm.print("Motor A Vel", robot.launcherMotorA.getVelocity());

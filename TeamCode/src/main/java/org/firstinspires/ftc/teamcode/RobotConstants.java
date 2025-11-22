@@ -38,6 +38,8 @@ public class RobotConstants {
 
     static final double DEFAULT_VELOCITY = 2000;
 
+    public static final double MIDDLE_INDEXER_POS = 0.44;
+
     public static final double[] speeds = {0.2, 0.6, 1};
 
     static final int TICKS_PER_REVOLUTION = 28;

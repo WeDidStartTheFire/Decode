@@ -409,7 +409,7 @@ public class TeleOpFunctions {
             robot.stopLaunchMotors();
             tm.print("Retracting feeder and stopping motors");
         }
-        if (gamepad2.left_trigger >= 0.5) robot.intakeLaunchMotors();
+        if (gamepad2.left_trigger >= 0.3) robot.intakeLaunchMotors(gamepad2.left_trigger);
         tm.print("Motor A RPM", robot.launcherMotorA.getVelocity(AngleUnit.DEGREES) / 360 * 60);
         tm.print("Motor B RPM", robot.launcherMotorB.getVelocity(AngleUnit.DEGREES) / 360 * 60);
         tm.print("Motor A Vel", robot.launcherMotorA.getVelocity());

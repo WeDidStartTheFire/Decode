@@ -4,12 +4,14 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_GOAL_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_ANGLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_HEIGHT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Motif;
 import static org.firstinspires.ftc.teamcode.RobotConstants.RED_GOAL_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TICKS_PER_REVOLUTION;
 import static org.firstinspires.ftc.teamcode.RobotState.launcherRPM;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
+import static java.lang.Math.abs;
 
 import androidx.annotation.Nullable;
 
@@ -125,13 +127,13 @@ public class Robot {
     }
 
     public void setIndexerServoPos(double pos) {
-        if (pos == .5) pos = .48;
+        if (pos == .5) pos = MIDDLE_INDEXER_POS;
         if (indexerServo != null) indexerServo.setPosition(pos);
     }
 
     public double getIndexerServoPos() {
         if (indexerServo == null) return -1;
-        return indexerServo.getPosition() == .48 ? .5 : indexerServo.getPosition();
+        return abs(indexerServo.getPosition() - MIDDLE_INDEXER_POS) < 1e-4 ? .5 : indexerServo.getPosition();
     }
 
     public boolean isIndexerServoConnected() {
@@ -163,10 +165,10 @@ public class Robot {
         launcherMotorB.setVelocity(motorVel);
     }
 
-    public void intakeLaunchMotors() {
+    public void intakeLaunchMotors(double percent) {
         if (launcherMotorA == null) return;
-        launcherMotorA.setPower(-0.25);
-        launcherMotorB.setPower(-0.25);
+        launcherMotorA.setPower(-percent * .4);
+        launcherMotorB.setPower(-percent * .4);
     }
 
     public void powerIntake(double power) {

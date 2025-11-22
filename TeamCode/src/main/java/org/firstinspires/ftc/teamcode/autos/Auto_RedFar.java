@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.autos;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
@@ -117,7 +118,7 @@ public class Auto_RedFar extends OpMode {
                         robot.follower.followPath(path2);
                         setState(State.FINISH_PATH_2);
                     } else {
-                        if (pos == 0) pos = 0.48;
+                        if (pos == 0) pos = MIDDLE_INDEXER_POS;
                         else pos = 1;
                         robot.setIndexerServoPos(pos);
                         setState(State.PUSH_ARTIFACT);

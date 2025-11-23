@@ -8,6 +8,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_GOAL_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Color.RED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_ANGLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_HEIGHT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.RED_GOAL_POSE;
@@ -42,6 +43,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -49,6 +51,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
+import java.util.List;
 
 public class TeleOpFunctions {
     DcMotorEx lf, lb, rf, rb;
@@ -151,7 +154,23 @@ public class TeleOpFunctions {
                     tm.print("error deg", toDegrees(headingPIDController.getError()));
                     tm.print("angVel deg", toDegrees(headingPIDController.getErrorDerivative()));
                     tm.print("turn", turn);
+
                 } else turn = -gamepad1.right_stick_x * speedMultiplier;
+
+                List<LLResultTypes.FiducialResult> fiducials = robot.getFiducials();
+                for (LLResultTypes.FiducialResult fiducial : fiducials) {
+
+                    if (color == RED && fiducial.getFiducialId() == 24 ||
+                            color == BLUE && fiducial.getFiducialId() == 20)  {
+                        double goalTx = robot.getTx();
+                        if (Double.isNaN(goalTx)) {
+                            continue;
+                        }
+                        double error = -goalTx;
+                        headingPIDController.updateError(error);
+                        turn = headingPIDController.run();
+                    }
+                }
             } else turn = -gamepad1.right_stick_x * speedMultiplier;
 
             follower.setTeleOpDrive(gamepad1.left_stick_y * speedMultiplier * (color == Color.RED ? -1 : 1),

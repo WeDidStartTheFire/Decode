@@ -34,7 +34,9 @@ import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 import static java.lang.Math.hypot;
+import static java.lang.Math.round;
 import static java.lang.Math.toDegrees;
+import static java.lang.Math.toRadians;
 
 import androidx.annotation.NonNull;
 
@@ -121,6 +123,9 @@ public class TeleOpFunctions {
      */
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
         if (usePedro) {
+            tm.print("Pose: (" + round(pose.getX() * 100) / 100 + ", " +
+                    round(pose.getY() * 100) / 100 + ", " +
+                    round(toDegrees(pose.getHeading()) * 100) / 100 + ")");
             double speedMultiplier = 1.5 * (gamepad1.left_bumper ? speeds[2] :
                     lerp(gamepad1.left_trigger, speeds[1], speeds[0]));
             speedMultiplier *= baseSpeedMultiplier;
@@ -143,6 +148,7 @@ public class TeleOpFunctions {
             Pose3D goalPose = color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE;
             tm.print("distance", hypot(pose.getX() - goalPose.getPosition().x,
                     pose.getY() - goalPose.getPosition().y));
+            tm.print("tx", robot.getTx());
             if (aiming && !holding) {
                 ProjectileSolver.LaunchSolution sol = getLaunchSolution();
                 if (sol != null) {
@@ -154,7 +160,6 @@ public class TeleOpFunctions {
                     tm.print("error deg", toDegrees(headingPIDController.getError()));
                     tm.print("angVel deg", toDegrees(headingPIDController.getErrorDerivative()));
                     tm.print("turn", turn);
-
                 } else turn = -gamepad1.right_stick_x * speedMultiplier;
 
                 List<LLResultTypes.FiducialResult> fiducials = robot.getFiducials();
@@ -162,13 +167,11 @@ public class TeleOpFunctions {
 
                     if (color == RED && fiducial.getFiducialId() == 24 ||
                             color == BLUE && fiducial.getFiducialId() == 20)  {
-                        double goalTx = robot.getTx();
-                        if (Double.isNaN(goalTx)) {
-                            continue;
-                        }
-                        double error = -goalTx;
+                        double error = -toRadians(robot.getTx());
+                        if (Double.isNaN(error)) continue;
                         headingPIDController.updateError(error);
                         turn = headingPIDController.run();
+                        tm.print("turn", turn);
                     }
                 }
             } else turn = -gamepad1.right_stick_x * speedMultiplier;

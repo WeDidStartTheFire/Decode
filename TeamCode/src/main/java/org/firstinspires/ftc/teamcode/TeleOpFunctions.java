@@ -8,7 +8,6 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_GOAL_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Color.RED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_ANGLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_HEIGHT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.RED_GOAL_POSE;
@@ -33,7 +32,6 @@ import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
-import static java.lang.Math.hypot;
 import static java.lang.Math.round;
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
@@ -52,8 +50,6 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-
-import java.util.List;
 
 public class TeleOpFunctions {
     DcMotorEx lf, lb, rf, rb;
@@ -142,13 +138,13 @@ public class TeleOpFunctions {
 
             if (!follower.isBusy() && following) holdCurrentPose();
 
-            double turn;
             aiming = aiming && abs(gamepad1.right_stick_x) <= .05;
             tm.print("aiming", RobotState.aiming);
             Pose3D goalPose = color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE;
-            tm.print("distance", hypot(pose.getX() - goalPose.getPosition().x,
-                    pose.getY() - goalPose.getPosition().y));
+            tm.print("distance", pose.distanceFrom(
+                    new Pose(goalPose.getPosition().x, goalPose.getPosition().y)));
             tm.print("tx", robot.getTx());
+            double turn = -gamepad1.right_stick_x * speedMultiplier;
             if (aiming && !holding) {
                 ProjectileSolver.LaunchSolution sol = getLaunchSolution();
                 if (sol != null) {
@@ -160,21 +156,16 @@ public class TeleOpFunctions {
                     tm.print("error deg", toDegrees(headingPIDController.getError()));
                     tm.print("angVel deg", toDegrees(headingPIDController.getErrorDerivative()));
                     tm.print("turn", turn);
-                } else turn = -gamepad1.right_stick_x * speedMultiplier;
-
-                List<LLResultTypes.FiducialResult> fiducials = robot.getFiducials();
-                for (LLResultTypes.FiducialResult fiducial : fiducials) {
-
-                    if (color == RED && fiducial.getFiducialId() == 24 ||
-                            color == BLUE && fiducial.getFiducialId() == 20)  {
-                        double error = -toRadians(robot.getTx());
-                        if (Double.isNaN(error)) continue;
-                        headingPIDController.updateError(error);
-                        turn = headingPIDController.run();
-                        tm.print("turn", turn);
-                    }
                 }
-            } else turn = -gamepad1.right_stick_x * speedMultiplier;
+
+                LLResultTypes.FiducialResult fiducial = robot.getGoalFiducial(color);
+                if (fiducial != null) {
+                    double error = -toRadians(fiducial.getTargetXDegrees());
+                    headingPIDController.updateError(error);
+                    turn = headingPIDController.run();
+                    tm.print("turn", turn);
+                }
+            }
 
             follower.setTeleOpDrive(gamepad1.left_stick_y * speedMultiplier * (color == Color.RED ? -1 : 1),
                     gamepad1.left_stick_x * speedMultiplier * (color == Color.RED ? -1 : 1), turn, !fieldCentric);

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_GOAL_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Color.RED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_ANGLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_HEIGHT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
@@ -216,6 +217,15 @@ public class Robot {
             }
         }
         return Motif.UNKNOWN;
+    }
+
+    public LLResultTypes.FiducialResult getGoalFiducial(RobotConstants.Color color) {
+        List<LLResultTypes.FiducialResult> fiducials = getFiducials();
+        for (LLResultTypes.FiducialResult fiducial : fiducials) {
+            if (color == RED && fiducial.getFiducialId() == 24 ||
+                    color == BLUE && fiducial.getFiducialId() == 20) return fiducial;
+        }
+        return null;
     }
 
     public List<LLResultTypes.FiducialResult> getFiducials() {

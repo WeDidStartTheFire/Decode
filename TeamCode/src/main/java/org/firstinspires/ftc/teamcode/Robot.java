@@ -229,6 +229,13 @@ public class Robot {
         return fiducials;
     }
 
+    public double getTx() {
+        if (limelight == null) return Double.NaN;
+        LLResult result = limelight.getLatestResult();
+
+        return result.getTx();
+    }
+
     @Nullable
     public Scalar getRGB() {
         if (colorSensor == null) return null;

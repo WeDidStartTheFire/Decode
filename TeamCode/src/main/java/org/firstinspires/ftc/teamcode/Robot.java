@@ -32,6 +32,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.opencv.core.Scalar;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import pedroPathing.constants.Constants;
@@ -43,7 +44,7 @@ public class Robot {
     public DcMotorEx launcherMotorA, launcherMotorB;
     private Servo feederServoA, feederServoB;
     private Servo indexerServo;
-    private CRServo intakeServoA, intakeServoB, intakeServoC;
+    private CRServo intakeServoA, intakeServoC;
     public ColorSensor colorSensor;
     public DistanceSensor distanceSensor;
     public Limelight3A limelight;
@@ -95,11 +96,6 @@ public class Robot {
             tm.except("intakeServoA not connected");
         }
         try {
-            intakeServoB = hardwareMap.get(CRServo.class, "intakeServoB"); // Expansion Hub 4
-        } catch (IllegalArgumentException e) {
-            tm.except("intakeServoB not connected");
-        }
-        try {
             intakeServoC = hardwareMap.get(CRServo.class, "intakeServoC"); // Expansion Hub 5
         } catch (IllegalArgumentException e) {
             tm.except("intakeServoC not connected");
@@ -148,7 +144,7 @@ public class Robot {
     }
 
     public double getFarLaunchMotorVel() {
-        return launcherRPM / TICKS_PER_REVOLUTION * 1.3;
+        return launcherRPM / TICKS_PER_REVOLUTION * 1.15;
     }
 
     public void spinLaunchMotors() {
@@ -174,7 +170,7 @@ public class Robot {
     public void powerIntake(double power) {
         if (intakeMotor != null) intakeMotor.setPower(power);
         if (intakeServoA != null) intakeServoA.setPower(power);
-        if (intakeServoB != null) intakeServoB.setPower(power);
+//        if (intakeServoB != null) intakeServoB.setPower(power);
         if (intakeServoC != null) intakeServoC.setPower(power);
     }
 
@@ -208,30 +204,29 @@ public class Robot {
      * @return Motif Enum, if it doesn't detect a valid ID, will return none.
      */
     public Motif getMotif() {
-        switch (getTagID()) {
-            case 21:
-                return Motif.GPP;
-            case 22:
-                return Motif.PGP;
-            case 23:
-                return Motif.PPG;
-            default:
-                return Motif.UNKNOWN;
+        List<LLResultTypes.FiducialResult> fiducials = getFiducials();
+        for (LLResultTypes.FiducialResult fiducial : fiducials) {
+            switch (fiducial.getFiducialId()) {
+                case 21:
+                    return Motif.GPP;
+                case 22:
+                    return Motif.PGP;
+                case 23:
+                    return Motif.PPG;
+            }
         }
+        return Motif.UNKNOWN;
     }
 
-    public int getTagID() {
-        if (limelight == null) return -1;
+    public List<LLResultTypes.FiducialResult> getFiducials() {
+        if (limelight == null) return new ArrayList<>();
         LLResult result = limelight.getLatestResult();
 
-        if (result == null || !result.isValid()) return -1;
+        if (result == null || !result.isValid()) return new ArrayList<>();
 
         List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
-        if (fiducials == null) return -1;
-
-        for (LLResultTypes.FiducialResult fiducial : fiducials) return fiducial.getFiducialId();
-
-        return -1;
+        if (fiducials == null) return new ArrayList<>();
+        return fiducials;
     }
 
     @Nullable

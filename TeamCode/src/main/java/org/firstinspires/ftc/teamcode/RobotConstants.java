@@ -57,7 +57,7 @@ public class RobotConstants {
     static final Pose3D BLUE_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 12, 136, 43, 0),
             new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
 
-    static final Pose[] ROBOT_POSITIONS = {};
+    static final Pose[] ROBOT_POSITIONS = {new Pose(41, 32, toRadians(180))};
 
     public enum Dir {
         LEFT, RIGHT, FORWARD, BACKWARD

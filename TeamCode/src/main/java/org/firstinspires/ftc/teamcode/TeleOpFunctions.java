@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
@@ -43,15 +42,12 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-
-import pedroPathing.localizers.LimelightHelpers;
 
 
 public class TeleOpFunctions {
@@ -64,7 +60,6 @@ public class TeleOpFunctions {
     double lastDriveInputTime = runtime.seconds();
     TelemetryUtils tm;
     PIDFController headingPIDController = new PIDFController(teleopHeadingPID);
-    Limelight3A limelight;
 
     public TeleOpFunctions(Robot robot, Gamepad gamepad1, Gamepad gamepad2) {
         this.robot = robot;
@@ -77,9 +72,6 @@ public class TeleOpFunctions {
         this.gamepad2 = gamepad2;
         follower = robot.follower;
         useOdometry = robot.drivetrain.useOdometry;
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(0);
-        limelight.start();
         tm = robot.drivetrain.tm;
     }
 

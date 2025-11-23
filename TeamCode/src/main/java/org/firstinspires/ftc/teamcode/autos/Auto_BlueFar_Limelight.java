@@ -103,7 +103,12 @@ public class Auto_BlueFar_Limelight extends OpMode {
         tm.print("Path State", state);
         tm.print("Indexer Pos", robot.getIndexerServoPos());
         tm.print("Pose", pose);
+        tm.print("Distance", robot.getInches());
+        tm.print("Artifact", robot.getArtifact());
         tm.print("Motif", motif);
+        tm.print("0", motif.getNthArtifact(0));
+        tm.print("1", motif.getNthArtifact(1));
+        tm.print("2", motif.getNthArtifact(2));
         switch (state) {
             case DETECT_MOTIF:
                 if (motif != RobotConstants.Motif.UNKNOWN) setState(State.FOLLOW_PATH_1);
@@ -141,7 +146,7 @@ public class Auto_BlueFar_Limelight extends OpMode {
                         setState(State.FINISH_PATH_2);
                         break;
                     }
-                    if (runtime.seconds() - indexerServoMoveTime < 0.5) break;
+                    if (runtime.seconds() - indexerServoMoveTime < 1.25) break;
                     Artifact desired = motif.getNthArtifact(numLaunched);
                     Artifact current = robot.getArtifact();
                     if (current == desired) {

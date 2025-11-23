@@ -289,10 +289,9 @@ public class TeleOpFunctions {
         else if (gamepad2.dpadRightWasPressed()) robot.setIndexerServoPos(RIGHT[idx]);
         else if (gamepad2.dpadUpWasPressed()) robot.setIndexerServoPos(UP[idx]);
         else if (gamepad2.dpadDownWasPressed()) robot.setIndexerServoPos(DOWN[idx]);
+        else if (gamepad2.yWasPressed()) rotateIndexerTo(Artifact.UNKNOWN);
         else return;
         indexerMoveStartTime = runtime.seconds();
-
-        if (gamepad2.yWasPressed()) rotateIndexerTo(Artifact.UNKNOWN);
     }
 
     private boolean rotateIndexerTo(Artifact artifact) {

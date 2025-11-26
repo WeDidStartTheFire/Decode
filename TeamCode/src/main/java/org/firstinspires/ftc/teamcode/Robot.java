@@ -28,6 +28,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -46,6 +47,7 @@ public class Robot {
     private Servo feederServoA, feederServoB;
     private Servo indexerServo;
     private CRServo intakeServoA, intakeServoC;
+    private TouchSensor touchSensorA, touchSensorB;
     public ColorSensor colorSensor;
     public DistanceSensor distanceSensor;
     public Limelight3A limelight;
@@ -102,6 +104,18 @@ public class Robot {
             tm.except("intakeServoC not connected");
         }
 
+        // Touch Sensors
+        try {
+            touchSensorA = hardwareMap.get(TouchSensor.class, "touchSensorA");
+        } catch (IllegalArgumentException e) {
+            tm.except("touchSensorA not connected");
+        }
+        try {
+            touchSensorB = hardwareMap.get(TouchSensor.class, "touchSensorB");
+        } catch (IllegalArgumentException e) {
+            tm.except("touchSensorB not connected");
+        }
+
         // Other
         try {
             colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
@@ -117,6 +131,11 @@ public class Robot {
         } catch (IllegalArgumentException e) {
             tm.except("limelight not connected");
         }
+    }
+
+    public boolean isFeederDown() {
+        return (touchSensorA == null || touchSensorA.isPressed()) &&
+                (touchSensorB == null || touchSensorB.isPressed());
     }
 
     private double ballVelToMotorVel(double ballVel) {

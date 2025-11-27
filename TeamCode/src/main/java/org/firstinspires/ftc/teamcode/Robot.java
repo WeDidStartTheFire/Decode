@@ -139,7 +139,7 @@ public class Robot {
     }
 
     private double ballVelToMotorVel(double ballVel) {
-        return ballVel;
+        return 3.88937 * ballVel + 607.76272;
     }
 
     public void setIndexerServoPos(double pos) {

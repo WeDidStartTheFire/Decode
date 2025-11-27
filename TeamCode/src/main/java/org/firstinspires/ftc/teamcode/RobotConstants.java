@@ -51,7 +51,7 @@ public class RobotConstants {
     static PIDFCoefficients teleopHeadingPID = new PIDFCoefficients(1, 0, .05, 0);
 
     static final double LAUNCHER_HEIGHT = 15.5;
-    static final double LAUNCHER_ANGLE = toRadians(40);
+    static final double LAUNCHER_ANGLE = toRadians(50);
     static final Pose3D RED_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 132, 136, 44, 0),
             new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
     static final Pose3D BLUE_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 12, 136, 44, 0),

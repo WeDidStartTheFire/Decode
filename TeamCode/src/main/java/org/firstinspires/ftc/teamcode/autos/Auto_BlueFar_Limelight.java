@@ -116,13 +116,12 @@ public class Auto_BlueFar_Limelight extends OpMode {
                 break;
             case FOLLOW_PATH_1:
                 robot.setIndexerServoPos(0);
-                robot.follower.followPath(path1);
+                robot.follower.followPath(path1, true);
                 robot.spinLaunchMotorsFar();
                 setState(State.HOLD_POINT);
                 break;
             case HOLD_POINT:
                 if (!robot.follower.isBusy()) {
-                    robot.follower.holdPoint(path1.endPose());
                     setState(State.PUSH_ARTIFACT);
                 }
                 break;
@@ -143,6 +142,7 @@ public class Auto_BlueFar_Limelight extends OpMode {
                     double pos = robot.getIndexerServoPos();
                     if (numLaunched == 3) {
                         robot.stopLaunchMotors();
+                        robot.follower.followPath(path2, true);
                         setState(State.FINISH_PATH_2);
                         break;
                     }
@@ -169,7 +169,6 @@ public class Auto_BlueFar_Limelight extends OpMode {
                 break;
             case FINISH_PATH_2:
                 if (!robot.follower.isBusy()) {
-                    robot.follower.holdPoint(path2.endPose());
                     saveOdometryPosition(robot.follower.getCurrentPath().endPose());
                     setState(State.FINISHED);
                 }

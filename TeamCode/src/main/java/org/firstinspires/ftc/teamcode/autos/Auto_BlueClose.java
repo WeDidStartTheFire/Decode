@@ -88,13 +88,12 @@ public class Auto_BlueClose extends OpMode {
         switch (state) {
             case FOLLOW_PATH_1:
                 robot.setIndexerServoPos(0);
-                robot.follower.followPath(path1);
+                robot.follower.followPath(path1, true);
                 robot.spinLaunchMotors();
                 setState(State.HOLD_POINT);
                 break;
             case HOLD_POINT:
                 if (!robot.follower.isBusy()) {
-                    robot.follower.holdPoint(path1.endPose());
                     setStateNoWait(State.PUSH_ARTIFACT);
                 }
                 break;
@@ -115,7 +114,7 @@ public class Auto_BlueClose extends OpMode {
                     double pos = robot.getIndexerServoPos();
                     if (pos == 1 || pos == -1) {
                         robot.stopLaunchMotors();
-                        robot.follower.followPath(path2);
+                        robot.follower.followPath(path2, true);
                         setState(State.FINISH_PATH_2);
                     } else {
                         if (pos == 0) pos = MIDDLE_INDEXER_POS;
@@ -127,7 +126,6 @@ public class Auto_BlueClose extends OpMode {
                 break;
             case FINISH_PATH_2:
                 if (!robot.follower.isBusy()) {
-                    robot.follower.holdPoint(path2.endPose());
                     saveOdometryPosition(robot.follower.getCurrentPath().endPose());
                     setState(State.FINISHED);
                 }

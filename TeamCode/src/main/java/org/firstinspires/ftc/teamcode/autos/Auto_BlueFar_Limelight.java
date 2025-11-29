@@ -25,7 +25,7 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import java.util.Arrays;
 
 
-@Autonomous(name = "Blue Far Limelight", group = "!!Secondary", preselectTeleOp = "Blue Main")
+@Autonomous(name = "🟦Blue🟦 Far Limelight", group = "!!Secondary", preselectTeleOp = "Blue Main")
 public class Auto_BlueFar_Limelight extends OpMode {
     private Robot robot;
 
@@ -83,6 +83,12 @@ public class Auto_BlueFar_Limelight extends OpMode {
         RobotState.motif = robot.getMotif();
         tm = robot.drivetrain.tm;
         buildPaths();
+        tm.print("🟦Blue🟦 Far Limelight Auto initialized");
+        tm.update();
+    }
+
+    @Override
+    public void start() {
         setState(State.DETECT_MOTIF);
     }
 

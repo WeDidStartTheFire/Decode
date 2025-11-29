@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
-@Autonomous(name = "Red Far", group = "!!!Primary", preselectTeleOp = "Red Main")
+@Autonomous(name = "🟥Red🟥 Far", group = "!!!Primary", preselectTeleOp = "Red Main")
 public class Auto_RedFar extends OpMode {
     private Robot robot;
 
@@ -69,6 +69,12 @@ public class Auto_RedFar extends OpMode {
         robot.follower.setStartingPose(new Pose(81.000, 8.500, toRadians(90)));
         tm = robot.drivetrain.tm;
         buildPaths();
+        tm.print("🟥Red🟥 Far Auto initialized");
+        tm.update();
+    }
+
+    @Override
+    public void start() {
         setState(State.FOLLOW_PATH_1);
     }
 

@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 
-@Autonomous(name = "Blue Far", group = "!!!Primary", preselectTeleOp = "Blue Main")
+@Autonomous(name = "🟦Blue🟦 Far", group = "!!!Primary", preselectTeleOp = "Blue Main")
 public class Auto_BlueFar extends OpMode {
     private Robot robot;
 
@@ -71,6 +71,12 @@ public class Auto_BlueFar extends OpMode {
         RobotState.motif = robot.getMotif();
         tm = robot.drivetrain.tm;
         buildPaths();
+        tm.print("🟦Blue🟦 Far Auto initialized");
+        tm.update();
+    }
+
+    @Override
+    public void start() {
         setState(State.FOLLOW_PATH_1);
     }
 

@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TeleOpFunctions;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
-@TeleOp(name = "Red Main", group = "Main")
+@TeleOp(name = "🟥Red🟥 Main", group = "Main")
 public class TeleOp_Main_Red extends OpMode {
     public TeleOpFunctions teleop;
     public Robot robot;
@@ -36,7 +36,7 @@ public class TeleOp_Main_Red extends OpMode {
         tm = robot.drivetrain.tm;
         if (!validStartPose) tm.print("⚠️WARNING⚠️", "Robot Centric driving will be used");
         else tm.print("Field Centric Driving", "✅");
-        tm.print("Color", "\uD83D\uDFE5\uD83D\uDFE5Red\uD83D\uDFE5\uD83D\uDFE5");
+        tm.print("Color", "🟥🟥Red🟥🟥");
     }
 
     @Override

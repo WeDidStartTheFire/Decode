@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 
-@Autonomous(name = "Blue Close", group = "!!!Primary", preselectTeleOp = "Blue Main")
+@Autonomous(name = "🟦Blue🟦 Close", group = "!!!Primary", preselectTeleOp = "Blue Main")
 public class Auto_BlueClose extends OpMode {
     private Robot robot;
 
@@ -64,6 +64,12 @@ public class Auto_BlueClose extends OpMode {
         robot.follower.setStartingPose(new Pose(17.271, 121.115, toRadians(143)));
         tm = robot.drivetrain.tm;
         buildPaths();
+        tm.print("🟦Blue🟦 Close Auto initialized");
+        tm.update();
+    }
+
+    @Override
+    public void start() {
         setState(State.FOLLOW_PATH_1);
     }
 

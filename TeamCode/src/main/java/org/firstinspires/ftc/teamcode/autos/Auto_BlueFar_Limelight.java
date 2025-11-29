@@ -139,7 +139,7 @@ public class Auto_BlueFar_Limelight extends OpMode {
                 }
                 break;
             case ROTATE_INDEXER:
-                if (stateTimer.getElapsedTimeSeconds() > 1) {
+                if (robot.isFeederDown()) {
                     double pos = robot.getIndexerServoPos();
                     if (numLaunched == 3) {
                         robot.stopLaunchMotors();

@@ -21,7 +21,6 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.teleopHeadingPID;
 import static org.firstinspires.ftc.teamcode.RobotState.aiming;
 import static org.firstinspires.ftc.teamcode.RobotState.artifacts;
 import static org.firstinspires.ftc.teamcode.RobotState.color;
-import static org.firstinspires.ftc.teamcode.RobotState.feederRetractStartTime;
 import static org.firstinspires.ftc.teamcode.RobotState.following;
 import static org.firstinspires.ftc.teamcode.RobotState.holding;
 import static org.firstinspires.ftc.teamcode.RobotState.indexerMoveStartTime;
@@ -351,14 +350,13 @@ public class TeleOpFunctions {
             robot.pushArtifactToLaunch();
             if (getCurrentArtifact() == Artifact.UNKNOWN) {
                 launchQueue.remove(0);
-                feederRetractStartTime = runtime.seconds();
                 robot.retractFeeder();
                 if (launchQueue.isEmpty()) robot.stopLaunchMotors();
                 launching = false;
             }
             return;
         }
-        if (runtime.seconds() - feederRetractStartTime < 0.5) return;
+        if (!robot.isFeederDown()) return;
         double pos = robot.getIndexerServoPos();
         while (!launchQueue.isEmpty() && getCurrentArtifact() != launchQueue.get(0)) {
             if (rotateIndexerTo(launchQueue.get(0))) {

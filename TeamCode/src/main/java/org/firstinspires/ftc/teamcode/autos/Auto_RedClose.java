@@ -105,7 +105,7 @@ public class Auto_RedClose extends OpMode {
                 }
                 break;
             case ROTATE_INDEXER:
-                if (stateTimer.getElapsedTimeSeconds() > 1) {
+                if (robot.isFeederDown()) {
                     double pos = robot.getIndexerServoPos();
                     if (pos == 1 || pos == -1) {
                         robot.stopLaunchMotors();

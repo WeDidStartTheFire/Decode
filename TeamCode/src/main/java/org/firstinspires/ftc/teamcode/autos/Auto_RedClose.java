@@ -31,11 +31,9 @@ public class Auto_RedClose extends OpMode {
     private enum State {
         FINISHED,
         FOLLOW_PATH_1,
-        HOLD_POINT,
         PUSH_ARTIFACT,
         RETRACT_FEEDER,
         ROTATE_INDEXER,
-        FINISH_PATH_2,
     }
 
     private void buildPaths() {
@@ -94,15 +92,10 @@ public class Auto_RedClose extends OpMode {
                 robot.setIndexerServoPos(0);
                 robot.follower.followPath(path1, true);
                 robot.spinLaunchMotors();
-                setState(State.HOLD_POINT);
-                break;
-            case HOLD_POINT:
-                if (!robot.follower.isBusy()) {
-                    setStateNoWait(State.PUSH_ARTIFACT);
-                }
+                setState(State.PUSH_ARTIFACT);
                 break;
             case PUSH_ARTIFACT:
-                if (stateTimer.getElapsedTimeSeconds() > 1) {
+                if (!robot.follower.isBusy() && stateTimer.getElapsedTimeSeconds() > 1) {
                     robot.pushArtifactToLaunch();
                     setState(State.RETRACT_FEEDER);
                 }
@@ -119,7 +112,7 @@ public class Auto_RedClose extends OpMode {
                     if (pos == 1 || pos == -1) {
                         robot.stopLaunchMotors();
                         robot.follower.followPath(path2, true);
-                        setState(State.FINISH_PATH_2);
+                        setState(State.FINISHED);
                     } else {
                         if (pos == 0) pos = MIDDLE_INDEXER_POS;
                         else pos = 1;
@@ -128,11 +121,8 @@ public class Auto_RedClose extends OpMode {
                     }
                 }
                 break;
-            case FINISH_PATH_2:
-                if (!robot.follower.isBusy()) {
-                    saveOdometryPosition(robot.follower.getCurrentPath().endPose());
-                    setState(State.FINISHED);
-                }
+            case FINISHED:
+                if (!robot.follower.isBusy()) saveOdometryPosition(pose);
                 break;
         }
     }

@@ -42,11 +42,9 @@ public class Auto_BlueFar_Limelight extends OpMode {
         FINISHED,
         DETECT_MOTIF,
         FOLLOW_PATH_1,
-        HOLD_POINT,
         PUSH_ARTIFACT,
         RETRACT_FEEDER,
         ROTATE_INDEXER,
-        FINISH_PATH_2,
     }
 
     private void buildPaths() {
@@ -124,15 +122,10 @@ public class Auto_BlueFar_Limelight extends OpMode {
                 robot.setIndexerServoPos(0);
                 robot.follower.followPath(path1, true);
                 robot.spinLaunchMotorsFar();
-                setState(State.HOLD_POINT);
-                break;
-            case HOLD_POINT:
-                if (!robot.follower.isBusy()) {
-                    setState(State.PUSH_ARTIFACT);
-                }
+                setState(State.PUSH_ARTIFACT);
                 break;
             case PUSH_ARTIFACT:
-                if (stateTimer.getElapsedTimeSeconds() > .67) {
+                if (!robot.follower.isBusy() && stateTimer.getElapsedTimeSeconds() > .67) {
                     robot.pushArtifactToLaunch();
                     setState(State.RETRACT_FEEDER);
                 }
@@ -149,7 +142,7 @@ public class Auto_BlueFar_Limelight extends OpMode {
                     if (numLaunched == 3) {
                         robot.stopLaunchMotors();
                         robot.follower.followPath(path2, true);
-                        setState(State.FINISH_PATH_2);
+                        setState(State.FINISHED);
                         break;
                     }
                     if (runtime.seconds() - indexerServoMoveTime < 1.25) break;
@@ -173,11 +166,8 @@ public class Auto_BlueFar_Limelight extends OpMode {
                     indexerServoMoveTime = runtime.seconds();
                 }
                 break;
-            case FINISH_PATH_2:
-                if (!robot.follower.isBusy()) {
-                    saveOdometryPosition(robot.follower.getCurrentPath().endPose());
-                    setState(State.FINISHED);
-                }
+            case FINISHED:
+                if (!robot.follower.isBusy()) saveOdometryPosition(pose);
                 break;
         }
     }

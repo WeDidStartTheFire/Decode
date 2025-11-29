@@ -159,8 +159,8 @@ public class Robot {
     public double getLaunchMotorVel() {
         ProjectileSolver.LaunchSolution sol = ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT,
                 vel, RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
-        double ignore = sol != null ? ballVelToMotorVel(sol.w) : 0;
-        return launcherRPM / TICKS_PER_REVOLUTION;
+        return sol != null ? ballVelToMotorVel(sol.w) : 0;
+//        return launcherRPM / TICKS_PER_REVOLUTION;
     }
 
     public double getFarLaunchMotorVel() {

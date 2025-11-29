@@ -67,8 +67,12 @@ public class Auto_RedClose extends OpMode {
     }
 
     private void setState(State state) {
-        this.state = state;
+        setStateNoWait(state);
         this.stateTimer.resetTimer();
+    }
+
+    private void setStateNoWait(State state) {
+        this.state = state;
     }
 
     @Override
@@ -87,9 +91,9 @@ public class Auto_RedClose extends OpMode {
                 setState(State.HOLD_POINT);
                 break;
             case HOLD_POINT:
-                if (!robot.follower.isBusy() && stateTimer.getElapsedTimeSeconds() > 1.267) {
+                if (!robot.follower.isBusy()) {
                     robot.follower.holdPoint(path1.endPose());
-                    setState(State.PUSH_ARTIFACT);
+                    setStateNoWait(State.PUSH_ARTIFACT);
                 }
                 break;
             case PUSH_ARTIFACT:

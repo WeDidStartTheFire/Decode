@@ -91,7 +91,7 @@ public class Auto_BlueFar_Limelight extends OpMode {
     }
 
     private void setState(State state) {
-        this.state = state;
+        setStateNoWait(state);
         this.stateTimer.resetTimer();
     }
 

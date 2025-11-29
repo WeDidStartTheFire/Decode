@@ -375,14 +375,14 @@ public class TeleOpFunctions {
 
     public void colorSensorLogic() {
         Artifact artifact = robot.getArtifact();
-        tm.print("Color", artifact);
+        tm.print("Color", robot.getColor());
+        tm.print("Artifact", robot.getArtifact());
         tm.print("Distance", robot.getInches());
         tm.print("Artifact 1", artifacts[0]);
         tm.print("Artifact 2", artifacts[1]);
         tm.print("Artifact 3", artifacts[2]);
         if (runtime.seconds() - indexerMoveStartTime < 0.67) return;
         if (artifact == Artifact.UNKNOWN && robot.getInches() < 6) return;
-        if (artifact == Artifact.PURPLE && robot.getInches() == 6) artifact = Artifact.UNKNOWN;
         double pos = robot.getIndexerServoPos();
         if (pos == 0) artifacts[0] = artifact;
         else if (.475 <= pos && pos <= .505) artifacts[1] = artifact;

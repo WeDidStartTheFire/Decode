@@ -1,6 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.GREEN;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.PURPLE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_GOAL_POSE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Color;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.RED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_ANGLE;
@@ -238,7 +243,7 @@ public class Robot {
         return Motif.UNKNOWN;
     }
 
-    public LLResultTypes.FiducialResult getGoalFiducial(RobotConstants.Color color) {
+    public LLResultTypes.FiducialResult getGoalFiducial(Color color) {
         List<LLResultTypes.FiducialResult> fiducials = getFiducials();
         for (LLResultTypes.FiducialResult fiducial : fiducials) {
             if (color == RED && fiducial.getFiducialId() == 24 ||
@@ -279,11 +284,16 @@ public class Robot {
         return distanceSensor.getDistance(DistanceUnit.INCH);
     }
 
-    public RobotConstants.Artifact getArtifact() {
+    public Artifact getColor() {
         Scalar color = getRGB();
-        if (color == null) return RobotConstants.Artifact.UNKNOWN;
-        if (ColorRange.ARTIFACT_GREEN.contains(color)) return RobotConstants.Artifact.GREEN;
-        if (ColorRange.ARTIFACT_PURPLE.contains(color)) return RobotConstants.Artifact.PURPLE;
-        return RobotConstants.Artifact.UNKNOWN;
+        if (color == null) return UNKNOWN;
+        if (ColorRange.ARTIFACT_GREEN.contains(color)) return GREEN;
+        if (ColorRange.ARTIFACT_PURPLE.contains(color)) return PURPLE;
+        return UNKNOWN;
+    }
+
+    public Artifact getArtifact() {
+        Artifact color = getColor();
+        return color == PURPLE && getInches() == 6 ? UNKNOWN : color;
     }
 }

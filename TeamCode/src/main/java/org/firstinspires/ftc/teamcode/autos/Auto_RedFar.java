@@ -105,7 +105,7 @@ public class Auto_RedFar extends OpMode {
                 }
                 break;
             case RETRACT_FEEDER:
-                if (stateTimer.getElapsedTimeSeconds() > .67) {
+                if (robot.getArtifact() == RobotConstants.Artifact.UNKNOWN) {
                     robot.retractFeeder();
                     setState(State.ROTATE_INDEXER);
                 }

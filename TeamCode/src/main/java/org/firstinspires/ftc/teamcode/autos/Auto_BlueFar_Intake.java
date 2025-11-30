@@ -174,7 +174,7 @@ public class Auto_BlueFar_Intake extends OpMode {
                     double pos = robot.getGoalIndexerPos();
                     if (pos == 1 || pos == -1) {
                         robot.stopLaunchMotors();
-                        robot.follower.followPath(path2, true);
+                        robot.follower.followPath(!intaked ? path2 : path7, true);
                         setState(!intaked ? State.INTAKE_1 : State.FINISHED);
                         intaked = true;
                     } else {

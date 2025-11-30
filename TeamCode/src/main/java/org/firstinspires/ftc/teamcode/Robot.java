@@ -22,6 +22,7 @@ import static java.lang.Math.signum;
 import androidx.annotation.Nullable;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
 import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
@@ -196,12 +197,24 @@ public class Robot {
         ProjectileSolver.LaunchSolution sol = ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT,
                 vel, RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
         return sol != null ? ballVelToMotorVel(sol.w) : 0;
-//        return launcherRPM / TICKS_PER_REVOLUTION;
+    }
+
+    public double getLaunchMotorVel(Pose pose) {
+        ProjectileSolver.LaunchSolution sol = ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT,
+                vel, RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
+        return sol != null ? ballVelToMotorVel(sol.w) : 0;
     }
 
     public void spinLaunchMotors() {
         if (launcherMotorA == null) return;
         double motorVel = getLaunchMotorVel();
+        launcherMotorA.setVelocity(motorVel);
+        launcherMotorB.setVelocity(motorVel);
+    }
+
+    public void spinLaunchMotors(Pose pose) {
+        if (launcherMotorA == null) return;
+        double motorVel = getLaunchMotorVel(pose);
         launcherMotorA.setVelocity(motorVel);
         launcherMotorB.setVelocity(motorVel);
     }

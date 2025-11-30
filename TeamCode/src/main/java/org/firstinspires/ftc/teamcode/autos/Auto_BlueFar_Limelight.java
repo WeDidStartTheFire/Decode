@@ -119,11 +119,12 @@ public class Auto_BlueFar_Limelight extends OpMode {
                 break;
             case FOLLOW_PATH_1:
                 robot.follower.followPath(path1, true);
-                robot.spinLaunchMotors();
+                robot.spinLaunchMotors(path1.endPose());
                 setState(State.PUSH_ARTIFACT);
                 break;
             case PUSH_ARTIFACT:
                 if (!robot.follower.isBusy() && robot.isIndexerStill() && robot.launchMotorsToSpeed()) {
+                    robot.spinLaunchMotors();
                     robot.pushArtifactToLaunch();
                     setState(State.RETRACT_FEEDER);
                 }

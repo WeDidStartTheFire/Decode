@@ -335,9 +335,6 @@ public class TeleOpFunctions {
         tm.print("runtime.seconds()", runtime.seconds());
         tm.print("Queue length", launchQueue.toArray().length);
         tm.print("Queue", launchQueue);
-        tm.print("Artifact 1", artifacts[0]);
-        tm.print("Artifact 2", artifacts[1]);
-        tm.print("Artifact 3", artifacts[2]);
         if (gamepad2.aWasPressed()) launchQueue.add(Artifact.GREEN);
         if (gamepad2.bWasPressed()) launchQueue.add(Artifact.PURPLE);
         if (gamepad2.xWasPressed()) {
@@ -430,6 +427,7 @@ public class TeleOpFunctions {
     }
 
     public void feederLogic() {
+        tm.print("Feeder Up", robot.isFeederUp());
         if (gamepad2.rightBumperWasPressed() && gamepad2.right_trigger >= 0.5 &&
                 robot.isIndexerStill()) robot.pushArtifactToLaunch();
     }

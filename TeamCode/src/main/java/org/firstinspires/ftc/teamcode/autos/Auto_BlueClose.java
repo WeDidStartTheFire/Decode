@@ -88,6 +88,13 @@ public class Auto_BlueClose extends OpMode {
         tm.print("Path State", state);
         tm.print("Indexer Pos", robot.getGoalIndexerPos());
         tm.print("Pose", pose);
+        tm.print("Motor Goal Vel", robot.getLaunchMotorVel(path1.endPose()));
+        tm.print("Motor A Vel", robot.launcherMotorA.getVelocity());
+        tm.print("Motor B Vel", robot.launcherMotorB.getVelocity());
+        tm.print("Feeder Up", robot.isFeederUp());
+        tm.print("Artifact", robot.getArtifact());
+        tm.print("Color", robot.getColor());
+        tm.print("Inches", robot.getInches());
         switch (state) {
             case FOLLOW_PATH_1:
                 robot.setIndexerServoPos(0);
@@ -103,7 +110,7 @@ public class Auto_BlueClose extends OpMode {
                 setState(State.RETRACT_FEEDER);
                 break;
             case RETRACT_FEEDER:
-                if (robot.getArtifact() != RobotConstants.Artifact.UNKNOWN) break;
+                if (robot.getInches() != 6) break;
                 robot.retractFeeder();
                 setState(State.ROTATE_INDEXER);
                 break;

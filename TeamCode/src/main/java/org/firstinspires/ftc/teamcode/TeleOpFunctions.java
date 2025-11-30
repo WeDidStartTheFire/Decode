@@ -29,6 +29,7 @@ import static org.firstinspires.ftc.teamcode.RobotState.launchQueue;
 import static org.firstinspires.ftc.teamcode.RobotState.launcherRPM;
 import static org.firstinspires.ftc.teamcode.RobotState.launching;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
+import static org.firstinspires.ftc.teamcode.RobotState.savedSeconds;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
@@ -350,12 +351,13 @@ public class TeleOpFunctions {
             if (getCurrentArtifact() == Artifact.UNKNOWN) {
                 launchQueue.remove(0);
                 robot.retractFeeder();
+                RobotState.savedSeconds = runtime.seconds();
                 if (launchQueue.isEmpty()) robot.stopLaunchMotors();
                 launching = false;
             }
             return;
         }
-        if (robot.isFeederUp()) return;
+        if (runtime.seconds() - savedSeconds < 0.67) return;
         while (!launchQueue.isEmpty() && getCurrentArtifact() != launchQueue.get(0)) {
             if (rotateIndexerTo(launchQueue.get(0))) break;
             launchQueue.remove(0);

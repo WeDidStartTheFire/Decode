@@ -28,4 +28,5 @@ public class RobotState {
     public static ArrayList<Artifact> launchQueue = new ArrayList<>();
     public static Artifact[] artifacts = {UNKNOWN, UNKNOWN, UNKNOWN};
     public static boolean launching = false;
+    public static double savedSeconds = 0;
 }

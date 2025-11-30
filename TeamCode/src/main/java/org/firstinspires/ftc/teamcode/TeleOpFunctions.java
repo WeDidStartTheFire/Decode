@@ -268,11 +268,11 @@ public class TeleOpFunctions {
             return;
         }
 
-        double[] POS = {0.00, 0.25, 0.48, 0.75, 1.00, 1.25};
+        double[] POS = {0.00, 0.25, MIDDLE_INDEXER_POS, 0.75, 1.00, 1.25};
         double[] DOWN = {0.75, 0.75, 0.25, 0.25, 0.75, 0.75};
         double[] UP = {0.25, 0.75, 0.75, 0.25, 0.25, 0.25};
-        double[] RIGHT = {0.48, 0.48, 1.00, 1.00, 0.00, 0.00};
-        double[] LEFT = {1.00, 0.00, 0.00, 0.48, 0.48, 1.00};
+        double[] RIGHT = {MIDDLE_INDEXER_POS, MIDDLE_INDEXER_POS, 1.00, 1.00, 0.00, 0.00};
+        double[] LEFT = {1.00, 0.00, 0.00, MIDDLE_INDEXER_POS, MIDDLE_INDEXER_POS, 1.00};
 
         // Read current servo position
         double curPos = robot.getGoalIndexerPos();
@@ -355,7 +355,7 @@ public class TeleOpFunctions {
             }
             return;
         }
-        if (!robot.isFeederDown()) return;
+        if (robot.isFeederUp()) return;
         while (!launchQueue.isEmpty() && getCurrentArtifact() != launchQueue.get(0)) {
             if (rotateIndexerTo(launchQueue.get(0))) break;
             launchQueue.remove(0);
@@ -380,7 +380,8 @@ public class TeleOpFunctions {
         if (artifact == Artifact.UNKNOWN && robot.getInches() < 6) return;
         double pos = robot.getGoalIndexerPos();
         if (pos == 0) artifacts[0] = artifact;
-        else if (abs(pos - .5) < 1e-4) artifacts[1] = artifact;
+        else if (abs(pos - .5) < 1e-4 || abs(pos - MIDDLE_INDEXER_POS) < 1e-4)
+            artifacts[1] = artifact;
         else if (pos == 1) artifacts[2] = artifact;
     }
 

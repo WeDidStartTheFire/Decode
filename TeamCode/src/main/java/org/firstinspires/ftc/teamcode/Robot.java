@@ -142,9 +142,9 @@ public class Robot {
         }
     }
 
-    public boolean isFeederDown() {
-        return (touchSensorA == null || touchSensorA.isPressed()) &&
-                (touchSensorB == null || touchSensorB.isPressed());
+    public boolean isFeederUp() {
+        return (touchSensorA != null && !touchSensorA.isPressed()) ||
+                (touchSensorB != null && !touchSensorB.isPressed());
     }
 
     private double ballVelToMotorVel(double ballVel) {

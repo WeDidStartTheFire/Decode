@@ -115,7 +115,7 @@ public class Auto_BlueFar extends OpMode {
                 setState(State.ROTATE_INDEXER);
                 break;
             case ROTATE_INDEXER:
-                if (!robot.isFeederDown()) break;
+                if (robot.isFeederUp()) break;
                 double pos = robot.getGoalIndexerPos();
                 if (pos == 1 || pos == -1) {
                     robot.stopLaunchMotors();

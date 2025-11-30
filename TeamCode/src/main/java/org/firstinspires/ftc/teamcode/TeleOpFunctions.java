@@ -6,12 +6,13 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_GOAL_POSE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_ROBOT_POSITIONS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_ANGLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_HEIGHT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.RED_GOAL_POSE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.ROBOT_POSITIONS;
+import static org.firstinspires.ftc.teamcode.RobotConstants.RED_ROBOT_POSITIONS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TICKS_PER_REVOLUTION;
 import static org.firstinspires.ftc.teamcode.RobotConstants.baseSpeedMultiplier;
 import static org.firstinspires.ftc.teamcode.RobotConstants.baseTurnSpeed;
@@ -245,6 +246,7 @@ public class TeleOpFunctions {
      */
     @NonNull
     private static Path getShortestPath(Pose poseEstimate) {
+        Pose[] ROBOT_POSITIONS = color == BLUE ? BLUE_ROBOT_POSITIONS : RED_ROBOT_POSITIONS;
         if (ROBOT_POSITIONS.length == 0) return new Path();
         double bestDistance = Double.MAX_VALUE;
         Pose bestPose = ROBOT_POSITIONS[0];

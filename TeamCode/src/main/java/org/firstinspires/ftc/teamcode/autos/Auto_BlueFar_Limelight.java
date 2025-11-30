@@ -123,46 +123,44 @@ public class Auto_BlueFar_Limelight extends OpMode {
                 setState(State.PUSH_ARTIFACT);
                 break;
             case PUSH_ARTIFACT:
-                if (!robot.follower.isBusy() && robot.isIndexerStill() && robot.launchMotorsToSpeed()) {
-                    robot.spinLaunchMotors();
-                    robot.pushArtifactToLaunch();
-                    setState(State.RETRACT_FEEDER);
-                }
+                if (robot.follower.isBusy() || !robot.isIndexerStill() || !robot.launchMotorsToSpeed())
+                    break;
+                robot.spinLaunchMotors();
+                robot.pushArtifactToLaunch();
+                setState(State.RETRACT_FEEDER);
                 break;
             case RETRACT_FEEDER:
-                if (robot.getArtifact() == Artifact.UNKNOWN) {
-                    robot.retractFeeder();
-                    setState(State.ROTATE_INDEXER);
-                }
+                if (robot.getArtifact() != Artifact.UNKNOWN) break;
+                robot.retractFeeder();
+                setState(State.ROTATE_INDEXER);
                 break;
             case ROTATE_INDEXER:
-                if (robot.isFeederDown()) {
-                    double pos = robot.getGoalIndexerPos();
-                    if (numLaunched == 3) {
-                        robot.stopLaunchMotors();
-                        robot.follower.followPath(path2, true);
-                        setState(State.FINISHED);
-                        break;
-                    }
-                    if (!robot.isIndexerStill()) break;
-                    Artifact desired = motif.getNthArtifact(numLaunched);
-                    Artifact current = robot.getArtifact();
-                    if (current == desired) {
-                        setStateNoWait(State.PUSH_ARTIFACT);
-                        numLaunched++;
-                        break;
-                    }
-                    artifacts[(int) (pos * 2)] = current;
-                    int idx = Arrays.asList(artifacts).indexOf(desired);
-                    if (idx != -1) {
-                        robot.setIndexerServoPos(idx / 2.0);
-                        artifacts[idx] = UNKNOWN;
-                        setState(State.PUSH_ARTIFACT);
-                        numLaunched++;
-                        break;
-                    }
-                    robot.setIndexerServoPos((pos + 0.5) % 1.5);
+                if (!robot.isFeederDown()) break;
+                double pos = robot.getGoalIndexerPos();
+                if (numLaunched == 3) {
+                    robot.stopLaunchMotors();
+                    robot.follower.followPath(path2, true);
+                    setState(State.FINISHED);
+                    break;
                 }
+                if (!robot.isIndexerStill()) break;
+                Artifact desired = motif.getNthArtifact(numLaunched);
+                Artifact current = robot.getArtifact();
+                if (current == desired) {
+                    setStateNoWait(State.PUSH_ARTIFACT);
+                    numLaunched++;
+                    break;
+                }
+                artifacts[(int) (pos * 2)] = current;
+                int idx = Arrays.asList(artifacts).indexOf(desired);
+                if (idx != -1) {
+                    robot.setIndexerServoPos(idx / 2.0);
+                    artifacts[idx] = UNKNOWN;
+                    setState(State.PUSH_ARTIFACT);
+                    numLaunched++;
+                    break;
+                }
+                robot.setIndexerServoPos((pos + 0.5) % 1.5);
                 break;
             case FINISHED:
                 if (!robot.follower.isBusy()) saveOdometryPosition(pose);

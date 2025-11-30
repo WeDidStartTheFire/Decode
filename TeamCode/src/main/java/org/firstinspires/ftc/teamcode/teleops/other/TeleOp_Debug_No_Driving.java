@@ -41,12 +41,12 @@ public class TeleOp_Debug_No_Driving extends OpMode {
         }
 
         try {
-            motorA = hardwareMap.get(DcMotorEx.class, "leftFront");
+            motorA = hardwareMap.get(DcMotorEx.class, "leftBack");
         } catch (Exception e) {
             tm.except("leftFront motor disconnected (motor A)");
         }
         try {
-            motorB = hardwareMap.get(DcMotorEx.class, "leftBack");
+            motorB = hardwareMap.get(DcMotorEx.class, "rightBack");
         } catch (Exception e) {
             tm.except("leftBack motor disconnected (motor B)");
         }

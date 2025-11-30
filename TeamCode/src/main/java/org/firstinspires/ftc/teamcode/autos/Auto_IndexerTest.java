@@ -31,7 +31,6 @@ public class Auto_IndexerTest extends OpMode {
     private enum State {
         FINISHED,
         FOLLOW_PATH_1,
-        HOLD_POINT,
         PUSH_ARTIFACT,
         RETRACT_FEEDER,
         ROTATE_INDEXER,
@@ -76,21 +75,16 @@ public class Auto_IndexerTest extends OpMode {
         pose = robot.follower.getPose();
         vel = robot.follower.getVelocity();
         tm.print("Path State", state);
-        tm.print("Indexer Pos", robot.getIndexerServoPos());
+        tm.print("Indexer Pos", robot.getGoalIndexerPos());
         switch (state) {
             case FOLLOW_PATH_1:
                 robot.follower.holdPoint(path1.endPose());
                 robot.setIndexerServoPos(0);
 //                robot.spinLaunchMotors();
-                setState(State.HOLD_POINT);
-                break;
-            case HOLD_POINT:
-                if (stateTimer.getElapsedTimeSeconds() > 1.267) {
-                    setState(State.PUSH_ARTIFACT);
-                }
+                setState(State.PUSH_ARTIFACT);
                 break;
             case PUSH_ARTIFACT:
-                if (stateTimer.getElapsedTimeSeconds() > 1) {
+                if (robot.isIndexerStill()) {
                     robot.pushArtifactToLaunch();
                     setState(State.RETRACT_FEEDER);
                 }
@@ -102,8 +96,8 @@ public class Auto_IndexerTest extends OpMode {
                 }
                 break;
             case ROTATE_INDEXER:
-                if (stateTimer.getElapsedTimeSeconds() > 1) {
-                    double pos = robot.getIndexerServoPos();
+                if (robot.isFeederDown()) {
+                    double pos = robot.getGoalIndexerPos();
                     if (pos == 1 || pos == -1) {
                         robot.stopLaunchMotors();
 //                        robot.follower.followPath(path2);

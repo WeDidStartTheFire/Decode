@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.autos;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
-import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
@@ -35,7 +34,6 @@ public class Auto_BlueFar_Limelight extends OpMode {
     private final Timer stateTimer = new Timer();
     private State state;
     private int numLaunched = 0;
-    private double indexerServoMoveTime = 0;
     private final Artifact[] artifacts = {UNKNOWN, UNKNOWN, UNKNOWN};
 
     private enum State {
@@ -105,7 +103,7 @@ public class Auto_BlueFar_Limelight extends OpMode {
         pose = robot.follower.getPose();
         vel = robot.follower.getVelocity();
         tm.print("Path State", state);
-        tm.print("Indexer Pos", robot.getIndexerServoPos());
+        tm.print("Indexer Pos", robot.getGoalIndexerPos());
         tm.print("Pose", pose);
         tm.print("Distance", robot.getInches());
         tm.print("Artifact", robot.getArtifact());
@@ -115,17 +113,17 @@ public class Auto_BlueFar_Limelight extends OpMode {
         tm.print("2", motif.getNthArtifact(2));
         switch (state) {
             case DETECT_MOTIF:
+                robot.setIndexerServoPos(0);
                 if (motif != RobotConstants.Motif.UNKNOWN) setState(State.FOLLOW_PATH_1);
                 else motif = robot.getMotif();
                 break;
             case FOLLOW_PATH_1:
-                robot.setIndexerServoPos(0);
                 robot.follower.followPath(path1, true);
                 robot.spinLaunchMotorsFar();
                 setState(State.PUSH_ARTIFACT);
                 break;
             case PUSH_ARTIFACT:
-                if (!robot.follower.isBusy() && stateTimer.getElapsedTimeSeconds() > .67) {
+                if (!robot.follower.isBusy() && robot.isIndexerStill()) {
                     robot.pushArtifactToLaunch();
                     setState(State.RETRACT_FEEDER);
                 }
@@ -138,14 +136,14 @@ public class Auto_BlueFar_Limelight extends OpMode {
                 break;
             case ROTATE_INDEXER:
                 if (robot.isFeederDown()) {
-                    double pos = robot.getIndexerServoPos();
+                    double pos = robot.getGoalIndexerPos();
                     if (numLaunched == 3) {
                         robot.stopLaunchMotors();
                         robot.follower.followPath(path2, true);
                         setState(State.FINISHED);
                         break;
                     }
-                    if (runtime.seconds() - indexerServoMoveTime < 1.25) break;
+                    if (!robot.isIndexerStill()) break;
                     Artifact desired = motif.getNthArtifact(numLaunched);
                     Artifact current = robot.getArtifact();
                     if (current == desired) {
@@ -163,7 +161,6 @@ public class Auto_BlueFar_Limelight extends OpMode {
                         break;
                     }
                     robot.setIndexerServoPos((pos + 0.5) % 1.5);
-                    indexerServoMoveTime = runtime.seconds();
                 }
                 break;
             case FINISHED:

@@ -275,7 +275,7 @@ public class TeleOpFunctions {
         double[] LEFT = {1.00, 0.00, 0.00, 0.48, 0.48, 1.00};
 
         // Read current servo position
-        double curPos = robot.getIndexerServoPos();
+        double curPos = robot.getGoalIndexerPos();
         if (curPos == -1) tm.print("Got -1 for indexer pos");
 
         // Find exact match (within a tiny tolerance) or fallback to nearest POS index
@@ -309,7 +309,7 @@ public class TeleOpFunctions {
     }
 
     private boolean rotateIndexerTo(Artifact artifact) {
-        double pos = robot.getIndexerServoPos();
+        double pos = robot.getGoalIndexerPos();
 
         double first = Math.round(pos * 2) / 2.0;
         double second = (first + 0.5) % 1;
@@ -359,10 +359,10 @@ public class TeleOpFunctions {
             return;
         }
         if (!robot.isFeederDown()) return;
-        double pos = robot.getIndexerServoPos();
+        double pos = robot.getGoalIndexerPos();
         while (!launchQueue.isEmpty() && getCurrentArtifact() != launchQueue.get(0)) {
             if (rotateIndexerTo(launchQueue.get(0))) {
-                if (pos != robot.getIndexerServoPos()) indexerMoveStartTime = runtime.seconds();
+                if (pos != robot.getGoalIndexerPos()) indexerMoveStartTime = runtime.seconds();
                 break;
             }
             launchQueue.remove(0);
@@ -385,7 +385,7 @@ public class TeleOpFunctions {
         tm.print("Artifact 3", artifacts[2]);
         if (runtime.seconds() - indexerMoveStartTime < 0.67) return;
         if (artifact == Artifact.UNKNOWN && robot.getInches() < 6) return;
-        double pos = robot.getIndexerServoPos();
+        double pos = robot.getGoalIndexerPos();
         if (pos == 0) artifacts[0] = artifact;
         else if (.475 <= pos && pos <= .505) artifacts[1] = artifact;
         else if (pos == 1) artifacts[2] = artifact;
@@ -399,7 +399,7 @@ public class TeleOpFunctions {
     }
 
     private Artifact getCurrentArtifact() {
-        return getArtifactAtPos(robot.getIndexerServoPos());
+        return getArtifactAtPos(robot.getGoalIndexerPos());
     }
 
     public void intakeLogic() {

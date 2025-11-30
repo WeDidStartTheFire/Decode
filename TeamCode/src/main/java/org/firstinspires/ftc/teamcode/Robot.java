@@ -8,6 +8,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_GOAL_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.RED;
+import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_SPEED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_ANGLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_HEIGHT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
@@ -18,10 +19,12 @@ import static org.firstinspires.ftc.teamcode.RobotState.launcherRPM;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static java.lang.Math.abs;
+import static java.lang.Math.signum;
 
 import androidx.annotation.Nullable;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -56,6 +59,8 @@ public class Robot {
     public ColorSensor colorSensor;
     public DistanceSensor distanceSensor;
     public Limelight3A limelight;
+    private double minIndexerPos = -.25, maxIndexerPos = 1.25, goalIndexerPos = 0;
+    private Timer indexerTimer = null;
 
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, boolean useOdometry) {
         follower = Constants.createFollower(hardwareMap);
@@ -148,13 +153,36 @@ public class Robot {
     }
 
     public void setIndexerServoPos(double pos) {
-        if (pos == .5) pos = MIDDLE_INDEXER_POS;
-        if (indexerServo != null) indexerServo.setPosition(pos);
+        updateIndexerPos();
+        resetIndexerTimer();
+        goalIndexerPos = pos == .5 ? MIDDLE_INDEXER_POS : pos;
+        if (indexerServo != null) indexerServo.setPosition(goalIndexerPos);
     }
 
-    public double getIndexerServoPos() {
+    private void updateIndexerPos() {
+        if (indexerTimer != null) {
+            double maxMovement = indexerTimer.getElapsedTimeSeconds() * INDEXER_SPEED;
+            minIndexerPos = maxMovement > abs(goalIndexerPos - minIndexerPos) ?
+                    goalIndexerPos : signum(goalIndexerPos - minIndexerPos) * maxMovement + minIndexerPos;
+            maxIndexerPos = maxMovement > abs(goalIndexerPos - maxIndexerPos) ?
+                    goalIndexerPos : signum(goalIndexerPos - maxIndexerPos) * maxMovement + maxIndexerPos;
+        }
+    }
+
+    private void resetIndexerTimer() {
+        if (indexerTimer == null) indexerTimer = new Timer();
+        else indexerTimer.resetTimer();
+    }
+
+    public double getGoalIndexerPos() {
         if (indexerServo == null) return -1;
         return abs(indexerServo.getPosition() - MIDDLE_INDEXER_POS) < 1e-4 ? .5 : indexerServo.getPosition();
+    }
+
+    public boolean isIndexerStill() {
+        updateIndexerPos();
+        double epsilon = 1e-4; // Small value to check "equality" even if doubles aren't exactly the same
+        return abs(minIndexerPos - goalIndexerPos) < epsilon && abs(maxIndexerPos - goalIndexerPos) < epsilon;
     }
 
     public boolean isIndexerServoConnected() {

@@ -93,7 +93,7 @@ public class Auto_BlueFar extends OpMode {
         pose = robot.follower.getPose();
         vel = robot.follower.getVelocity();
         tm.print("Path State", state);
-        tm.print("Indexer Pos", robot.getIndexerServoPos());
+        tm.print("Indexer Pos", robot.getGoalIndexerPos());
         tm.print("Pose", pose);
         switch (state) {
             case FOLLOW_PATH_1:
@@ -103,7 +103,7 @@ public class Auto_BlueFar extends OpMode {
                 setState(State.PUSH_ARTIFACT);
                 break;
             case PUSH_ARTIFACT:
-                if (!robot.follower.isBusy() && stateTimer.getElapsedTimeSeconds() > 1) {
+                if (!robot.follower.isBusy() && robot.isIndexerStill()) {
                     robot.pushArtifactToLaunch();
                     setState(State.RETRACT_FEEDER);
                 }
@@ -116,7 +116,7 @@ public class Auto_BlueFar extends OpMode {
                 break;
             case ROTATE_INDEXER:
                 if (robot.isFeederDown()) {
-                    double pos = robot.getIndexerServoPos();
+                    double pos = robot.getGoalIndexerPos();
                     if (pos == 1 || pos == -1) {
                         robot.stopLaunchMotors();
                         robot.follower.followPath(path2, true);

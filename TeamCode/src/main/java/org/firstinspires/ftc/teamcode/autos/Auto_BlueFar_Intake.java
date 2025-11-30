@@ -158,31 +158,29 @@ public class Auto_BlueFar_Intake extends OpMode {
                 setState(State.PUSH_ARTIFACT);
                 break;
             case PUSH_ARTIFACT:
-                if (!robot.follower.isBusy() && robot.isIndexerStill() && robot.launchMotorsToSpeed()) {
-                    robot.pushArtifactToLaunch();
-                    setState(State.RETRACT_FEEDER);
-                }
+                if (robot.follower.isBusy() || !robot.isIndexerStill() || !robot.launchMotorsToSpeed())
+                    break;
+                robot.pushArtifactToLaunch();
+                setState(State.RETRACT_FEEDER);
                 break;
             case RETRACT_FEEDER:
-                if (robot.getArtifact() == RobotConstants.Artifact.UNKNOWN) {
-                    robot.retractFeeder();
-                    setState(State.ROTATE_INDEXER);
-                }
+                if (robot.getArtifact() != RobotConstants.Artifact.UNKNOWN) break;
+                robot.retractFeeder();
+                setState(State.ROTATE_INDEXER);
                 break;
             case ROTATE_INDEXER:
-                if (robot.isFeederDown()) {
-                    double pos = robot.getGoalIndexerPos();
-                    if (pos == 1 || pos == -1) {
-                        robot.stopLaunchMotors();
-                        robot.follower.followPath(!intaked ? path2 : path7, true);
-                        setState(!intaked ? State.INTAKE_1 : State.FINISHED);
-                        intaked = true;
-                    } else {
-                        if (pos == 0) pos = MIDDLE_INDEXER_POS;
-                        else pos = 1;
-                        robot.setIndexerServoPos(pos);
-                        setState(State.PUSH_ARTIFACT);
-                    }
+                if (!robot.isFeederDown()) break;
+                double pos = robot.getGoalIndexerPos();
+                if (pos == 1 || pos == -1) {
+                    robot.stopLaunchMotors();
+                    robot.follower.followPath(!intaked ? path2 : path7, true);
+                    setState(!intaked ? State.INTAKE_1 : State.FINISHED);
+                    intaked = true;
+                } else {
+                    if (pos == 0) pos = MIDDLE_INDEXER_POS;
+                    else pos = 1;
+                    robot.setIndexerServoPos(pos);
+                    setState(State.PUSH_ARTIFACT);
                 }
                 break;
             case INTAKE_1:

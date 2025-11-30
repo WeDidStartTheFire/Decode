@@ -84,38 +84,34 @@ public class Auto_IndexerTest extends OpMode {
                 setState(State.PUSH_ARTIFACT);
                 break;
             case PUSH_ARTIFACT:
-                if (robot.isIndexerStill()) {
-                    robot.pushArtifactToLaunch();
-                    setState(State.RETRACT_FEEDER);
-                }
+                if (!robot.isIndexerStill()) break;
+                robot.pushArtifactToLaunch();
+                setState(State.RETRACT_FEEDER);
                 break;
             case RETRACT_FEEDER:
-                if (stateTimer.getElapsedTimeSeconds() > .67) {
-                    robot.retractFeeder();
-                    setState(State.ROTATE_INDEXER);
-                }
+                if (stateTimer.getElapsedTimeSeconds() < .67) break;
+                robot.retractFeeder();
+                setState(State.ROTATE_INDEXER);
                 break;
             case ROTATE_INDEXER:
-                if (robot.isFeederDown()) {
-                    double pos = robot.getGoalIndexerPos();
-                    if (pos == 1 || pos == -1) {
-                        robot.stopLaunchMotors();
+                if (!robot.isFeederDown()) break;
+                double pos = robot.getGoalIndexerPos();
+                if (pos == 1 || pos == -1) {
+                    robot.stopLaunchMotors();
 //                        robot.follower.followPath(path2);
-                        setState(State.FINISHED);
-                    } else {
-                        if (pos == 0) pos = MIDDLE_INDEXER_POS;
-                        else pos = 1;
-                        robot.setIndexerServoPos(pos);
-                        setState(State.PUSH_ARTIFACT);
-                    }
+                    setState(State.FINISHED);
+                } else {
+                    if (pos == 0) pos = MIDDLE_INDEXER_POS;
+                    else pos = 1;
+                    robot.setIndexerServoPos(pos);
+                    setState(State.PUSH_ARTIFACT);
                 }
                 break;
             case FINISH_PATH_2:
-                if (!robot.follower.isBusy()) {
-                    robot.follower.holdPoint(path2.endPose());
-                    saveOdometryPosition(robot.follower.getCurrentPath().endPose());
-                    setState(State.FINISHED);
-                }
+                if (robot.follower.isBusy()) break;
+                robot.follower.holdPoint(path2.endPose());
+                saveOdometryPosition(robot.follower.getCurrentPath().endPose());
+                setState(State.FINISHED);
                 break;
         }
     }

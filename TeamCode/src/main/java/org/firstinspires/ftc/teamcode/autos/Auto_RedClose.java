@@ -95,7 +95,7 @@ public class Auto_RedClose extends OpMode {
                 setState(State.PUSH_ARTIFACT);
                 break;
             case PUSH_ARTIFACT:
-                if (!robot.follower.isBusy() && robot.isIndexerStill()) {
+                if (!robot.follower.isBusy() && robot.isIndexerStill() && robot.launchMotorsToSpeed()) {
                     robot.pushArtifactToLaunch();
                     setState(State.RETRACT_FEEDER);
                 }

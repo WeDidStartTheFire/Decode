@@ -99,11 +99,11 @@ public class Auto_BlueFar extends OpMode {
             case FOLLOW_PATH_1:
                 robot.setIndexerServoPos(0);
                 robot.follower.followPath(path1, true);
-                robot.spinLaunchMotorsFar();
+                robot.spinLaunchMotors();
                 setState(State.PUSH_ARTIFACT);
                 break;
             case PUSH_ARTIFACT:
-                if (!robot.follower.isBusy() && robot.isIndexerStill()) {
+                if (!robot.follower.isBusy() && robot.isIndexerStill() && robot.launchMotorsToSpeed()) {
                     robot.pushArtifactToLaunch();
                     setState(State.RETRACT_FEEDER);
                 }

@@ -14,8 +14,6 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_HEIGHT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Motif;
 import static org.firstinspires.ftc.teamcode.RobotConstants.RED_GOAL_POSE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.TICKS_PER_REVOLUTION;
-import static org.firstinspires.ftc.teamcode.RobotState.launcherRPM;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static java.lang.Math.abs;
@@ -196,20 +194,9 @@ public class Robot {
 //        return launcherRPM / TICKS_PER_REVOLUTION;
     }
 
-    public double getFarLaunchMotorVel() {
-        return launcherRPM / TICKS_PER_REVOLUTION * 1.15;
-    }
-
     public void spinLaunchMotors() {
         if (launcherMotorA == null) return;
         double motorVel = getLaunchMotorVel();
-        launcherMotorA.setVelocity(motorVel);
-        launcherMotorB.setVelocity(motorVel);
-    }
-
-    public void spinLaunchMotorsFar() {
-        if (launcherMotorA == null) return;
-        double motorVel = getFarLaunchMotorVel();
         launcherMotorA.setVelocity(motorVel);
         launcherMotorB.setVelocity(motorVel);
     }

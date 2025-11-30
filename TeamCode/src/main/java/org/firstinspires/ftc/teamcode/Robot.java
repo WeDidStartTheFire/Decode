@@ -157,6 +157,11 @@ public class Robot {
         if (indexerServo != null) indexerServo.setPosition(goalIndexerPos);
     }
 
+    /**
+     * Updates the max and min indexer pos estimates. Use
+     * <a href="https://www.desmos.com/calculator/pla2kgtybc">this link</a> for a demonstration of
+     * how this estimate works
+     */
     private void updateIndexerPos() {
         if (indexerTimer != null) {
             double maxMovement = indexerTimer.getElapsedTimeSeconds() * INDEXER_SPEED;

@@ -219,6 +219,7 @@ public class Auto_BlueFar_Intake extends OpMode {
                 if (robot.follower.isBusy()) break;
                 robot.powerIntake(0);
                 robot.follower.followPath(path6, true);
+                robot.spinLaunchMotors();
                 setState(State.PUSH_ARTIFACT);
                 break;
             case FINISHED:

@@ -11,6 +11,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.Color;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_ANGLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_HEIGHT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.RED_GOAL_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.RED_ROBOT_POSITIONS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TICKS_PER_REVOLUTION;
@@ -24,7 +25,6 @@ import static org.firstinspires.ftc.teamcode.RobotState.artifacts;
 import static org.firstinspires.ftc.teamcode.RobotState.color;
 import static org.firstinspires.ftc.teamcode.RobotState.following;
 import static org.firstinspires.ftc.teamcode.RobotState.holding;
-import static org.firstinspires.ftc.teamcode.RobotState.indexerMoveStartTime;
 import static org.firstinspires.ftc.teamcode.RobotState.launchQueue;
 import static org.firstinspires.ftc.teamcode.RobotState.launcherRPM;
 import static org.firstinspires.ftc.teamcode.RobotState.launching;
@@ -304,8 +304,6 @@ public class TeleOpFunctions {
         else if (gamepad2.dpadUpWasPressed()) robot.setIndexerServoPos(UP[idx]);
         else if (gamepad2.dpadDownWasPressed()) robot.setIndexerServoPos(DOWN[idx]);
         else if (gamepad2.yWasPressed()) rotateIndexerTo(Artifact.UNKNOWN);
-        else return;
-        indexerMoveStartTime = runtime.seconds();
     }
 
     private boolean rotateIndexerTo(Artifact artifact) {
@@ -333,7 +331,6 @@ public class TeleOpFunctions {
 
     public void autoLaunchLogic() {
         tm.print("launching", launching);
-        tm.print("indexerMoveStartTime", indexerMoveStartTime);
         tm.print("runtime.seconds()", runtime.seconds());
         tm.print("Queue length", launchQueue.toArray().length);
         tm.print("Queue", launchQueue);
@@ -359,17 +356,13 @@ public class TeleOpFunctions {
             return;
         }
         if (!robot.isFeederDown()) return;
-        double pos = robot.getGoalIndexerPos();
         while (!launchQueue.isEmpty() && getCurrentArtifact() != launchQueue.get(0)) {
-            if (rotateIndexerTo(launchQueue.get(0))) {
-                if (pos != robot.getGoalIndexerPos()) indexerMoveStartTime = runtime.seconds();
-                break;
-            }
+            if (rotateIndexerTo(launchQueue.get(0))) break;
             launchQueue.remove(0);
         }
         if (launchQueue.isEmpty()) return;
         robot.spinLaunchMotors();
-        if (robot.launchMotorsToSpeed() && runtime.seconds() - indexerMoveStartTime > 1.1) {
+        if (robot.launchMotorsToSpeed() && robot.isIndexerStill()) {
             robot.pushArtifactToLaunch();
             launching = true;
         }
@@ -383,17 +376,17 @@ public class TeleOpFunctions {
         tm.print("Artifact 1", artifacts[0]);
         tm.print("Artifact 2", artifacts[1]);
         tm.print("Artifact 3", artifacts[2]);
-        if (runtime.seconds() - indexerMoveStartTime < 0.67) return;
+        if (!robot.isIndexerStill()) return;
         if (artifact == Artifact.UNKNOWN && robot.getInches() < 6) return;
         double pos = robot.getGoalIndexerPos();
         if (pos == 0) artifacts[0] = artifact;
-        else if (.475 <= pos && pos <= .505) artifacts[1] = artifact;
+        else if (abs(pos - .5) < 1e-4) artifacts[1] = artifact;
         else if (pos == 1) artifacts[2] = artifact;
     }
 
     private Artifact getArtifactAtPos(double pos) {
         if (pos == 0) return artifacts[0];
-        if (.475 <= pos && pos <= .505) return artifacts[1];
+        if (abs(pos - .5) < 1e-4 || abs(pos - MIDDLE_INDEXER_POS) < 1e-4) return artifacts[1];
         if (pos == 1) return artifacts[2];
         return Artifact.UNKNOWN;
     }
@@ -435,7 +428,7 @@ public class TeleOpFunctions {
 
     public void feederLogic() {
         if (gamepad2.rightBumperWasPressed() && gamepad2.right_trigger >= 0.5 &&
-                runtime.seconds() - indexerMoveStartTime > 0.67) robot.pushArtifactToLaunch();
+                robot.isIndexerStill()) robot.pushArtifactToLaunch();
     }
 
 }

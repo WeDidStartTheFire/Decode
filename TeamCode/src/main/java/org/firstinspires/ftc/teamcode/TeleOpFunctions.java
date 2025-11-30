@@ -334,7 +334,6 @@ public class TeleOpFunctions {
         tm.print("launching", launching);
         tm.print("runtime.seconds()", runtime.seconds());
         tm.print("Queue length", launchQueue.toArray().length);
-        tm.print("Queue", launchQueue);
         if (gamepad2.aWasPressed()) launchQueue.add(Artifact.GREEN);
         if (gamepad2.bWasPressed()) launchQueue.add(Artifact.PURPLE);
         if (gamepad2.xWasPressed()) {
@@ -348,13 +347,13 @@ public class TeleOpFunctions {
             if (getCurrentArtifact() == Artifact.UNKNOWN) {
                 launchQueue.remove(0);
                 robot.retractFeeder();
-                RobotState.savedSeconds = runtime.seconds();
+                savedSeconds = runtime.seconds();
                 if (launchQueue.isEmpty()) robot.stopLaunchMotors();
                 launching = false;
             }
             return;
         }
-        if (runtime.seconds() - savedSeconds < 0.67) return;
+        if (robot.isFeederUp()/*runtime.seconds() - savedSeconds < 0.67*/) return;
         while (!launchQueue.isEmpty() && getCurrentArtifact() != launchQueue.get(0)) {
             if (rotateIndexerTo(launchQueue.get(0))) break;
             launchQueue.remove(0);

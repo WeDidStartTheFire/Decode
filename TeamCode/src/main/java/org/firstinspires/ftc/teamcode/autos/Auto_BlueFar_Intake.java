@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 public class Auto_BlueFar_Intake extends OpMode {
     private Robot robot;
 
-    private PathChain path1, path2, path3, path4, path5, path6;
+    private PathChain path1, path2, path3, path4, path5, path6, path7;
     private TelemetryUtils tm;
 
     private final Timer stateTimer = new Timer();
@@ -63,12 +63,48 @@ public class Auto_BlueFar_Intake extends OpMode {
                 .addPath(
                         new BezierLine(new Pose(40.000, 35.000), new Pose(30.000, 35.000))
                 )
-                .setLinearHeadingInterpolation(
-                        toRadians(180),
+                .setConstantHeadingInterpolation(
                         toRadians(180)
                 )
                 .build();
-
+        path4 = robot.follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(30, 35), new Pose(25, 35))
+                )
+                .setConstantHeadingInterpolation(
+                        toRadians(180)
+                )
+                .build();
+        path5 = robot.follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(25, 35), new Pose(20, 35))
+                )
+                .setConstantHeadingInterpolation(
+                        toRadians(180)
+                )
+                .build();
+        path6 = robot.follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(20, 35), new Pose(60.000, 20.000))
+                )
+                .setLinearHeadingInterpolation(
+                        toRadians(90),
+                        toRadians(112.4794343971)
+                )
+                .build();
+        path7 = robot.follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(60, 20), new Pose(25, 8.5))
+                )
+                .setLinearHeadingInterpolation(
+                    toRadians(112.4794343971),
+                        toRadians(90)
+                )
+                .build();
     }
 
     @Override

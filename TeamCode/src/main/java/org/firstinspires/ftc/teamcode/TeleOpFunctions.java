@@ -409,6 +409,9 @@ public class TeleOpFunctions {
             robot.retractFeeder();
             return;
         }
+        if (robot.launchMotorsToSpeed()) robot.setLEDColor(0.500);
+        else if (robot.getLaunchMotorVel() > 100) robot.setLEDColor(0.388);
+        else robot.setLEDColor(0.279);
         if (gamepad2.right_trigger >= 0.5) robot.spinLaunchMotors();
         else if (launchQueue.isEmpty() && !launching) {
             robot.retractFeeder();

@@ -53,6 +53,7 @@ public class Robot {
     public DcMotorEx launcherMotorA, launcherMotorB;
     private Servo feederServoA, feederServoB;
     private Servo indexerServo;
+    private Servo led;
     private CRServo intakeServoA, intakeServoC;
     private TouchSensor touchSensorA, touchSensorB;
     public ColorSensor colorSensor;
@@ -140,6 +141,15 @@ public class Robot {
         } catch (IllegalArgumentException e) {
             tm.except("limelight not connected");
         }
+        try {
+            led = hardwareMap.get(Servo.class, "led");
+        } catch (IllegalArgumentException e) {
+            tm.except("LED not connected");
+        }
+    }
+
+    public void setLEDColor(double color) {
+        if (led != null) led.setPosition(color);
     }
 
     public boolean isFeederUp() {

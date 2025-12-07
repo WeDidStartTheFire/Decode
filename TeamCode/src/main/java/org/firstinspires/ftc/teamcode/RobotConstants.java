@@ -45,6 +45,7 @@ public class RobotConstants {
 
     static final int TICKS_PER_REVOLUTION = 28;
     static final int DEFAULT_LAUNCHER_RPM = 36400;
+    public static final double MAX_LAUNCHER_SPIN_WAIT = 1.5;
 
     static final double baseSpeedMultiplier = 0.75;
     static final double baseTurnSpeed = 2.5;

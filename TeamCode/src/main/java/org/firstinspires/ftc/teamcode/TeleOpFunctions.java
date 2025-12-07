@@ -37,7 +37,6 @@ import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 import static java.lang.Math.round;
 import static java.lang.Math.toDegrees;
-import static java.lang.Math.toRadians;
 
 import androidx.annotation.NonNull;
 
@@ -46,7 +45,6 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -161,13 +159,13 @@ public class TeleOpFunctions {
                     tm.print("turn", turn);
                 }
 
-                LLResultTypes.FiducialResult fiducial = robot.getGoalFiducial(color);
-                if (fiducial != null) {
-                    double error = -toRadians(fiducial.getTargetXDegrees());
-                    headingPIDController.updateError(error);
-                    turn = headingPIDController.run();
-                    tm.print("turn", turn);
-                }
+//                LLResultTypes.FiducialResult fiducial = robot.getGoalFiducial(color);
+//                if (fiducial != null) {
+//                    double error = -toRadians(fiducial.getTargetXDegrees());
+//                    headingPIDController.updateError(error);
+//                    turn = headingPIDController.run();
+//                    tm.print("turn", turn);
+//                }
             }
 
             follower.setTeleOpDrive(gamepad1.left_stick_y * speedMultiplier * (color == Color.RED ? -1 : 1),
@@ -238,7 +236,10 @@ public class TeleOpFunctions {
             follower.followPath(getShortestPath(pose));
         } else if (gamepad1.aWasPressed()) { // Hold pos
             holdCurrentPose();
-        } else if (gamepad1.bWasPressed()) aiming = !aiming; // Aim robot at goal
+        } else if (gamepad1.bWasPressed()) {
+            aiming = !aiming; // Aim robot at goal
+            if (holding && aiming) holdCurrentPose();
+        }
     }
 
     /**
@@ -336,6 +337,8 @@ public class TeleOpFunctions {
         tm.print("launching", launching);
         tm.print("runtime.seconds()", runtime.seconds());
         tm.print("Queue length", launchQueue.toArray().length);
+        tm.print("Can Launch", robot.canLaunch());
+        if (!robot.canLaunch()) return;
         if (gamepad2.aWasPressed()) launchQueue.add(Artifact.GREEN);
         if (gamepad2.bWasPressed()) launchQueue.add(Artifact.PURPLE);
         if (gamepad2.xWasPressed()) {

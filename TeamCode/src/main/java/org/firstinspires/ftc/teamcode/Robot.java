@@ -215,6 +215,12 @@ public class Robot {
         return sol != null ? ballVelToMotorVel(sol.w) : 0;
     }
 
+    public boolean canLaunch() {
+        ProjectileSolver.LaunchSolution sol = ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT,
+                vel, RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
+        return sol != null;
+    }
+
     public void spinLaunchMotors() {
         if (launcherMotorA == null) return;
         double motorVel = getLaunchMotorVel();

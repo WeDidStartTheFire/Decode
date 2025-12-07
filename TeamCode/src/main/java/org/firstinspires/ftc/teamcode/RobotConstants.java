@@ -38,7 +38,7 @@ public class RobotConstants {
 
     static final double DEFAULT_VELOCITY = 2000;
 
-    public static final double MIDDLE_INDEXER_POS = 0.48;
+    public static final double MIDDLE_INDEXER_POS = 0.5;
     public static final double INDEXER_SPEED = 0.4; // distance / time
 
     public static final double[] speeds = {0.2, 0.6, 1};

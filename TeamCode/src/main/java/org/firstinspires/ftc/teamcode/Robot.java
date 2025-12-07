@@ -229,6 +229,11 @@ public class Robot {
         launcherMotorB.setVelocity(motorVel);
     }
 
+    public boolean areLaunchMotorsSpinning() {
+        if (launcherMotorA == null) return false;
+        return launcherMotorA.getVelocity() + launcherMotorB.getVelocity() > 30;
+    }
+
     public void intakeLaunchMotors(double percent) {
         if (launcherMotorA == null) return;
         launcherMotorA.setPower(-percent * .4);

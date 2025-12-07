@@ -96,6 +96,7 @@ public class Auto_BlueClose extends OpMode {
         tm.print("Artifact", robot.getArtifact());
         tm.print("Color", robot.getColor());
         tm.print("Inches", robot.getInches());
+        tm.print("🥀");
         switch (state) {
             case FOLLOW_PATH_1:
                 robot.setIndexerServoPos(0);

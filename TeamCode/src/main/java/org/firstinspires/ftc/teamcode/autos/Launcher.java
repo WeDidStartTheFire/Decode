@@ -37,7 +37,7 @@ public class Launcher {
         this.state = state;
     }
 
-    private void update() {
+    public void update() {
         switch (state) {
             case IDLE:
                 isBusy = false;

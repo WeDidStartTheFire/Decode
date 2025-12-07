@@ -32,6 +32,7 @@ public class Auto_RedClose extends OpMode {
     private enum State {
         FINISHED,
         FOLLOW_PATH_1,
+        SPIN_LAUNCH_MOTORS,
         PUSH_ARTIFACT,
         RETRACT_FEEDER,
         ROTATE_INDEXER,
@@ -99,11 +100,15 @@ public class Auto_RedClose extends OpMode {
             case FOLLOW_PATH_1:
                 robot.setIndexerServoPos(0);
                 robot.follower.followPath(path1, true);
+                setState(State.SPIN_LAUNCH_MOTORS);
+                break;
+            case SPIN_LAUNCH_MOTORS:
+                if (robot.follower.isBusy()) break;
                 robot.spinLaunchMotors(path1.endPose());
                 setState(State.PUSH_ARTIFACT);
                 break;
             case PUSH_ARTIFACT:
-                if (robot.follower.isBusy() || !robot.isIndexerStill() || (!robot.launchMotorsToSpeed() &&
+                if (!robot.isIndexerStill() || (!robot.launchMotorsToSpeed() &&
                         stateTimer.getElapsedTimeSeconds() < MAX_LAUNCHER_SPIN_WAIT))
                     break;
                 robot.spinLaunchMotors();

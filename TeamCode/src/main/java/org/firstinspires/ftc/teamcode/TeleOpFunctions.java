@@ -11,6 +11,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.Color;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_ANGLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_HEIGHT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.RED_GOAL_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.RED_ROBOT_POSITIONS;
@@ -25,6 +26,7 @@ import static org.firstinspires.ftc.teamcode.RobotState.artifacts;
 import static org.firstinspires.ftc.teamcode.RobotState.color;
 import static org.firstinspires.ftc.teamcode.RobotState.following;
 import static org.firstinspires.ftc.teamcode.RobotState.holding;
+import static org.firstinspires.ftc.teamcode.RobotState.launchMotorSpinStartTime;
 import static org.firstinspires.ftc.teamcode.RobotState.launchQueue;
 import static org.firstinspires.ftc.teamcode.RobotState.launcherRPM;
 import static org.firstinspires.ftc.teamcode.RobotState.launching;
@@ -359,8 +361,10 @@ public class TeleOpFunctions {
             launchQueue.remove(0);
         }
         if (launchQueue.isEmpty()) return;
+        if (!robot.areLaunchMotorsSpinning()) launchMotorSpinStartTime = runtime.seconds();
         robot.spinLaunchMotors();
-        if (robot.launchMotorsToSpeed() && robot.isIndexerStill()) {
+        if ((robot.launchMotorsToSpeed() || runtime.seconds() - launchMotorSpinStartTime >
+                MAX_LAUNCHER_SPIN_WAIT) && robot.isIndexerStill()) {
             robot.pushArtifactToLaunch();
             launching = true;
         }

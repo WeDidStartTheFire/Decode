@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.autos;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
@@ -102,7 +103,8 @@ public class Auto_RedClose extends OpMode {
                 setState(State.PUSH_ARTIFACT);
                 break;
             case PUSH_ARTIFACT:
-                if (robot.follower.isBusy() || !robot.isIndexerStill() || !robot.launchMotorsToSpeed())
+                if (robot.follower.isBusy() || !robot.isIndexerStill() || (!robot.launchMotorsToSpeed() &&
+                        stateTimer.getElapsedTimeSeconds() < MAX_LAUNCHER_SPIN_WAIT))
                     break;
                 robot.spinLaunchMotors();
                 robot.pushArtifactToLaunch();

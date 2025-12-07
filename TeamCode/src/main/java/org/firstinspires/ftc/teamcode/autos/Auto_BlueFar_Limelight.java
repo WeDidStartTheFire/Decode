@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.autos;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
+import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
@@ -123,7 +124,8 @@ public class Auto_BlueFar_Limelight extends OpMode {
                 setState(State.PUSH_ARTIFACT);
                 break;
             case PUSH_ARTIFACT:
-                if (robot.follower.isBusy() || !robot.isIndexerStill() || !robot.launchMotorsToSpeed())
+                if (robot.follower.isBusy() || !robot.isIndexerStill() || (!robot.launchMotorsToSpeed() &&
+                        stateTimer.getElapsedTimeSeconds() < MAX_LAUNCHER_SPIN_WAIT))
                     break;
                 robot.spinLaunchMotors();
                 robot.pushArtifactToLaunch();
@@ -147,7 +149,7 @@ public class Auto_BlueFar_Limelight extends OpMode {
                 Artifact desired = motif.getNthArtifact(numLaunched);
                 Artifact current = robot.getArtifact();
                 if (current == desired) {
-                    setStateNoWait(State.PUSH_ARTIFACT);
+                    setState(State.PUSH_ARTIFACT);
                     numLaunched++;
                     break;
                 }

@@ -23,7 +23,8 @@ public class RobotState {
     public static Pose savedPose;
     public static Vector vel;
     public static boolean aiming;
-    public static float launcherRPM = DEFAULT_LAUNCHER_RPM;
+    public static double launcherRPM = DEFAULT_LAUNCHER_RPM;
+    public static double launchMotorSpinStartTime;
     public static Motif motif;
     public static ArrayList<Artifact> launchQueue = new ArrayList<>();
     public static Artifact[] artifacts = {UNKNOWN, UNKNOWN, UNKNOWN};

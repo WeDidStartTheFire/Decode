@@ -102,10 +102,15 @@ public class TeleOpFunctions {
                 RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
     }
 
+    private ProjectileSolver.LaunchSolution getLaunchSolutionStationary() {
+        return ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT, new Vector(),
+                RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
+    }
+
     private void holdCurrentPose() {
         Pose holdPose = holding ? follower.getCurrentPath() != null ? follower.getCurrentPath().endPose() : pose : pose;
         if (aiming) {
-            ProjectileSolver.LaunchSolution sol = getLaunchSolution();
+            ProjectileSolver.LaunchSolution sol = getLaunchSolutionStationary();
             holdPose = sol == null ? holdPose : holdPose.withHeading(sol.phi);
         }
         follower.holdPoint(holdPose);

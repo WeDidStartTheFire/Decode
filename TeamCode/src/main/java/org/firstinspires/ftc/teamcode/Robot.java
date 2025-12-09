@@ -164,7 +164,7 @@ public class Robot {
     public void setIndexerServoPos(double pos) {
         updateIndexerPos();
         resetIndexerTimer();
-        goalIndexerPos = pos == .5 ? MIDDLE_INDEXER_POS : pos;
+        goalIndexerPos = abs(.5 - pos) < 1e-4 ? MIDDLE_INDEXER_POS : pos;
         if (indexerServo != null) indexerServo.setPosition(goalIndexerPos);
     }
 

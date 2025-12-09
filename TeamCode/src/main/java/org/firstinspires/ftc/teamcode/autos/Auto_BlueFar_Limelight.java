@@ -36,6 +36,7 @@ public class Auto_BlueFar_Limelight extends OpMode {
     private State state;
     private int numLaunched = 0;
     private final Artifact[] artifacts = {UNKNOWN, UNKNOWN, UNKNOWN};
+    private int failedCount = 0;
 
     private enum State {
         FINISHED,
@@ -52,15 +53,11 @@ public class Auto_BlueFar_Limelight extends OpMode {
     private final Pose endPose = new Pose(40.500, 35.000, toRadians(180));
 
     private void buildPaths() {
-        path1 = robot.follower
-                .pathBuilder()
-                .addPath(
-                        new BezierLine(startPose, shootPose)
-                )
+        path1 = robot.follower.pathBuilder()
+                .addPath(new BezierLine(startPose, shootPose))
                 .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
-        path2 = robot.follower
-                .pathBuilder()
+        path2 = robot.follower.pathBuilder()
                 .addPath(new BezierLine(shootPose, endPose))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), endPose.getHeading())
                 .build();
@@ -78,6 +75,7 @@ public class Auto_BlueFar_Limelight extends OpMode {
         tm = robot.drivetrain.tm;
         buildPaths();
         tm.print("🟦Blue🟦 Far Limelight Auto initialized");
+        tm.print("Motif", motif);
         tm.update();
     }
 
@@ -106,9 +104,10 @@ public class Auto_BlueFar_Limelight extends OpMode {
         tm.print("Distance", robot.getInches());
         tm.print("Artifact", robot.getArtifact());
         tm.print("Motif", motif);
-        tm.print("0", motif.getNthArtifact(0));
-        tm.print("1", motif.getNthArtifact(1));
-        tm.print("2", motif.getNthArtifact(2));
+        tm.print("Artifact 1", artifacts[0]);
+        tm.print("Artifact 2", artifacts[1]);
+        tm.print("Artifact 3", artifacts[2]);
+        Artifact desired, current;
         switch (state) {
             case DETECT_MOTIF:
                 robot.setIndexerServoPos(0);
@@ -126,14 +125,29 @@ public class Auto_BlueFar_Limelight extends OpMode {
                 break;
             case PUSH_ARTIFACT:
                 if (!robot.isIndexerStill() || (!robot.launchMotorsToSpeed() &&
-                        stateTimer.getElapsedTimeSeconds() < MAX_LAUNCHER_SPIN_WAIT))
+                        stateTimer.getElapsedTimeSeconds() < MAX_LAUNCHER_SPIN_WAIT)) break;
+                desired = motif.getNthArtifact(numLaunched);
+                current = robot.getArtifact();
+                if (current != desired) {
+                    if (failedCount < 10) {
+                        failedCount++;
+                        break;
+                    }
+                    failedCount = 0;
+                    setState(State.ROTATE_INDEXER);
                     break;
+                }
                 robot.spinLaunchMotors();
                 robot.pushArtifactToLaunch();
                 setState(State.RETRACT_FEEDER);
                 break;
             case RETRACT_FEEDER:
-                if (robot.getArtifact() != Artifact.UNKNOWN) break;
+                current = robot.getArtifact();
+                if (current != UNKNOWN && stateTimer.getElapsedTimeSeconds() < 2) break;
+                if (current == UNKNOWN) {
+                    numLaunched++;
+                    artifacts[(int) (robot.getGoalIndexerPos() * 2)] = UNKNOWN;
+                }
                 robot.retractFeeder();
                 setState(State.ROTATE_INDEXER);
                 break;
@@ -147,20 +161,17 @@ public class Auto_BlueFar_Limelight extends OpMode {
                     break;
                 }
                 if (!robot.isIndexerStill()) break;
-                Artifact desired = motif.getNthArtifact(numLaunched);
-                Artifact current = robot.getArtifact();
+                desired = motif.getNthArtifact(numLaunched);
+                current = robot.getArtifact();
                 if (current == desired) {
                     setState(State.PUSH_ARTIFACT);
-                    numLaunched++;
                     break;
                 }
                 artifacts[(int) (pos * 2)] = current;
                 int idx = Arrays.asList(artifacts).indexOf(desired);
                 if (idx != -1) {
                     robot.setIndexerServoPos(idx / 2.0);
-                    artifacts[idx] = UNKNOWN;
                     setState(State.PUSH_ARTIFACT);
-                    numLaunched++;
                     break;
                 }
                 robot.setIndexerServoPos((pos + 0.5) % 1.5);

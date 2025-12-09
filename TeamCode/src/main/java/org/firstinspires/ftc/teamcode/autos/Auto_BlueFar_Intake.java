@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.autos;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
@@ -20,7 +21,7 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 
-@Autonomous(name = "🟦Blue🟦 Far Intake", group = "!!!Primary", preselectTeleOp = "Blue Main")
+@Autonomous(name = "🟦Blue🟦 Far Intake", group = "!!!Primary", preselectTeleOp = BLUE_TELEOP_NAME)
 public class Auto_BlueFar_Intake extends OpMode {
     private Robot robot;
 
@@ -109,7 +110,7 @@ public class Auto_BlueFar_Intake extends OpMode {
         RobotState.motif = robot.getMotif();
         tm = robot.drivetrain.tm;
         buildPaths();
-        tm.print("🟦Blue🟦 Far Auto initialized");
+        tm.print("🟦Blue🟦 Far Intake Auto initialized");
         tm.update();
     }
 
@@ -135,6 +136,13 @@ public class Auto_BlueFar_Intake extends OpMode {
         tm.print("Path State", state);
         tm.print("Indexer Pos", robot.getGoalIndexerPos());
         tm.print("Pose", pose);
+        tm.print("Motor Goal Vel", robot.getLaunchMotorVel(shootPose));
+        tm.print("Motor A Vel", robot.launcherMotorA.getVelocity());
+        tm.print("Motor B Vel", robot.launcherMotorB.getVelocity());
+        tm.print("Feeder Up", robot.isFeederUp());
+        tm.print("Artifact", robot.getArtifact());
+        tm.print("Color", robot.getColor());
+        tm.print("Inches", robot.getInches());
         switch (state) {
             case FOLLOW_PATH_1:
                 robot.setIndexerServoPos(0);

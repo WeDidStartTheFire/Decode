@@ -62,6 +62,9 @@ public class RobotConstants {
     static final Pose[] RED_ROBOT_POSITIONS = {new Pose(41, 32, toRadians(180))};
     static final Pose[] BLUE_ROBOT_POSITIONS = {new Pose(103, 32, toRadians(180))};
 
+    public static final String BLUE_TELEOP_NAME = "🟦Blue🟦 Main";
+    public static final String RED_TELEOP_NAME = "🟥Red🟥 Main";
+
     public enum Dir {
         LEFT, RIGHT, FORWARD, BACKWARD
     }

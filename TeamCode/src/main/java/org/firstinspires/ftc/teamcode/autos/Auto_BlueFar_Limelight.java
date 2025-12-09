@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.autos;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
+import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
@@ -25,7 +26,7 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import java.util.Arrays;
 
 
-@Autonomous(name = "🟦Blue🟦 Far Limelight", group = "!!Secondary", preselectTeleOp = "Blue Main")
+@Autonomous(name = "🟦Blue🟦 Far Limelight", group = "!!Secondary", preselectTeleOp = BLUE_TELEOP_NAME)
 public class Auto_BlueFar_Limelight extends OpMode {
     private Robot robot;
 
@@ -101,6 +102,10 @@ public class Auto_BlueFar_Limelight extends OpMode {
         tm.print("Path State", state);
         tm.print("Indexer Pos", robot.getGoalIndexerPos());
         tm.print("Pose", pose);
+        tm.print("Motor Goal Vel", robot.getLaunchMotorVel(shootPose));
+        tm.print("Motor A Vel", robot.launcherMotorA.getVelocity());
+        tm.print("Motor B Vel", robot.launcherMotorB.getVelocity());
+        tm.print("Feeder Up", robot.isFeederUp());
         tm.print("Distance", robot.getInches());
         tm.print("Artifact", robot.getArtifact());
         tm.print("Motif", motif);

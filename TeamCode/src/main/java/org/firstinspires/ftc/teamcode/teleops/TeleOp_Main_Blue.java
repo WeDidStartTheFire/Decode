@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleops;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
+import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotState.auto;
 import static org.firstinspires.ftc.teamcode.RobotState.following;
 import static org.firstinspires.ftc.teamcode.RobotState.holding;
@@ -17,7 +18,7 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TeleOpFunctions;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
-@TeleOp(name = "🟦Blue🟦 Main", group = "Main")
+@TeleOp(name = BLUE_TELEOP_NAME, group = "Main")
 public class TeleOp_Main_Blue extends OpMode {
     public TeleOpFunctions teleop;
     public Robot robot;

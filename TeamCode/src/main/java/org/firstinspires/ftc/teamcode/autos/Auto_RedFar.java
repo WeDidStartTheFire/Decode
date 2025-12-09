@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.autos;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
+import static org.firstinspires.ftc.teamcode.RobotConstants.RED_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
@@ -19,7 +20,7 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
-@Autonomous(name = "🟥Red🟥 Far", group = "!!!Primary", preselectTeleOp = "Red Main")
+@Autonomous(name = "🟥Red🟥 Far", group = "!!!Primary", preselectTeleOp = RED_TELEOP_NAME)
 public class Auto_RedFar extends OpMode {
     private Robot robot;
 

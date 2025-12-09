@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.autos;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
@@ -20,7 +21,7 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 
-@Autonomous(name = "🟦Blue🟦 Close", group = "!!!Primary", preselectTeleOp = "Blue Main")
+@Autonomous(name = "🟦Blue🟦 Close", group = "!!!Primary", preselectTeleOp = BLUE_TELEOP_NAME)
 public class Auto_BlueClose extends OpMode {
     private Robot robot;
 
@@ -95,7 +96,6 @@ public class Auto_BlueClose extends OpMode {
         tm.print("Artifact", robot.getArtifact());
         tm.print("Color", robot.getColor());
         tm.print("Inches", robot.getInches());
-        tm.print("🥀");
         switch (state) {
             case FOLLOW_PATH_1:
                 robot.setIndexerServoPos(0);

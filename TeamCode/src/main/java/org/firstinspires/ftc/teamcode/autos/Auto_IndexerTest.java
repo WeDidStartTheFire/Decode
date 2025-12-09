@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.autos;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
@@ -18,7 +19,7 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 
-@Autonomous(name = "Indexer and Feeder Test", group = "Test", preselectTeleOp = "Blue Main")
+@Autonomous(name = "Indexer and Feeder Test", group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
 public class Auto_IndexerTest extends OpMode {
     private Robot robot;
 

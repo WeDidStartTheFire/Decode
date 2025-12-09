@@ -39,26 +39,18 @@ public class Auto_BlueFar extends OpMode {
         ROTATE_INDEXER,
     }
 
+    private final Pose startPose = new Pose(63.500, 8.500, toRadians(90));
+    private final Pose shootPose = new Pose(60.000, 20.000, toRadians(114.80566575481602));
+    private final Pose endPose = new Pose(40.500, 35.000, toRadians(180));
+
     private void buildPaths() {
-        path1 = robot.follower
-                .pathBuilder()
-                .addPath(
-                        new BezierLine(new Pose(63.500, 8.500), new Pose(60.000, 20.000))
-                )
-                .setLinearHeadingInterpolation(
-                        toRadians(90),
-                        toRadians(112.4794343971)
-                )
+        path1 = robot.follower.pathBuilder()
+                .addPath(new BezierLine(startPose, shootPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
-        path2 = robot.follower
-                .pathBuilder()
-                .addPath(
-                        new BezierLine(new Pose(60.000, 20.000), new Pose(40.500, 35.000))
-                )
-                .setLinearHeadingInterpolation(
-                        toRadians(112.4794343971),
-                        toRadians(180)
-                )
+        path2 = robot.follower.pathBuilder()
+                .addPath(new BezierLine(shootPose, endPose))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), endPose.getHeading())
                 .build();
     }
 
@@ -67,7 +59,7 @@ public class Auto_BlueFar extends OpMode {
         RobotState.auto = true;
         RobotState.color = RobotConstants.Color.BLUE;
         robot = new Robot(hardwareMap, telemetry, true);
-        robot.follower.setStartingPose(new Pose(63.500, 8.500, toRadians(90)));
+        robot.follower.setStartingPose(startPose);
         RobotState.motif = robot.getMotif();
         tm = robot.drivetrain.tm;
         buildPaths();
@@ -97,7 +89,7 @@ public class Auto_BlueFar extends OpMode {
         tm.print("Path State", state);
         tm.print("Indexer Pos", robot.getGoalIndexerPos());
         tm.print("Pose", pose);
-        tm.print("Motor Goal Vel", robot.getLaunchMotorVel(path1.endPose()));
+        tm.print("Motor Goal Vel", robot.getLaunchMotorVel(shootPose));
         tm.print("Motor A Vel", robot.launcherMotorA.getVelocity());
         tm.print("Motor B Vel", robot.launcherMotorB.getVelocity());
         tm.print("Feeder Up", robot.isFeederUp());
@@ -113,7 +105,7 @@ public class Auto_BlueFar extends OpMode {
                 break;
             case SPIN_LAUNCH_MOTORS:
                 if (robot.follower.isBusy()) break;
-                robot.spinLaunchMotors(path1.endPose());
+                robot.spinLaunchMotors(shootPose);
                 setState(State.PUSH_ARTIFACT);
                 break;
             case PUSH_ARTIFACT:

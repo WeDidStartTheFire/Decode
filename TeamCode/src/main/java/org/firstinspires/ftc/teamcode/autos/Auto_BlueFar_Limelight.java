@@ -47,26 +47,22 @@ public class Auto_BlueFar_Limelight extends OpMode {
         ROTATE_INDEXER,
     }
 
+    private final Pose startPose = new Pose(63.500, 8.500, toRadians(90));
+    private final Pose shootPose = new Pose(60.000, 20.000, toRadians(114.80566575481602));
+    private final Pose endPose = new Pose(40.500, 35.000, toRadians(180));
+
     private void buildPaths() {
         path1 = robot.follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(63.500, 8.500), new Pose(60.000, 20.000))
+                        new BezierLine(startPose, shootPose)
                 )
-                .setLinearHeadingInterpolation(
-                        toRadians(90),
-                        toRadians(112.4794343971)
-                )
+                .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
         path2 = robot.follower
                 .pathBuilder()
-                .addPath(
-                        new BezierLine(new Pose(60.000, 20.000), new Pose(40.500, 35.000))
-                )
-                .setLinearHeadingInterpolation(
-                        toRadians(112.4794343971),
-                        toRadians(180)
-                )
+                .addPath(new BezierLine(shootPose, endPose))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), endPose.getHeading())
                 .build();
     }
 
@@ -77,7 +73,7 @@ public class Auto_BlueFar_Limelight extends OpMode {
         limelight.start();
         RobotState.auto = true;
         robot = new Robot(hardwareMap, telemetry, true);
-        robot.follower.setStartingPose(new Pose(63.500, 8.500, toRadians(90)));
+        robot.follower.setStartingPose(startPose);
         RobotState.motif = robot.getMotif();
         tm = robot.drivetrain.tm;
         buildPaths();
@@ -125,7 +121,7 @@ public class Auto_BlueFar_Limelight extends OpMode {
                 break;
             case SPIN_LAUNCH_MOTORS:
                 if (robot.follower.isBusy()) break;
-                robot.spinLaunchMotors(path1.endPose());
+                robot.spinLaunchMotors(shootPose);
                 setState(State.PUSH_ARTIFACT);
                 break;
             case PUSH_ARTIFACT:

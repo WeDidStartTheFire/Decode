@@ -39,20 +39,18 @@ public class Auto_BlueClose extends OpMode {
         ROTATE_INDEXER,
     }
 
+    private final Pose startPose = new Pose(19.541233442405954, 121.478672985782, toRadians(144));
+    private final Pose shootPose = new Pose(58.291, 84.630, toRadians(134.4257895029621));
+    private final Pose endPose = new Pose(40.804, 60.018, toRadians(180));
+
     private void buildPaths() {
         path1 = robot.follower.pathBuilder()
-                .addPath(
-                        // Path 1
-                        new BezierLine(new Pose(17.271, 121.115), new Pose(58.291, 84.630))
-                )
-                .setLinearHeadingInterpolation(toRadians(143), toRadians(132.0229330904))
+                .addPath(new BezierLine(startPose, shootPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
         path2 = robot.follower.pathBuilder()
-                .addPath(
-                        // Path 2
-                        new BezierLine(new Pose(58.291, 84.630), new Pose(40.804, 60.018))
-                )
-                .setLinearHeadingInterpolation(toRadians(132.0229330904), toRadians(180))
+                .addPath(new BezierLine(shootPose, endPose))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), endPose.getHeading())
                 .build();
     }
 
@@ -61,7 +59,7 @@ public class Auto_BlueClose extends OpMode {
         RobotState.auto = true;
         RobotState.color = RobotConstants.Color.BLUE;
         robot = new Robot(hardwareMap, telemetry, true);
-        robot.follower.setStartingPose(new Pose(17.271, 121.115, toRadians(143)));
+        robot.follower.setStartingPose(startPose);
         tm = robot.drivetrain.tm;
         buildPaths();
         tm.print("🟦Blue🟦 Close Auto initialized");
@@ -90,7 +88,7 @@ public class Auto_BlueClose extends OpMode {
         tm.print("Path State", state);
         tm.print("Indexer Pos", robot.getGoalIndexerPos());
         tm.print("Pose", pose);
-        tm.print("Motor Goal Vel", robot.getLaunchMotorVel(path1.endPose()));
+        tm.print("Motor Goal Vel", robot.getLaunchMotorVel(shootPose));
         tm.print("Motor A Vel", robot.launcherMotorA.getVelocity());
         tm.print("Motor B Vel", robot.launcherMotorB.getVelocity());
         tm.print("Feeder Up", robot.isFeederUp());
@@ -106,7 +104,7 @@ public class Auto_BlueClose extends OpMode {
                 break;
             case SPIN_LAUNCH_MOTORS:
                 if (robot.follower.isBusy()) break;
-                robot.spinLaunchMotors(path1.endPose());
+                robot.spinLaunchMotors(shootPose);
                 setState(State.PUSH_ARTIFACT);
                 break;
             case PUSH_ARTIFACT:

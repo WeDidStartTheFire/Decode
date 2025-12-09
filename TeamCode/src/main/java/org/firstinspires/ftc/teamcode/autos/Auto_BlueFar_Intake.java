@@ -47,73 +47,56 @@ public class Auto_BlueFar_Intake extends OpMode {
         RETURN_TO_LAUNCH,
     }
 
+    private final Pose startPose = new Pose(63.500, 8.500, toRadians(90));
+    private final Pose shootPose = new Pose(60.000, 20.000, toRadians(114.80566575481602));
+
     private void buildPaths() {
         path1 = robot.follower
                 .pathBuilder()
-                .addPath(
-                        new BezierLine(new Pose(63.500, 8.500), new Pose(60.000, 20.000))
-                )
-                .setLinearHeadingInterpolation(
-                        toRadians(90),
-                        toRadians(112.4794343971)
-                )
+                .addPath(new BezierLine(startPose, shootPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
         path2 = robot.follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(60.000, 20.000), new Pose(40.500, 35.000))
+                        new BezierLine(shootPose, new Pose(40.500, 35.000))
                 )
-                .setLinearHeadingInterpolation(
-                        toRadians(112.4794343971),
-                        toRadians(180)
-                )
+                .setLinearHeadingInterpolation(shootPose.getHeading(), toRadians(180))
                 .build();
         path3 = robot.follower
                 .pathBuilder()
                 .addPath(
                         new BezierLine(new Pose(40.000, 35.000), new Pose(30.000, 35.000))
                 )
-                .setConstantHeadingInterpolation(
-                        toRadians(180)
-                )
+                .setConstantHeadingInterpolation(toRadians(180))
                 .build();
         path4 = robot.follower
                 .pathBuilder()
                 .addPath(
                         new BezierLine(new Pose(30, 35), new Pose(25, 35))
                 )
-                .setConstantHeadingInterpolation(
-                        toRadians(180)
-                )
+                .setConstantHeadingInterpolation(toRadians(180))
                 .build();
         path5 = robot.follower
                 .pathBuilder()
                 .addPath(
                         new BezierLine(new Pose(25, 35), new Pose(20, 35))
                 )
-                .setConstantHeadingInterpolation(
-                        toRadians(180)
-                )
+                .setConstantHeadingInterpolation(toRadians(180))
                 .build();
         path6 = robot.follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(20, 35), new Pose(60.000, 20.000))
+                        new BezierLine(new Pose(20, 35), shootPose)
                 )
-                .setLinearHeadingInterpolation(
-                        toRadians(90),
-                        toRadians(112.4794343971)
-                )
+                .setLinearHeadingInterpolation(toRadians(180), shootPose.getHeading())
                 .build();
         path7 = robot.follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(60, 20), new Pose(25, 8.5))
+                        new BezierLine(shootPose, new Pose(25, 8.5))
                 )
-                .setLinearHeadingInterpolation(
-                    toRadians(112.4794343971),
-                        toRadians(90)
-                )
+                .setLinearHeadingInterpolation(shootPose.getHeading(), toRadians(90))
                 .build();
     }
 
@@ -122,7 +105,7 @@ public class Auto_BlueFar_Intake extends OpMode {
         RobotState.auto = true;
         RobotState.color = RobotConstants.Color.BLUE;
         robot = new Robot(hardwareMap, telemetry, true);
-        robot.follower.setStartingPose(new Pose(63.500, 8.500, toRadians(90)));
+        robot.follower.setStartingPose(startPose);
         RobotState.motif = robot.getMotif();
         tm = robot.drivetrain.tm;
         buildPaths();
@@ -160,7 +143,7 @@ public class Auto_BlueFar_Intake extends OpMode {
                 break;
             case SPIN_LAUNCH_MOTORS:
                 if (robot.follower.isBusy()) break;
-                robot.spinLaunchMotors(path1.endPose());
+                robot.spinLaunchMotors(shootPose);
                 setState(State.PUSH_ARTIFACT);
                 break;
             case PUSH_ARTIFACT:

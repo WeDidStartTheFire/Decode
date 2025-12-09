@@ -1,15 +1,15 @@
 package org.firstinspires.ftc.teamcode.autos;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 
 import com.pedropathing.util.Timer;
 
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.RobotConstants;
 
 public class Launcher {
 
-    private Robot robot;
+    private final Robot robot;
     private State state;
     private final Timer stateTimer = new Timer();
     private boolean isBusy;
@@ -22,7 +22,7 @@ public class Launcher {
         PUSH_ARTIFACT
     }
 
-    public void init(Robot robot) {
+    public Launcher(Robot robot) {
         this.robot = robot;
         setState(State.IDLE);
         isBusy = false;
@@ -48,8 +48,7 @@ public class Launcher {
             case ROTATE_INDEX:
                 robot.retractFeeder();
                 if (robot.isFeederUp()) break;
-                double goalPos = ((artifactsToLaunch - 1) % 3) / 2.0;
-                if (goalPos == 0.5) goalPos = MIDDLE_INDEXER_POS;
+                double goalPos = ((3 - artifactsToLaunch) % 3) / 2.0;
                 robot.setIndexerServoPos(goalPos);
                 setState(State.PUSH_ARTIFACT);
                 break;
@@ -62,7 +61,7 @@ public class Launcher {
                 setState(State.RETRACT_FEEDER);
                 break;
             case RETRACT_FEEDER:
-                if (robot.getInches() != 6) break;
+                if (robot.getArtifact() != RobotConstants.Artifact.UNKNOWN) break;
                 artifactsToLaunch--;
                 robot.retractFeeder();
                 if (artifactsToLaunch > 0) setState(State.ROTATE_INDEX);
@@ -77,5 +76,9 @@ public class Launcher {
 
     public boolean isBusy() {
         return isBusy;
+    }
+
+    public String getState() {
+        return state.toString();
     }
 }

@@ -39,8 +39,8 @@ public class TelemetryUtils {
      * @param content Content to display in telemetry
      */
     public void print(String content) {
-        telemetryM.addLine(content);
 //        telemetry.addLine(content);
+        telemetryM.addLine(content);
     }
 
     /**
@@ -48,7 +48,7 @@ public class TelemetryUtils {
      */
     public void update() {
 //        telemetry.update();
-        telemetryM.update();
+        telemetryM.update(telemetry);
     }
 
     /**

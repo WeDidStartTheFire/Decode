@@ -6,6 +6,7 @@ import static java.lang.Math.toRadians;
 import androidx.annotation.NonNull;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.bylazar.field.Style;
 import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -64,6 +65,9 @@ public class RobotConstants {
 
     public static final String BLUE_TELEOP_NAME = "🟦Blue🟦 Main";
     public static final String RED_TELEOP_NAME = "🟥Red🟥 Main";
+
+    public static final Style historyLook = new Style("", "#4CAF50", 0.0);
+    public static final Style robotLook = new Style("", "#3F51B5", 0.0);
 
     public enum Dir {
         LEFT, RIGHT, FORWARD, BACKWARD
@@ -135,9 +139,9 @@ public class RobotConstants {
         public String toString() {
             switch (this) {
                 case GREEN:
-                    return "\uD83D\uDFE2Green\uD83D\uDFE2";
+                    return "🟢Green🟢";
                 case PURPLE:
-                    return "\uD83D\uDFE3Purple\uD83D\uDFE3";
+                    return "🟣Purple🟣";
                 case UNKNOWN:
                     return "◌Empty◌";
                 default:

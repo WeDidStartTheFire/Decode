@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.autos;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
+import static org.firstinspires.ftc.teamcode.RobotConstants.historyLook;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
@@ -110,6 +111,7 @@ public class Auto_BlueFar_RefactorTest extends OpMode {
         pathUpdate();
         launcher.update();
 
+        TelemetryUtils.drawPoseHistory(robot.follower.getPoseHistory(), historyLook);
         tm.print("Path State", state);
         tm.print("Launcher State", launcher.getState());
         tm.print("Indexer Pos", robot.getGoalIndexerPos());

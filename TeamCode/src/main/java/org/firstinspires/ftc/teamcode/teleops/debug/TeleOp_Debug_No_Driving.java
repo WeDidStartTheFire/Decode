@@ -1,25 +1,20 @@
-package org.firstinspires.ftc.teamcode.teleops.other;
+package org.firstinspires.ftc.teamcode.teleops.debug;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
-@TeleOp(name = "Test Adjustable RPM", group = "Test")
-@Disabled
-public class TeleOp_Debug_AdjustableRPM extends OpMode {
+@TeleOp(name = "Test No Driving", group = "Test")
+public class TeleOp_Debug_No_Driving extends OpMode {
 
     boolean wasDownA = false;
     boolean wasDownB = false;
     public Servo servoA, servoB, servoC, servoD;
     public DcMotorEx motorA, motorB;
-    public final int TICKS_PER_REVOLUTION = 28;
-    public int MOTOR_RPM = 5800;
-    public int MOTOR_VEL = MOTOR_RPM / TICKS_PER_REVOLUTION;
+    public final int MOTOR_VEL = 5800 / 28;
     public TelemetryUtils tm = new TelemetryUtils(telemetry);
 
     @Override
@@ -46,42 +41,20 @@ public class TeleOp_Debug_AdjustableRPM extends OpMode {
         }
 
         try {
-            motorA = hardwareMap.get(DcMotorEx.class, "leftFront");
+            motorA = hardwareMap.get(DcMotorEx.class, "leftBack");
         } catch (Exception e) {
             tm.except("leftFront motor disconnected (motor A)");
         }
         try {
-            motorB = hardwareMap.get(DcMotorEx.class, "leftBack");
+            motorB = hardwareMap.get(DcMotorEx.class, "rightBack");
         } catch (Exception e) {
             tm.except("leftBack motor disconnected (motor B)");
         }
+
     }
 
     @Override
     public void loop() {
-
-        if (gamepad1.dpadUpWasPressed()) MOTOR_RPM += 100;
-        if (gamepad1.dpadDownWasPressed()) MOTOR_RPM -= 100;
-        MOTOR_VEL = MOTOR_RPM / TICKS_PER_REVOLUTION;
-
-        tm.print("Goal RPM", MOTOR_RPM);
-
-        if (motorA != null) {
-            if (gamepad1.left_stick_y < -.05) motorA.setVelocity(MOTOR_VEL); // Up
-            else if (gamepad1.left_stick_y > .05) motorA.setVelocity(-MOTOR_VEL); // Down
-            else motorA.setVelocity(0);
-            tm.print("Motor A RPM", motorA.getVelocity(AngleUnit.DEGREES) / 360 * 60);
-        } else tm.addLastActionTelemetry("motorA disconnected");
-
-        if (motorB != null) {
-            if (gamepad1.right_stick_y < -.05) motorB.setVelocity(MOTOR_VEL); // Up
-            else if (gamepad1.right_stick_y > .05) motorB.setVelocity(-MOTOR_VEL); // Down
-            else motorB.setVelocity(0);
-            tm.print("Motor B RPM", motorB.getVelocity(AngleUnit.DEGREES) / 360 * 60);
-        } else tm.addLastActionTelemetry("motorB disconnected");
-
-        tm.addLastActionTelemetry("");
-
         if (servoA != null) {
             if (gamepad1.a && !wasDownA) {
                 if (servoA.getPosition() > 0.95) {
@@ -140,6 +113,44 @@ public class TeleOp_Debug_AdjustableRPM extends OpMode {
             }
         } else {
             tm.addLastActionTelemetry("servoD disconnected");
+        }
+
+        if (motorA != null) {
+            if (gamepad1.dpad_up) {
+                motorA.setPower(1);
+            } else if (gamepad1.dpad_down) {
+                motorA.setPower(-1);
+            } else {
+                motorA.setPower(0);
+            }
+//                if (gamepad1.dpad_up) {
+//                    motorA.setVelocity(MOTOR_VEL);
+//                } else if (gamepad1.dpad_down) {
+//                    motorA.setVelocity(-MOTOR_VEL);
+//                } else {
+//                    motorA.setVelocity(0);
+//                }
+        } else {
+            tm.addLastActionTelemetry("motorA disconnected");
+        }
+
+        if (motorB != null) {
+            if (gamepad1.dpad_right) {
+                motorB.setPower(1);
+            } else if (gamepad1.dpad_left) {
+                motorB.setPower(-1);
+            } else {
+                motorB.setPower(0);
+            }
+//                if (gamepad1.dpad_right) {
+//                    motorB.setVelocity(MOTOR_VEL);
+//                } else if (gamepad1.dpad_left) {
+//                    motorB.setVelocity(-MOTOR_VEL);
+//                } else {
+//                    motorB.setVelocity(0);
+//                }
+        } else {
+            tm.addLastActionTelemetry("motorB disconnected");
         }
     }
 }

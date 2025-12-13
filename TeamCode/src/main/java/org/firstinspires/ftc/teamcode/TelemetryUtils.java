@@ -1,12 +1,17 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class TelemetryUtils {
     public Telemetry telemetry;
+    public TelemetryManager telemetryM;
 
     public TelemetryUtils(Telemetry telemetry) {
         this.telemetry = telemetry;
+        telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
     }
 
     /**
@@ -16,7 +21,8 @@ public class TelemetryUtils {
      * @param content Object
      */
     public void print(String caption, Object content) {
-        telemetry.addData(caption, content);
+//        telemetry.addData(caption, content);
+        telemetryM.addData(caption, content);
     }
 
     /**
@@ -25,14 +31,16 @@ public class TelemetryUtils {
      * @param content Content to display in telemetry
      */
     public void print(String content) {
-        telemetry.addLine(content);
+        telemetryM.addLine(content);
+//        telemetry.addLine(content);
     }
 
     /**
      * A less space consuming way to update the displayed telemetry.
      */
     public void update() {
-        telemetry.update();
+//        telemetry.update();
+        telemetryM.update();
     }
 
     /**

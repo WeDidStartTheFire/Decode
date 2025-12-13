@@ -18,7 +18,6 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.RED_ROBOT_POSITIONS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TICKS_PER_REVOLUTION;
 import static org.firstinspires.ftc.teamcode.RobotConstants.baseSpeedMultiplier;
 import static org.firstinspires.ftc.teamcode.RobotConstants.baseTurnSpeed;
-import static org.firstinspires.ftc.teamcode.RobotConstants.historyLook;
 import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
 import static org.firstinspires.ftc.teamcode.RobotConstants.speeds;
 import static org.firstinspires.ftc.teamcode.RobotConstants.teleopHeadingPID;
@@ -127,7 +126,7 @@ public class TeleOpFunctions {
      */
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
         if (usePedro) {
-            TelemetryUtils.drawPoseHistory(robot.follower.getPoseHistory(), historyLook);
+            TelemetryUtils.drawPoseHistory(robot.follower.getPoseHistory());
             tm.print("Pose: (" + round(pose.getX() * 100) / 100 + ", " +
                     round(pose.getY() * 100) / 100 + ", " +
                     round(toDegrees(pose.getHeading()) * 100) / 100 + ")");

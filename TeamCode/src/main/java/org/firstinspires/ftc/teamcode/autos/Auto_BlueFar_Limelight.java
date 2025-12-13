@@ -4,7 +4,6 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.historyLook;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
@@ -100,7 +99,7 @@ public class Auto_BlueFar_Limelight extends OpMode {
         robot.follower.update();
         pose = robot.follower.getPose();
         vel = robot.follower.getVelocity();
-        TelemetryUtils.drawPoseHistory(robot.follower.getPoseHistory(), historyLook);
+        TelemetryUtils.drawPoseHistory(robot.follower.getPoseHistory());
         tm.print("Path State", state);
         tm.print("Indexer Pos", robot.getGoalIndexerPos());
         tm.print("Pose", pose);

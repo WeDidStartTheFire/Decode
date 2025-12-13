@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.autos;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.RED_TELEOP_NAME;
-import static org.firstinspires.ftc.teamcode.RobotConstants.historyLook;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
@@ -86,7 +85,7 @@ public class Auto_RedClose extends OpMode {
         robot.follower.update();
         pose = robot.follower.getPose();
         vel = robot.follower.getVelocity();
-        TelemetryUtils.drawPoseHistory(robot.follower.getPoseHistory(), historyLook);
+        TelemetryUtils.drawPoseHistory(robot.follower.getPoseHistory());
         tm.print("Path State", state);
         tm.print("Indexer Pos", robot.getGoalIndexerPos());
         tm.print("Pose", pose);

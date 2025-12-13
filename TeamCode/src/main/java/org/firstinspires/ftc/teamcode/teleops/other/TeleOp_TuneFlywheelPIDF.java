@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.teleops.other;
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
+import com.bylazar.configurables.annotations.Configurable;
+import com.bylazar.configurables.annotations.IgnoreConfigurable;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -17,10 +19,14 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 
 @TeleOp(name = "Tune Flywheel PIDF", group = "Test")
+@Configurable
 public class TeleOp_TuneFlywheelPIDF extends OpMode {
 
+    @IgnoreConfigurable
     Robot robot;
+    @IgnoreConfigurable
     TelemetryUtils tm;
+    @IgnoreConfigurable
     TeleOpFunctions teleop;
 
     int highGoalVel = 1600;
@@ -29,8 +35,11 @@ public class TeleOp_TuneFlywheelPIDF extends OpMode {
 
     double P = 0;
     double F = 0;
+    @IgnoreConfigurable
     PIDFCoefficients pidf = new PIDFCoefficients(P, 0, 0, F);
+    @IgnoreConfigurable
     PIDFCoefficients defaultpidf;
+    @IgnoreConfigurable
     double[] increments = {10, 1, .1, .01, .001};
     int incIdx = 1;
 
@@ -71,7 +80,7 @@ public class TeleOp_TuneFlywheelPIDF extends OpMode {
         double BVel = robot.launcherMotorB.getVelocity();
         double errorA = AVel - goalVel;
         double errorB = BVel - goalVel;
-        tm.print("Goal Vel", goalVel);
+        tm.print("Target Vel", goalVel);
         tm.print("A Vel", robot.launcherMotorA.getVelocity());
         tm.print("B Vel", robot.launcherMotorB.getVelocity());
         tm.print("A Error", errorA);

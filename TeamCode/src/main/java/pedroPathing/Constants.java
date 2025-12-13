@@ -1,4 +1,4 @@
-package pedroPathing.constants;
+package pedroPathing;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.control.FilteredPIDFCoefficients;

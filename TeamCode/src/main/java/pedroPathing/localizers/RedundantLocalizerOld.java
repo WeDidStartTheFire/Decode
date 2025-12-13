@@ -1,13 +1,13 @@
 package pedroPathing.localizers;
 
 import com.pedropathing.ftc.localization.localizers.OTOSLocalizer;
-import com.pedropathing.localization.Localizer;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.localization.Localizer;
 import com.pedropathing.math.MathFunctions;
 import com.pedropathing.math.Vector;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import pedroPathing.constants.Constants;
+import pedroPathing.Constants;
 
 
 public class RedundantLocalizerOld implements Localizer {

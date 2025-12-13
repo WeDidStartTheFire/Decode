@@ -44,7 +44,7 @@ import org.opencv.core.Scalar;
 import java.util.ArrayList;
 import java.util.List;
 
-import pedroPathing.constants.Constants;
+import pedroPathing.Constants;
 
 public class Robot {
     public Drivetrain drivetrain;

@@ -22,7 +22,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class Constants {
 
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(6.80388555)
+            .mass(10)
             .centripetalScaling(0.0004)
             .forwardZeroPowerAcceleration(-36.835087)
             .lateralZeroPowerAcceleration(-44.409589)
@@ -31,7 +31,7 @@ public class Constants {
             .translationalPIDFCoefficients(new PIDFCoefficients(0.25, 0, 0.024, 0))
             .headingPIDFCoefficients(new PIDFCoefficients(2, 0, 0.13, 0))
             .drivePIDFCoefficients(
-                    new FilteredPIDFCoefficients(0.05, 0, 0.000006, 0.6, 0)
+                    new FilteredPIDFCoefficients(0.04, 0, 0.00006, 0.2, 0)
             );
 
     public static MecanumConstants driveConstants = new MecanumConstants()
@@ -76,8 +76,8 @@ public class Constants {
     public static PathConstraints pathConstraints = new PathConstraints(
             0.995,
             500,
-            1,
-            1
+            1.4,
+            0.9
     );
 
     public static Follower createOTOSFollower(HardwareMap hardwareMap) {

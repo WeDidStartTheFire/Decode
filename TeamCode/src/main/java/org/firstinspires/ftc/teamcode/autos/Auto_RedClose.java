@@ -120,7 +120,8 @@ public class Auto_RedClose extends OpMode {
                 setState(State.RETRACT_FEEDER);
                 break;
             case RETRACT_FEEDER:
-                if (robot.getInches() != 6 || stateTimer.getElapsedTimeSeconds() < .2) break;
+                if ((robot.getInches() != 6 || stateTimer.getElapsedTimeSeconds() < .2) &&
+                        stateTimer.getElapsedTimeSeconds() < 2) break;
                 robot.retractFeeder();
                 setState(State.ROTATE_INDEXER);
                 break;

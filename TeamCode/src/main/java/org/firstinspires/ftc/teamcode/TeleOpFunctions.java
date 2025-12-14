@@ -50,7 +50,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 public class TeleOpFunctions {
@@ -279,6 +278,8 @@ public class TeleOpFunctions {
             return;
         }
         tm.print("Indexer still", robot.isIndexerStill());
+        tm.print("Indexer goal pos", robot.getGoalIndexerPos());
+        tm.print("Indexer pos", robot.getEstimateIndexerPos());
 
         double[] POS = {0.00, 0.25, MIDDLE_INDEXER_POS, 0.75, 1.00, 1.25};
         double[] DOWN = {0.75, 0.75, 0.25, 0.25, 0.75, 0.75};
@@ -343,8 +344,7 @@ public class TeleOpFunctions {
 
     public void autoLaunchLogic() {
         tm.print("launching", launching);
-        tm.print("runtime.seconds()", runtime.seconds());
-        tm.print("Queue length", launchQueue.toArray().length);
+        tm.print("Queue", launchQueue);
         tm.print("Can Launch", robot.canLaunch());
         if (!robot.canLaunch()) return;
         if (gamepad2.aWasPressed()) launchQueue.add(Artifact.GREEN);
@@ -434,12 +434,10 @@ public class TeleOpFunctions {
             tm.print("Retracting feeder and stopping motors");
         }
         if (gamepad2.left_trigger >= 0.3) robot.intakeLaunchMotors(gamepad2.left_trigger);
-        tm.print("Motor A RPM", robot.launcherMotorA.getVelocity(AngleUnit.DEGREES) / 360 * 60);
-        tm.print("Motor B RPM", robot.launcherMotorB.getVelocity(AngleUnit.DEGREES) / 360 * 60);
         tm.print("Motor A Vel", robot.launcherMotorA.getVelocity());
         tm.print("Motor B Vel", robot.launcherMotorB.getVelocity());
         tm.print("Goal", robot.getLaunchMotorVel());
-        tm.print("Motor Velocity", motorVel);
+        tm.print("Motor Velocity (adjustable, unused)", motorVel);
         tm.print("To Speed", robot.launchMotorsToSpeed());
     }
 

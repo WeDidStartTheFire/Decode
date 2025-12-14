@@ -180,6 +180,12 @@ public class TeleOpFunctions {
             return;
         }
 
+        if (gamepad1.dpadLeftWasPressed()) {
+            fieldCentric = false;
+        } else if (gamepad1.dpadRightWasPressed()) {
+            fieldCentric = true;
+        }
+
         double axial, lateral, yaw, xMove, yMove;
         double speedMultiplier = gamepad1.left_bumper ? speeds[2] :
                 lerp(gamepad1.left_trigger, speeds[1], speeds[0]);

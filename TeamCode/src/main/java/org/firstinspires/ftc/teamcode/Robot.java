@@ -17,7 +17,6 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.RED_GOAL_POSE;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static java.lang.Math.abs;
-import static java.lang.Math.signum;
 
 import androidx.annotation.Nullable;
 
@@ -162,7 +161,7 @@ public class Robot {
     }
 
     public void setIndexerServoPos(double pos) {
-        updateIndexerPos();
+        updateInternalBounds();
         resetIndexerTimer();
         goalIndexerPos = abs(.5 - pos) < 1e-4 ? MIDDLE_INDEXER_POS : pos;
         if (indexerServo != null) indexerServo.setPosition(goalIndexerPos);
@@ -173,14 +172,34 @@ public class Robot {
      * <a href="https://www.desmos.com/calculator/pla2kgtybc">this link</a> for a demonstration of
      * how this estimate works
      */
-    private void updateIndexerPos() {
-        if (indexerTimer != null) {
-            double maxMovement = indexerTimer.getElapsedTimeSeconds() * INDEXER_SPEED;
-            minIndexerPos = maxMovement > abs(goalIndexerPos - minIndexerPos) ?
-                    goalIndexerPos : signum(goalIndexerPos - minIndexerPos) * maxMovement + minIndexerPos;
-            maxIndexerPos = maxMovement > abs(goalIndexerPos - maxIndexerPos) ?
-                    goalIndexerPos : signum(goalIndexerPos - maxIndexerPos) * maxMovement + maxIndexerPos;
-        }
+    private void updateInternalBounds() {
+        double[] bounds = calculateCurrentBounds();
+        minIndexerPos = bounds[0];
+        maxIndexerPos = bounds[1];
+    }
+
+    /**
+     * Calculates where the min and max bounds are right now, without modifying the class state.
+     *
+     * @return double[] { min, max }
+     */
+    private double[] calculateCurrentBounds() {
+        if (indexerTimer == null) return new double[]{minIndexerPos, maxIndexerPos};
+
+        double time = indexerTimer.getElapsedTimeSeconds();
+        double maxMovement = time * INDEXER_SPEED;
+
+        double distMin = Math.abs(goalIndexerPos - minIndexerPos);
+        double currentMin = maxMovement > distMin ?
+                goalIndexerPos :
+                minIndexerPos + Math.signum(goalIndexerPos - minIndexerPos) * maxMovement;
+
+        double distMax = Math.abs(goalIndexerPos - maxIndexerPos);
+        double currentMax = maxMovement > distMax ?
+                goalIndexerPos :
+                maxIndexerPos + Math.signum(goalIndexerPos - maxIndexerPos) * maxMovement;
+
+        return new double[]{currentMin, currentMax};
     }
 
     private void resetIndexerTimer() {
@@ -193,12 +212,18 @@ public class Robot {
         return abs(indexerServo.getPosition() - MIDDLE_INDEXER_POS) < 1e-4 ? .5 : indexerServo.getPosition();
     }
 
-    public boolean isIndexerStill() {
-        updateIndexerPos();
-        double epsilon = 1e-4; // Small value to check "equality" even if doubles aren't exactly the same
-        return abs(minIndexerPos - goalIndexerPos) < epsilon && abs(maxIndexerPos - goalIndexerPos) < epsilon;
+    public double getEstimateIndexerPos() {
+        if (indexerServo == null) return -1;
+        double[] bounds = calculateCurrentBounds();
+        return (bounds[0] + bounds[1]) / 2.0;
     }
-
+    public boolean isIndexerStill() {
+        if (indexerTimer == null) return false;
+        double[] bounds = calculateCurrentBounds();
+        double epsilon = 1e-4;
+        return abs(bounds[0] - goalIndexerPos) < epsilon &&
+                abs(bounds[1] - goalIndexerPos) < epsilon;
+    }
     public boolean isIndexerServoConnected() {
         return indexerServo != null;
     }

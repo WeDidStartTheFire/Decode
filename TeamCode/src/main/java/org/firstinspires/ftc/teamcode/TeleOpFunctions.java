@@ -278,6 +278,7 @@ public class TeleOpFunctions {
             tm.print("Indexer Servo not connected");
             return;
         }
+        tm.print("Indexer still", robot.isIndexerStill());
 
         double[] POS = {0.00, 0.25, MIDDLE_INDEXER_POS, 0.75, 1.00, 1.25};
         double[] DOWN = {0.75, 0.75, 0.25, 0.25, 0.75, 0.75};

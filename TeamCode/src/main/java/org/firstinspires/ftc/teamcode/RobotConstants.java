@@ -40,7 +40,7 @@ public class RobotConstants {
     static final double DEFAULT_VELOCITY = 2000;
 
     public static final double MIDDLE_INDEXER_POS = 0.455;
-    public static final double INDEXER_SPEED = 0.35;
+    public static final double INDEXER_SPEED = 1 / 1.3;
 
     public static final double[] speeds = {0.2, 0.6, 1};
 

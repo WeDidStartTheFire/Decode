@@ -31,7 +31,7 @@ public class Constants {
             .translationalPIDFCoefficients(new PIDFCoefficients(0.25, 0, 0.024, 0))
             .headingPIDFCoefficients(new PIDFCoefficients(2, 0, 0.13, 0))
             .drivePIDFCoefficients(
-                    new FilteredPIDFCoefficients(0.04, 0, 0.00006, 0.2, 0)
+                    new FilteredPIDFCoefficients(0.035, 0, 0.0001, 0.2, 0)
             );
 
     public static MecanumConstants driveConstants = new MecanumConstants()
@@ -76,8 +76,8 @@ public class Constants {
     public static PathConstraints pathConstraints = new PathConstraints(
             0.995,
             500,
-            1.4,
-            0.9
+            1.5,
+            0.80
     );
 
     public static Follower createOTOSFollower(HardwareMap hardwareMap) {

@@ -30,7 +30,7 @@ public class TelemetryUtils {
      * @param content Object
      */
     public void print(String caption, Object content) {
-//        telemetry.addData(caption, content);
+        telemetry.addData(caption, content);
         telemetryM.addData(caption, content);
     }
 
@@ -40,7 +40,7 @@ public class TelemetryUtils {
      * @param content Content to display in telemetry
      */
     public void print(String content) {
-//        telemetry.addLine(content);
+        telemetry.addLine(content);
         telemetryM.addLine(content);
     }
 
@@ -48,8 +48,8 @@ public class TelemetryUtils {
      * A less space consuming way to update the displayed telemetry.
      */
     public void update() {
-//        telemetry.update();
-        telemetryM.update(telemetry);
+        telemetry.update();
+        telemetryM.update();
     }
 
     /**

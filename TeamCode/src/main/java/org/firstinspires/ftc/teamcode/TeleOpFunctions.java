@@ -129,9 +129,8 @@ public class TeleOpFunctions {
             tm.print("Pose: (" + round(pose.getX() * 100) / 100 + ", " +
                     round(pose.getY() * 100) / 100 + ", " +
                     round(toDegrees(pose.getHeading()) * 100) / 100 + ")");
-            double speedMultiplier = 1.5 * (gamepad1.left_bumper ? speeds[2] :
-                    lerp(gamepad1.left_trigger, speeds[1], speeds[0]));
-            speedMultiplier *= baseSpeedMultiplier;
+            double speedMultiplier = (gamepad1.left_bumper ? speeds[2] :
+                    lerp(gamepad1.left_trigger, speeds[2], speeds[0]));
 
             if ((abs(gamepad1.left_stick_y) > .05 ||
                     abs(gamepad1.left_stick_x) > .05 || abs(gamepad1.right_stick_x) > .05)) {
@@ -396,7 +395,7 @@ public class TeleOpFunctions {
         tm.print("Artifact 2", artifacts[1]);
         tm.print("Artifact 3", artifacts[2]);
         if (!robot.isIndexerStill()) return;
-        if (artifact == Artifact.UNKNOWN && robot.getInches() < 6) return;
+        if (artifact == Artifact.UNKNOWN && robot.getInches() < 5.5) return;
         double pos = robot.getGoalIndexerPos();
         if (pos == 0) artifacts[0] = artifact;
         else if (abs(pos - .5) < 1e-4 || abs(pos - MIDDLE_INDEXER_POS) < 1e-4)

@@ -14,6 +14,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_HEIGHT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Motif;
 import static org.firstinspires.ftc.teamcode.RobotConstants.RED_GOAL_POSE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.launcherPIDF;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static java.lang.Math.abs;
@@ -53,7 +54,7 @@ public class Robot {
     private Servo feederServoA, feederServoB;
     private Servo indexerServo;
     private Servo led;
-    private CRServo intakeServoA, intakeServoC;
+    private CRServo intakeServoA, intakeServoB, intakeServoC;
     private TouchSensor touchSensorA, touchSensorB;
     public ColorSensor colorSensor;
     public DistanceSensor distanceSensor;
@@ -80,6 +81,8 @@ public class Robot {
             launcherMotorB.setDirection(DcMotorSimple.Direction.REVERSE);
             launcherMotorA.setTargetPosition(0);
             launcherMotorB.setTargetPosition(0);
+            launcherMotorA.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherPIDF);
+            launcherMotorB.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherPIDF);
             launcherMotorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             launcherMotorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         } catch (IllegalArgumentException e) {
@@ -106,6 +109,11 @@ public class Robot {
             intakeServoA.setDirection(DcMotorSimple.Direction.REVERSE);
         } catch (IllegalArgumentException e) {
             tm.except("intakeServoA not connected");
+        }
+        try {
+            intakeServoB = hardwareMap.get(CRServo.class, "intakeServoB"); // Expansion Hub 4
+        } catch (IllegalArgumentException e) {
+            tm.except("intakeServoB not connected");
         }
         try {
             intakeServoC = hardwareMap.get(CRServo.class, "intakeServoC"); // Expansion Hub 5
@@ -157,7 +165,7 @@ public class Robot {
     }
 
     private double ballVelToMotorVel(double ballVel) {
-        return 6.61518 * ballVel;
+        return 6.4 * ballVel;
     }
 
     public void setIndexerServoPos(double pos) {
@@ -274,7 +282,7 @@ public class Robot {
     public void powerIntake(double power) {
         if (intakeMotor != null) intakeMotor.setPower(power);
         if (intakeServoA != null) intakeServoA.setPower(power);
-//        if (intakeServoB != null) intakeServoB.setPower(power);
+        if (intakeServoB != null) intakeServoB.setPower(power);
         if (intakeServoC != null) intakeServoC.setPower(power);
     }
 

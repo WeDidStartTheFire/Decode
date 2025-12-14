@@ -55,6 +55,8 @@ public class RobotConstants {
 
     static final double LAUNCHER_HEIGHT = 15.5;
     static final double LAUNCHER_ANGLE = toRadians(50);
+    static com.qualcomm.robotcore.hardware.PIDFCoefficients launcherPIDF =
+            new com.qualcomm.robotcore.hardware.PIDFCoefficients(80, 0, 0, 20);
     static final Pose3D RED_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 139, 139, 44, 0),
             new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
     static final Pose3D BLUE_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 5, 139, 44, 0),

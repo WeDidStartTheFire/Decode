@@ -33,8 +33,8 @@ public class TeleOp_TuneFlywheelPIDF extends OpMode {
     int lowGoalVel = 1200;
     int goalVel = lowGoalVel;
 
-    double P = 0;
-    double F = 0;
+    double P = 80;
+    double F = 20;
     @IgnoreConfigurable
     PIDFCoefficients pidf = new PIDFCoefficients(P, 0, 0, F);
     @IgnoreConfigurable
@@ -56,8 +56,8 @@ public class TeleOp_TuneFlywheelPIDF extends OpMode {
         tm = robot.drivetrain.tm;
         tm.print("Tune Flywheel PIDF Initialized");
         tm.update();
-        if (robot.launcherMotorA != null)
-            defaultpidf = robot.launcherMotorA.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        if (robot.drivetrain.lf != null)
+            defaultpidf = robot.drivetrain.lf.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     @Override
@@ -89,5 +89,11 @@ public class TeleOp_TuneFlywheelPIDF extends OpMode {
         tm.print("P", P);
         tm.print("F", F);
         tm.print("Increment", increments[incIdx]);
+        tm.print("---------------------------");
+        tm.print("PIDF", pidf);
+        tm.print("PIDF A", robot.launcherMotorA.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
+        tm.print("PIDF B", robot.launcherMotorB.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
+        tm.print("Default PIDF", defaultpidf);
+        tm.update();
     }
 }

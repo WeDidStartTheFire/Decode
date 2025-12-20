@@ -32,7 +32,7 @@ public class Auto_BlueFar_Intake extends OpMode {
     private final Timer stateTimer = new Timer();
     private State state;
 
-    private final boolean intaked = false;
+    private boolean intaked = false;
 
     private enum State {
         FINISHED,
@@ -178,14 +178,52 @@ public class Auto_BlueFar_Intake extends OpMode {
                 double pos = robot.getGoalIndexerPos();
                 if (pos == 1 || pos == -1) {
                     robot.stopLaunchMotors();
-                    robot.follower.followPath(path2, true);
-                    setState(State.FINISHED);
+                    robot.follower.followPath(!intaked ? path2 : path7, true);
+                    setState(!intaked ? State.INTAKE_1 : State.FINISHED);
+                    intaked = true;
                 } else {
                     if (pos == 0) pos = MIDDLE_INDEXER_POS;
                     else pos = 1;
                     robot.setIndexerServoPos(pos);
                     setState(State.PUSH_ARTIFACT);
                 }
+                break;
+            case INTAKE_1:
+                if (robot.follower.isBusy()) break;
+                robot.powerIntake(1);
+                robot.follower.followPath(path3, true);
+                setState(State.INTAKE_2);
+                break;
+            case INTAKE_2:
+                if (robot.follower.isBusy()) break;
+                robot.powerIntake(0);
+                robot.setIndexerServoPos(MIDDLE_INDEXER_POS);
+                setState(State.INTAKE_3);
+                break;
+            case INTAKE_3:
+                if (!robot.isIndexerStill()) break;
+                robot.powerIntake(1);
+                robot.follower.followPath(path4, true);
+                setState(State.INTAKE_4);
+                break;
+            case INTAKE_4:
+                if (robot.follower.isBusy()) break;
+                robot.powerIntake(0);
+                robot.setIndexerServoPos(0);
+                setState(State.INTAKE_5);
+                break;
+            case INTAKE_5:
+                if (!robot.isIndexerStill()) break;
+                robot.powerIntake(1);
+                robot.follower.followPath(path5, true);
+                setState(State.RETURN_TO_LAUNCH);
+                break;
+            case RETURN_TO_LAUNCH:
+                if (robot.follower.isBusy()) break;
+                robot.powerIntake(0);
+                robot.follower.followPath(path6, true);
+                robot.spinLaunchMotors();
+                setState(State.PUSH_ARTIFACT);
                 break;
             case FINISHED:
                 if (!robot.follower.isBusy()) saveOdometryPosition(pose);

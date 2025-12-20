@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.autos;
+package org.firstinspires.ftc.teamcode.autos.in_progress;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.autos.Launcher;
 
 @Autonomous(name = "🟦Blue🟦 Far Refactor Test", group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
 public class Auto_BlueFar_RefactorTest extends OpMode {

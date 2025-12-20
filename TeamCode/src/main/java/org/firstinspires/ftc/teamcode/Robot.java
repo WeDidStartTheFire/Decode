@@ -164,6 +164,10 @@ public class Robot {
                 (touchSensorB != null && !touchSensorB.isPressed());
     }
 
+    public double getFeederPos() {
+        return (feederServoA.getPosition() + feederServoB.getPosition()) / 2.0;
+    }
+
     private double ballVelToMotorVel(double ballVel) {
         return 6.4 * ballVel;
     }

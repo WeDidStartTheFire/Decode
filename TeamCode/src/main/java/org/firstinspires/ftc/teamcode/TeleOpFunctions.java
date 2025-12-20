@@ -448,8 +448,8 @@ public class TeleOpFunctions {
 
     public void feederLogic() {
         tm.print("Feeder Up", robot.isFeederUp());
+        tm.print("Feeder Pos", robot.getFeederPos());
         if (gamepad2.rightBumperWasPressed() && gamepad2.right_trigger >= 0.5 &&
                 robot.isIndexerStill()) robot.pushArtifactToLaunch();
     }
-
 }

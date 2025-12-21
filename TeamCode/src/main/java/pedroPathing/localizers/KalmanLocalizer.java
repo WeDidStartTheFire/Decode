@@ -61,6 +61,8 @@ public class KalmanLocalizer implements Localizer {
     DMatrixRMaj zVel = new DMatrixRMaj(3, 1);
     DMatrixRMaj R_vel = CommonOps_DDRM.identity(3);
 
+    private boolean useDriveEncoderLocalizer = false;
+
     static {
         H_vel.set(0, 3, 1.0);
         H_vel.set(1, 4, 1.0);
@@ -105,6 +107,10 @@ public class KalmanLocalizer implements Localizer {
 
         prevPose = startPose;
         prevNano = System.nanoTime();
+    }
+
+    public void setUseDriveEncoderLocalizer(boolean useDriveEncoderLocalizer) {
+        this.useDriveEncoderLocalizer = useDriveEncoderLocalizer;
     }
 
     public @Nullable Pose getPose() {
@@ -171,19 +177,21 @@ public class KalmanLocalizer implements Localizer {
         kalmanFilter.predict();
 
         // Prepare velocity measurement from encoders and its covariance
-        zVel.set(0, 0, vxEnc);
-        zVel.set(1, 0, vyEnc);
-        zVel.set(2, 0, wEnc);
-        double vxVar = DRIVE_ENC_POSE_VAR / (safeDt * safeDt);
-        double vyVar = DRIVE_ENC_POSE_VAR / (safeDt * safeDt);
-        double wVar = DRIVE_ENC_HEAD_VAR / (safeDt * safeDt);
-        R_vel.set(0, 0, vxVar);
-        R_vel.set(1, 1, vyVar);
-        R_vel.set(2, 2, wVar);
+        if (useDriveEncoderLocalizer) {
+            zVel.set(0, 0, vxEnc);
+            zVel.set(1, 0, vyEnc);
+            zVel.set(2, 0, wEnc);
+            double vxVar = DRIVE_ENC_POSE_VAR / (safeDt * safeDt);
+            double vyVar = DRIVE_ENC_POSE_VAR / (safeDt * safeDt);
+            double wVar = DRIVE_ENC_HEAD_VAR / (safeDt * safeDt);
+            R_vel.set(0, 0, vxVar);
+            R_vel.set(1, 1, vyVar);
+            R_vel.set(2, 2, wVar);
 
-        // Temporarily set H to H_vel, update with encoder velocities
-        kalmanFilter.setH(H_vel);
-        kalmanFilter.update(zVel, R_vel);
+            // Temporarily set H to H_vel, update with encoder velocities
+            kalmanFilter.setH(H_vel);
+            kalmanFilter.update(zVel, R_vel);
+        }
 
         // Prepare OTOS velocity measurement and covariance
         zVel.set(0, 0, vxO);

@@ -18,6 +18,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+import pedroPathing.localizers.KalmanLocalizer;
+
 @Configurable
 public class Constants {
 
@@ -81,9 +83,17 @@ public class Constants {
     );
 
     public static Follower createOTOSFollower(HardwareMap hardwareMap) {
-        return new  FollowerBuilder(followerConstants, hardwareMap)
+        return new FollowerBuilder(followerConstants, hardwareMap)
                 .mecanumDrivetrain(driveConstants)
                 .OTOSLocalizer(otosConstants)
+                .pathConstraints(pathConstraints)
+                .build();
+    }
+
+    public static Follower createKalmanFollowre(HardwareMap hardwareMap) {
+        return new FollowerBuilder(followerConstants, hardwareMap)
+                .mecanumDrivetrain(driveConstants)
+                .setLocalizer(new KalmanLocalizer(hardwareMap))
                 .pathConstraints(pathConstraints)
                 .build();
     }

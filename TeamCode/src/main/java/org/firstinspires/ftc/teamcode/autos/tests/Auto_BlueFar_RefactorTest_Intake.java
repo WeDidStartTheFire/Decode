@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.autos.tests;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
+import static org.firstinspires.ftc.teamcode.RobotConstants.INTAKE_WAIT_TIME;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
@@ -43,6 +44,7 @@ public class Auto_BlueFar_RefactorTest_Intake extends OpMode {
         INTAKE_4,
         INTAKE_5,
         RETURN_TO_LAUNCH,
+        FOLLOW_PATH_7,
     }
 
     private final Pose startPose = new Pose(63.500, 8.500, toRadians(90));
@@ -137,8 +139,13 @@ public class Auto_BlueFar_RefactorTest_Intake extends OpMode {
             case LAUNCH_ARTIFACTS:
                 if (robot.follower.isBusy()) break;
                 launcher.launchArtifacts(3);
-                setState(launchRound == 0 ? State.INTAKE_1 : State.FOLLOW_PATH_2);
+                setState(launchRound == 0 ? State.FOLLOW_PATH_2 : State.FOLLOW_PATH_7);
                 launchRound++;
+                break;
+            case FOLLOW_PATH_2:
+                if (launcher.isBusy()) break;
+                robot.follower.followPath(path2, true);
+                setState(State.INTAKE_1);
                 break;
             case INTAKE_1:
                 if (robot.follower.isBusy()) break;
@@ -147,7 +154,8 @@ public class Auto_BlueFar_RefactorTest_Intake extends OpMode {
                 setState(State.INTAKE_2);
                 break;
             case INTAKE_2:
-                if (robot.follower.isBusy()) break;
+                if (robot.follower.isBusy() ||
+                        stateTimer.getElapsedTimeSeconds() < INTAKE_WAIT_TIME) break;
                 robot.powerIntake(0);
                 robot.setIndexerServoPos(MIDDLE_INDEXER_POS);
                 setState(State.INTAKE_3);
@@ -159,7 +167,8 @@ public class Auto_BlueFar_RefactorTest_Intake extends OpMode {
                 setState(State.INTAKE_4);
                 break;
             case INTAKE_4:
-                if (robot.follower.isBusy()) break;
+                if (robot.follower.isBusy() ||
+                        stateTimer.getElapsedTimeSeconds() < INTAKE_WAIT_TIME) break;
                 robot.powerIntake(0);
                 robot.setIndexerServoPos(0);
                 setState(State.INTAKE_5);
@@ -170,16 +179,17 @@ public class Auto_BlueFar_RefactorTest_Intake extends OpMode {
                 robot.follower.followPath(path5, true);
                 setState(State.RETURN_TO_LAUNCH);
                 break;
-            case FOLLOW_PATH_2:
-                if (launcher.isBusy()) break;
-                robot.follower.followPath(path2, true);
-                setState(State.FINISHED);
-                break;
             case RETURN_TO_LAUNCH:
-                if (robot.follower.isBusy()) break;
+                if (robot.follower.isBusy() ||
+                        stateTimer.getElapsedTimeSeconds() < INTAKE_WAIT_TIME) break;
                 robot.powerIntake(0);
                 robot.follower.followPath(path6, true);
                 setState(State.LAUNCH_ARTIFACTS);
+                break;
+            case FOLLOW_PATH_7:
+                if (launcher.isBusy()) break;
+                robot.follower.followPath(path7, true);
+                setState(State.FINISHED);
                 break;
             case FINISHED:
                 if (!robot.follower.isBusy()) saveOdometryPosition(pose);

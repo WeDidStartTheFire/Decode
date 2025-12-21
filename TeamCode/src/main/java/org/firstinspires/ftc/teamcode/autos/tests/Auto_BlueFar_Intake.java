@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.autos.tests;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_SPEED;
+import static org.firstinspires.ftc.teamcode.RobotConstants.INTAKE_WAIT_TIME;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
@@ -195,7 +196,8 @@ public class Auto_BlueFar_Intake extends OpMode {
                 setState(State.INTAKE_2);
                 break;
             case INTAKE_2:
-                if (robot.follower.isBusy()) break;
+                if (robot.follower.isBusy() ||
+                        stateTimer.getElapsedTimeSeconds() < INTAKE_WAIT_TIME) break;
                 robot.powerIntake(0);
                 robot.setIndexerServoPos(MIDDLE_INDEXER_POS);
                 setState(State.INTAKE_3);
@@ -207,7 +209,8 @@ public class Auto_BlueFar_Intake extends OpMode {
                 setState(State.INTAKE_4);
                 break;
             case INTAKE_4:
-                if (robot.follower.isBusy()) break;
+                if (robot.follower.isBusy() ||
+                        stateTimer.getElapsedTimeSeconds() < INTAKE_WAIT_TIME) break;
                 robot.powerIntake(0);
                 robot.setIndexerServoPos(0);
                 setState(State.INTAKE_5);
@@ -219,7 +222,8 @@ public class Auto_BlueFar_Intake extends OpMode {
                 setState(State.RETURN_TO_LAUNCH);
                 break;
             case RETURN_TO_LAUNCH:
-                if (robot.follower.isBusy()) break;
+                if (robot.follower.isBusy() ||
+                        stateTimer.getElapsedTimeSeconds() < INTAKE_WAIT_TIME) break;
                 robot.powerIntake(0);
                 robot.follower.followPath(path6, true);
                 robot.spinLaunchMotors();

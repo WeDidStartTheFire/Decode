@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.autos.LauncherMotif;
 
-@Autonomous(name = "🟦Blue🟦 Far Refactor Test", group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
+@Autonomous(name = "🟦Blue🟦 Far Refactor Test Motif", group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
 public class Auto_BlueFar_RefactorTest_Motif extends OpMode {
     private Robot robot;
 
@@ -67,7 +67,7 @@ public class Auto_BlueFar_RefactorTest_Motif extends OpMode {
         tm = robot.drivetrain.tm;
         buildPaths();
         launcher = new LauncherMotif(robot);
-        tm.print("🟦Blue🟦 Far Refactor Test Auto Motif initialized");
+        tm.print("🟦Blue🟦 Far Refactor Test Auto Refactor Test Motif initialized");
         tm.print("Motif", motif);
         tm.update();
     }

@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.autos.LauncherMotif;
 
-@Autonomous(name = "🟦Blue🟦 Far Refactor Test", group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
+@Autonomous(name = "🟦Blue🟦 Far Refactor Test Intake Motif", group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
 public class Auto_BlueFar_RefactorTest_IntakeMotif extends OpMode {
     private Robot robot;
 
@@ -49,7 +49,7 @@ public class Auto_BlueFar_RefactorTest_IntakeMotif extends OpMode {
 
     private final Pose startPose = new Pose(63.500, 8.500, toRadians(90));
     private final Pose shootPose = new Pose(60.000, 20.000, toRadians(114.80566575481602));
-    private final Pose endPose = new Pose(40.500, 35.000, toRadians(180));
+    private final Pose intakePose = new Pose(40.500, 35.000, toRadians(180));
 
     private void buildPaths() {
         path1 = robot.follower
@@ -60,16 +60,14 @@ public class Auto_BlueFar_RefactorTest_IntakeMotif extends OpMode {
         path2 = robot.follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(shootPose, new Pose(40.500, 35.000))
+                        new BezierLine(shootPose, intakePose)
                 )
-                .setLinearHeadingInterpolation(shootPose.getHeading(), toRadians(180))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), intakePose.getHeading())
                 .build();
         path3 = robot.follower
                 .pathBuilder()
-                .addPath(
-                        new BezierLine(new Pose(40.000, 35.000), new Pose(30.000, 35.000))
-                )
-                .setConstantHeadingInterpolation(toRadians(180))
+                .addPath(new BezierLine(intakePose, new Pose(30.000, 35.000)))
+                .setLinearHeadingInterpolation(intakePose.getHeading(), toRadians(180))
                 .build();
         path4 = robot.follower
                 .pathBuilder()
@@ -111,7 +109,7 @@ public class Auto_BlueFar_RefactorTest_IntakeMotif extends OpMode {
         tm = robot.drivetrain.tm;
         buildPaths();
         launcher = new LauncherMotif(robot);
-        tm.print("🟦Blue🟦 Far Refactor Test Auto initialized");
+        tm.print("🟦Blue🟦 Far Refactor Test Intake Motif Auto initialized");
         tm.update();
     }
 

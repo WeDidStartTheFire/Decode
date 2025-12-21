@@ -1,7 +1,8 @@
 package org.firstinspires.ftc.teamcode.autos.tests;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
-import static org.firstinspires.ftc.teamcode.RobotState.motif;
+import static org.firstinspires.ftc.teamcode.RobotConstants.INTAKE_WAIT_TIME;
+import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
@@ -11,7 +12,6 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -22,21 +22,29 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.autos.LauncherMotif;
 
 @Autonomous(name = "🟦Blue🟦 Far Refactor Test", group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
-public class Auto_BlueFar_RefactorTest_Motif extends OpMode {
+public class Auto_BlueFar_RefactorTest_IntakeMotif extends OpMode {
     private Robot robot;
 
-    private PathChain path1, path2;
+    private PathChain path1, path2, path3, path4, path5, path6, path7;
     private TelemetryUtils tm;
 
     private final Timer stateTimer = new Timer();
     private State state;
     private LauncherMotif launcher;
+    private double launchRound = 0;
 
     private enum State {
         FINISHED,
         FOLLOW_PATH_1,
         LAUNCH_ARTIFACTS,
         FOLLOW_PATH_2,
+        INTAKE_1,
+        INTAKE_2,
+        INTAKE_3,
+        INTAKE_4,
+        INTAKE_5,
+        RETURN_TO_LAUNCH,
+        FOLLOW_PATH_7,
     }
 
     private final Pose startPose = new Pose(63.500, 8.500, toRadians(90));
@@ -44,21 +52,57 @@ public class Auto_BlueFar_RefactorTest_Motif extends OpMode {
     private final Pose endPose = new Pose(40.500, 35.000, toRadians(180));
 
     private void buildPaths() {
-        path1 = robot.follower.pathBuilder()
+        path1 = robot.follower
+                .pathBuilder()
                 .addPath(new BezierLine(startPose, shootPose))
                 .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
-        path2 = robot.follower.pathBuilder()
-                .addPath(new BezierLine(shootPose, endPose))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), endPose.getHeading())
+        path2 = robot.follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(shootPose, new Pose(40.500, 35.000))
+                )
+                .setLinearHeadingInterpolation(shootPose.getHeading(), toRadians(180))
+                .build();
+        path3 = robot.follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(40.000, 35.000), new Pose(30.000, 35.000))
+                )
+                .setConstantHeadingInterpolation(toRadians(180))
+                .build();
+        path4 = robot.follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(30, 35), new Pose(25, 35))
+                )
+                .setConstantHeadingInterpolation(toRadians(180))
+                .build();
+        path5 = robot.follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(25, 35), new Pose(20, 35))
+                )
+                .setConstantHeadingInterpolation(toRadians(180))
+                .build();
+        path6 = robot.follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(20, 35), shootPose)
+                )
+                .setLinearHeadingInterpolation(toRadians(180), shootPose.getHeading())
+                .build();
+        path7 = robot.follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(shootPose, new Pose(25, 8.5))
+                )
+                .setLinearHeadingInterpolation(shootPose.getHeading(), toRadians(90))
                 .build();
     }
 
     @Override
     public void init() {
-        Limelight3A limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(0);
-        limelight.start();
         RobotState.auto = true;
         RobotState.color = RobotConstants.Color.BLUE;
         robot = new Robot(hardwareMap, telemetry, true);
@@ -67,8 +111,7 @@ public class Auto_BlueFar_RefactorTest_Motif extends OpMode {
         tm = robot.drivetrain.tm;
         buildPaths();
         launcher = new LauncherMotif(robot);
-        tm.print("🟦Blue🟦 Far Refactor Test Auto Motif initialized");
-        tm.print("Motif", motif);
+        tm.print("🟦Blue🟦 Far Refactor Test Auto initialized");
         tm.update();
     }
 
@@ -96,11 +139,56 @@ public class Auto_BlueFar_RefactorTest_Motif extends OpMode {
             case LAUNCH_ARTIFACTS:
                 if (robot.follower.isBusy()) break;
                 launcher.launchArtifacts(3);
-                setState(State.FOLLOW_PATH_2);
+                setState(launchRound == 0 ? State.FOLLOW_PATH_2 : State.FOLLOW_PATH_7);
+                launchRound++;
                 break;
             case FOLLOW_PATH_2:
                 if (launcher.isBusy()) break;
                 robot.follower.followPath(path2, true);
+                setState(State.INTAKE_1);
+                break;
+            case INTAKE_1:
+                if (robot.follower.isBusy()) break;
+                robot.powerIntake(1);
+                robot.follower.followPath(path3, true);
+                setState(State.INTAKE_2);
+                break;
+            case INTAKE_2:
+                if (robot.follower.isBusy() ||
+                        stateTimer.getElapsedTimeSeconds() < INTAKE_WAIT_TIME) break;
+                robot.powerIntake(0);
+                robot.setIndexerServoPos(MIDDLE_INDEXER_POS);
+                setState(State.INTAKE_3);
+                break;
+            case INTAKE_3:
+                if (!robot.isIndexerStill()) break;
+                robot.powerIntake(1);
+                robot.follower.followPath(path4, true);
+                setState(State.INTAKE_4);
+                break;
+            case INTAKE_4:
+                if (robot.follower.isBusy() ||
+                        stateTimer.getElapsedTimeSeconds() < INTAKE_WAIT_TIME) break;
+                robot.powerIntake(0);
+                robot.setIndexerServoPos(0);
+                setState(State.INTAKE_5);
+                break;
+            case INTAKE_5:
+                if (!robot.isIndexerStill()) break;
+                robot.powerIntake(1);
+                robot.follower.followPath(path5, true);
+                setState(State.RETURN_TO_LAUNCH);
+                break;
+            case RETURN_TO_LAUNCH:
+                if (robot.follower.isBusy() ||
+                        stateTimer.getElapsedTimeSeconds() < INTAKE_WAIT_TIME) break;
+                robot.powerIntake(0);
+                robot.follower.followPath(path6, true);
+                setState(State.LAUNCH_ARTIFACTS);
+                break;
+            case FOLLOW_PATH_7:
+                if (launcher.isBusy()) break;
+                robot.follower.followPath(path7, true);
                 setState(State.FINISHED);
                 break;
             case FINISHED:

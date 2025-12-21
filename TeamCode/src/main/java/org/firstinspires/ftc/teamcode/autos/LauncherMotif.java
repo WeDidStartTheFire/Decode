@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 
 import java.util.Arrays;
 
-public class Launcher_Motif {
+public class LauncherMotif {
 
     private final Robot robot;
     private State state;
@@ -30,7 +30,7 @@ public class Launcher_Motif {
         PUSH_ARTIFACT
     }
 
-    public Launcher_Motif(Robot robot) {
+    public LauncherMotif(Robot robot) {
         this.robot = robot;
         setState(State.IDLE);
         isBusy = false;

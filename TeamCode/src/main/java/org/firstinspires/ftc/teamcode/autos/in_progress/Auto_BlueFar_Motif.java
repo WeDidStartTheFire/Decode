@@ -27,8 +27,8 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import java.util.Arrays;
 
 
-@Autonomous(name = "🟦Blue🟦 Far Limelight", group = "!!Secondary", preselectTeleOp = BLUE_TELEOP_NAME)
-public class Auto_BlueFar_Limelight extends OpMode {
+@Autonomous(name = "🟦Blue🟦 Far Motif", group = "!!Secondary", preselectTeleOp = BLUE_TELEOP_NAME)
+public class Auto_BlueFar_Motif extends OpMode {
     private Robot robot;
 
     private PathChain path1, path2;
@@ -71,12 +71,13 @@ public class Auto_BlueFar_Limelight extends OpMode {
         limelight.pipelineSwitch(0);
         limelight.start();
         RobotState.auto = true;
+        RobotState.color = RobotConstants.Color.BLUE;
         robot = new Robot(hardwareMap, telemetry, true);
         robot.follower.setStartingPose(startPose);
         RobotState.motif = robot.getMotif();
         tm = robot.drivetrain.tm;
         buildPaths();
-        tm.print("🟦Blue🟦 Far Limelight Auto initialized");
+        tm.print("🟦Blue🟦 Far Motif Auto initialized");
         tm.print("Motif", motif);
         tm.update();
     }
@@ -151,9 +152,9 @@ public class Auto_BlueFar_Limelight extends OpMode {
                 setState(State.RETRACT_FEEDER);
                 break;
             case RETRACT_FEEDER:
-                current = robot.getArtifact();
                 if ((robot.getInches() != 6 || stateTimer.getElapsedTimeSeconds() < .2) &&
                         stateTimer.getElapsedTimeSeconds() < 2) break;
+                current = robot.getArtifact();
                 if (current == UNKNOWN) {
                     numLaunched++;
                     artifacts[(int) (robot.getGoalIndexerPos() * 2)] = UNKNOWN;

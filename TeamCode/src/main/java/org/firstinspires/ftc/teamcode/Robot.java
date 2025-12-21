@@ -220,7 +220,7 @@ public class Robot {
     }
 
     public double getGoalIndexerPos() {
-        if (indexerServo == null) return -1;
+        if (indexerServo == null || indexerTimer == null) return -1;
         return abs(indexerServo.getPosition() - MIDDLE_INDEXER_POS) < 1e-4 ? .5 : indexerServo.getPosition();
     }
 

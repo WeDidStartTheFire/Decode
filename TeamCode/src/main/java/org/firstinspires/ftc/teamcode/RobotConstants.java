@@ -100,6 +100,7 @@ public class RobotConstants {
         }
 
         public Artifact getNthArtifact(int n) {
+            n %= 3;
             switch (this) {
                 case GPP:
                     switch (n) {

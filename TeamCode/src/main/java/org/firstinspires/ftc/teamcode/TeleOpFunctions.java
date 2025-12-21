@@ -33,6 +33,7 @@ import static org.firstinspires.ftc.teamcode.RobotState.launchQueue;
 import static org.firstinspires.ftc.teamcode.RobotState.launcherRPM;
 import static org.firstinspires.ftc.teamcode.RobotState.launching;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
+import static org.firstinspires.ftc.teamcode.RobotState.robotCentric;
 import static org.firstinspires.ftc.teamcode.RobotState.savedSeconds;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static java.lang.Math.PI;
@@ -54,8 +55,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-
-import pedroPathing.Drawing;
 
 public class TeleOpFunctions {
     DcMotorEx lf, lb, rf, rb;
@@ -129,6 +128,9 @@ public class TeleOpFunctions {
      * @param fieldCentric Whether to use field centric driving or not
      */
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
+        if (gamepad1.dpadLeftWasPressed()) robotCentric = true;
+        else if (gamepad1.dpadRightWasPressed()) robotCentric = true;
+        fieldCentric = fieldCentric && !robotCentric;
         if (usePedro) {
             tm.drawRobot(follower);
             tm.print("Pose: (" + round(pose.getX() * 100) / 100 + ", " +
@@ -188,12 +190,6 @@ public class TeleOpFunctions {
                     gamepad1.left_stick_x * speedMultiplier * (color == Color.RED ? -1 : 1), turn, !fieldCentric);
 
             return;
-        }
-
-        if (gamepad1.dpadLeftWasPressed()) {
-            fieldCentric = false;
-        } else if (gamepad1.dpadRightWasPressed()) {
-            fieldCentric = true;
         }
 
         double axial, lateral, yaw, xMove, yMove;

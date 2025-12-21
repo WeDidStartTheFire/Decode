@@ -19,6 +19,7 @@ public class RobotState {
     public static volatile boolean following = false;
     public static volatile boolean holding = false;
     public static boolean validStartPose;
+    public static boolean robotCentric = false;
     public static Pose pose;
     public static Pose savedPose;
     public static Vector vel;

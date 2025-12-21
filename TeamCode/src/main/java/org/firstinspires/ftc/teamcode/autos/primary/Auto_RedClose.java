@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.autos.LauncherMotif;
 
-import pedroPathing.Drawing;
+
 
 @Autonomous(name = "🟥Red🟥 Close", group = "!!!Primary", preselectTeleOp = RED_TELEOP_NAME)
 public class Auto_RedClose extends OpMode {
@@ -119,7 +119,7 @@ public class Auto_RedClose extends OpMode {
         pathUpdate();
         launcher.update();
 
-        Drawing.drawDebug(robot.follower);
+        tm.drawRobot(robot.follower);
         tm.print("Path State", state);
         tm.print("Launcher State", launcher.getState());
         tm.print("Feeder Up", robot.isFeederUp());

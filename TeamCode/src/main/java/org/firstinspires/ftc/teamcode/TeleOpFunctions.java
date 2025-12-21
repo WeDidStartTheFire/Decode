@@ -130,7 +130,7 @@ public class TeleOpFunctions {
      */
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
         if (usePedro) {
-            Drawing.drawDebug(follower);
+            tm.drawRobot(follower);
             tm.print("Pose: (" + round(pose.getX() * 100) / 100 + ", " +
                     round(pose.getY() * 100) / 100 + ", " +
                     round(toDegrees(pose.getHeading()) * 100) / 100 + ")");

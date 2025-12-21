@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.autos.LauncherMotif;
 
-import pedroPathing.Drawing;
+
 
 @Autonomous(name = "🟦Blue🟦 Far", group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
 public class Auto_BlueFar extends OpMode {
@@ -116,10 +116,10 @@ public class Auto_BlueFar extends OpMode {
         robot.follower.update();
         pose = robot.follower.getPose();
         vel = robot.follower.getVelocity();
+        tm.drawRobot(robot.follower);
         pathUpdate();
         launcher.update();
 
-        Drawing.drawDebug(robot.follower);
         tm.print("Path State", state);
         tm.print("Launcher State", launcher.getState());
         tm.print("Feeder Up", robot.isFeederUp());

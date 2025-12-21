@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
-import org.firstinspires.ftc.teamcode.autos.LauncherMotif;
+import org.firstinspires.ftc.teamcode.autos.Launcher;
 
 
 @Autonomous(name = "🟦Blue🟦 Far Intake", group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
@@ -31,7 +31,7 @@ public class Auto_BlueFar_Intake extends OpMode {
 
     private final Timer stateTimer = new Timer();
     private State state;
-    private LauncherMotif launcher;
+    private Launcher launcher;
     private double launchRound = 0;
 
     private enum State {
@@ -109,7 +109,7 @@ public class Auto_BlueFar_Intake extends OpMode {
         RobotState.motif = robot.getMotif();
         tm = robot.drivetrain.tm;
         buildPaths();
-        launcher = new LauncherMotif(robot);
+        launcher = new Launcher(robot);
         tm.print("🟦Blue🟦 Far Refactor Test Intake Motif Auto initialized");
         tm.update();
     }

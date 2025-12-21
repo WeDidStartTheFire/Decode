@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
-import org.firstinspires.ftc.teamcode.autos.LauncherMotif;
+import org.firstinspires.ftc.teamcode.autos.Launcher;
 
 
 @Autonomous(name = "🟥Red🟥 Far", group = "!!!Primary", preselectTeleOp = RED_TELEOP_NAME)
@@ -31,7 +31,7 @@ public class Auto_RedFar extends OpMode {
 
     private final Timer stateTimer = new Timer();
     private State state;
-    private LauncherMotif launcher;
+    private Launcher launcher;
 
     private enum State {
         FINISHED,
@@ -67,7 +67,7 @@ public class Auto_RedFar extends OpMode {
         RobotState.motif = robot.getMotif();
         tm = robot.drivetrain.tm;
         buildPaths();
-        launcher = new LauncherMotif(robot);
+        launcher = new Launcher(robot);
         tm.print("🟥Red🟥 Far Auto initialized");
         tm.print("Motif", motif);
         tm.update();

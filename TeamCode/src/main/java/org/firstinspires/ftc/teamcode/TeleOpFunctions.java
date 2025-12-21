@@ -7,11 +7,12 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_GOAL_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_ROBOT_POSITIONS;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.*;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_ANGLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_HEIGHT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.GREEN;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.YELLOW;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.RED_GOAL_POSE;
@@ -38,7 +39,7 @@ import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 import static java.lang.Math.round;
 import static java.lang.Math.toDegrees;
-import pedroPathing.Drawing;
+
 import androidx.annotation.NonNull;
 
 import com.pedropathing.control.PIDFController;
@@ -53,6 +54,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+
+import pedroPathing.Drawing;
 
 public class TeleOpFunctions {
     DcMotorEx lf, lb, rf, rb;
@@ -447,6 +450,7 @@ public class TeleOpFunctions {
         if (gamepad2.right_trigger >= 0.5) robot.spinLaunchMotors();
         else if (launchQueue.isEmpty() && !launching) {
             robot.retractFeeder();
+            robot.stopLaunchMotors();
             tm.print("Retracting feeder");
         }
         if (gamepad2.left_trigger >= 0.3) robot.intakeLaunchMotors(gamepad2.left_trigger);
@@ -460,7 +464,8 @@ public class TeleOpFunctions {
     public void feederLogic() {
         tm.print("Feeder Up", robot.isFeederUp());
         tm.print("Feeder Pos", robot.getFeederPos());
-        if (gamepad2.rightBumperWasPressed() && gamepad2.right_trigger >= 0.5 &&
+        if (gamepad2.right_bumper && gamepad2.right_trigger >= 0.5 &&
                 robot.isIndexerStill()) robot.pushArtifactToLaunch();
+        else robot.retractFeeder();
     }
 }

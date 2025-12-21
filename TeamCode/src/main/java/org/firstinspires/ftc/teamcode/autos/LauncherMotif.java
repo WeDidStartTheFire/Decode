@@ -107,6 +107,7 @@ public class LauncherMotif {
                 current = robot.getArtifact();
                 if (current == UNKNOWN) {
                     numLaunched++;
+                    artifactsToLaunch--;
                     artifacts[(int) (robot.getGoalIndexerPos() * 2)] = UNKNOWN;
                 }
                 robot.retractFeeder();

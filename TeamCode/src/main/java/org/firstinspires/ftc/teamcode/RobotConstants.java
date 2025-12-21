@@ -154,4 +154,38 @@ public class RobotConstants {
             }
         }
     }
+
+    public enum LEDColors {
+        OFF, RED, ORANGE, YELLOW, SAGE, GREEN, AZURE, BLUE, INDIGO, VIOLET, WHITE;
+
+        /** sourced from the image at bit.ly/4b14AsU **/
+        public double position() {
+            switch (this) {
+                case OFF:
+                    return 0.0;
+                case RED:
+                    return 0.277;
+                case ORANGE:
+                    return 0.333;
+                case YELLOW:
+                    return 0.388;
+                case SAGE:
+                    return 0.444;
+                case GREEN:
+                    return 0.500;
+                case AZURE:
+                    return 0.555;
+                case BLUE:
+                    return 0.611;
+                case INDIGO:
+                    return 0.666;
+                case VIOLET:
+                    return 0.722;
+                case WHITE:
+                    return 1.0;
+                default:
+                    return 0.0;
+            }
+        }
+    }
 }

@@ -155,8 +155,8 @@ public class Robot {
         }
     }
 
-    public void setLEDColor(double color) {
-        if (led != null) led.setPosition(color);
+    public void setLEDColor(RobotConstants.LEDColors color) {
+        if (led != null) led.setPosition(color.position());
     }
 
     public boolean isFeederUp() {

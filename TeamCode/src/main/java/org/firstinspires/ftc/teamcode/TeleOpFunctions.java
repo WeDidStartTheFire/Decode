@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_GOAL_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_ROBOT_POSITIONS;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.*;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_ANGLE;
@@ -436,9 +437,9 @@ public class TeleOpFunctions {
             robot.retractFeeder();
             return;
         }
-        if (robot.launchMotorsToSpeed()) robot.setLEDColor(0.500);
-        else if (robot.getLaunchMotorVel() > 100) robot.setLEDColor(0.388);
-        else robot.setLEDColor(0.279);
+        if (robot.launchMotorsToSpeed()) robot.setLEDColor(GREEN);
+        else if (robot.getLaunchMotorVel() > 100) robot.setLEDColor(YELLOW);
+        else robot.setLEDColor(RED);
         if (gamepad2.right_trigger >= 0.5) robot.spinLaunchMotors();
         else if (launchQueue.isEmpty() && !launching) {
             robot.retractFeeder();

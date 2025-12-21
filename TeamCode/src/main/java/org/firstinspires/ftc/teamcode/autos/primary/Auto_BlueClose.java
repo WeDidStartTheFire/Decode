@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
-import pedroPathing.Drawing;
+
 
 @Autonomous(name = "🟦Blue🟦 Close", group = "!!!Primary", preselectTeleOp = BLUE_TELEOP_NAME)
 public class Auto_BlueClose extends OpMode {
@@ -88,7 +88,7 @@ public class Auto_BlueClose extends OpMode {
         robot.follower.update();
         pose = robot.follower.getPose();
         vel = robot.follower.getVelocity();
-        Drawing.drawDebug(robot.follower);
+        tm.drawRobot(robot.follower);
         tm.print("Path State", state);
         tm.print("Feeder Up", robot.isFeederUp());
         tm.print("Indexer Pos", robot.getGoalIndexerPos());

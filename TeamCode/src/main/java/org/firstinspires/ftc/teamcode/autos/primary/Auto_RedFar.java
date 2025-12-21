@@ -1,6 +1,9 @@
-package org.firstinspires.ftc.teamcode.autos.in_progress;
+package org.firstinspires.ftc.teamcode.autos.primary;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
+import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_SPEED;
+import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
+import static org.firstinspires.ftc.teamcode.RobotConstants.RED_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
@@ -17,10 +20,9 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
-import org.firstinspires.ftc.teamcode.autos.Launcher;
 
-@Autonomous(name = "🟦Blue🟦 Far Refactor Test", group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
-public class Auto_BlueFar_RefactorTest extends OpMode {
+@Autonomous(name = "🟥Red🟥 Far", group = "!!!Primary", preselectTeleOp = RED_TELEOP_NAME)
+public class Auto_RedFar extends OpMode {
     private Robot robot;
 
     private PathChain path1, path2;
@@ -28,18 +30,19 @@ public class Auto_BlueFar_RefactorTest extends OpMode {
 
     private final Timer stateTimer = new Timer();
     private State state;
-    private Launcher launcher;
 
     private enum State {
         FINISHED,
         FOLLOW_PATH_1,
-        LAUNCH_ARTIFACTS,
-        FOLLOW_PATH_2,
+        SPIN_LAUNCH_MOTORS,
+        PUSH_ARTIFACT,
+        RETRACT_FEEDER,
+        ROTATE_INDEXER,
     }
 
-    private final Pose startPose = new Pose(63.500, 8.500, toRadians(90));
-    private final Pose shootPose = new Pose(60.000, 20.000, toRadians(114.80566575481602));
-    private final Pose endPose = new Pose(40.500, 35.000, toRadians(180));
+    private final Pose startPose = new Pose(81.000, 8.500, toRadians(90));
+    private final Pose shootPose = new Pose(84.000, 20.000, toRadians(65.19433424518398));
+    private final Pose endPose = new Pose(98.500, 35.000, toRadians(0));
 
     private void buildPaths() {
         path1 = robot.follower.pathBuilder()
@@ -55,14 +58,12 @@ public class Auto_BlueFar_RefactorTest extends OpMode {
     @Override
     public void init() {
         RobotState.auto = true;
-        RobotState.color = RobotConstants.Color.BLUE;
+        RobotState.color = RobotConstants.Color.RED;
         robot = new Robot(hardwareMap, telemetry, true);
         robot.follower.setStartingPose(startPose);
-        RobotState.motif = robot.getMotif();
         tm = robot.drivetrain.tm;
         buildPaths();
-        launcher = new Launcher(robot);
-        tm.print("🟦Blue🟦 Far Refactor Test Auto initialized");
+        tm.print("🟥Red🟥 Far Auto initialized");
         tm.update();
     }
 
@@ -80,40 +81,13 @@ public class Auto_BlueFar_RefactorTest extends OpMode {
         this.stateTimer.resetTimer();
     }
 
-    public void pathUpdate() {
-        switch (state) {
-            case FOLLOW_PATH_1:
-                robot.setIndexerServoPos(0);
-                robot.follower.followPath(path1, true);
-                setState(State.LAUNCH_ARTIFACTS);
-                break;
-            case LAUNCH_ARTIFACTS:
-                if (robot.follower.isBusy()) break;
-                launcher.launchArtifacts(3);
-                setState(State.FOLLOW_PATH_2);
-                break;
-            case FOLLOW_PATH_2:
-                if (launcher.isBusy()) break;
-                robot.follower.followPath(path2, true);
-                setState(State.FINISHED);
-                break;
-            case FINISHED:
-                if (!robot.follower.isBusy()) saveOdometryPosition(pose);
-                break;
-        }
-    }
-
     @Override
     public void loop() {
         robot.follower.update();
         pose = robot.follower.getPose();
         vel = robot.follower.getVelocity();
-        pathUpdate();
-        launcher.update();
-
         TelemetryUtils.drawPoseHistory(robot.follower.getPoseHistory());
         tm.print("Path State", state);
-        tm.print("Launcher State", launcher.getState());
         tm.print("Feeder Up", robot.isFeederUp());
         tm.print("Indexer Pos", robot.getGoalIndexerPos());
         tm.print("Indexer Still", robot.isIndexerStill());
@@ -125,6 +99,51 @@ public class Auto_BlueFar_RefactorTest extends OpMode {
         tm.print("Artifact", robot.getArtifact());
         tm.print("Color", robot.getColor());
         tm.print("Inches", robot.getInches());
+        switch (state) {
+            case FOLLOW_PATH_1:
+                robot.setIndexerServoPos(0);
+                robot.follower.followPath(path1, true);
+                setState(State.SPIN_LAUNCH_MOTORS);
+                break;
+            case SPIN_LAUNCH_MOTORS:
+                if (robot.follower.isBusy()) break;
+                robot.spinLaunchMotors(shootPose);
+                setState(State.PUSH_ARTIFACT);
+                break;
+            case PUSH_ARTIFACT:
+                if (!robot.isIndexerStill() || (!robot.launchMotorsToSpeed() &&
+                        stateTimer.getElapsedTimeSeconds() < MAX_LAUNCHER_SPIN_WAIT) ||
+                        stateTimer.getElapsedTimeSeconds() < .2 || (robot.getInches() == 6 &&
+                        stateTimer.getElapsedTimeSeconds() < 1 / INDEXER_SPEED)) break;
+                robot.spinLaunchMotors();
+                robot.pushArtifactToLaunch();
+                setState(State.RETRACT_FEEDER);
+                break;
+            case RETRACT_FEEDER:
+                if ((robot.getInches() != 6 || stateTimer.getElapsedTimeSeconds() < .2) &&
+                        stateTimer.getElapsedTimeSeconds() < 2) break;
+                robot.retractFeeder();
+                setState(State.ROTATE_INDEXER);
+                break;
+            case ROTATE_INDEXER:
+                if ((robot.isFeederUp() || stateTimer.getElapsedTimeSeconds() < .2) &&
+                        stateTimer.getElapsedTimeSeconds() < .6) break;
+                double pos = robot.getGoalIndexerPos();
+                if (pos == 1 || pos == -1) {
+                    robot.stopLaunchMotors();
+                    robot.follower.followPath(path2, true);
+                    setState(State.FINISHED);
+                } else {
+                    if (pos == 0) pos = MIDDLE_INDEXER_POS;
+                    else pos = 1;
+                    robot.setIndexerServoPos(pos);
+                    setState(State.PUSH_ARTIFACT);
+                }
+                break;
+            case FINISHED:
+                if (!robot.follower.isBusy()) saveOdometryPosition(pose);
+                break;
+        }
     }
 
     @Override

@@ -1,9 +1,9 @@
-package org.firstinspires.ftc.teamcode.autos;
+package org.firstinspires.ftc.teamcode.autos.primary;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_SPEED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
-import static org.firstinspires.ftc.teamcode.RobotConstants.RED_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
@@ -21,8 +21,9 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
-@Autonomous(name = "🟥Red🟥 Close", group = "!!!Primary", preselectTeleOp = RED_TELEOP_NAME)
-public class Auto_RedClose extends OpMode {
+
+@Autonomous(name = "🟦Blue🟦 Close", group = "!!!Primary", preselectTeleOp = BLUE_TELEOP_NAME)
+public class Auto_BlueClose extends OpMode {
     private Robot robot;
 
     private PathChain path1, path2;
@@ -40,9 +41,9 @@ public class Auto_RedClose extends OpMode {
         ROTATE_INDEXER,
     }
 
-    private final Pose startPose = new Pose(126.729, 121.115, toRadians(36));
-    private final Pose shootPose = new Pose(85.709, 84.630, toRadians(45.57421049703793));
-    private final Pose endPose = new Pose(103.196, 60.018, toRadians(0));
+    private final Pose startPose = new Pose(19.541233442405954, 121.478672985782, toRadians(144));
+    private final Pose shootPose = new Pose(58.291, 84.630, toRadians(134.4257895029621));
+    private final Pose endPose = new Pose(40.804, 60.018, toRadians(180));
 
     private void buildPaths() {
         path1 = robot.follower.pathBuilder()
@@ -58,12 +59,12 @@ public class Auto_RedClose extends OpMode {
     @Override
     public void init() {
         RobotState.auto = true;
-        RobotState.color = RobotConstants.Color.RED;
+        RobotState.color = RobotConstants.Color.BLUE;
         robot = new Robot(hardwareMap, telemetry, true);
         robot.follower.setStartingPose(startPose);
         tm = robot.drivetrain.tm;
         buildPaths();
-        tm.print("🟥Red🟥 Close Auto initialized");
+        tm.print("🟦Blue🟦 Close Auto initialized");
         tm.update();
     }
 
@@ -150,7 +151,7 @@ public class Auto_RedClose extends OpMode {
     public void stop() {
         robot.follower.update();
         robot.follower.breakFollowing();
-        RobotState.pose = robot.follower.getPose();
-        saveOdometryPosition(RobotState.pose);
+        pose = robot.follower.getPose();
+        saveOdometryPosition(pose);
     }
 }

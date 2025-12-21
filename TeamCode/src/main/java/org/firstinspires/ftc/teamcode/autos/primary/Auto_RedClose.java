@@ -1,9 +1,9 @@
-package org.firstinspires.ftc.teamcode.autos;
+package org.firstinspires.ftc.teamcode.autos.primary;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_SPEED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
+import static org.firstinspires.ftc.teamcode.RobotConstants.RED_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
@@ -21,9 +21,8 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
-
-@Autonomous(name = "🟦Blue🟦 Far", group = "!!!Primary", preselectTeleOp = BLUE_TELEOP_NAME)
-public class Auto_BlueFar extends OpMode {
+@Autonomous(name = "🟥Red🟥 Close", group = "!!!Primary", preselectTeleOp = RED_TELEOP_NAME)
+public class Auto_RedClose extends OpMode {
     private Robot robot;
 
     private PathChain path1, path2;
@@ -41,9 +40,9 @@ public class Auto_BlueFar extends OpMode {
         ROTATE_INDEXER,
     }
 
-    private final Pose startPose = new Pose(63.500, 8.500, toRadians(90));
-    private final Pose shootPose = new Pose(60.000, 20.000, toRadians(114.80566575481602));
-    private final Pose endPose = new Pose(40.500, 35.000, toRadians(180));
+    private final Pose startPose = new Pose(126.729, 121.115, toRadians(36));
+    private final Pose shootPose = new Pose(85.709, 84.630, toRadians(45.57421049703793));
+    private final Pose endPose = new Pose(103.196, 60.018, toRadians(0));
 
     private void buildPaths() {
         path1 = robot.follower.pathBuilder()
@@ -59,13 +58,12 @@ public class Auto_BlueFar extends OpMode {
     @Override
     public void init() {
         RobotState.auto = true;
-        RobotState.color = RobotConstants.Color.BLUE;
+        RobotState.color = RobotConstants.Color.RED;
         robot = new Robot(hardwareMap, telemetry, true);
         robot.follower.setStartingPose(startPose);
-        RobotState.motif = robot.getMotif();
         tm = robot.drivetrain.tm;
         buildPaths();
-        tm.print("🟦Blue🟦 Far Auto initialized");
+        tm.print("🟥Red🟥 Close Auto initialized");
         tm.update();
     }
 
@@ -74,13 +72,13 @@ public class Auto_BlueFar extends OpMode {
         setState(State.FOLLOW_PATH_1);
     }
 
-    private void setStateNoWait(State state) {
-        this.state = state;
-    }
-
     private void setState(State state) {
         setStateNoWait(state);
         this.stateTimer.resetTimer();
+    }
+
+    private void setStateNoWait(State state) {
+        this.state = state;
     }
 
     @Override
@@ -152,6 +150,7 @@ public class Auto_BlueFar extends OpMode {
     public void stop() {
         robot.follower.update();
         robot.follower.breakFollowing();
-        saveOdometryPosition(robot.follower.getPose());
+        RobotState.pose = robot.follower.getPose();
+        saveOdometryPosition(RobotState.pose);
     }
 }

@@ -46,6 +46,7 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.Vector;
 import com.pedropathing.paths.Path;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -141,6 +142,18 @@ public class TeleOpFunctions {
                     follower.startTeleopDrive();
                 }
             } else if (runtime.seconds() - lastDriveInputTime > 0.5 && !holding) holdCurrentPose();
+
+            if (holding) {
+                lf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                lb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                rf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                rb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            } else {
+                lf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+                lb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+                rf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+                rb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            }
 
             if (!follower.isBusy() && following) holdCurrentPose();
 
@@ -435,8 +448,7 @@ public class TeleOpFunctions {
         if (gamepad2.right_trigger >= 0.5) robot.spinLaunchMotors();
         else if (launchQueue.isEmpty() && !launching) {
             robot.retractFeeder();
-            robot.stopLaunchMotors();
-            tm.print("Retracting feeder and stopping motors");
+            tm.print("Retracting feeder");
         }
         if (gamepad2.left_trigger >= 0.3) robot.intakeLaunchMotors(gamepad2.left_trigger);
         tm.print("Motor A Vel", robot.launcherMotorA.getVelocity());

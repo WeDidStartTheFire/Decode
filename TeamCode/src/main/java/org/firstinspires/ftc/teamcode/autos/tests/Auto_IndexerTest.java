@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
+import pedroPathing.Drawing;
 
 @Autonomous(name = "Indexer and Feeder Test", group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
 public class Auto_IndexerTest extends OpMode {
@@ -75,7 +76,7 @@ public class Auto_IndexerTest extends OpMode {
         robot.follower.update();
         pose = robot.follower.getPose();
         vel = robot.follower.getVelocity();
-        TelemetryUtils.drawPoseHistory(robot.follower.getPoseHistory());
+        Drawing.drawDebug(robot.follower);
         tm.print("Path State", state);
         tm.print("Indexer Pos", robot.getGoalIndexerPos());
         switch (state) {

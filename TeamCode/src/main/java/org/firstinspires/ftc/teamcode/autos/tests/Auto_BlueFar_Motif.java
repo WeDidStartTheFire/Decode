@@ -25,6 +25,7 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 import java.util.Arrays;
+import pedroPathing.Drawing;
 
 
 @Autonomous(name = "🟦Blue🟦 Far Motif", group = "!!Secondary", preselectTeleOp = BLUE_TELEOP_NAME)
@@ -101,7 +102,7 @@ public class Auto_BlueFar_Motif extends OpMode {
         robot.follower.update();
         pose = robot.follower.getPose();
         vel = robot.follower.getVelocity();
-        TelemetryUtils.drawPoseHistory(robot.follower.getPoseHistory());
+        Drawing.drawDebug(robot.follower);
         tm.print("Path State", state);
         tm.print("Indexer Pos", robot.getGoalIndexerPos());
         tm.print("Pose", pose);

@@ -21,6 +21,8 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
+import pedroPathing.Drawing;
+
 @Autonomous(name = "🟥Red🟥 Far", group = "!!!Primary", preselectTeleOp = RED_TELEOP_NAME)
 public class Auto_RedFar extends OpMode {
     private Robot robot;
@@ -86,7 +88,7 @@ public class Auto_RedFar extends OpMode {
         robot.follower.update();
         pose = robot.follower.getPose();
         vel = robot.follower.getVelocity();
-        TelemetryUtils.drawPoseHistory(robot.follower.getPoseHistory());
+        Drawing.drawDebug(robot.follower);
         tm.print("Path State", state);
         tm.print("Feeder Up", robot.isFeederUp());
         tm.print("Indexer Pos", robot.getGoalIndexerPos());

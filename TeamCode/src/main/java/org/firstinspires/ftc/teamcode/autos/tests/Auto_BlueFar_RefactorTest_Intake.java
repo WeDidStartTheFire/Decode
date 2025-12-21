@@ -21,6 +21,8 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.autos.Launcher;
 
+import pedroPathing.Drawing;
+
 @Autonomous(name = "🟦Blue🟦 Far Refactor Test Intake", group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
 public class Auto_BlueFar_RefactorTest_Intake extends OpMode {
     private Robot robot;
@@ -201,7 +203,7 @@ public class Auto_BlueFar_RefactorTest_Intake extends OpMode {
         pathUpdate();
         launcher.update();
 
-        TelemetryUtils.drawPoseHistory(robot.follower.getPoseHistory());
+        Drawing.drawDebug(robot.follower);
         tm.print("Path State", state);
         tm.print("Launcher State", launcher.getState());
         tm.print("Feeder Up", robot.isFeederUp());

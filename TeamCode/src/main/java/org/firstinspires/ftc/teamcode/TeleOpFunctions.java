@@ -38,7 +38,7 @@ import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 import static java.lang.Math.round;
 import static java.lang.Math.toDegrees;
-
+import pedroPathing.Drawing;
 import androidx.annotation.NonNull;
 
 import com.pedropathing.control.PIDFController;
@@ -127,7 +127,7 @@ public class TeleOpFunctions {
      */
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
         if (usePedro) {
-            TelemetryUtils.drawPoseHistory(robot.follower.getPoseHistory());
+            Drawing.drawDebug(follower);
             tm.print("Pose: (" + round(pose.getX() * 100) / 100 + ", " +
                     round(pose.getY() * 100) / 100 + ", " +
                     round(toDegrees(pose.getHeading()) * 100) / 100 + ")");

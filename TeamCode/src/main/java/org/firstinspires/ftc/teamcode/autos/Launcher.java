@@ -112,7 +112,10 @@ public class Launcher {
                 }
                 robot.retractFeeder();
                 if (artifactsToLaunch > 0) setState(State.ROTATE_INDEXER);
-                else setState(State.IDLE);
+                else {
+                    robot.stopLaunchMotors();
+                    setState(State.IDLE);
+                }
                 break;
         }
     }

@@ -114,12 +114,14 @@ public class Auto_BlueFar_RefactorTest extends OpMode {
         TelemetryUtils.drawPoseHistory(robot.follower.getPoseHistory());
         tm.print("Path State", state);
         tm.print("Launcher State", launcher.getState());
+        tm.print("Feeder Up", robot.isFeederUp());
         tm.print("Indexer Pos", robot.getGoalIndexerPos());
+        tm.print("Indexer Still", robot.isIndexerStill());
+        tm.print("Indexer Estimate Pos", robot.getEstimateIndexerPos());
         tm.print("Pose", pose);
         tm.print("Motor Goal Vel", robot.getLaunchMotorVel(shootPose));
         tm.print("Motor A Vel", robot.launcherMotorA.getVelocity());
         tm.print("Motor B Vel", robot.launcherMotorB.getVelocity());
-        tm.print("Feeder Up", robot.isFeederUp());
         tm.print("Artifact", robot.getArtifact());
         tm.print("Color", robot.getColor());
         tm.print("Inches", robot.getInches());

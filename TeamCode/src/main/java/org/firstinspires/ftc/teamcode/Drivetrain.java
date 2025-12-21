@@ -73,15 +73,9 @@ public class Drivetrain {
             rb.setDirection(DcMotorEx.Direction.FORWARD);
 
             if (auto) {
-                lf.setZeroPowerBehavior(BRAKE);
-                lb.setZeroPowerBehavior(BRAKE);
-                rf.setZeroPowerBehavior(BRAKE);
-                rb.setZeroPowerBehavior(BRAKE);
+                setMotorZeroPowerBehaviors(BRAKE);
             } else {
-                lf.setZeroPowerBehavior(FLOAT);
-                lb.setZeroPowerBehavior(FLOAT);
-                rf.setZeroPowerBehavior(FLOAT);
-                rb.setZeroPowerBehavior(FLOAT);
+                setMotorZeroPowerBehaviors(FLOAT);
             }
 
             lb.setTargetPosition(lb.getCurrentPosition());
@@ -212,6 +206,14 @@ public class Drivetrain {
         lb.setMode(mode);
         rf.setMode(mode);
         rb.setMode(mode);
+    }
+
+    public void setMotorZeroPowerBehaviors(DcMotor.ZeroPowerBehavior behavior){
+        if (lb == null) return;
+        lf.setZeroPowerBehavior(behavior);
+        lb.setZeroPowerBehavior(behavior);
+        rf.setZeroPowerBehavior(behavior);
+        rb.setZeroPowerBehavior(behavior);
     }
 
     public void setMotorPowers(double power) {

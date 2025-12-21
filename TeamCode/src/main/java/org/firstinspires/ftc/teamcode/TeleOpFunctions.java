@@ -437,9 +437,13 @@ public class TeleOpFunctions {
             robot.retractFeeder();
             return;
         }
-        if (robot.launchMotorsToSpeed()) robot.setLEDColor(GREEN);
-        else if (robot.getLaunchMotorVel() > 100) robot.setLEDColor(YELLOW);
-        else robot.setLEDColor(RED);
+        if (getLaunchSolution() == null)
+            robot.setLEDColor(RobotConstants.LEDColors.BLUE);
+        else {
+            if (robot.launchMotorsToSpeed()) robot.setLEDColor(GREEN);
+            else if (robot.getLaunchMotorVel() > 100) robot.setLEDColor(YELLOW);
+            else robot.setLEDColor(RobotConstants.LEDColors.RED);
+        }
         if (gamepad2.right_trigger >= 0.5) robot.spinLaunchMotors();
         else if (launchQueue.isEmpty() && !launching) {
             robot.retractFeeder();

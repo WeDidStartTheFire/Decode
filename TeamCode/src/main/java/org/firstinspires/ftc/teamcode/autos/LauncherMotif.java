@@ -47,9 +47,13 @@ public class LauncherMotif {
 
     public void update() {
         RobotConstants.Artifact desired, current;
+        double pos;
         switch (state) {
             case IDLE:
                 isBusy = false;
+                current = robot.getArtifact();
+                pos = robot.getGoalIndexerPos();
+                if (robot.isIndexerStill()) artifacts[(int) pos * 2] = current;
                 if (artifactsToLaunch == 0) break;
                 isBusy = true;
                 setState(State.ROTATE_INDEXER);
@@ -58,7 +62,7 @@ public class LauncherMotif {
                 robot.retractFeeder();
                 if ((robot.isFeederUp() || stateTimer.getElapsedTimeSeconds() < .2) &&
                         stateTimer.getElapsedTimeSeconds() < .6) break;
-                double pos = robot.getGoalIndexerPos();
+                pos = robot.getGoalIndexerPos();
                 if (pos == -1) robot.setIndexerServoPos(0);
                 if (!robot.isIndexerStill()) break;
                 desired = motif.getNthArtifact(numLaunched);

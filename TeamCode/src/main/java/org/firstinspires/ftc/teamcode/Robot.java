@@ -229,6 +229,7 @@ public class Robot {
         double[] bounds = calculateCurrentBounds();
         return (bounds[0] + bounds[1]) / 2.0;
     }
+
     public boolean isIndexerStill() {
         if (indexerTimer == null) return false;
         double[] bounds = calculateCurrentBounds();
@@ -236,6 +237,7 @@ public class Robot {
         return abs(bounds[0] - goalIndexerPos) < epsilon &&
                 abs(bounds[1] - goalIndexerPos) < epsilon;
     }
+
     public boolean isIndexerServoConnected() {
         return indexerServo != null;
     }

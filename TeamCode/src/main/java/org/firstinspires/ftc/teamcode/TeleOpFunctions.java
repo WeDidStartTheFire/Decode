@@ -144,15 +144,9 @@ public class TeleOpFunctions {
             } else if (runtime.seconds() - lastDriveInputTime > 0.5 && !holding) holdCurrentPose();
 
             if (holding) {
-                lf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                lb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                rf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                rb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                robot.drivetrain.setMotorZeroPowerBehaviors(DcMotor.ZeroPowerBehavior.BRAKE);
             } else {
-                lf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-                lb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-                rf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-                rb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+                robot.drivetrain.setMotorZeroPowerBehaviors(DcMotor.ZeroPowerBehavior.FLOAT);
             }
 
             if (!follower.isBusy() && following) holdCurrentPose();

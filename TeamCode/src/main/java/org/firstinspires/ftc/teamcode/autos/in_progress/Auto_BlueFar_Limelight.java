@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.autos.in_progress;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
+import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_SPEED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
@@ -131,7 +132,9 @@ public class Auto_BlueFar_Limelight extends OpMode {
                 break;
             case PUSH_ARTIFACT:
                 if (!robot.isIndexerStill() || (!robot.launchMotorsToSpeed() &&
-                        stateTimer.getElapsedTimeSeconds() < MAX_LAUNCHER_SPIN_WAIT)) break;
+                        stateTimer.getElapsedTimeSeconds() < MAX_LAUNCHER_SPIN_WAIT) ||
+                        stateTimer.getElapsedTimeSeconds() < .2 || (robot.getInches() == 6 &&
+                        stateTimer.getElapsedTimeSeconds() < 1 / INDEXER_SPEED)) break;
                 desired = motif.getNthArtifact(numLaunched);
                 current = robot.getArtifact();
                 if (current != desired) {
@@ -149,7 +152,8 @@ public class Auto_BlueFar_Limelight extends OpMode {
                 break;
             case RETRACT_FEEDER:
                 current = robot.getArtifact();
-                if (current != UNKNOWN && stateTimer.getElapsedTimeSeconds() < 2) break;
+                if ((robot.getInches() != 6 || stateTimer.getElapsedTimeSeconds() < .2) &&
+                        stateTimer.getElapsedTimeSeconds() < 2) break;
                 if (current == UNKNOWN) {
                     numLaunched++;
                     artifacts[(int) (robot.getGoalIndexerPos() * 2)] = UNKNOWN;
@@ -158,7 +162,8 @@ public class Auto_BlueFar_Limelight extends OpMode {
                 setState(State.ROTATE_INDEXER);
                 break;
             case ROTATE_INDEXER:
-                if (robot.isFeederUp()) break;
+                if ((robot.isFeederUp() || stateTimer.getElapsedTimeSeconds() < .2) &&
+                        stateTimer.getElapsedTimeSeconds() < .6) break;
                 double pos = robot.getGoalIndexerPos();
                 if (numLaunched == 3) {
                     robot.stopLaunchMotors();

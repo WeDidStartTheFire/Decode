@@ -13,6 +13,7 @@ import com.pedropathing.ftc.localization.localizers.OTOSLocalizer;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.localization.Localizer;
 import com.pedropathing.math.Vector;
+import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -22,6 +23,7 @@ import org.ejml.data.DMatrixRMaj;
 import org.ejml.dense.row.CommonOps_DDRM;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 import pedroPathing.Constants;
 
@@ -61,6 +63,9 @@ public class KalmanLocalizer implements Localizer {
     DMatrixRMaj zVel = new DMatrixRMaj(3, 1);
     DMatrixRMaj R_vel = CommonOps_DDRM.identity(3);
 
+    Limelight3A limelight;
+    double IMUoffset;
+
     private boolean useDriveEncoderLocalizer = false;
 
     static {
@@ -75,6 +80,7 @@ public class KalmanLocalizer implements Localizer {
 
     public KalmanLocalizer(@NonNull HardwareMap map, Pose startPose) {
         imu = map.get(IMU.class, "imu");
+        imu.resetYaw();
 
         driveEncoderLocalizer = new DriveEncoderLocalizer(map, Constants.driveEncoderConstants);
 
@@ -82,7 +88,7 @@ public class KalmanLocalizer implements Localizer {
 
         otos = map.get(SparkFunOTOS.class, Constants.otosConstants.hardwareMapName);
 
-        Limelight3A limelight = map.get(Limelight3A.class, "limelight");
+        limelight = map.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100);
         limelight.pipelineSwitch(0);
         limelight.start();
@@ -127,9 +133,13 @@ public class KalmanLocalizer implements Localizer {
 
     public void setStartPose(Pose setStart) {
         otosLocalizer.setStartPose(setStart);
+        IMUoffset = setStart.getHeading();
     }
 
     public void setPose(Pose setPose) {
+        otosLocalizer.setPose(setPose);
+        IMUoffset = otosAngleUnit.toRadians(setPose.getHeading())
+                - imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle;
     }
 
     public void update() {
@@ -139,15 +149,17 @@ public class KalmanLocalizer implements Localizer {
         prevNano = currNano;
 
         // TODO: Make sure we have the right axis for yaw
-        double robotYaw = imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle;
+//        double robotYaw = getIMUHeading();
+        double robotYaw = otosAngleUnit.toRadians(otosLocalizer.getIMUHeading());
         double yawRate = imu.getRobotAngularVelocity(RADIANS).zRotationRate;
 
         driveEncoderLocalizer.update();
         Pose driveEncoderVel = driveEncoderLocalizer.getVelocity();
 
-        LimelightHelpers.SetRobotOrientation("limelight", robotYaw, yawRate, 0, 0, 0, 0);
-        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-        double[] stdevs = LimelightHelpers.getLatestResults("limelight").stdev_mt2;
+        limelight.updateRobotOrientation(robotYaw);
+        LLResult result = limelight.getLatestResult();
+        Pose3D botpose = result.getBotpose();
+        double[] stdevs = result.getStddevMt1();
 
         otosLocalizer.update();
         SparkFunOTOS.Pose2D otosStdDev = otos.getPositionStdDev();
@@ -213,11 +225,11 @@ public class KalmanLocalizer implements Localizer {
         // Restore pose-measurement H for absolute sensor updates (e.g. Limelight)
         kalmanFilter.setH(kalmanH);
 
-        if (Math.abs(yawRate) < 360 && mt2 != null && mt2.tagCount > 0 &&
+        if (Math.abs(yawRate) < 360 && botpose != null && result.getBotposeTagCount() > 0 &&
                 stdevs != null && stdevs.length >= 2) {
-            kalmanZ.set(0, 0, LLLinearUnit.toInches(mt2.pose.getX()));
-            kalmanZ.set(1, 0, LLLinearUnit.toInches(mt2.pose.getY()));
-            kalmanZ.set(2, 0, LLAngleUnit.toRadians(mt2.pose.getHeading()));
+            kalmanZ.set(0, 0, LLLinearUnit.toInches(botpose.getPosition().x));
+            kalmanZ.set(1, 0, LLLinearUnit.toInches(botpose.getPosition().y));
+            kalmanZ.set(2, 0, LLAngleUnit.toRadians(robotYaw));
 
             kalmanR.set(0, 0, LLLinearUnit.toInches(stdevs[0]) * LLLinearUnit.toInches(stdevs[0]));
             kalmanR.set(1, 1, LLLinearUnit.toInches(stdevs[1]) * LLLinearUnit.toInches(stdevs[1]));
@@ -263,7 +275,7 @@ public class KalmanLocalizer implements Localizer {
     }
 
     public double getIMUHeading() {
-        return imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle;
+        return imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle + IMUoffset;
     }
 
     public boolean isNAN() {

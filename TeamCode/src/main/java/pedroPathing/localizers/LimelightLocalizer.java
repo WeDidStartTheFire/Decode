@@ -7,13 +7,12 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.pedropathing.localization.Localizer;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.localization.Localizer;
 import com.pedropathing.math.Vector;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
@@ -66,8 +65,7 @@ public class LimelightLocalizer implements Localizer {
         long currTime = System.nanoTime();
         double dt = (currTime - prevTime) / 1_000_000.0;
         double robotYaw = imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle;
-        double yawRate = imu.getRobotAngularVelocity(RADIANS).zRotationRate;
-        LimelightHelpers.SetRobotOrientation("limelight", robotYaw, yawRate, 0, 0, 0, 0);
+        limelight.updateRobotOrientation(robotYaw);
 
         pose = null;
         LLResult result = limelight.getLatestResult();

@@ -41,6 +41,11 @@ public class TeleOp_Main_Red extends OpMode {
     }
 
     @Override
+    public void start() {
+        teleop.start();
+    }
+
+    @Override
     public void loop() {
         teleop.update();
         teleop.autoMovementLogic(validStartPose);

@@ -40,6 +40,11 @@ public class Test_Limelight extends OpMode {
     }
 
     @Override
+    public void start() {
+        teleop.start();
+    }
+
+    @Override
     public void loop() {
         teleop.update();
         tm.print("Motif", robot.getMotif());

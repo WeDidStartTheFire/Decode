@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TeleOpFunctions;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
-@TeleOp(name = "Always Field Centric", group = "Main")
+@TeleOp(name = "Always Field Centric", group = "Secondary")
 public class TeleOp_AlwaysFieldCentric extends OpMode {
     public TeleOpFunctions teleop;
     public Robot robot;
@@ -34,6 +34,11 @@ public class TeleOp_AlwaysFieldCentric extends OpMode {
             tm.print("Field Centric Driving️", "☑️Will be used without valid position");
         else tm.print("Field Centric Driving", "✅");
         tm.print("Color", "\uD83D\uDFE6Blue\uD83D\uDFE6 (Default)");
+    }
+
+    @Override
+    public void start() {
+        teleop.start();
     }
 
     @Override

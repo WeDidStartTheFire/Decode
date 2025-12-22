@@ -43,6 +43,7 @@ public class RobotConstants {
     public static final double INDEXER_SPEED = .7;
 
     public static final double INTAKE_WAIT_TIME = 2;
+    public static final double ARTIFACT_INTAKE_MEASURED_WAIT_TIME = 1;
 
     public static final double[] speeds = {0.2, 0.6, 1};
 

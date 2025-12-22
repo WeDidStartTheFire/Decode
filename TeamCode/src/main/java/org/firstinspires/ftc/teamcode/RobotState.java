@@ -9,6 +9,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.Motif;
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.Vector;
+import com.pedropathing.util.Timer;
 
 import java.util.ArrayList;
 
@@ -29,6 +30,7 @@ public class RobotState {
     public static Motif motif;
     public static ArrayList<Artifact> launchQueue = new ArrayList<>();
     public static Artifact[] artifacts = {UNKNOWN, UNKNOWN, UNKNOWN};
+    public static Timer artiafactMeasuredTime = new Timer();
     public static boolean launching = false;
     public static double savedSeconds = 0;
 }

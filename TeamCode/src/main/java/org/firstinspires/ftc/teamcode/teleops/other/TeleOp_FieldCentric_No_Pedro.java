@@ -14,9 +14,9 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TeleOpFunctions;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
-@TeleOp(name = "Test Field Centric No Pedro", group = "Test")
+@TeleOp(name = "Field Centric No Pedro", group = "Secondary")
 @Disabled
-public class TeleOp_TestFieldCentric_No_Pedro extends OpMode {
+public class TeleOp_FieldCentric_No_Pedro extends OpMode {
     public TeleOpFunctions teleop;
     public Robot robot;
     public TelemetryUtils tm;
@@ -35,6 +35,11 @@ public class TeleOp_TestFieldCentric_No_Pedro extends OpMode {
         if (!validStartPose) tm.print("⚠️WARNING⚠️", "Field centric driving without valid position");
         else tm.print("Field Centric Driving", "✅");
         tm.print("Color", "\uD83D\uDFE6Blue\uD83D\uDFE6 (Default)");
+    }
+
+    @Override
+    public void start() {
+        teleop.start();
     }
 
     @Override

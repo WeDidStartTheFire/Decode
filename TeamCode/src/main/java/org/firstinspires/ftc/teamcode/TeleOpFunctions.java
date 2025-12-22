@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADI
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
+import static org.firstinspires.ftc.teamcode.RobotConstants.ARTIFACT_INTAKE_MEASURED_WAIT_TIME;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_GOAL_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_ROBOT_POSITIONS;
@@ -24,6 +25,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
 import static org.firstinspires.ftc.teamcode.RobotConstants.speeds;
 import static org.firstinspires.ftc.teamcode.RobotConstants.teleopHeadingPID;
 import static org.firstinspires.ftc.teamcode.RobotState.aiming;
+import static org.firstinspires.ftc.teamcode.RobotState.artiafactMeasuredTime;
 import static org.firstinspires.ftc.teamcode.RobotState.artifacts;
 import static org.firstinspires.ftc.teamcode.RobotState.color;
 import static org.firstinspires.ftc.teamcode.RobotState.following;
@@ -79,6 +81,10 @@ public class TeleOpFunctions {
         follower = robot.follower;
         useOdometry = robot.drivetrain.useOdometry;
         tm = robot.drivetrain.tm;
+    }
+
+    public void start() {
+        robot.setIndexerServoPos(0);
     }
 
     public void update() {
@@ -395,6 +401,7 @@ public class TeleOpFunctions {
 
     public void colorSensorLogic() {
         Artifact artifact = robot.getArtifact();
+        Artifact current = getCurrentArtifact();
         tm.print("Color", robot.getColor());
         tm.print("Artifact", robot.getArtifact());
         tm.print("Distance", robot.getInches());
@@ -408,6 +415,7 @@ public class TeleOpFunctions {
         else if (abs(pos - .5) < 1e-4 || abs(pos - MIDDLE_INDEXER_POS) < 1e-4)
             artifacts[1] = artifact;
         else if (pos == 1) artifacts[2] = artifact;
+        if (artifact != current) artiafactMeasuredTime.resetTimer();
     }
 
     private Artifact getArtifactAtPos(double pos) {
@@ -422,7 +430,12 @@ public class TeleOpFunctions {
     }
 
     public void intakeLogic() {
-        if (gamepad1.right_trigger > 0.3) robot.powerIntake(-gamepad1.right_trigger);
+        if (gamepad1.right_trigger > 0.3) {
+            robot.powerIntake(-gamepad1.right_trigger);
+            if (robot.isIndexerStill() && artiafactMeasuredTime.getElapsedTimeSeconds() <
+                    ARTIFACT_INTAKE_MEASURED_WAIT_TIME && getCurrentArtifact() != Artifact.UNKNOWN)
+                rotateIndexerTo(Artifact.UNKNOWN);
+        }
         else if (gamepad1.right_bumper) robot.powerIntake(1);
         else robot.powerIntake(0);
     }

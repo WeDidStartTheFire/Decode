@@ -11,12 +11,22 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 import static org.firstinspires.ftc.teamcode.RobotConstants.B;
 import static org.firstinspires.ftc.teamcode.RobotConstants.COUNTS_PER_INCH;
+import static org.firstinspires.ftc.teamcode.RobotConstants.DEFAULT_VELOCITY;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Dir;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Dir.BACKWARD;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Dir.FORWARD;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Dir.LEFT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Dir.RIGHT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.IMU_PARAMS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.M;
+import static org.firstinspires.ftc.teamcode.RobotConstants.STRAFE_FRONT_MODIFIER;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURN_SPEED;
+import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
+import static org.firstinspires.ftc.teamcode.RobotState.auto;
+import static org.firstinspires.ftc.teamcode.Utils.active;
+import static org.firstinspires.ftc.teamcode.Utils.angleDifference;
+import static org.firstinspires.ftc.teamcode.Utils.simplifyAngle;
+import static org.firstinspires.ftc.teamcode.Utils.sleep;
 import static java.lang.Math.abs;
 import static java.lang.Math.min;
 import static java.lang.Math.signum;
@@ -25,10 +35,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
-
-import static org.firstinspires.ftc.teamcode.RobotConstants.*;
-import static org.firstinspires.ftc.teamcode.Utils.*;
-import static org.firstinspires.ftc.teamcode.RobotState.*;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -72,11 +78,8 @@ public class Drivetrain {
             rf.setDirection(DcMotorEx.Direction.FORWARD);
             rb.setDirection(DcMotorEx.Direction.FORWARD);
 
-            if (auto) {
-                setMotorZeroPowerBehaviors(BRAKE);
-            } else {
-                setMotorZeroPowerBehaviors(FLOAT);
-            }
+            if (auto) setMotorZeroPowerBehaviors(BRAKE);
+            else setMotorZeroPowerBehaviors(FLOAT);
 
             lb.setTargetPosition(lb.getCurrentPosition());
             rb.setTargetPosition(rb.getCurrentPosition());

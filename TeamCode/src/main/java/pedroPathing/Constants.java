@@ -33,7 +33,7 @@ public class Constants {
             .translationalPIDFCoefficients(new PIDFCoefficients(0.25, 0, 0.024, 0))
             .headingPIDFCoefficients(new PIDFCoefficients(2, 0, 0.13, 0))
             .drivePIDFCoefficients(
-                    new FilteredPIDFCoefficients(0.035, 0, 0.0003, 0.2, 0)
+                    new FilteredPIDFCoefficients(0.014, 0, 0.00001, 0.6, 0)
             );
 
     public static MecanumConstants driveConstants = new MecanumConstants()
@@ -90,7 +90,7 @@ public class Constants {
                 .build();
     }
 
-    public static Follower createKalmanFollowre(HardwareMap hardwareMap) {
+    public static Follower createKalmanFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)
                 .mecanumDrivetrain(driveConstants)
                 .setLocalizer(new KalmanLocalizer(hardwareMap))

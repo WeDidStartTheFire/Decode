@@ -409,7 +409,7 @@ public class TeleOpFunctions {
         tm.print("Artifact 2", artifacts[1]);
         tm.print("Artifact 3", artifacts[2]);
         if (!robot.isIndexerStill()) return;
-        if (artifact == Artifact.UNKNOWN && robot.getInches() < 5.5) return;
+        if (artifact == Artifact.UNKNOWN && robot.getInches() < 3.7) return;
         double pos = robot.getGoalIndexerPos();
         if (pos == 0) artifacts[0] = artifact;
         else if (abs(pos - .5) < 1e-4 || abs(pos - MIDDLE_INDEXER_POS) < 1e-4)
@@ -430,8 +430,13 @@ public class TeleOpFunctions {
     }
 
     public void intakeLogic() {
-        if (gamepad1.right_trigger > 0.3) {
-            robot.powerIntake(-gamepad1.right_trigger);
+        if (gamepad1.right_trigger > 0.3 && robot.isIndexerStill()) {
+            if (getCurrentArtifact() == Artifact.UNKNOWN)
+                robot.powerIntake(-gamepad1.right_trigger);
+            else {
+                robot.powerInnerIntake(-gamepad1.right_trigger);
+                robot.powerOuterIntake(gamepad1.right_trigger / 3);
+            }
             if (robot.isIndexerStill() && artiafactMeasuredTime.getElapsedTimeSeconds() <
                     ARTIFACT_INTAKE_MEASURED_WAIT_TIME && getCurrentArtifact() != Artifact.UNKNOWN)
                 rotateIndexerTo(Artifact.UNKNOWN);

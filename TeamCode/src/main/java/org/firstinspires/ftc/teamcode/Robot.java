@@ -292,6 +292,16 @@ public class Robot {
         if (intakeServoC != null) intakeServoC.setPower(power);
     }
 
+    public void powerInnerIntake(double power) {
+        if (intakeServoA != null) intakeServoA.setPower(power);
+        if (intakeServoC != null) intakeServoC.setPower(power);
+    }
+
+    public void powerOuterIntake(double power) {
+        if (intakeMotor != null) intakeMotor.setPower(power);
+        if (intakeServoB != null) intakeServoB.setPower(power);
+    }
+
     public void pushArtifactToLaunch() {
         if (feederServoA == null) return;
         feederServoB.setPosition(1);

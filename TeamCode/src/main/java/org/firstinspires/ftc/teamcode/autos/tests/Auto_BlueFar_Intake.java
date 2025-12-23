@@ -110,7 +110,7 @@ public class Auto_BlueFar_Intake extends OpMode {
         tm = robot.drivetrain.tm;
         buildPaths();
         launcher = new Launcher(robot);
-        tm.print("🟦Blue🟦 Far Refactor Test Intake Motif Auto initialized");
+        tm.print("🟦Blue🟦 Far Intake Auto initialized");
         tm.update();
     }
 

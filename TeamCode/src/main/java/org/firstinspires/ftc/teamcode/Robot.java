@@ -5,9 +5,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.GREEN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.PURPLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_GOAL_POSE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Color;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Color.RED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_SPEED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_ANGLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_HEIGHT;
@@ -243,9 +241,7 @@ public class Robot {
     }
 
     public double getLaunchMotorVel() {
-        ProjectileSolver.LaunchSolution sol = ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT,
-                vel, RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
-        return sol != null ? ballVelToMotorVel(sol.w) : 0;
+        return getLaunchMotorVel(pose);
     }
 
     public double getLaunchMotorVel(Pose pose) {
@@ -261,10 +257,7 @@ public class Robot {
     }
 
     public void spinLaunchMotors() {
-        if (launcherMotorA == null) return;
-        double motorVel = getLaunchMotorVel();
-        launcherMotorA.setVelocity(motorVel);
-        launcherMotorB.setVelocity(motorVel);
+        spinLaunchMotors(pose);
     }
 
     public void spinLaunchMotors(Pose pose) {
@@ -286,10 +279,8 @@ public class Robot {
     }
 
     public void powerIntake(double power) {
-        if (intakeMotor != null) intakeMotor.setPower(power);
-        if (intakeServoA != null) intakeServoA.setPower(power);
-        if (intakeServoB != null) intakeServoB.setPower(power);
-        if (intakeServoC != null) intakeServoC.setPower(power);
+        powerInnerIntake(power);
+        powerOuterIntake(power);
     }
 
     public void powerInnerIntake(double power) {
@@ -344,15 +335,6 @@ public class Robot {
             }
         }
         return Motif.UNKNOWN;
-    }
-
-    public LLResultTypes.FiducialResult getGoalFiducial(Color color) {
-        List<LLResultTypes.FiducialResult> fiducials = getFiducials();
-        for (LLResultTypes.FiducialResult fiducial : fiducials) {
-            if (color == RED && fiducial.getFiducialId() == 24 ||
-                    color == BLUE && fiducial.getFiducialId() == 20) return fiducial;
-        }
-        return null;
     }
 
     public List<LLResultTypes.FiducialResult> getFiducials() {

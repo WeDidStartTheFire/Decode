@@ -14,12 +14,12 @@ public class ColorRange {
     public static final ColorRange ARTIFACT_GREEN = new ColorRange(
             ColorSpace.RGB,
             new Scalar(0.4, 1.25, .95),
-            new Scalar(0.7, 1.60, 1.2)
+            new Scalar(0.715, 1.60, 1.2)
     );
 
     public static final ColorRange ARTIFACT_PURPLE = new ColorRange(
             ColorSpace.RGB,
-            new Scalar(0.7, 0.50, 1.05),
+            new Scalar(0.67, 0.50, 1.05),
             new Scalar(0.867, 1.19, 5.0)
     );
 

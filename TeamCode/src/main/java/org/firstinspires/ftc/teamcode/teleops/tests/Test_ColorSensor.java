@@ -7,12 +7,11 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TeleOpFunctions;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.robot.Robot;
 
 import java.util.Objects;
 
@@ -38,14 +37,12 @@ public class Test_ColorSensor extends OpMode {
 
     @Override
     public void loop() {
-        if (robot.colorSensor != null) {
-            tm.print("R", ((int) (Objects.requireNonNull(robot.getRGB()).val[0] * 10000)) / 10000.0);
-            tm.print("G", ((int) (Objects.requireNonNull(robot.getRGB()).val[1] * 10000)) / 10000.0);
-            tm.print("B", ((int) (Objects.requireNonNull(robot.getRGB()).val[2] * 10000)) / 10000.0);
-            tm.print("Distance (in)", robot.distanceSensor.getDistance(DistanceUnit.INCH));
-            tm.print("Color", robot.getColor());
-            tm.print("Artifact", robot.getArtifact());
-        }
+        tm.print("R", ((int) (Objects.requireNonNull(robot.colorSensor.getRGB()).val[0] * 10000)) / 10000.0);
+        tm.print("G", ((int) (Objects.requireNonNull(robot.colorSensor.getRGB()).val[1] * 10000)) / 10000.0);
+        tm.print("B", ((int) (Objects.requireNonNull(robot.colorSensor.getRGB()).val[2] * 10000)) / 10000.0);
+        tm.print("Distance (in)", robot.colorSensor.getInches());
+        tm.print("Color", robot.colorSensor.getColor());
+        tm.print("Artifact", robot.colorSensor.getArtifact());
         tm.update();
     }
 }

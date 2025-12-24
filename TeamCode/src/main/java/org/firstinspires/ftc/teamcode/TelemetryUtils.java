@@ -1,16 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.historyLook;
-import static org.firstinspires.ftc.teamcode.RobotConstants.robotLook;
-
-import com.bylazar.field.FieldManager;
-import com.bylazar.field.PanelsField;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.math.Vector;
-import com.pedropathing.util.PoseHistory;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -20,7 +12,6 @@ import pedroPathing.Drawing;
 public class TelemetryUtils {
     public Telemetry telemetry;
     public static final TelemetryManager telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
-    private static final FieldManager panelsField = PanelsField.INSTANCE.getField();
 
     public TelemetryUtils(Telemetry telemetry) {
         this.telemetry = telemetry;

@@ -6,7 +6,6 @@ import static java.lang.Math.toRadians;
 import androidx.annotation.NonNull;
 
 import com.bylazar.configurables.annotations.Configurable;
-import com.bylazar.field.Style;
 import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -26,18 +25,18 @@ public class RobotConstants {
     static final double WHEEL_DIAMETER_INCHES = SMALL_WHEEL_DIAMETER;
     static final double COUNTS_PER_MOTOR_REV = 537.6898395722;  // ((((1.0 + (46.0 / 17.0))) * (1.0 + (46.0 / 11.0))) * 28.0);
     static final double DRIVE_GEAR_REDUCTION = 1.0; // No External Gearing
-    static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * PI);
+    public static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * PI);
 
-    static final double STRAFE_FRONT_MODIFIER = 1.3;
-    static final double B = 1.1375;
-    static final double M = 0.889;
-    static final double TURN_SPEED = 0.5;
+    public static final double STRAFE_FRONT_MODIFIER = 1.3;
+    public static final double B = 1.1375;
+    public static final double M = 0.889;
+    public static final double TURN_SPEED = 0.5;
 
-    static final IMU.Parameters IMU_PARAMS = new IMU.Parameters(
+    public static final IMU.Parameters IMU_PARAMS = new IMU.Parameters(
             new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                     RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
 
-    static final double DEFAULT_VELOCITY = 2000;
+    public static final double DRIVETRAIN_VELOCITY = 2000;
 
     public static final double MIDDLE_INDEXER_POS = 0.455;
     public static final double INDEXER_SPEED = .7;
@@ -55,13 +54,13 @@ public class RobotConstants {
 
     static PIDFCoefficients teleopHeadingPID = new PIDFCoefficients(1, 0, .05, 0);
 
-    static final double LAUNCHER_HEIGHT = 15.5;
-    static final double LAUNCHER_ANGLE = toRadians(50);
-    static com.qualcomm.robotcore.hardware.PIDFCoefficients launcherPIDF =
+    public static final double LAUNCHER_HEIGHT = 15.5;
+    public static final double LAUNCHER_ANGLE = toRadians(50);
+    public static com.qualcomm.robotcore.hardware.PIDFCoefficients launcherPIDF =
             new com.qualcomm.robotcore.hardware.PIDFCoefficients(80, 0, 0, 20);
-    static final Pose3D RED_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 139, 139, 44, 0),
+    public static final Pose3D RED_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 139, 139, 44, 0),
             new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
-    static final Pose3D BLUE_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 5, 139, 44, 0),
+    public static final Pose3D BLUE_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 5, 139, 44, 0),
             new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
 
     static final Pose[] RED_ROBOT_POSITIONS = {new Pose(41, 32, toRadians(180))};
@@ -69,9 +68,6 @@ public class RobotConstants {
 
     public static final String BLUE_TELEOP_NAME = "🟦Blue🟦 Main";
     public static final String RED_TELEOP_NAME = "🟥Red🟥 Main";
-
-    public static final Style historyLook = new Style("", "#4CAF50", 0.0);
-    public static final Style robotLook = new Style("", "#3F51B5", 0.0);
 
     public enum Dir {
         LEFT, RIGHT, FORWARD, BACKWARD

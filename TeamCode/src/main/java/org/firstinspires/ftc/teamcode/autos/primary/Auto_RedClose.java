@@ -15,11 +15,11 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
-import org.firstinspires.ftc.teamcode.autos.Launcher;
+import org.firstinspires.ftc.teamcode.controllers.LaunchController;
+import org.firstinspires.ftc.teamcode.robot.Robot;
 
 
 
@@ -32,7 +32,7 @@ public class Auto_RedClose extends OpMode {
 
     private final Timer stateTimer = new Timer();
     private State state;
-    private Launcher launcher;
+    private LaunchController launcher;
 
     private enum State {
         FINISHED,
@@ -65,10 +65,10 @@ public class Auto_RedClose extends OpMode {
         RobotState.color = RobotConstants.Color.RED;
         robot = new Robot(hardwareMap, telemetry, true);
         robot.follower.setStartingPose(startPose);
-        RobotState.motif = robot.getMotif();
+        RobotState.motif = robot.limelight.getMotif();
         tm = robot.drivetrain.tm;
         buildPaths();
-        launcher = new Launcher(robot);
+        launcher = new LaunchController(robot);
         tm.print("🟥Red🟥 Close Auto initialized");
         tm.print("Motif", motif);
         tm.update();
@@ -91,7 +91,7 @@ public class Auto_RedClose extends OpMode {
     public void pathUpdate() {
         switch (state) {
             case FOLLOW_PATH_1:
-                robot.setIndexerServoPos(0);
+                robot.indexer.setPos(0);
                 robot.follower.followPath(path1, true);
                 setState(State.LAUNCH_ARTIFACTS);
                 break;
@@ -122,17 +122,16 @@ public class Auto_RedClose extends OpMode {
         tm.drawRobot(robot.follower);
         tm.print("Path State", state);
         tm.print("Launcher State", launcher.getState());
-        tm.print("Feeder Up", robot.isFeederUp());
-        tm.print("Indexer Pos", robot.getGoalIndexerPos());
-        tm.print("Indexer Still", robot.isIndexerStill());
-        tm.print("Indexer Estimate Pos", robot.getEstimateIndexerPos());
+        tm.print("Feeder Up", robot.feeder.isUp());
+        tm.print("Indexer Pos", robot.indexer.getGoalPos());
+        tm.print("Indexer Still", robot.indexer.isStill());
+        tm.print("Indexer Estimate Pos", robot.indexer.getEstimatePos());
         tm.print("Pose", pose);
-        tm.print("Motor Goal Vel", robot.getLaunchMotorVel(shootPose));
-        tm.print("Motor A Vel", robot.launcherMotorA.getVelocity());
-        tm.print("Motor B Vel", robot.launcherMotorB.getVelocity());
-        tm.print("Artifact", robot.getArtifact());
-        tm.print("Color", robot.getColor());
-        tm.print("Inches", robot.getInches());
+        tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose));
+        tm.print("Launcher Vel", robot.launcher.getVel());
+        tm.print("Artifact", robot.colorSensor.getArtifact());
+        tm.print("Color", robot.colorSensor.getColor());
+        tm.print("Inches", robot.colorSensor.getInches());
     }
 
     @Override

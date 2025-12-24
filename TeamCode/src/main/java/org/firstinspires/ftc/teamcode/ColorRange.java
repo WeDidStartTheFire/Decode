@@ -5,12 +5,8 @@ import androidx.annotation.NonNull;
 import org.firstinspires.ftc.vision.opencv.ColorSpace;
 import org.opencv.core.Scalar;
 
-/**
- * An {@link ColorRange represents a 3-channel minimum/maximum
- * range for a given color space}
- */
-public class ColorRange
-{
+/** Represents a 3-channel minimum/maximum range for a given color space */
+public class ColorRange {
     protected final ColorSpace colorSpace;
     protected final Scalar min;
     protected final Scalar max;

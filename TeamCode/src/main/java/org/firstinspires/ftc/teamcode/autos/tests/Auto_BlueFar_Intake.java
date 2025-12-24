@@ -15,11 +15,11 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
-import org.firstinspires.ftc.teamcode.autos.Launcher;
+import org.firstinspires.ftc.teamcode.controllers.LaunchController;
+import org.firstinspires.ftc.teamcode.robot.Robot;
 
 
 @Autonomous(name = "🟦Blue🟦 Far Intake", group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
@@ -31,7 +31,7 @@ public class Auto_BlueFar_Intake extends OpMode {
 
     private final Timer stateTimer = new Timer();
     private State state;
-    private Launcher launcher;
+    private LaunchController launcher;
     private double launchRound = 0;
 
     private enum State {
@@ -106,10 +106,10 @@ public class Auto_BlueFar_Intake extends OpMode {
         RobotState.color = RobotConstants.Color.BLUE;
         robot = new Robot(hardwareMap, telemetry, true);
         robot.follower.setStartingPose(startPose);
-        RobotState.motif = robot.getMotif();
+        RobotState.motif = robot.limelight.getMotif();
         tm = robot.drivetrain.tm;
         buildPaths();
-        launcher = new Launcher(robot);
+        launcher = new LaunchController(robot);
         tm.print("🟦Blue🟦 Far Intake Auto initialized");
         tm.update();
     }
@@ -131,7 +131,7 @@ public class Auto_BlueFar_Intake extends OpMode {
     public void pathUpdate() {
         switch (state) {
             case FOLLOW_PATH_1:
-                robot.setIndexerServoPos(0);
+                robot.indexer.setPos(0);
                 robot.follower.followPath(path1, true);
                 setState(State.LAUNCH_ARTIFACTS);
                 break;
@@ -148,40 +148,40 @@ public class Auto_BlueFar_Intake extends OpMode {
                 break;
             case INTAKE_1:
                 if (robot.follower.isBusy()) break;
-                robot.powerIntake(1);
+                robot.intake.power(1);
                 robot.follower.followPath(path3, true);
                 setState(State.INTAKE_2);
                 break;
             case INTAKE_2:
                 if (robot.follower.isBusy() ||
                         stateTimer.getElapsedTimeSeconds() < INTAKE_WAIT_TIME) break;
-                robot.powerIntake(0);
-                robot.setIndexerServoPos(MIDDLE_INDEXER_POS);
+                robot.intake.power(0);
+                robot.indexer.setPos(MIDDLE_INDEXER_POS);
                 setState(State.INTAKE_3);
                 break;
             case INTAKE_3:
-                if (!robot.isIndexerStill()) break;
-                robot.powerIntake(1);
+                if (!robot.indexer.isStill()) break;
+                robot.intake.power(1);
                 robot.follower.followPath(path4, true);
                 setState(State.INTAKE_4);
                 break;
             case INTAKE_4:
                 if (robot.follower.isBusy() ||
                         stateTimer.getElapsedTimeSeconds() < INTAKE_WAIT_TIME) break;
-                robot.powerIntake(0);
-                robot.setIndexerServoPos(0);
+                robot.intake.power(0);
+                robot.indexer.setPos(0);
                 setState(State.INTAKE_5);
                 break;
             case INTAKE_5:
-                if (!robot.isIndexerStill()) break;
-                robot.powerIntake(1);
+                if (!robot.indexer.isStill()) break;
+                robot.intake.power(1);
                 robot.follower.followPath(path5, true);
                 setState(State.RETURN_TO_LAUNCH);
                 break;
             case RETURN_TO_LAUNCH:
                 if (robot.follower.isBusy() ||
                         stateTimer.getElapsedTimeSeconds() < INTAKE_WAIT_TIME) break;
-                robot.powerIntake(0);
+                robot.intake.power(0);
                 robot.follower.followPath(path6, true);
                 setState(State.LAUNCH_ARTIFACTS);
                 break;
@@ -207,17 +207,16 @@ public class Auto_BlueFar_Intake extends OpMode {
         tm.drawRobot(robot.follower);
         tm.print("Path State", state);
         tm.print("Launcher State", launcher.getState());
-        tm.print("Feeder Up", robot.isFeederUp());
-        tm.print("Indexer Pos", robot.getGoalIndexerPos());
-        tm.print("Indexer Still", robot.isIndexerStill());
-        tm.print("Indexer Estimate Pos", robot.getEstimateIndexerPos());
+        tm.print("Feeder Up", robot.feeder.isUp());
+        tm.print("Indexer Pos", robot.indexer.getGoalPos());
+        tm.print("Indexer Still", robot.indexer.isStill());
+        tm.print("Indexer Estimate Pos", robot.indexer.getEstimatePos());
         tm.print("Pose", pose);
-        tm.print("Motor Goal Vel", robot.getLaunchMotorVel(shootPose));
-        tm.print("Motor A Vel", robot.launcherMotorA.getVelocity());
-        tm.print("Motor B Vel", robot.launcherMotorB.getVelocity());
-        tm.print("Artifact", robot.getArtifact());
-        tm.print("Color", robot.getColor());
-        tm.print("Inches", robot.getInches());
+        tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose));
+        tm.print("Launcher Vel", robot.launcher.getVel());
+        tm.print("Artifact", robot.colorSensor.getArtifact());
+        tm.print("Color", robot.colorSensor.getColor());
+        tm.print("Inches", robot.colorSensor.getInches());
     }
 
     @Override

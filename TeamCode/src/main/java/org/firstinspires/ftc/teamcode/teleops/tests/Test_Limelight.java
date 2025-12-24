@@ -8,11 +8,11 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TeleOpFunctions;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.robot.Robot;
 
 import pedroPathing.localizers.LimelightHelpers;
 
@@ -47,7 +47,7 @@ public class Test_Limelight extends OpMode {
     @Override
     public void loop() {
         teleop.update();
-        tm.print("Motif", robot.getMotif());
+        tm.print("Motif", robot.limelight.getMotif());
         tm.print("Target", limelightTargetFiducial.getCameraPose_TargetSpace2D());
         teleop.autoMovementLogic(validStartPose);
         teleop.drivetrainLogic(validStartPose);

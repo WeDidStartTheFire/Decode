@@ -56,6 +56,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.teamcode.robot.Robot;
 
 public class TeleOpFunctions {
     DcMotorEx lf, lb, rf, rb;
@@ -83,7 +84,7 @@ public class TeleOpFunctions {
     }
 
     public void start() {
-        robot.setIndexerServoPos(0);
+        robot.indexer.setPos(0);
     }
 
     public void update() {
@@ -169,7 +170,7 @@ public class TeleOpFunctions {
             Pose3D goalPose = color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE;
             tm.print("distance", pose.distanceFrom(
                     new Pose(goalPose.getPosition().x, goalPose.getPosition().y)));
-            tm.print("tx", robot.getTx());
+            tm.print("tx", robot.limelight.getTx());
             double turn = -gamepad1.right_stick_x * speedMultiplier;
             if (aiming && !holding) {
                 ProjectileSolver.LaunchSolution sol = getLaunchSolution();
@@ -183,14 +184,6 @@ public class TeleOpFunctions {
                     tm.print("angVel deg", toDegrees(headingPIDController.getErrorDerivative()));
                     tm.print("turn", turn);
                 }
-
-//                LLResultTypes.FiducialResult fiducial = robot.getGoalFiducial(color);
-//                if (fiducial != null) {
-//                    double error = -toRadians(fiducial.getTargetXDegrees());
-//                    headingPIDController.updateError(error);
-//                    turn = headingPIDController.run();
-//                    tm.print("turn", turn);
-//                }
             }
 
             follower.setTeleOpDrive(gamepad1.left_stick_y * speedMultiplier * (color == Color.RED ? -1 : 1),
@@ -292,22 +285,20 @@ public class TeleOpFunctions {
     }
 
     public void indexerLogic() {
-        if (!robot.isIndexerServoConnected()) {
+        if (!robot.indexer.isConnected()) {
             tm.print("Indexer Servo not connected");
             return;
         }
-        tm.print("Indexer still", robot.isIndexerStill());
-        tm.print("Indexer goal pos", robot.getGoalIndexerPos());
-        tm.print("Indexer pos", robot.getEstimateIndexerPos());
+        tm.print("Indexer still", robot.indexer.isStill());
+        tm.print("Indexer goal pos", robot.indexer.getGoalPos());
+        tm.print("Indexer pos", robot.indexer.getEstimatePos());
 
-        double[] POS = {0.00, 0.25, MIDDLE_INDEXER_POS, 0.75, 1.00, 1.25};
-        double[] DOWN = {0.75, 0.75, 0.25, 0.25, 0.75, 0.75};
-        double[] UP = {0.25, 0.75, 0.75, 0.25, 0.25, 0.25};
-        double[] RIGHT = {MIDDLE_INDEXER_POS, MIDDLE_INDEXER_POS, 1.00, 1.00, 0.00, 0.00};
-        double[] LEFT = {1.00, 0.00, 0.00, MIDDLE_INDEXER_POS, MIDDLE_INDEXER_POS, 1.00};
+        double[] POS = {0.00, MIDDLE_INDEXER_POS, 1.00};
+        double[] RIGHT = {MIDDLE_INDEXER_POS, 1.00, 0.00};
+        double[] LEFT = {1.00, 0.00, MIDDLE_INDEXER_POS};
 
         // Read current servo position
-        double curPos = robot.getGoalIndexerPos();
+        double curPos = robot.indexer.getGoalPos();
         if (curPos == -1) tm.print("Got -1 for indexer pos");
 
         // Find exact match (within a tiny tolerance) or fallback to nearest POS index
@@ -331,64 +322,61 @@ public class TeleOpFunctions {
         }
 
         // Apply mapping based on dpad input
-        if (gamepad2.dpadLeftWasPressed()) robot.setIndexerServoPos(LEFT[idx]);
-        else if (gamepad2.dpadRightWasPressed()) robot.setIndexerServoPos(RIGHT[idx]);
-//        else if (gamepad2.dpadUpWasPressed()) robot.setIndexerServoPos(UP[idx]);
-//        else if (gamepad2.dpadDownWasPressed()) robot.setIndexerServoPos(DOWN[idx]);
-//        else if (gamepad2.yWasPressed()) robot.rotateIndexerTo(Artifact.UNKNOWN);
+        if (gamepad2.dpadLeftWasPressed()) robot.indexer.setPos(LEFT[idx]);
+        else if (gamepad2.dpadRightWasPressed()) robot.indexer.setPos(RIGHT[idx]);
     }
 
     public void autoLaunchLogic() {
         tm.print("launching", launching);
         tm.print("Queue", launchQueue);
-        tm.print("Can Launch", robot.canLaunch());
-        if (!robot.canLaunch()) return;
+        tm.print("Can Launch", robot.launcher.canLaunch());
+        if (!robot.launcher.canLaunch()) return;
         if (gamepad2.aWasPressed()) launchQueue.add(Artifact.GREEN);
         if (gamepad2.bWasPressed()) launchQueue.add(Artifact.PURPLE);
         if (gamepad2.xWasPressed()) {
             launching = false;
             launchQueue.clear();
-            robot.stopLaunchMotors();
+            robot.launcher.stop();
         }
         if (launching) {
-            robot.spinLaunchMotors();
-            robot.pushArtifactToLaunch();
-            if (robot.getCurrentArtifact() == Artifact.UNKNOWN) {
+            robot.launcher.spin();
+            robot.feeder.raise();
+            if (robot.indexer.getCurrentArtifact() == Artifact.UNKNOWN) {
                 launchQueue.remove(0);
-                robot.retractFeeder();
+                robot.feeder.retract();
                 savedSeconds = runtime.seconds();
-                if (launchQueue.isEmpty()) robot.stopLaunchMotors();
+                if (launchQueue.isEmpty()) robot.launcher.stop();
                 launching = false;
             }
             return;
         }
-        if (robot.isFeederUp()/*runtime.seconds() - savedSeconds < 0.67*/) return;
-        while (!launchQueue.isEmpty() && robot.getCurrentArtifact() != launchQueue.get(0)) {
-            if (robot.rotateIndexerTo(launchQueue.get(0))) break;
+        if (robot.feeder.isUp()/*runtime.seconds() - savedSeconds < 0.67*/) return;
+        while (!launchQueue.isEmpty() && robot.indexer.getCurrentArtifact() != launchQueue.get(0)) {
+            if (robot.indexer.rotateIndexerTo(launchQueue.get(0))) break;
             launchQueue.remove(0);
         }
         if (launchQueue.isEmpty()) return;
-        if (!robot.areLaunchMotorsSpinning()) launchMotorSpinStartTime = runtime.seconds();
-        robot.spinLaunchMotors();
-        if ((robot.launchMotorsToSpeed() || runtime.seconds() - launchMotorSpinStartTime >
-                MAX_LAUNCHER_SPIN_WAIT) && robot.isIndexerStill()) {
-            robot.pushArtifactToLaunch();
+        if (!robot.launcher.isSpinning()) launchMotorSpinStartTime = runtime.seconds();
+        robot.launcher.spin();
+        if ((robot.launcher.toSpeed() || runtime.seconds() - launchMotorSpinStartTime >
+                MAX_LAUNCHER_SPIN_WAIT) && robot.indexer.isStill()) {
+            robot.feeder.raise();
             launching = true;
         }
     }
 
     public void colorSensorLogic() {
-        Artifact artifact = robot.getArtifact();
-        Artifact current = robot.getCurrentArtifact();
-        tm.print("Color", robot.getColor());
-        tm.print("Artifact", robot.getArtifact());
-        tm.print("Distance", robot.getInches());
+        Artifact artifact = robot.colorSensor.getArtifact();
+        Artifact current = robot.indexer.getCurrentArtifact();
+        tm.print("Color", robot.colorSensor.getColor());
+        tm.print("Artifact", robot.colorSensor.getArtifact());
+        tm.print("Distance", robot.colorSensor.getInches());
         tm.print("Artifact 1", artifacts[0]);
         tm.print("Artifact 2", artifacts[1]);
         tm.print("Artifact 3", artifacts[2]);
-        if (!robot.isIndexerStill()) return;
-        if (artifact == Artifact.UNKNOWN && robot.getInches() < 3.7) return;
-        double pos = robot.getGoalIndexerPos();
+        if (!robot.indexer.isStill()) return;
+        if (artifact == Artifact.UNKNOWN && robot.colorSensor.getInches() < 3.7) return;
+        double pos = robot.indexer.getGoalPos();
         if (pos == 0) artifacts[0] = artifact;
         else if (abs(pos - .5) < 1e-4 || abs(pos - MIDDLE_INDEXER_POS) < 1e-4)
             artifacts[1] = artifact;
@@ -399,21 +387,20 @@ public class TeleOpFunctions {
     public void intakeLogic() {
         double power = gamepad1.right_trigger;
         if (power > 0.3) {
-            if (robot.getCurrentArtifact() == Artifact.UNKNOWN) {
-                if (robot.isIndexerStill()) robot.powerIntake(-power);
+            if (robot.indexer.getCurrentArtifact() == Artifact.UNKNOWN) {
+                if (robot.indexer.isStill()) robot.intake.power(-power);
                 else {
-                    robot.powerInnerIntake(power);
-                    robot.powerOuterIntake(-power);
+                    robot.intake.powerInside(power);
+                    robot.intake.powerOutside(-power);
                 }
             } else {
-                robot.powerInnerIntake(power);
-                robot.powerOuterIntake(power / 2);
+                robot.intake.powerInside(power);
+                robot.intake.powerOutside(power / 2);
             }
-            if (robot.isIndexerStill() && robot.getCurrentArtifact() != Artifact.UNKNOWN)
-                robot.rotateIndexerTo(Artifact.UNKNOWN);
-        }
-        else if (gamepad1.right_bumper) robot.powerIntake(1);
-        else robot.powerIntake(0);
+            if (robot.indexer.isStill() && robot.indexer.getCurrentArtifact() != Artifact.UNKNOWN)
+                robot.indexer.rotateIndexerTo(Artifact.UNKNOWN);
+        } else if (gamepad1.right_bumper) robot.intake.power(1);
+        else robot.intake.power(0);
     }
 
     public void launcherLogic() {
@@ -421,36 +408,35 @@ public class TeleOpFunctions {
         if (gamepad1.dpadDownWasPressed()) launcherRPM -= gamepad1.x ? 350 : 3500;
         double motorVel = launcherRPM / TICKS_PER_REVOLUTION;
 
-        if (robot.launcherMotorA == null) {
-            robot.retractFeeder();
+        if (!robot.launcher.isConnected()) {
+            robot.feeder.retract();
             return;
         }
         if (getLaunchSolution() == null)
-            robot.setLEDColor(RobotConstants.LEDColors.BLUE);
+            robot.led.setColor(RobotConstants.LEDColors.BLUE);
         else {
-            if (robot.launchMotorsToSpeed()) robot.setLEDColor(GREEN);
-            else if (robot.getLaunchMotorVel() > 100) robot.setLEDColor(YELLOW);
-            else robot.setLEDColor(RobotConstants.LEDColors.RED);
+            if (robot.launcher.toSpeed()) robot.led.setColor(GREEN);
+            else if (robot.launcher.getGoalVel() > 100) robot.led.setColor(YELLOW);
+            else robot.led.setColor(RobotConstants.LEDColors.RED);
         }
-        if (gamepad2.right_trigger >= 0.5) robot.spinLaunchMotors();
+        if (gamepad2.right_trigger >= 0.5) robot.launcher.spin();
         else if (launchQueue.isEmpty() && !launching) {
-            robot.retractFeeder();
-            robot.stopLaunchMotors();
+            robot.feeder.retract();
+            robot.launcher.stop();
             tm.print("Retracting feeder");
         }
-        if (gamepad2.left_trigger >= 0.3) robot.intakeLaunchMotors(gamepad2.left_trigger);
-        tm.print("Motor A Vel", robot.launcherMotorA.getVelocity());
-        tm.print("Motor B Vel", robot.launcherMotorB.getVelocity());
-        tm.print("Goal", robot.getLaunchMotorVel());
+        if (gamepad2.left_trigger >= 0.3) robot.launcher.intakeMotors(gamepad2.left_trigger);
+        tm.print("Launcher Vel", robot.launcher.getVel());
+        tm.print("Goal", robot.launcher.getGoalVel());
         tm.print("Motor Velocity (adjustable, unused)", motorVel);
-        tm.print("To Speed", robot.launchMotorsToSpeed());
+        tm.print("To Speed", robot.launcher.toSpeed());
     }
 
     public void feederLogic() {
-        tm.print("Feeder Up", robot.isFeederUp());
-        tm.print("Feeder Pos", robot.getFeederPos());
+        tm.print("Feeder Up", robot.feeder.isUp());
+        tm.print("Feeder Pos", robot.feeder.getPos());
         if (gamepad2.right_bumper && gamepad2.right_trigger >= 0.5 &&
-                robot.isIndexerStill()) robot.pushArtifactToLaunch();
-        else robot.retractFeeder();
+                robot.indexer.isStill()) robot.feeder.raise();
+        else robot.feeder.retract();
     }
 }

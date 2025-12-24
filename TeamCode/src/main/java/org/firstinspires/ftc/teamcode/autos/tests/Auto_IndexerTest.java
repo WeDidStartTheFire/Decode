@@ -14,9 +14,9 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.robot.Robot;
 
 
 
@@ -78,35 +78,35 @@ public class Auto_IndexerTest extends OpMode {
         vel = robot.follower.getVelocity();
         tm.drawRobot(robot.follower);
         tm.print("Path State", state);
-        tm.print("Indexer Pos", robot.getGoalIndexerPos());
+        tm.print("Indexer Pos", robot.indexer.getGoalPos());
         switch (state) {
             case FOLLOW_PATH_1:
                 robot.follower.holdPoint(path1.endPose());
-                robot.setIndexerServoPos(0);
+                robot.indexer.setPos(0);
 //                robot.spinLaunchMotors();
                 setState(State.PUSH_ARTIFACT);
                 break;
             case PUSH_ARTIFACT:
-                if (!robot.isIndexerStill()) break;
-                robot.pushArtifactToLaunch();
+                if (!robot.indexer.isStill()) break;
+                robot.feeder.raise();
                 setState(State.RETRACT_FEEDER);
                 break;
             case RETRACT_FEEDER:
                 if (stateTimer.getElapsedTimeSeconds() < .67) break;
-                robot.retractFeeder();
+                robot.feeder.retract();
                 setState(State.ROTATE_INDEXER);
                 break;
             case ROTATE_INDEXER:
-                if (robot.isFeederUp()) break;
-                double pos = robot.getGoalIndexerPos();
+                if (robot.feeder.isUp()) break;
+                double pos = robot.indexer.getGoalPos();
                 if (pos == 1 || pos == -1) {
-                    robot.stopLaunchMotors();
+                    robot.launcher.stop();
 //                        robot.follower.followPath(path2);
                     setState(State.FINISHED);
                 } else {
                     if (pos == 0) pos = MIDDLE_INDEXER_POS;
                     else pos = 1;
-                    robot.setIndexerServoPos(pos);
+                    robot.indexer.setPos(pos);
                     setState(State.PUSH_ARTIFACT);
                 }
                 break;

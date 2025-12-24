@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
@@ -11,24 +11,15 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 import static org.firstinspires.ftc.teamcode.RobotConstants.B;
 import static org.firstinspires.ftc.teamcode.RobotConstants.COUNTS_PER_INCH;
-import static org.firstinspires.ftc.teamcode.RobotConstants.DEFAULT_VELOCITY;
+import static org.firstinspires.ftc.teamcode.RobotConstants.DRIVETRAIN_VELOCITY;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Dir;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Dir.BACKWARD;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Dir.FORWARD;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Dir.LEFT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Dir.RIGHT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.IMU_PARAMS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.M;
-import static org.firstinspires.ftc.teamcode.RobotConstants.STRAFE_FRONT_MODIFIER;
-import static org.firstinspires.ftc.teamcode.RobotConstants.TURN_SPEED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
 import static org.firstinspires.ftc.teamcode.RobotState.auto;
-import static org.firstinspires.ftc.teamcode.Utils.active;
-import static org.firstinspires.ftc.teamcode.Utils.angleDifference;
-import static org.firstinspires.ftc.teamcode.Utils.simplifyAngle;
-import static org.firstinspires.ftc.teamcode.Utils.sleep;
 import static java.lang.Math.abs;
-import static java.lang.Math.min;
 import static java.lang.Math.signum;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -37,13 +28,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 public class Drivetrain {
     public DcMotorEx lf, lb, rf, rb;
     public IMU imu;
-
-    double goalAngle = 0;
-    double velocity = DEFAULT_VELOCITY;
 
     public volatile boolean loop = false;
 
@@ -97,7 +86,7 @@ public class Drivetrain {
      * @param inches    Amount of inches to drive.
      * @param direction (opt.) Direction to drive if inches is zero.*
      */
-    public void drive(double inches, RobotConstants.Dir direction) {
+    public void drive(double inches, Dir direction) {
         if (lf == null) return;
 
         int lfTarget = 0;
@@ -110,13 +99,13 @@ public class Drivetrain {
         // reset the timeout time and start motion.
         if (inches != 0) {
             runtime.reset();
-            setMotorVelocities(velocity * signum(inches) * dir);
+            setMotorVelocities(DRIVETRAIN_VELOCITY * signum(inches) * dir);
             inches = signum(inches) * (abs(inches) + B) / M;
-        } else setMotorVelocities(velocity * dir);
+        } else setMotorVelocities(DRIVETRAIN_VELOCITY * dir);
 
-        double duration = abs(inches * COUNTS_PER_INCH / velocity);
+        double duration = abs(inches * COUNTS_PER_INCH / DRIVETRAIN_VELOCITY);
 
-        while (active() && (runtime.seconds() < duration) && inches != 0) {
+        while (runtime.seconds() < duration && inches != 0) {
             // Display it for the driver.
             tm.print("Angle", imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
             tm.print("Running to", " " + lfTarget + ":" + rfTarget);
@@ -124,78 +113,6 @@ public class Drivetrain {
             if (!loop) tm.update();
         }
         if (inches != 0) stop();
-    }
-
-    /**
-     * Turns the robot a specified number of degrees. Positive values turn right, negative values
-     * turn left.
-     *
-     * @param degrees   The amount of degrees to turn.
-     * @param direction Direction to turn if degrees is zero.
-     */
-    public void turn(double degrees, RobotConstants.Dir direction) {
-        double direct = direction == LEFT ? -1 : direction == RIGHT ? 1 : 0;
-        sleep(100);
-        degrees *= -1;
-        degrees -= imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
-        imu.resetYaw();
-        double tolerance = 1;
-        double startAngle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
-        double angle, turnModifier, turnPower, initialGoalAngle;
-        double correctedGoalAngle = initialGoalAngle = startAngle + degrees;
-        double difference = 999;
-        if (abs(initialGoalAngle) > 180)
-            correctedGoalAngle -= abs(initialGoalAngle) / initialGoalAngle * 360;
-        while (active() && (difference > tolerance) && degrees != 0) {
-            angle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
-            difference = simplifyAngle(min(abs(initialGoalAngle - angle), abs(correctedGoalAngle - angle)));
-            turnModifier = min(1, (difference + 3) / 30);
-            turnPower = degrees / abs(degrees) * TURN_SPEED * turnModifier * direct;
-            setMotorPowers(-turnPower, turnPower, -turnPower, turnPower);
-
-            angle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
-            difference = min(abs(initialGoalAngle - angle), abs(correctedGoalAngle - angle));
-
-            tm.print("Corrected Goal", correctedGoalAngle);
-            tm.print("Initial Goal", initialGoalAngle);
-            tm.print("Start", startAngle);
-            tm.print("Angle", angle);
-            tm.print("Distance from goal", difference);
-            if (!loop) tm.update();
-        }
-        stop();
-        imu.resetYaw();
-    }
-
-    /**
-     * Turns the robot a specified number of degrees. Positive values turn right, negative values
-     * turn left.
-     *
-     * @param degrees   The amount of degrees to turn.
-     * @param direction Direction to turn if degrees is zero.
-     */
-    public void newTurn(double degrees, RobotConstants.Dir direction) {
-        double direct = direction == LEFT ? -1 : direction == RIGHT ? 1 : 0;
-        goalAngle = simplifyAngle(goalAngle - degrees);
-        degrees = simplifyAngle(-degrees - imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
-        double tolerance = 1;
-        double startAngle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
-        double angle, turnModifier, turnPower;
-        double error = 999;
-        while (active() && error > tolerance) {
-            angle = imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle;
-            error = abs(angleDifference(angle, goalAngle));
-            turnModifier = min(1, (error + 3) / 30);
-            turnPower = TURN_SPEED * turnModifier * direct * signum(degrees);
-            setMotorPowers(-turnPower, turnPower, -turnPower, turnPower);
-
-            tm.print("Start Angle", startAngle);
-            tm.print("Current Angle", angle);
-            tm.print("Goal Angle", goalAngle);
-            tm.print("Error", error);
-            if (!loop) tm.update();
-        }
-        stop();
     }
 
     /**
@@ -263,42 +180,6 @@ public class Drivetrain {
         lb.setZeroPowerBehavior(behavior);
         rf.setZeroPowerBehavior(behavior);
         rb.setZeroPowerBehavior(behavior);
-    }
-
-    /**
-     * Strafes left or right for a specified number of inches. An inches value of zero will cause
-     * the robot to strafe until manually stopped.
-     *
-     * @param inches    Amount of inches to strafe.
-     * @param direction Direction to strafe in.*
-     */
-    public void strafe(double inches, Dir direction) {
-        if (!active() || lf == null) return;
-        setMotorModes(STOP_AND_RESET_ENCODER);
-
-        setMotorModes(RUN_USING_ENCODER);
-
-        double dir = direction == RIGHT ? -1 : direction == LEFT ? 1 : 0;
-
-        runtime.reset();
-        lb.setVelocity(velocity * dir);
-        rb.setVelocity(-velocity * dir);
-        lf.setVelocity(-velocity * STRAFE_FRONT_MODIFIER * dir);
-        rf.setVelocity(velocity * STRAFE_FRONT_MODIFIER * dir);
-
-        if (inches != 0) inches = (abs(inches) + 1.0125) / 0.7155; // Linear regression
-
-        double duration = abs(inches * COUNTS_PER_INCH / velocity);
-
-        runtime.reset();
-        while (active() && (runtime.seconds() < duration) && inches != 0) {
-            tm.print("Strafing until", duration + " seconds");
-            tm.print("Currently at", runtime.seconds() + " seconds");
-            if (!loop) tm.update();
-        }
-        if (inches != 0) stop();
-        tm.print("Strafing", "Complete");
-        if (!loop) tm.update();
     }
 
     /** Stops all drive train motors on the robot. */

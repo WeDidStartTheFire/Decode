@@ -4,10 +4,10 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.Utils;
+import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @Autonomous(name = "Basic", group = "!!Secondary", preselectTeleOp = "Main")
 public class Auto_Basic extends LinearOpMode {

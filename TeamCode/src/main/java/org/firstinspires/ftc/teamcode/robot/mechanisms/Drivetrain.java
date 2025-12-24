@@ -27,7 +27,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 public class Drivetrain {
@@ -40,8 +39,8 @@ public class Drivetrain {
 
     public TelemetryUtils tm;
 
-    public Drivetrain(HardwareMap hardwareMap, Telemetry telemetry, boolean useOdom) {
-        tm = new TelemetryUtils(telemetry);
+    public Drivetrain(HardwareMap hardwareMap, TelemetryUtils tm, boolean useOdom) {
+        this.tm = tm;
 
         imu = hardwareMap.get(IMU.class, "imu");
         if (!imu.initialize(IMU_PARAMS)) throw new RuntimeException("IMU initialization failed");

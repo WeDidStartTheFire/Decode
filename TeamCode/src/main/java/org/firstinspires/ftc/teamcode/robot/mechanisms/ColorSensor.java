@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.GREEN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.PURPLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
@@ -9,7 +10,6 @@ import androidx.annotation.Nullable;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.ColorRange;
 import org.firstinspires.ftc.teamcode.RobotConstants;
@@ -21,8 +21,7 @@ public class ColorSensor {
     private com.qualcomm.robotcore.hardware.ColorSensor colorSensor;
     private DistanceSensor distanceSensor;
 
-    public ColorSensor(HardwareMap hardwareMap, Telemetry telemetry) {
-        TelemetryUtils tm = new TelemetryUtils(telemetry);
+    public ColorSensor(HardwareMap hardwareMap, TelemetryUtils tm) {
         try {
             colorSensor = hardwareMap.get(com.qualcomm.robotcore.hardware.ColorSensor.class, "colorSensor");
             distanceSensor = hardwareMap.get(DistanceSensor.class, "colorSensor");
@@ -51,12 +50,12 @@ public class ColorSensor {
         if (color == null) return UNKNOWN;
         if (ColorRange.ARTIFACT_GREEN.contains(color)) return GREEN;
         if (ColorRange.ARTIFACT_PURPLE.contains(color)) return PURPLE;
-        return UNKNOWN;
+        return EMPTY;
     }
 
     public RobotConstants.Artifact getArtifact() {
         RobotConstants.Artifact color = getColor();
-        return color == PURPLE && getInches() == 6 ? UNKNOWN : color;
+        if (color == EMPTY && getInches() < 3.7) color = UNKNOWN;
+        return color;
     }
-
 }

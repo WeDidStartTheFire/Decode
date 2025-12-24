@@ -4,15 +4,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 public class Feeder {
     private Servo feederServoA, feederServoB;
     private TouchSensor touchSensorA, touchSensorB;
 
-    public Feeder(HardwareMap hardwareMap, Telemetry telemetry) {
-        TelemetryUtils tm = new TelemetryUtils(telemetry);
+    public Feeder(HardwareMap hardwareMap, TelemetryUtils tm) {
         try {
             feederServoA = hardwareMap.get(Servo.class, "feederServoA"); // Expansion Hub 0
             feederServoB = hardwareMap.get(Servo.class, "feederServoB"); // Expansion Hub 1

@@ -10,14 +10,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
-import org.firstinspires.ftc.teamcode.TeleOpFunctions;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = "Field Centric No Pedro", group = "Secondary")
 @Disabled
 public class TeleOp_FieldCentric_No_Pedro extends OpMode {
-    public TeleOpFunctions teleop;
+    public TeleOpController teleop;
     public Robot robot;
     public TelemetryUtils tm;
 
@@ -30,7 +30,7 @@ public class TeleOp_FieldCentric_No_Pedro extends OpMode {
         robot = new Robot(hardwareMap, telemetry, false);
         robot.follower.setPose(RobotState.pose);
         robot.follower.startTeleopDrive();
-        teleop = new TeleOpFunctions(robot, gamepad1, gamepad2);
+        teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
         if (!validStartPose) tm.print("⚠️WARNING⚠️", "Field centric driving without valid position");
         else tm.print("Field Centric Driving", "✅");

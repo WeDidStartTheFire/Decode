@@ -1,10 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleops;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
-import static org.firstinspires.ftc.teamcode.RobotState.auto;
-import static org.firstinspires.ftc.teamcode.RobotState.following;
-import static org.firstinspires.ftc.teamcode.RobotState.holding;
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
@@ -14,13 +10,13 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
-import org.firstinspires.ftc.teamcode.TeleOpFunctions;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = BLUE_TELEOP_NAME, group = "Main")
 public class TeleOp_Main_Blue extends OpMode {
-    public TeleOpFunctions teleop;
+    public TeleOpController teleop;
     public Robot robot;
     public TelemetryUtils tm;
 
@@ -33,7 +29,7 @@ public class TeleOp_Main_Blue extends OpMode {
         robot = new Robot(hardwareMap, telemetry, validStartPose);
         robot.follower.setPose(RobotState.pose);
         robot.follower.startTeleopDrive();
-        teleop = new TeleOpFunctions(robot, gamepad1, gamepad2);
+        teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
         if (!validStartPose) tm.print("⚠️WARNING⚠️", "Robot Centric driving will be used");
         else tm.print("Field Centric Driving", "✅");
@@ -61,12 +57,6 @@ public class TeleOp_Main_Blue extends OpMode {
 
     @Override
     public void stop() {
-        RobotState.launching = false;
-        auto = false;
-        following = false;
-        holding = false;
-        robot.follower.breakFollowing();
-        RobotState.launchQueue.clear();
-        RobotState.artifacts = new RobotConstants.Artifact[]{UNKNOWN, UNKNOWN, UNKNOWN};
+        teleop.stop();
     }
 }

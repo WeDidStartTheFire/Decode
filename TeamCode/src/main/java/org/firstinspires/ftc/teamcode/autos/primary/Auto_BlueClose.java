@@ -31,7 +31,7 @@ public class Auto_BlueClose extends OpMode {
 
     private final Timer stateTimer = new Timer();
     private State state;
-    private LaunchController launcher;
+    private LaunchController launchController;
 
     private enum State {
         FINISHED,
@@ -64,10 +64,11 @@ public class Auto_BlueClose extends OpMode {
         RobotState.color = RobotConstants.Color.BLUE;
         robot = new Robot(hardwareMap, telemetry, true);
         robot.follower.setStartingPose(startPose);
+        robot.indexer.markAllUnknown();
         RobotState.motif = robot.limelight.getMotif();
         tm = robot.drivetrain.tm;
         buildPaths();
-        launcher = new LaunchController(robot);
+        launchController = new LaunchController(robot);
         tm.print("🟦Blue🟦 Close Auto initialized");
         tm.print("Motif", motif);
         tm.update();
@@ -96,11 +97,11 @@ public class Auto_BlueClose extends OpMode {
                 break;
             case LAUNCH_ARTIFACTS:
                 if (robot.follower.isBusy()) break;
-                launcher.launchArtifacts(3);
+                launchController.launchArtifacts(3);
                 setState(State.FOLLOW_PATH_2);
                 break;
             case FOLLOW_PATH_2:
-                if (launcher.isBusy()) break;
+                if (launchController.isBusy()) break;
                 robot.follower.followPath(path2, true);
                 setState(State.FINISHED);
                 break;
@@ -116,11 +117,12 @@ public class Auto_BlueClose extends OpMode {
         pose = robot.follower.getPose();
         vel = robot.follower.getVelocity();
         pathUpdate();
-        launcher.update();
+        launchController.update();
+        robot.indexer.update();
 
         tm.drawRobot(robot.follower);
         tm.print("Path State", state);
-        tm.print("Launcher State", launcher.getState());
+        tm.print("Launcher State", launchController.getState());
         tm.print("Feeder Up", robot.feeder.isUp());
         tm.print("Indexer Pos", robot.indexer.getGoalPos());
         tm.print("Indexer Still", robot.indexer.isStill());

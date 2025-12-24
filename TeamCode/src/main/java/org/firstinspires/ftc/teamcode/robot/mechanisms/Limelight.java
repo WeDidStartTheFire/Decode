@@ -5,7 +5,6 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
@@ -16,8 +15,7 @@ public class Limelight {
 
     private Limelight3A limelight;
 
-    public Limelight(HardwareMap hardwareMap, Telemetry telemetry) {
-        TelemetryUtils tm = new TelemetryUtils(telemetry);
+    public Limelight(HardwareMap hardwareMap, TelemetryUtils tm) {
         try {
             limelight = hardwareMap.get(Limelight3A.class, "limelight");
             limelight.pipelineSwitch(0);

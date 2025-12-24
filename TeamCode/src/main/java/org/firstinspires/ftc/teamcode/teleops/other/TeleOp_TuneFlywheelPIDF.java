@@ -13,8 +13,8 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
-import org.firstinspires.ftc.teamcode.TeleOpFunctions;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 
@@ -27,7 +27,7 @@ public class TeleOp_TuneFlywheelPIDF extends OpMode {
     @IgnoreConfigurable
     TelemetryUtils tm;
     @IgnoreConfigurable
-    TeleOpFunctions teleop;
+    TeleOpController teleop;
 
     int highGoalVel = 1600;
     int lowGoalVel = 1200;
@@ -52,7 +52,7 @@ public class TeleOp_TuneFlywheelPIDF extends OpMode {
         robot = new Robot(hardwareMap, telemetry, validStartPose);
         robot.follower.setPose(RobotState.pose);
         robot.follower.startTeleopDrive();
-        teleop = new TeleOpFunctions(robot, gamepad1, gamepad2);
+        teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
         tm.print("Tune Flywheel PIDF Initialized");
         tm.update();
@@ -70,29 +70,29 @@ public class TeleOp_TuneFlywheelPIDF extends OpMode {
         if (gamepad1.dpadRightWasPressed()) P += increments[incIdx];
         if (gamepad1.dpadLeftWasPressed()) P -= increments[incIdx];
 
-        if (robot.launcherMotorA == null) return;
+        if (robot.launcher.isConnected()) return;
         pidf = new PIDFCoefficients(P, 0, 0, F);
-        robot.launcherMotorA.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-        robot.launcherMotorB.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
-        robot.launcherMotorA.setVelocity(goalVel);
-        robot.launcherMotorB.setVelocity(goalVel);
-        double AVel = robot.launcherMotorA.getVelocity();
-        double BVel = robot.launcherMotorB.getVelocity();
-        double errorA = AVel - goalVel;
-        double errorB = BVel - goalVel;
+//        robot.launcherMotorA.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+//        robot.launcherMotorB.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+//        robot.launcherMotorA.setVelocity(goalVel);
+//        robot.launcherMotorB.setVelocity(goalVel);
+//        double AVel = robot.launcherMotorA.getVelocity();
+//        double BVel = robot.launcherMotorB.getVelocity();
+//        double errorA = AVel - goalVel;
+//        double errorB = BVel - goalVel;
         tm.print("Target Vel", goalVel);
-        tm.print("A Vel", robot.launcherMotorA.getVelocity());
-        tm.print("B Vel", robot.launcherMotorB.getVelocity());
-        tm.print("A Error", errorA);
-        tm.print("B Error", errorB);
+//        tm.print("A Vel", robot.launcherMotorA.getVelocity());
+//        tm.print("B Vel", robot.launcherMotorB.getVelocity());
+//        tm.print("A Error", errorA);
+//        tm.print("B Error", errorB);
         tm.print("---------------------------");
         tm.print("P", P);
         tm.print("F", F);
         tm.print("Increment", increments[incIdx]);
         tm.print("---------------------------");
         tm.print("PIDF", pidf);
-        tm.print("PIDF A", robot.launcherMotorA.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
-        tm.print("PIDF B", robot.launcherMotorB.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
+//        tm.print("PIDF A", robot.launcherMotorA.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
+//        tm.print("PIDF B", robot.launcherMotorB.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
         tm.print("Default PIDF", defaultpidf);
         tm.update();
     }

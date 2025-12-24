@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 public class Intake {
@@ -14,8 +13,7 @@ public class Intake {
     private CRServo intakeServoA, intakeServoB, intakeServoC;
     private DcMotorEx intakeMotor;
 
-    public Intake(HardwareMap hardwareMap, Telemetry telemetry) {
-        TelemetryUtils tm = new TelemetryUtils(telemetry);
+    public Intake(HardwareMap hardwareMap, TelemetryUtils tm) {
         try {
             intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor"); // Expansion Hub 0
         } catch (IllegalArgumentException e) {

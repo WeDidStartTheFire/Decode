@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.controllers;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
@@ -24,8 +24,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
 import static org.firstinspires.ftc.teamcode.RobotConstants.speeds;
 import static org.firstinspires.ftc.teamcode.RobotConstants.teleopHeadingPID;
 import static org.firstinspires.ftc.teamcode.RobotState.aiming;
-import static org.firstinspires.ftc.teamcode.RobotState.artiafactMeasuredTime;
-import static org.firstinspires.ftc.teamcode.RobotState.artifacts;
+import static org.firstinspires.ftc.teamcode.RobotState.auto;
 import static org.firstinspires.ftc.teamcode.RobotState.color;
 import static org.firstinspires.ftc.teamcode.RobotState.following;
 import static org.firstinspires.ftc.teamcode.RobotState.holding;
@@ -37,6 +36,7 @@ import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.robotCentric;
 import static org.firstinspires.ftc.teamcode.RobotState.savedSeconds;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
+import static org.firstinspires.ftc.teamcode.Utils.lerp;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 import static java.lang.Math.round;
@@ -56,12 +56,17 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.teamcode.ProjectileSolver;
+import org.firstinspires.ftc.teamcode.RobotConstants;
+import org.firstinspires.ftc.teamcode.RobotState;
+import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
-public class TeleOpFunctions {
+public class TeleOpController {
     DcMotorEx lf, lb, rf, rb;
     IMU imu;
     Gamepad gamepad1, gamepad2;
+    IntakeController intakeController;
     Robot robot;
     public Follower follower;
     boolean useOdometry;
@@ -69,8 +74,9 @@ public class TeleOpFunctions {
     TelemetryUtils tm;
     PIDFController headingPIDController = new PIDFController(teleopHeadingPID);
 
-    public TeleOpFunctions(Robot robot, Gamepad gamepad1, Gamepad gamepad2) {
+    public TeleOpController(Robot robot, Gamepad gamepad1, Gamepad gamepad2) {
         this.robot = robot;
+        intakeController = new IntakeController(robot);
         lf = robot.drivetrain.lf;
         lb = robot.drivetrain.lb;
         rf = robot.drivetrain.rf;
@@ -94,6 +100,16 @@ public class TeleOpFunctions {
         vel = follower.getVelocity();
     }
 
+    public void stop() {
+        RobotState.launching = false;
+        auto = false;
+        following = false;
+        holding = false;
+        robot.follower.breakFollowing();
+        RobotState.launchQueue.clear();
+        robot.indexer.markAllUnknown();
+    }
+
     /**
      * Logic for the drivetrain during TeleOp
      *
@@ -101,10 +117,6 @@ public class TeleOpFunctions {
      */
     public void drivetrainLogic(boolean fieldCentric) {
         drivetrainLogic(fieldCentric, true);
-    }
-
-    private double lerp(double t, double a, double b) {
-        return (b - a) * t + a;
     }
 
     private ProjectileSolver.LaunchSolution getLaunchSolution() {
@@ -341,7 +353,7 @@ public class TeleOpFunctions {
         if (launching) {
             robot.launcher.spin();
             robot.feeder.raise();
-            if (robot.indexer.getCurrentArtifact() == Artifact.UNKNOWN) {
+            if (robot.indexer.isActiveSlotEmpty()) {
                 launchQueue.remove(0);
                 robot.feeder.retract();
                 savedSeconds = runtime.seconds();
@@ -352,7 +364,7 @@ public class TeleOpFunctions {
         }
         if (robot.feeder.isUp()/*runtime.seconds() - savedSeconds < 0.67*/) return;
         while (!launchQueue.isEmpty() && robot.indexer.getCurrentArtifact() != launchQueue.get(0)) {
-            if (robot.indexer.rotateIndexerTo(launchQueue.get(0))) break;
+            if (robot.indexer.rotateToArtifact(launchQueue.get(0))) break;
             launchQueue.remove(0);
         }
         if (launchQueue.isEmpty()) return;
@@ -366,41 +378,14 @@ public class TeleOpFunctions {
     }
 
     public void colorSensorLogic() {
-        Artifact artifact = robot.colorSensor.getArtifact();
-        Artifact current = robot.indexer.getCurrentArtifact();
-        tm.print("Color", robot.colorSensor.getColor());
-        tm.print("Artifact", robot.colorSensor.getArtifact());
-        tm.print("Distance", robot.colorSensor.getInches());
-        tm.print("Artifact 1", artifacts[0]);
-        tm.print("Artifact 2", artifacts[1]);
-        tm.print("Artifact 3", artifacts[2]);
-        if (!robot.indexer.isStill()) return;
-        if (artifact == Artifact.UNKNOWN && robot.colorSensor.getInches() < 3.7) return;
-        double pos = robot.indexer.getGoalPos();
-        if (pos == 0) artifacts[0] = artifact;
-        else if (abs(pos - .5) < 1e-4 || abs(pos - MIDDLE_INDEXER_POS) < 1e-4)
-            artifacts[1] = artifact;
-        else if (pos == 1) artifacts[2] = artifact;
-        if (artifact != current) artiafactMeasuredTime.resetTimer();
+        robot.indexer.update();
     }
 
     public void intakeLogic() {
-        double power = gamepad1.right_trigger;
-        if (power > 0.3) {
-            if (robot.indexer.getCurrentArtifact() == Artifact.UNKNOWN) {
-                if (robot.indexer.isStill()) robot.intake.power(-power);
-                else {
-                    robot.intake.powerInside(power);
-                    robot.intake.powerOutside(-power);
-                }
-            } else {
-                robot.intake.powerInside(power);
-                robot.intake.powerOutside(power / 2);
-            }
-            if (robot.indexer.isStill() && robot.indexer.getCurrentArtifact() != Artifact.UNKNOWN)
-                robot.indexer.rotateIndexerTo(Artifact.UNKNOWN);
-        } else if (gamepad1.right_bumper) robot.intake.power(1);
-        else robot.intake.power(0);
+        if (gamepad1.right_trigger > 0.3) intakeController.intake();
+        else if (gamepad1.right_bumper) intakeController.outtake();
+        else intakeController.stop();
+        intakeController.update();
     }
 
     public void launcherLogic() {

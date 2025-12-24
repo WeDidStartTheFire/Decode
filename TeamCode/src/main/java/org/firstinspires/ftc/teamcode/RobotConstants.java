@@ -27,10 +27,8 @@ public class RobotConstants {
     static final double DRIVE_GEAR_REDUCTION = 1.0; // No External Gearing
     public static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * PI);
 
-    public static final double STRAFE_FRONT_MODIFIER = 1.3;
     public static final double B = 1.1375;
     public static final double M = 0.889;
-    public static final double TURN_SPEED = 0.5;
 
     public static final IMU.Parameters IMU_PARAMS = new IMU.Parameters(
             new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
@@ -45,14 +43,14 @@ public class RobotConstants {
 
     public static final double[] speeds = {0.2, 0.6, 1};
 
-    static final int TICKS_PER_REVOLUTION = 28;
+    public static final int TICKS_PER_REVOLUTION = 28;
     static final int DEFAULT_LAUNCHER_RPM = 36400;
     public static final double MAX_LAUNCHER_SPIN_WAIT = 3;
 
-    static final double baseSpeedMultiplier = 0.75;
-    static final double baseTurnSpeed = 2.5;
+    public static final double baseSpeedMultiplier = 0.75;
+    public static final double baseTurnSpeed = 2.5;
 
-    static PIDFCoefficients teleopHeadingPID = new PIDFCoefficients(1, 0, .05, 0);
+    public static PIDFCoefficients teleopHeadingPID = new PIDFCoefficients(1, 0, .05, 0);
 
     public static final double LAUNCHER_HEIGHT = 15.5;
     public static final double LAUNCHER_ANGLE = toRadians(50);
@@ -63,14 +61,14 @@ public class RobotConstants {
     public static final Pose3D BLUE_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 5, 139, 44, 0),
             new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
 
-    static final Pose[] RED_ROBOT_POSITIONS = {new Pose(41, 32, toRadians(180))};
-    static final Pose[] BLUE_ROBOT_POSITIONS = {new Pose(103, 32, toRadians(180))};
+    public static final Pose[] RED_ROBOT_POSITIONS = {new Pose(41, 32, toRadians(180))};
+    public static final Pose[] BLUE_ROBOT_POSITIONS = {new Pose(103, 32, toRadians(180))};
 
     public static final String BLUE_TELEOP_NAME = "🟦Blue🟦 Main";
     public static final String RED_TELEOP_NAME = "🟥Red🟥 Main";
 
     public enum Dir {
-        LEFT, RIGHT, FORWARD, BACKWARD
+        FORWARD, BACKWARD
     }
 
     public enum Color {
@@ -133,7 +131,10 @@ public class RobotConstants {
     }
 
     public enum Artifact {
-        GREEN, PURPLE, UNKNOWN;
+        GREEN,
+        PURPLE,
+        EMPTY,
+        UNKNOWN;
 
         @NonNull
         @Override
@@ -143,8 +144,10 @@ public class RobotConstants {
                     return "🟢Green🟢";
                 case PURPLE:
                     return "🟣Purple🟣";
-                case UNKNOWN:
+                case EMPTY:
                     return "◌Empty◌";
+                case UNKNOWN:
+                    return "?UNKNOWN?";
                 default:
                     return super.toString();
             }

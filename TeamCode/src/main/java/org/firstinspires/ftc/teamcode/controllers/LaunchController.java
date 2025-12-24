@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_SPEED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
@@ -10,8 +11,6 @@ import com.pedropathing.util.Timer;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
-import java.util.Arrays;
-
 public class LaunchController {
 
     private final Robot robot;
@@ -20,7 +19,6 @@ public class LaunchController {
     private boolean isBusy;
     private int artifactsToLaunch = 0;
     private int numLaunched = 0;
-    private final RobotConstants.Artifact[] artifacts = {UNKNOWN, UNKNOWN, UNKNOWN};
     private int failedCount = 0;
 
     enum State {
@@ -51,9 +49,6 @@ public class LaunchController {
         switch (state) {
             case IDLE:
                 isBusy = false;
-                current = robot.colorSensor.getArtifact();
-                pos = robot.indexer.getGoalPos();
-                if (robot.indexer.isStill()) artifacts[(int) pos * 2] = current;
                 if (artifactsToLaunch == 0) break;
                 isBusy = true;
                 setState(State.ROTATE_INDEXER);
@@ -71,14 +66,11 @@ public class LaunchController {
                     setState(State.PUSH_ARTIFACT);
                     break;
                 }
-                artifacts[(int) (pos * 2)] = current;
-                int idx = Arrays.asList(artifacts).indexOf(desired);
-                if (idx != -1) {
-                    robot.indexer.setPos(idx / 2.0);
-                    setState(State.PUSH_ARTIFACT);
-                    break;
-                }
-                robot.indexer.setPos((pos + 0.5) % 1.5);
+                if (robot.indexer.rotateToArtifact(desired)) return;
+                if (robot.indexer.rotateToArtifact(UNKNOWN)) return;
+                if (robot.indexer.rotateToAny()) return;
+                artifactsToLaunch = 0;
+                setState(State.IDLE);
                 break;
             case PUSH_ARTIFACT:
                 robot.launcher.spin();
@@ -105,10 +97,9 @@ public class LaunchController {
                 if ((robot.colorSensor.getInches() != 6 || stateTimer.getElapsedTimeSeconds() < .2) &&
                         stateTimer.getElapsedTimeSeconds() < 2) break;
                 current = robot.colorSensor.getArtifact();
-                if (current == UNKNOWN) {
+                if (current == EMPTY) {
                     numLaunched++;
                     artifactsToLaunch--;
-                    artifacts[(int) (robot.indexer.getGoalPos() * 2)] = UNKNOWN;
                 }
                 robot.feeder.retract();
                 if (artifactsToLaunch > 0) setState(State.ROTATE_INDEXER);

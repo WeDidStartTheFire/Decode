@@ -4,6 +4,7 @@ import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.ColorSensor;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Drivetrain;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Feeder;
@@ -29,14 +30,16 @@ public class Robot {
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, boolean useOdometry) {
         follower = Constants.createFollower(hardwareMap);
 
-        drivetrain = new Drivetrain(hardwareMap, telemetry, useOdometry);
+        TelemetryUtils tm = new TelemetryUtils(telemetry);
 
-        intake = new Intake(hardwareMap, telemetry);
-        feeder = new Feeder(hardwareMap, telemetry);
-        colorSensor = new ColorSensor(hardwareMap, telemetry);
-        indexer = new Indexer(hardwareMap, telemetry);
-        limelight = new Limelight(hardwareMap, telemetry);
-        launcher = new Launcher(hardwareMap, telemetry);
-        led = new LED(hardwareMap, telemetry);
+        drivetrain = new Drivetrain(hardwareMap, tm, useOdometry);
+
+        intake = new Intake(hardwareMap, tm);
+        feeder = new Feeder(hardwareMap, tm);
+        colorSensor = new ColorSensor(hardwareMap, tm);
+        indexer = new Indexer(hardwareMap, tm, colorSensor);
+        limelight = new Limelight(hardwareMap, tm);
+        launcher = new Launcher(hardwareMap, tm);
+        led = new LED(hardwareMap, tm);
     }
 }

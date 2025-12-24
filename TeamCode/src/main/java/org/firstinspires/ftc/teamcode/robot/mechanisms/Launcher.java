@@ -15,7 +15,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
@@ -24,9 +23,7 @@ public class Launcher {
 
     DcMotorEx launcherMotorA, launcherMotorB;
 
-    public Launcher(HardwareMap hardwareMap, Telemetry telemetry) {
-        TelemetryUtils tm = new TelemetryUtils(telemetry);
-
+    public Launcher(HardwareMap hardwareMap, TelemetryUtils tm) {
         try {
             launcherMotorA = hardwareMap.get(DcMotorEx.class, "launcherMotorA"); // Expansion Hub 1
             launcherMotorB = hardwareMap.get(DcMotorEx.class, "launcherMotorB"); // Expansion Hub 2
@@ -42,7 +39,6 @@ public class Launcher {
             tm.except("At least one launcherMotor not connected");
         }
     }
-
 
     public double getGoalVel() {
         return getGoalVel(pose);

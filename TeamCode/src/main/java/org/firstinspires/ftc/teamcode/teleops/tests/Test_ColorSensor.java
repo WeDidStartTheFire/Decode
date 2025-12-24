@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
-import org.firstinspires.ftc.teamcode.TeleOpFunctions;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 import java.util.Objects;
@@ -20,7 +20,7 @@ import java.util.Objects;
 public class Test_ColorSensor extends OpMode {
     Robot robot;
     TelemetryUtils tm;
-    TeleOpFunctions teleop;
+    TeleOpController teleop;
 
     @Override
     public void init() {
@@ -31,7 +31,7 @@ public class Test_ColorSensor extends OpMode {
         robot = new Robot(hardwareMap, telemetry, false);
         robot.follower.setPose(RobotState.pose);
         robot.follower.startTeleopDrive();
-        teleop = new TeleOpFunctions(robot, gamepad1, gamepad2);
+        teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
     }
 

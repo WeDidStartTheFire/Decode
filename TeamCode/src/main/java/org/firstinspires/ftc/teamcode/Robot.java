@@ -13,6 +13,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Motif;
 import static org.firstinspires.ftc.teamcode.RobotConstants.RED_GOAL_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.launcherPIDF;
+import static org.firstinspires.ftc.teamcode.RobotState.artifacts;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static java.lang.Math.abs;
@@ -235,6 +236,41 @@ public class Robot {
         return abs(bounds[0] - goalIndexerPos) < epsilon &&
                 abs(bounds[1] - goalIndexerPos) < epsilon;
     }
+
+    public Artifact getArtifactAtPos(double pos) {
+        if (pos == 0) return artifacts[0];
+        if (abs(pos - .5) < 1e-4 || abs(pos - MIDDLE_INDEXER_POS) < 1e-4) return artifacts[1];
+        if (pos == 1) return artifacts[2];
+        return Artifact.UNKNOWN;
+    }
+
+    public Artifact getCurrentArtifact() {
+        return getArtifactAtPos(getGoalIndexerPos());
+    }
+
+    public boolean rotateIndexerTo(Artifact artifact) {
+        double pos = getGoalIndexerPos();
+
+        double first = Math.round(pos * 2) / 2.0;
+        double second = (first + 0.5) % 1;
+        double third = Math.round(1 - pos);
+
+        if (getArtifactAtPos(first) == artifact) {
+            setIndexerServoPos(first);
+            return true;
+        }
+        if (getArtifactAtPos(second) == artifact) {
+            setIndexerServoPos(second);
+            return true;
+        }
+        if (getArtifactAtPos(third) == artifact) {
+            setIndexerServoPos(third);
+            return true;
+        }
+
+        return false;
+    }
+
 
     public boolean isIndexerServoConnected() {
         return indexerServo != null;

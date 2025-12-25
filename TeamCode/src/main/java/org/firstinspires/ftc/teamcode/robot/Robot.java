@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot;
 
-import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -14,11 +13,8 @@ import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Launcher;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Limelight;
 
-import pedroPathing.Constants;
-
 public class Robot {
     public Drivetrain drivetrain;
-    public Follower follower;
     public Feeder feeder;
     public ColorSensor colorSensor;
     public Intake intake;
@@ -28,12 +24,8 @@ public class Robot {
     public LED led;
 
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, boolean useOdometry) {
-        follower = Constants.createFollower(hardwareMap);
-
         TelemetryUtils tm = new TelemetryUtils(telemetry);
-
         drivetrain = new Drivetrain(hardwareMap, tm, useOdometry);
-
         intake = new Intake(hardwareMap, tm);
         feeder = new Feeder(hardwareMap, tm);
         colorSensor = new ColorSensor(hardwareMap, tm);

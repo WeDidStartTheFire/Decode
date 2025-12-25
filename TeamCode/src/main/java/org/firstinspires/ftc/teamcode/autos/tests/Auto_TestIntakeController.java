@@ -46,7 +46,7 @@ public class Auto_TestIntakeController extends OpMode {
         RobotState.auto = true;
         RobotState.color = RobotConstants.Color.BLUE;
         robot = new Robot(hardwareMap, telemetry, true);
-        robot.follower.setStartingPose(startPose);
+        robot.drivetrain.follower.setStartingPose(startPose);
         RobotState.motif = robot.limelight.getMotif();
         tm = robot.drivetrain.tm;
         buildPaths();
@@ -80,22 +80,22 @@ public class Auto_TestIntakeController extends OpMode {
                 if (!intakeController.isBusy()) setState(State.FINISHED);
                 break;
             case FINISHED:
-                if (!robot.follower.isBusy()) saveOdometryPosition(pose);
+                if (!robot.drivetrain.follower.isBusy()) saveOdometryPosition(pose);
                 break;
         }
     }
 
     @Override
     public void loop() {
-        robot.follower.update();
-        pose = robot.follower.getPose();
-        vel = robot.follower.getVelocity();
+        robot.drivetrain.follower.update();
+        pose = robot.drivetrain.follower.getPose();
+        vel = robot.drivetrain.follower.getVelocity();
         pathUpdate();
         robot.indexer.update();
         launchController.update();
         intakeController.update();
 
-        tm.drawRobot(robot.follower);
+        tm.drawRobot(robot.drivetrain.follower);
         tm.print("Path State", state);
         tm.print("Launch Controller State", launchController.getState());
         tm.print("Intake Controller State", intakeController.getState());
@@ -103,7 +103,7 @@ public class Auto_TestIntakeController extends OpMode {
         tm.print("Indexer Pos", robot.indexer.getGoalPos());
         tm.print("Indexer Still", robot.indexer.isStill());
         tm.print("Indexer Estimate Pos", robot.indexer.getEstimatePos());
-        tm.print("Pose", pose);
+        tm.print(pose);
         tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose));
         tm.print("Launcher Vel", robot.launcher.getVel());
         tm.print("Artifact", robot.colorSensor.getArtifact());
@@ -113,8 +113,8 @@ public class Auto_TestIntakeController extends OpMode {
 
     @Override
     public void stop() {
-        robot.follower.update();
-        robot.follower.breakFollowing();
-        saveOdometryPosition(robot.follower.getPose());
+        robot.drivetrain.follower.update();
+        robot.drivetrain.follower.breakFollowing();
+        saveOdometryPosition(robot.drivetrain.follower.getPose());
     }
 }

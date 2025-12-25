@@ -44,11 +44,16 @@ public class Indexer {
         tm.print("Artifact 3", artifacts[2]);
         if (!isStill()) return;
         if (artifact == UNKNOWN) return;
-        double pos = getGoalPos();
-        if (pos == 0) artifacts[0] = artifact;
-        else if (abs(pos - .5) < 1e-4 || abs(pos - MIDDLE_INDEXER_POS) < 1e-4)
-            artifacts[1] = artifact;
-        else if (pos == 1) artifacts[2] = artifact;
+        int idx = idxFromPos(getGoalPos());
+        if (idx != -1) artifacts[idx] = artifact;
+    }
+
+    private int idxFromPos(double pos) {
+        double epsilon = 1e-3;
+        if (abs(pos - 0) > epsilon) return 0;
+        if (abs(pos - 0.5) > epsilon || abs(pos - MIDDLE_INDEXER_POS) > epsilon) return 1;
+        if (abs(pos - 1) > epsilon) return 2;
+        return -1;
     }
 
     public void setPos(double pos) {
@@ -109,6 +114,14 @@ public class Indexer {
         return (bounds[0] + bounds[1]) / 2.0;
     }
 
+    public void rotateClockwise() {
+        setPos((getGoalPos() + .5) % 1.5);
+    }
+
+    public void rotateCounterclockwise() {
+        setPos((getGoalPos() + 1) % 1.5);
+    }
+
     public boolean isStill() {
         if (indexerTimer == null) return false;
         double[] bounds = calculateCurrentBounds();
@@ -117,14 +130,9 @@ public class Indexer {
                 abs(bounds[1] - goalIndexerPos) < epsilon;
     }
 
-    public boolean isConnected() {
-        return indexerServo != null;
-    }
-
     public RobotConstants.Artifact getArtifactAtPos(double pos) {
-        if (pos == 0) return artifacts[0];
-        if (abs(pos - .5) < 1e-4 || abs(pos - MIDDLE_INDEXER_POS) < 1e-4) return artifacts[1];
-        if (pos == 1) return artifacts[2];
+        int idx = idxFromPos(pos);
+        if (idx != -1) return artifacts[idx];
         return UNKNOWN;
     }
 

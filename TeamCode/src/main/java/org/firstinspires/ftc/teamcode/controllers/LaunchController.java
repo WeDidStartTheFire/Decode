@@ -1,15 +1,22 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
+import static org.firstinspires.ftc.teamcode.ProjectileSolver.getLaunchSolution;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_SPEED;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.GREEN;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.YELLOW;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 import com.pedropathing.util.Timer;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+
+import java.util.ArrayList;
 
 public class LaunchController {
 
@@ -17,9 +24,9 @@ public class LaunchController {
     private State state;
     private final Timer stateTimer = new Timer();
     private boolean isBusy;
-    private int artifactsToLaunch = 0;
     private int numLaunched = 0;
     private int failedCount = 0;
+    private final ArrayList<RobotConstants.Artifact> launchQueue = new ArrayList<>();
 
     enum State {
         IDLE,
@@ -44,12 +51,16 @@ public class LaunchController {
     }
 
     public void update() {
+        if (getLaunchSolution() == null) robot.led.setColor(RobotConstants.LEDColors.BLUE);
+        else if (robot.launcher.toSpeed()) robot.led.setColor(GREEN);
+        else if (robot.launcher.getGoalVel() > 100) robot.led.setColor(YELLOW);
+        else robot.led.setColor(RobotConstants.LEDColors.RED);
         RobotConstants.Artifact desired, current;
         double pos;
         switch (state) {
             case IDLE:
                 isBusy = false;
-                if (artifactsToLaunch == 0) break;
+                if (launchQueue.isEmpty()) break;
                 isBusy = true;
                 setState(State.ROTATE_INDEXER);
                 break;
@@ -60,16 +71,15 @@ public class LaunchController {
                 pos = robot.indexer.getGoalPos();
                 if (pos == -1) robot.indexer.setPos(0);
                 if (!robot.indexer.isStill()) break;
-                desired = motif.getNthArtifact(numLaunched);
-                current = robot.colorSensor.getArtifact();
+                desired = launchQueue.get(0);
+                current = robot.indexer.getCurrentArtifact();
                 if (current == desired) {
                     setState(State.PUSH_ARTIFACT);
                     break;
                 }
-                if (robot.indexer.rotateToArtifact(desired)) return;
-                if (robot.indexer.rotateToArtifact(UNKNOWN)) return;
-                if (robot.indexer.rotateToAny()) return;
-                artifactsToLaunch = 0;
+                if (robot.indexer.rotateToArtifact(desired)) break;
+                if (robot.indexer.rotateToArtifact(UNKNOWN)) break;
+                if (robot.indexer.rotateToAny()) break;
                 setState(State.IDLE);
                 break;
             case PUSH_ARTIFACT:
@@ -78,7 +88,7 @@ public class LaunchController {
                         stateTimer.getElapsedTimeSeconds() < MAX_LAUNCHER_SPIN_WAIT) ||
                         stateTimer.getElapsedTimeSeconds() < .2 || (robot.colorSensor.getInches() == 6 &&
                         stateTimer.getElapsedTimeSeconds() < 1 / INDEXER_SPEED)) break;
-                desired = motif.getNthArtifact(numLaunched);
+                desired = launchQueue.get(0);
                 current = robot.colorSensor.getArtifact();
                 if (current != desired) {
                     if (failedCount < 10) {
@@ -99,10 +109,10 @@ public class LaunchController {
                 current = robot.colorSensor.getArtifact();
                 if (current == EMPTY) {
                     numLaunched++;
-                    artifactsToLaunch--;
+                    launchQueue.remove(0);
                 }
                 robot.feeder.retract();
-                if (artifactsToLaunch > 0) setState(State.ROTATE_INDEXER);
+                if (!launchQueue.isEmpty()) setState(State.ROTATE_INDEXER);
                 else {
                     robot.launcher.stop();
                     setState(State.IDLE);
@@ -111,8 +121,36 @@ public class LaunchController {
         }
     }
 
-    public void launchArtifacts(int num) {
-        artifactsToLaunch = num;
+    public void launchArtifacts(int n) {
+        n = min(3, max(n, 0));
+        for (int i = 0; i < n; i++)
+            launchArtifact(motif.getNthArtifact(numLaunched + i));
+    }
+
+    public void launchArtifact(RobotConstants.Artifact artifact) {
+        launchQueue.add(artifact);
+    }
+
+    public void manualStop() {
+        if (isBusy) return;
+        robot.launcher.stop();
+        robot.feeder.retract();
+    }
+
+    public void stop() {
+        robot.launcher.stop();
+        robot.feeder.retract();
+        launchQueue.clear();
+        isBusy = false;
+        setState(State.IDLE);
+    }
+
+    public void manualSpin() {
+        robot.launcher.spin();
+    }
+
+    public void intake(double percent) {
+        robot.launcher.intakeMotors(percent);
     }
 
     public boolean isBusy() {

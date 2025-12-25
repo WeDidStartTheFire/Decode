@@ -50,8 +50,8 @@ public class TeleOp_TuneFlywheelPIDF extends OpMode {
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
         robot = new Robot(hardwareMap, telemetry, validStartPose);
-        robot.follower.setPose(RobotState.pose);
-        robot.follower.startTeleopDrive();
+        robot.drivetrain.follower.setPose(RobotState.pose);
+        robot.drivetrain.follower.startTeleopDrive();
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
         tm.print("Tune Flywheel PIDF Initialized");

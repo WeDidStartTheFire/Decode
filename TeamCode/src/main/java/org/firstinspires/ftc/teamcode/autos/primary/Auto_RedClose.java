@@ -46,11 +46,11 @@ public class Auto_RedClose extends OpMode {
     private final Pose endPose = new Pose(103.196, 60.018, toRadians(0));
 
     private void buildPaths() {
-        path1 = robot.follower.pathBuilder()
+        path1 = robot.drivetrain.follower.pathBuilder()
                 .addPath(new BezierLine(startPose, shootPose))
                 .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
-        path2 = robot.follower.pathBuilder()
+        path2 = robot.drivetrain.follower.pathBuilder()
                 .addPath(new BezierLine(shootPose, endPose))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), endPose.getHeading())
                 .build();
@@ -64,7 +64,7 @@ public class Auto_RedClose extends OpMode {
         RobotState.auto = true;
         RobotState.color = RobotConstants.Color.RED;
         robot = new Robot(hardwareMap, telemetry, true);
-        robot.follower.setStartingPose(startPose);
+        robot.drivetrain.follower.setStartingPose(startPose);
         robot.indexer.markAllUnknown();
         RobotState.motif = robot.limelight.getMotif();
         tm = robot.drivetrain.tm;
@@ -93,42 +93,42 @@ public class Auto_RedClose extends OpMode {
         switch (state) {
             case FOLLOW_PATH_1:
                 robot.indexer.setPos(0);
-                robot.follower.followPath(path1, true);
+                robot.drivetrain.follower.followPath(path1, true);
                 setState(State.LAUNCH_ARTIFACTS);
                 break;
             case LAUNCH_ARTIFACTS:
-                if (robot.follower.isBusy()) break;
+                if (robot.drivetrain.follower.isBusy()) break;
                 launchController.launchArtifacts(3);
                 setState(State.FOLLOW_PATH_2);
                 break;
             case FOLLOW_PATH_2:
                 if (launchController.isBusy()) break;
-                robot.follower.followPath(path2, true);
+                robot.drivetrain.follower.followPath(path2, true);
                 setState(State.FINISHED);
                 break;
             case FINISHED:
-                if (!robot.follower.isBusy()) saveOdometryPosition(pose);
+                if (!robot.drivetrain.follower.isBusy()) saveOdometryPosition(pose);
                 break;
         }
     }
 
     @Override
     public void loop() {
-        robot.follower.update();
-        pose = robot.follower.getPose();
-        vel = robot.follower.getVelocity();
+        robot.drivetrain.follower.update();
+        pose = robot.drivetrain.follower.getPose();
+        vel = robot.drivetrain.follower.getVelocity();
         pathUpdate();
         launchController.update();
         robot.indexer.update();
 
-        tm.drawRobot(robot.follower);
+        tm.drawRobot(robot.drivetrain.follower);
         tm.print("Path State", state);
         tm.print("Launcher State", launchController.getState());
         tm.print("Feeder Up", robot.feeder.isUp());
         tm.print("Indexer Pos", robot.indexer.getGoalPos());
         tm.print("Indexer Still", robot.indexer.isStill());
         tm.print("Indexer Estimate Pos", robot.indexer.getEstimatePos());
-        tm.print("Pose", pose);
+        tm.print(pose);
         tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose));
         tm.print("Launcher Vel", robot.launcher.getVel());
         tm.print("Artifact", robot.colorSensor.getArtifact());
@@ -138,9 +138,9 @@ public class Auto_RedClose extends OpMode {
 
     @Override
     public void stop() {
-        robot.follower.update();
-        robot.follower.breakFollowing();
-        RobotState.pose = robot.follower.getPose();
+        robot.drivetrain.follower.update();
+        robot.drivetrain.follower.breakFollowing();
+        RobotState.pose = robot.drivetrain.follower.getPose();
         saveOdometryPosition(RobotState.pose);
     }
 }

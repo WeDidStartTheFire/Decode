@@ -33,8 +33,8 @@ public class Test_Limelight extends OpMode {
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
         robot = new Robot(hardwareMap, telemetry, false);
-        robot.follower.setPose(RobotState.pose);
-        robot.follower.startTeleopDrive();
+        robot.drivetrain.follower.setPose(RobotState.pose);
+        robot.drivetrain.follower.startTeleopDrive();
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
     }
@@ -49,11 +49,10 @@ public class Test_Limelight extends OpMode {
         teleop.update();
         tm.print("Motif", robot.limelight.getMotif());
         tm.print("Target", limelightTargetFiducial.getCameraPose_TargetSpace2D());
-        teleop.autoMovementLogic(validStartPose);
         teleop.drivetrainLogic(validStartPose);
-        teleop.intakeLogic();
+        teleop.updateIntake();
         teleop.feederLogic();
-        teleop.indexerLogic();
-        teleop.launcherLogic();
+        teleop.updateIndexerTeleOp();
+        teleop.updateLauncherTeleOp();
     }
 }

@@ -53,6 +53,10 @@ public class IntakeController {
         }
     }
 
+    public boolean isNotReady() {
+        return !robot.indexer.isActiveSlotEmpty();
+    }
+
     public boolean isBusy() {
         return isBusy;
     }

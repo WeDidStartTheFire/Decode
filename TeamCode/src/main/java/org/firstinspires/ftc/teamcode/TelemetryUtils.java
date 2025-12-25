@@ -1,8 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
+import static java.lang.Math.round;
+import static java.lang.Math.toDegrees;
+
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -37,6 +41,12 @@ public class TelemetryUtils {
     public void print(String content) {
         telemetry.addLine(content);
         telemetryM.addLine(content);
+    }
+
+    public void print(Pose pose) {
+        print("Pose: (" + round(pose.getX() * 100) / 100 + ", " +
+                round(pose.getY() * 100) / 100 + ", " +
+                round(toDegrees(pose.getHeading()) * 100) / 100 + ")");
     }
 
     /**

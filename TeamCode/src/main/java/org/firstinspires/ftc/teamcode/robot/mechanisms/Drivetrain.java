@@ -19,9 +19,12 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.IMU_PARAMS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.M;
 import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
 import static org.firstinspires.ftc.teamcode.RobotState.auto;
+import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static java.lang.Math.abs;
 import static java.lang.Math.signum;
 
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -29,9 +32,12 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
+import pedroPathing.Constants;
+
 public class Drivetrain {
     public DcMotorEx lf, lb, rf, rb;
     public IMU imu;
+    public Follower follower;
 
     public volatile boolean loop = false;
 
@@ -41,6 +47,7 @@ public class Drivetrain {
 
     public Drivetrain(HardwareMap hardwareMap, TelemetryUtils tm, boolean useOdom) {
         this.tm = tm;
+        follower = Constants.createFollower(hardwareMap);
 
         imu = hardwareMap.get(IMU.class, "imu");
         if (!imu.initialize(IMU_PARAMS)) throw new RuntimeException("IMU initialization failed");
@@ -76,6 +83,15 @@ public class Drivetrain {
         }
 
         useOdometry = useOdom;
+    }
+
+    public void holdCurrentPose(double heading) {
+        Pose holdPose = pose.withHeading(heading);
+        follower.holdPoint(holdPose);
+    }
+
+    public void holdCurrentPose() {
+        follower.holdPoint(pose);
     }
 
     /**
@@ -184,6 +200,7 @@ public class Drivetrain {
     /** Stops all drive train motors on the robot. */
     public void stop() {
         if (lb == null) return;
+        follower.breakFollowing();
         setMotorPowers(0);
         setMotorVelocities(0);
 

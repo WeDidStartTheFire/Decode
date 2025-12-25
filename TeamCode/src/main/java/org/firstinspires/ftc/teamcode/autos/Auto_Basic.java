@@ -17,11 +17,11 @@ public class Auto_Basic extends LinearOpMode {
     public void runOpMode() {
         RobotState.auto = true;
         robot = new Robot(hardwareMap, telemetry, false);
-        robot.follower.setPose(new Pose());
+        robot.drivetrain.follower.setPose(new Pose());
         waitForStart();
 
         robot.drivetrain.drive(15, RobotConstants.Dir.FORWARD);
-        robot.follower.update();
-        Utils.saveOdometryPosition(robot.follower.getPose());
+        robot.drivetrain.follower.update();
+        Utils.saveOdometryPosition(robot.drivetrain.follower.getPose());
     }
 }

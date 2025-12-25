@@ -1,5 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_GOAL_POSE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_ANGLE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_HEIGHT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.RED_GOAL_POSE;
+import static org.firstinspires.ftc.teamcode.RobotState.pose;
+import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static java.lang.Math.abs;
 import static java.lang.Math.sqrt;
 
@@ -25,6 +32,16 @@ public class ProjectileSolver {
             this.phi = phi;
             this.t = t;
         }
+    }
+
+    public static @Nullable LaunchSolution getLaunchSolution() {
+        return ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT, vel,
+                RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
+    }
+
+    public static @Nullable LaunchSolution getLaunchSolutionStationary() {
+        return ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT, new Vector(),
+                RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
     }
 
     public static @Nullable LaunchSolution solveLaunch(

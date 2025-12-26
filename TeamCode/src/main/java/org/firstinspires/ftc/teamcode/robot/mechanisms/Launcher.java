@@ -69,7 +69,7 @@ public class Launcher {
 
     public boolean isSpinning() {
         if (launcherMotorA == null) return false;
-        return launcherMotorA.getVelocity() + launcherMotorB.getVelocity() > 30;
+        return (launcherMotorA.getVelocity() + launcherMotorB.getVelocity()) / 2 > 100;
     }
 
     public void intakeMotors(double percent) {
@@ -81,7 +81,12 @@ public class Launcher {
     public boolean toSpeed() {
         if (launcherMotorA == null) return false;
         double motorVel = getGoalVel();
-        return launcherMotorA.getVelocity() >= motorVel && launcherMotorB.getVelocity() >= motorVel;
+        double aRawVel = launcherMotorA.getVelocity();
+        double bRawVel = launcherMotorB.getVelocity();
+        double aVel = aRawVel == 0 && bRawVel > 100 ? bRawVel : aRawVel;
+        double bVel = bRawVel == 0 && aRawVel > 100 ? aRawVel : bRawVel;
+        double vel = (aVel + bVel / 2);
+        return aVel >= motorVel - 15 && bVel >= motorVel - 15 && vel >= motorVel - 5;
     }
 
     public void stop() {

@@ -26,6 +26,7 @@ public class LaunchController {
     private boolean isBusy;
     private int numLaunched = 0;
     private int failedCount = 0;
+    private int successCount = 0;
     private final ArrayList<RobotConstants.Artifact> launchQueue = new ArrayList<>();
 
     enum State {
@@ -53,7 +54,7 @@ public class LaunchController {
     public void update() {
         if (getLaunchSolution() == null) robot.led.setColor(RobotConstants.LEDColors.BLUE);
         else if (robot.launcher.toSpeed()) robot.led.setColor(GREEN);
-        else if (robot.launcher.getGoalVel() > 100) robot.led.setColor(YELLOW);
+        else if (robot.launcher.isSpinning()) robot.led.setColor(YELLOW);
         else robot.led.setColor(RobotConstants.LEDColors.RED);
         RobotConstants.Artifact desired, current;
         double pos;
@@ -89,7 +90,7 @@ public class LaunchController {
                         stateTimer.getElapsedTimeSeconds() < .2 || (robot.colorSensor.getInches() == 6 &&
                         stateTimer.getElapsedTimeSeconds() < 1 / INDEXER_SPEED)) break;
                 desired = launchQueue.get(0);
-                current = robot.colorSensor.getArtifact();
+                current = robot.indexer.getCurrentArtifact();
                 if (current != desired) {
                     if (failedCount < 10) {
                         failedCount++;
@@ -104,13 +105,15 @@ public class LaunchController {
                 setState(State.RETRACT_FEEDER);
                 break;
             case RETRACT_FEEDER:
-                if ((robot.colorSensor.getInches() != 6 || stateTimer.getElapsedTimeSeconds() < .2) &&
+                if ((robot.indexer.isActiveSlotEmpty() || stateTimer.getElapsedTimeSeconds() < .4) &&
                         stateTimer.getElapsedTimeSeconds() < 2) break;
-                current = robot.colorSensor.getArtifact();
-                if (current == EMPTY) {
-                    numLaunched++;
-                    launchQueue.remove(0);
-                }
+                current = robot.indexer.getCurrentArtifact();
+                if (current != EMPTY) break;
+                successCount++;
+                if (successCount <= 5) break;
+                successCount = 0;
+                numLaunched++;
+                launchQueue.remove(0);
                 robot.feeder.retract();
                 if (!launchQueue.isEmpty()) setState(State.ROTATE_INDEXER);
                 else {
@@ -159,5 +162,9 @@ public class LaunchController {
 
     public String getState() {
         return state.toString();
+    }
+
+    public ArrayList<RobotConstants.Artifact> getQueue() {
+        return launchQueue;
     }
 }

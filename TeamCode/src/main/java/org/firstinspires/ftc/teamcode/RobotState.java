@@ -9,8 +9,6 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.Vector;
 
-import java.util.ArrayList;
-
 @Configurable
 public class RobotState {
     public static boolean auto = false;
@@ -21,7 +19,6 @@ public class RobotState {
     public static Pose savedPose;
     public static Vector vel;
     public static Motif motif;
-    public static ArrayList<Artifact> launchQueue = new ArrayList<>();
     public static Artifact[] artifacts = {UNKNOWN, UNKNOWN, UNKNOWN};
     public static boolean launching = false;
 }

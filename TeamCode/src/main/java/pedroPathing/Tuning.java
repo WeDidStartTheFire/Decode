@@ -10,9 +10,6 @@ import static pedroPathing.Tuning.telemetryM;
 import com.bylazar.configurables.PanelsConfigurables;
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.configurables.annotations.IgnoreConfigurable;
-import com.bylazar.field.FieldManager;
-import com.bylazar.field.PanelsField;
-import com.bylazar.field.Style;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
@@ -940,6 +937,7 @@ class DriveTuner extends OpMode {
  * @author Harrison Womack - 10158 Scott's Bots
  * @version 1.0, 3/12/2024
  */
+@Configurable
 class Line extends OpMode {
     public static double DISTANCE = 40;
     private boolean forward = true;
@@ -1005,6 +1003,7 @@ class Line extends OpMode {
  * @author Harrison Womack - 10158 Scott's Bots
  * @version 1.0, 3/13/2024
  */
+@Configurable
 class CentripetalTuner extends OpMode {
     public static double DISTANCE = 20;
     private boolean forward = true;
@@ -1072,6 +1071,7 @@ class CentripetalTuner extends OpMode {
  * @author Samarth Mahapatra - 1002 CircuitRunners Robotics Surge
  * @version 1.0, 12/30/2024
  */
+@Configurable
 class Triangle extends OpMode {
 
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
@@ -1135,6 +1135,7 @@ class Triangle extends OpMode {
  * @author Harrison Womack - 10158 Scott's Bots
  * @version 1.0, 3/12/2024
  */
+@Configurable
 class Circle extends OpMode {
     public static double RADIUS = 10;
     private PathChain circle;

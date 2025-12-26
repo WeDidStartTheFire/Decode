@@ -6,10 +6,11 @@ import static java.lang.Math.toRadians;
 import androidx.annotation.NonNull;
 
 import com.bylazar.configurables.annotations.Configurable;
-import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.PathConstraints;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -43,19 +44,25 @@ public class RobotConstants {
 
     public static final double[] speeds = {0.2, 0.6, 1};
 
-    public static final int TICKS_PER_REVOLUTION = 28;
-    static final int DEFAULT_LAUNCHER_RPM = 36400;
     public static final double MAX_LAUNCHER_SPIN_WAIT = 3;
 
     public static final double baseSpeedMultiplier = 0.75;
     public static final double baseTurnSpeed = 2.5;
 
-    public static PIDFCoefficients teleopHeadingPID = new PIDFCoefficients(1, 0, .05, 0);
+    public static PathConstraints slowIntakePathConstraints = new PathConstraints(
+            0.3,
+            500,
+            0.5,
+            0.4
+    );
 
+    public static com.pedropathing.control.PIDFCoefficients teleopHeadingPID =
+            new com.pedropathing.control.PIDFCoefficients(1, 0, .05, 0);
+    public static PIDFCoefficients turretMotorPID = new PIDFCoefficients(0, 0, 0, 0);
+    public static PIDFCoefficients launcherPIDF = new PIDFCoefficients(80, 0, 0, 20);
     public static final double LAUNCHER_HEIGHT = 15.5;
     public static final double LAUNCHER_ANGLE = toRadians(50);
-    public static com.qualcomm.robotcore.hardware.PIDFCoefficients launcherPIDF =
-            new com.qualcomm.robotcore.hardware.PIDFCoefficients(80, 0, 0, 20);
+
     public static final Pose3D RED_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 139, 139, 44, 0),
             new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
     public static final Pose3D BLUE_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 5, 139, 44, 0),

@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.robot.mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Launcher;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Limelight;
+import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 
 public class Robot {
     public Drivetrain drivetrain;
@@ -22,6 +23,7 @@ public class Robot {
     public Limelight limelight;
     public Launcher launcher;
     public LED led;
+    public Turret turret;
 
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, boolean useOdometry) {
         TelemetryUtils tm = new TelemetryUtils(telemetry);
@@ -33,5 +35,6 @@ public class Robot {
         limelight = new Limelight(hardwareMap, tm);
         launcher = new Launcher(hardwareMap, tm);
         led = new LED(hardwareMap, tm);
+        turret = new Turret(hardwareMap, tm);
     }
 }

@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact;
-import static org.firstinspires.ftc.teamcode.RobotState.launchQueue;
 import static org.firstinspires.ftc.teamcode.RobotState.launching;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.robotCentric;
@@ -62,7 +61,6 @@ public class TeleOpController {
         driveController.stop();
         launchController.stop();
         intakeController.stop();
-        RobotState.launchQueue.clear();
         robot.indexer.markAllUnknown();
     }
 
@@ -128,7 +126,7 @@ public class TeleOpController {
         launchController.update();
 
         tm.print("launching", launching);
-        tm.print("Queue", launchQueue);
+        tm.print("Queue", launchController.getQueue());
         tm.print("Can Launch", robot.launcher.canLaunch());
         tm.print("Launcher Vel", robot.launcher.getVel());
         tm.print("Goal", robot.launcher.getGoalVel());

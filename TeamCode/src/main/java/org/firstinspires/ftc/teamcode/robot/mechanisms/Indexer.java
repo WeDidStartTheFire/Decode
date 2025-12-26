@@ -50,9 +50,9 @@ public class Indexer {
 
     private int idxFromPos(double pos) {
         double epsilon = 1e-3;
-        if (abs(pos - 0) > epsilon) return 0;
-        if (abs(pos - 0.5) > epsilon || abs(pos - MIDDLE_INDEXER_POS) > epsilon) return 1;
-        if (abs(pos - 1) > epsilon) return 2;
+        if (abs(pos - 0) < epsilon) return 0;
+        if (abs(pos - 0.5) < epsilon || abs(pos - MIDDLE_INDEXER_POS) < epsilon) return 1;
+        if (abs(pos - 1) < epsilon) return 2;
         return -1;
     }
 

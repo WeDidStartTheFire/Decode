@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact;
-import static org.firstinspires.ftc.teamcode.RobotState.launching;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.robotCentric;
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
@@ -12,7 +11,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
 
-import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
@@ -57,7 +55,6 @@ public class TeleOpController {
     }
 
     public void stop() {
-        RobotState.launching = false;
         driveController.stop();
         launchController.stop();
         intakeController.stop();
@@ -125,7 +122,6 @@ public class TeleOpController {
         if (gamepad2.xWasPressed()) launchController.stop();
         launchController.update();
 
-        tm.print("launching", launching);
         tm.print("Queue", launchController.getQueue());
         tm.print("Can Launch", robot.launcher.canLaunch());
         tm.print("Launcher Vel", robot.launcher.getVel());

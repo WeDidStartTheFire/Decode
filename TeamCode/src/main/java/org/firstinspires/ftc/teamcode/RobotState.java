@@ -20,5 +20,4 @@ public class RobotState {
     public static Vector vel;
     public static Motif motif;
     public static Artifact[] artifacts = {UNKNOWN, UNKNOWN, UNKNOWN};
-    public static boolean launching = false;
 }

@@ -30,10 +30,10 @@ public class Constants {
             .lateralZeroPowerAcceleration(-44.409589)
 //            .forwardZeroPowerAcceleration(-37.30993063)
 //            .lateralZeroPowerAcceleration(-63.25810803)
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.25, 0, 0.024, 0))
-            .headingPIDFCoefficients(new PIDFCoefficients(2, 0, 0.13, 0))
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.04, 0, 0.004, 0.004))
+            .headingPIDFCoefficients(new PIDFCoefficients(1, 0, 0.05, 0))
             .drivePIDFCoefficients(
-                    new FilteredPIDFCoefficients(0.013, 0, 0.00001, 0.5, 0)
+                    new FilteredPIDFCoefficients(0.014, 0, 0.00001, 0.4, 0)
             );
 
     public static MecanumConstants driveConstants = new MecanumConstants()
@@ -79,7 +79,7 @@ public class Constants {
             0.9,
             500,
             0.9,
-            0.6
+            0.5
     );
 
     public static Follower createOTOSFollower(HardwareMap hardwareMap) {

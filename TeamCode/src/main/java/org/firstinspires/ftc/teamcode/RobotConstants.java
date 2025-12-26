@@ -38,7 +38,7 @@ public class RobotConstants {
     public static final double DRIVETRAIN_VELOCITY = 2000;
 
     public static final double MIDDLE_INDEXER_POS = 0.455;
-    public static final double INDEXER_SPEED = .7;
+    public static final double INDEXER_SPEED = 1.4;
 
     public static final double INTAKE_WAIT_TIME = 2;
 

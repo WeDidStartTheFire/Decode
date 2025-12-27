@@ -87,7 +87,9 @@ public class LaunchController {
                 robot.launcher.spin();
                 if (!robot.indexer.isStill() || (!robot.launcher.toSpeed() &&
                         stateTimer.getElapsedTimeSeconds() < MAX_LAUNCHER_SPIN_WAIT) ||
-                        stateTimer.getElapsedTimeSeconds() < .2 || (robot.colorSensor.getInches() == 6 &&
+                        stateTimer.getElapsedTimeSeconds() < .2 || (
+                        (robot.colorSensor.getArtifact() == EMPTY ||
+                                robot.colorSensor.getArtifact() == UNKNOWN) &&
                         stateTimer.getElapsedTimeSeconds() < 1 / INDEXER_SPEED)) break;
                 desired = launchQueue.get(0);
                 current = robot.indexer.getCurrentArtifact();

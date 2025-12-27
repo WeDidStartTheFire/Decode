@@ -56,8 +56,11 @@ public class Turret {
     }
 
     public void setRobotCentricAngle(double angle) {
-        turretMotor.setTargetPosition((int) ((toDegrees(angle) - 0 /* replace with degree offset */)
-                * 1.1/* replace with encoders per degree */));
+        turretMotor.setTargetPosition(Math.clamp(
+                (int) ((toDegrees(angle) - 0 /* replace with degree offset */)
+                        * 1.1) /* replace with encoders per degree */,
+                0, /* replace with min encoder value */
+                100 /* replace with max encoder value */));
     }
 
     public void setFieldCentricAngle(double angle) {

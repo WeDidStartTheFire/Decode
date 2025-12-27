@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.autos.tests;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
+import static org.firstinspires.ftc.teamcode.RobotConstants.slowIntakePathConstraints;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
 import static java.lang.Math.toRadians;
 
+import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -57,20 +59,23 @@ public class Auto_BlueFar_Intake_Refactor extends OpMode {
                 .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
         shootToIntake = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(shootPose, intakePose))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), intakePose.getHeading())
+                .addPath(new BezierCurve(shootPose, new Pose(53.340, 34.935), intakePose))
+                .setTangentHeadingInterpolation()
                 .build();
         intake1 = robot.drivetrain.follower.pathBuilder()
                 .addPath(new BezierLine(intakePose, new Pose(30.000, 35.000)))
                 .setLinearHeadingInterpolation(intakePose.getHeading(), toRadians(180))
+                .setConstraints(slowIntakePathConstraints)
                 .build();
         intake2 = robot.drivetrain.follower.pathBuilder()
                 .addPath(new BezierLine(new Pose(30, 35), new Pose(25, 35)))
                 .setConstantHeadingInterpolation(toRadians(180))
+                .setConstraints(slowIntakePathConstraints)
                 .build();
         intake3 = robot.drivetrain.follower.pathBuilder()
                 .addPath(new BezierLine(new Pose(25, 35), new Pose(20, 35)))
                 .setConstantHeadingInterpolation(toRadians(180))
+                .setConstraints(slowIntakePathConstraints)
                 .build();
         intakeToShoot = robot.drivetrain.follower.pathBuilder()
                 .addPath(new BezierLine(new Pose(20, 35), shootPose))
@@ -132,19 +137,19 @@ public class Auto_BlueFar_Intake_Refactor extends OpMode {
                 break;
             case INTAKE_1:
                 if (robot.drivetrain.follower.isBusy()) break;
-                robot.drivetrain.follower.followPath(intake1, true);
+                robot.drivetrain.follower.followPath(intake1, 0.5, true);
                 setState(State.INTAKE_2);
                 break;
             case INTAKE_2:
                 if (robot.drivetrain.follower.isBusy() || robot.indexer.totalArtifacts() < 1 ||
                         intakeController.isNotReady()) break;
-                robot.drivetrain.follower.followPath(intake2, true);
+                robot.drivetrain.follower.followPath(intake2, 0.5, true);
                 setState(State.INTAKE_3);
                 break;
             case INTAKE_3:
                 if (robot.drivetrain.follower.isBusy() || robot.indexer.totalArtifacts() < 2 ||
                         intakeController.isNotReady()) break;
-                robot.drivetrain.follower.followPath(intake3, true);
+                robot.drivetrain.follower.followPath(intake3, 0.5, true);
                 setState(State.RETURN_TO_LAUNCH);
                 break;
             case RETURN_TO_LAUNCH:

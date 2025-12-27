@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
 import static java.lang.Math.toRadians;
 
+import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -47,20 +48,18 @@ public class Auto_BlueFar_Intake_Refactor_NoLaunch extends OpMode {
     }
 
     private final Pose startPose = new Pose(63.500, 8.500, toRadians(90));
-    private final Pose shootPose = new Pose(63.500, 20.000, toRadians(114.80566575481602));
+    private final Pose shootPose = new Pose(60.000, 20.000, toRadians(114.80566575481602));
     private final Pose intakePose = new Pose(40.500, 35.000, toRadians(180));
     private final Pose endPose = new Pose(25, 9.5, toRadians(180));
 
     private void buildPaths() {
         startToShoot = robot.drivetrain.follower.pathBuilder()
                 .addPath(new BezierLine(startPose, shootPose))
-//                .setConstraints(slowIntakePathConstraints)
                 .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
         shootToIntake = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(shootPose, intakePose))
-                .setConstraints(slowIntakePathConstraints)
-                .setLinearHeadingInterpolation(shootPose.getHeading(), intakePose.getHeading())
+                .addPath(new BezierCurve(shootPose, new Pose(53.340, 34.935), intakePose))
+                .setTangentHeadingInterpolation()
                 .build();
         intake1 = robot.drivetrain.follower.pathBuilder()
                 .addPath(new BezierLine(intakePose, new Pose(30.000, 33.500)))
@@ -152,19 +151,19 @@ public class Auto_BlueFar_Intake_Refactor_NoLaunch extends OpMode {
                 break;
             case INTAKE_1:
                 if (robot.drivetrain.follower.isBusy()) break;
-                robot.drivetrain.follower.followPath(intake1, true);
+                robot.drivetrain.follower.followPath(intake1, 0.5, true);
                 setState(State.INTAKE_2);
                 break;
             case INTAKE_2:
                 if (robot.drivetrain.follower.isBusy() || robot.indexer.totalArtifacts() < 1 ||
                         intakeController.isNotReady()) break;
-                robot.drivetrain.follower.followPath(intake2, true);
+                robot.drivetrain.follower.followPath(intake2, 0.5, true);
                 setState(State.INTAKE_3);
                 break;
             case INTAKE_3:
                 if (robot.drivetrain.follower.isBusy() || robot.indexer.totalArtifacts() < 2 ||
                         intakeController.isNotReady()) break;
-                robot.drivetrain.follower.followPath(intake3, true);
+                robot.drivetrain.follower.followPath(intake3, 0.5, true);
                 setState(State.RETURN_TO_LAUNCH);
                 break;
             case RETURN_TO_LAUNCH:

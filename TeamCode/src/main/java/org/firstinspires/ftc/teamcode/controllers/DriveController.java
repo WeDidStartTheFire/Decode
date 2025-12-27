@@ -136,8 +136,8 @@ public class DriveController {
             }
         }
 
-        robot.drivetrain.follower.setTeleOpDrive(gp.left_stick_y * speedMultiplier * (color == RED ? -1 : 1),
-                gp.left_stick_x * speedMultiplier * (color == RED ? -1 : 1), turn, !fieldCentric);
+        robot.drivetrain.follower.setTeleOpDrive(gp.left_stick_y * speedMultiplier * (color == RED || !fieldCentric ? -1 : 1),
+                gp.left_stick_x * speedMultiplier * (color == RED || !fieldCentric ? -1 : 1), turn, !fieldCentric);
     }
 
     public void updateTeleOpNoPedro(Gamepad gp, boolean fieldCentric) {

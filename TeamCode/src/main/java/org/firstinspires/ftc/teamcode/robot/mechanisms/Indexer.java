@@ -6,6 +6,8 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_SPEED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotState.artifacts;
 import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 import androidx.annotation.Nullable;
 
@@ -61,7 +63,8 @@ public class Indexer {
     public void setPos(double pos) {
         updateInternalBounds();
         resetTimer();
-        goalIndexerPos = abs(.5 - pos) < 1e-4 ? MIDDLE_INDEXER_POS : pos;
+        pos = max(0, min(1, pos));
+        goalIndexerPos = abs(.5 - pos) < 1e-3 ? MIDDLE_INDEXER_POS : pos;
         if (indexerServo != null) indexerServo.setPosition(goalIndexerPos);
     }
 
@@ -105,9 +108,14 @@ public class Indexer {
         else indexerTimer.resetTimer();
     }
 
+    /**
+     * Gets the goal position of the indexer servo.
+     *
+     * @return The goal position (0.0-1.0), or -1 if servo or timer is not initialized.
+     */
     public double getGoalPos() {
         if (indexerServo == null || indexerTimer == null) return -1;
-        return abs(indexerServo.getPosition() - MIDDLE_INDEXER_POS) < 1e-4 ? .5 : indexerServo.getPosition();
+        return abs(indexerServo.getPosition() - MIDDLE_INDEXER_POS) < 1e-3 ? .5 : indexerServo.getPosition();
     }
 
     public double getEstimatePos() {
@@ -131,7 +139,7 @@ public class Indexer {
     public boolean isStill() {
         if (indexerTimer == null) return false;
         double[] bounds = calculateCurrentBounds();
-        double epsilon = 1e-4;
+        double epsilon = 1e-3;
         return abs(bounds[0] - goalIndexerPos) < epsilon &&
                 abs(bounds[1] - goalIndexerPos) < epsilon;
     }
@@ -174,6 +182,7 @@ public class Indexer {
 
     public boolean rotateToAny() {
         double pos = getGoalPos();
+        if (pos == -1) pos = 0;
 
         double first = Math.round(pos * 2) / 2.0;
         double second = (first + 0.5) % 1;

@@ -55,7 +55,7 @@ public class ProjectileSolver {
 
     /**
      * Solves for the launch speed, angle, and time of flight given the robot's position and
-     * velocity and a target position as long as the time of flight is under 10 seconds
+     * velocity and a target position
      *
      * @param xr    Robot x (in)
      * @param yr    Robot y (in)

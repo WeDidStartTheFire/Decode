@@ -77,6 +77,7 @@ public class Launcher {
     }
 
     public void intakeMotors(double percent) {
+        percent = Math.max(-1, Math.min(1, percent));
         if (launcherMotorA != null) launcherMotorA.setPower(-percent * .4);
         if (launcherMotorB != null) launcherMotorB.setPower(-percent * .4);
     }

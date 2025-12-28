@@ -4,11 +4,14 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.turretMotorPID;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static java.lang.Math.toDegrees;
 
+import android.text.method.Touch;
+
 import androidx.annotation.Nullable;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
@@ -16,6 +19,7 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 public class Turret {
 
     public @Nullable DcMotorEx turretMotor;
+    public @Nullable TouchSensor turretTouchSensor;
     private boolean aiming;
 
     public Turret(HardwareMap hardwareMap, TelemetryUtils tm) {
@@ -29,6 +33,11 @@ public class Turret {
         } catch (IllegalArgumentException e) {
             tm.except("turretMotor not connected");
         }
+        try {
+            turretTouchSensor = hardwareMap.get(TouchSensor.class, "turretTouchSensor");
+        } catch (IllegalArgumentException e){
+            tm.except("turretTouchSensor not connected");
+        }
     }
 
     public void setAiming(boolean aiming) {
@@ -39,7 +48,7 @@ public class Turret {
         if (turretMotor == null) return;
         // 1. Check if turret is being zeroed (e.g. touch sensor pressed) and that the velocity
         // is low enough and zero it (like <15 deg/s or so)
-        if (false /* touch sensor pressed or wtvr */) {
+        if (turretTouchSensor != null && turretTouchSensor.isPressed()) {
             turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // sets encoder back to 0
             turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }

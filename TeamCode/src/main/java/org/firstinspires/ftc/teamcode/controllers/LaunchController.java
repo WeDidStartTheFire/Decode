@@ -70,6 +70,11 @@ public class LaunchController {
                 pos = robot.indexer.getGoalPos();
                 if (pos == -1) robot.indexer.setPos(0);
                 if (!robot.indexer.isStill()) break;
+                if (launchQueue.isEmpty()) {
+                    robot.launcher.stop();
+                    isBusy = false;
+                    setState(State.IDLE);
+                }
                 desired = launchQueue.get(0);
                 current = robot.indexer.getCurrentArtifact();
                 if (current == desired) {
@@ -86,6 +91,11 @@ public class LaunchController {
                 robot.launcher.spin();
                 if (!robot.indexer.isStill() || (!robot.launcher.toSpeed() &&
                         stateTimer.getElapsedTimeSeconds() < MAX_LAUNCHER_SPIN_WAIT)) break;
+                if (launchQueue.isEmpty()) {
+                    robot.launcher.stop();
+                    isBusy = false;
+                    setState(State.IDLE);
+                }
                 desired = launchQueue.get(0);
                 current = robot.indexer.getCurrentArtifact();
                 if (current != desired) {

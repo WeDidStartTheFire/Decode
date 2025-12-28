@@ -146,7 +146,7 @@ public class Indexer {
 
     public RobotConstants.Artifact getArtifactAtPos(double pos) {
         int idx = idxFromPos(pos);
-        if (idx != -1) return artifacts[idx];
+        if (idx >= 0 && idx < artifacts.length) return artifacts[idx];
         return UNKNOWN;
     }
 

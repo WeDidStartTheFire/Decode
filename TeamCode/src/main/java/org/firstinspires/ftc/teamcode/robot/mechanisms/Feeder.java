@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
+import androidx.annotation.Nullable;
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -7,8 +9,8 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 public class Feeder {
-    private Servo feederServoA, feederServoB;
-    private TouchSensor touchSensorA, touchSensorB;
+    private @Nullable Servo feederServoA, feederServoB;
+    private @Nullable TouchSensor touchSensorA, touchSensorB;
 
     public Feeder(HardwareMap hardwareMap, TelemetryUtils tm) {
         try {
@@ -39,17 +41,18 @@ public class Feeder {
     }
 
     public double getPos() {
+        if (feederServoA == null || feederServoB == null) return -1;
         return (feederServoA.getPosition() + feederServoB.getPosition()) / 2.0;
     }
 
     public void raise() {
-        if (feederServoA == null) return;
+        if (feederServoA == null || feederServoB == null) return;
         feederServoB.setPosition(1);
         feederServoA.setPosition(.95);
     }
 
     public void retract() {
-        if (feederServoA == null) return;
+        if (feederServoA == null || feederServoB == null) return;
         feederServoA.setPosition(0);
         feederServoB.setPosition(0);
     }

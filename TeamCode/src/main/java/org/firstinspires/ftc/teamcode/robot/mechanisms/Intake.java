@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 
+import androidx.annotation.Nullable;
+
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -10,8 +12,8 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 public class Intake {
 
-    private CRServo intakeServoA, intakeServoB, intakeServoC;
-    private DcMotorEx intakeMotor;
+    private @Nullable CRServo intakeServoA, intakeServoB, intakeServoC;
+    private @Nullable DcMotorEx intakeMotor;
 
     public Intake(HardwareMap hardwareMap, TelemetryUtils tm) {
         try {

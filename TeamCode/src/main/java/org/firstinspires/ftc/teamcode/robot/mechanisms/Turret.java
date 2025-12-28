@@ -4,6 +4,8 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.turretMotorPID;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static java.lang.Math.toDegrees;
 
+import androidx.annotation.Nullable;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -13,7 +15,7 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 public class Turret {
 
-    public DcMotorEx turretMotor;
+    public @Nullable DcMotorEx turretMotor;
     private boolean aiming;
 
     public Turret(HardwareMap hardwareMap, TelemetryUtils tm) {
@@ -56,6 +58,7 @@ public class Turret {
     }
 
     public void setRobotCentricAngle(double angle) {
+        if (turretMotor == null) return;
         turretMotor.setTargetPosition(Math.clamp(
                 (int) ((toDegrees(angle) - 0 /* replace with degree offset */)
                         * 1.1) /* replace with encoders per degree */,

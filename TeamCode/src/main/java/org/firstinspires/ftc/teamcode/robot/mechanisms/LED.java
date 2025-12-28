@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
+import androidx.annotation.Nullable;
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -7,7 +9,7 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 public class LED {
-    private Servo led;
+    private @Nullable Servo led;
 
     public LED(HardwareMap hardwareMap, TelemetryUtils tm) {
         try {

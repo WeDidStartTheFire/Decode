@@ -18,8 +18,8 @@ import org.opencv.core.Scalar;
 
 public class ColorSensor {
 
-    private com.qualcomm.robotcore.hardware.ColorSensor colorSensor;
-    private DistanceSensor distanceSensor;
+    private @Nullable com.qualcomm.robotcore.hardware.ColorSensor colorSensor;
+    private @Nullable DistanceSensor distanceSensor;
 
     public ColorSensor(HardwareMap hardwareMap, TelemetryUtils tm) {
         try {
@@ -42,7 +42,7 @@ public class ColorSensor {
     }
 
     public double getInches() {
-        return distanceSensor.getDistance(DistanceUnit.INCH);
+        return distanceSensor == null ? -1 : distanceSensor.getDistance(DistanceUnit.INCH);
     }
 
     public RobotConstants.Artifact getColor() {

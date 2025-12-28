@@ -7,6 +7,8 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotState.artifacts;
 import static java.lang.Math.abs;
 
+import androidx.annotation.Nullable;
+
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -18,7 +20,7 @@ import java.util.Arrays;
 
 public class Indexer {
 
-    private Servo indexerServo;
+    private @Nullable Servo indexerServo;
     private double minIndexerPos = -.25, maxIndexerPos = 1.25, goalIndexerPos = 0;
     private Timer indexerTimer = null;
     private final ColorSensor colorSensor;

@@ -9,6 +9,8 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.launcherPIDF;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 
+import androidx.annotation.Nullable;
+
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -21,7 +23,7 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 public class Launcher {
 
-    DcMotorEx launcherMotorA, launcherMotorB;
+    private @Nullable DcMotorEx launcherMotorA, launcherMotorB;
 
     public Launcher(HardwareMap hardwareMap, TelemetryUtils tm) {
         try {
@@ -61,31 +63,30 @@ public class Launcher {
     }
 
     public void spin(Pose pose) {
-        if (launcherMotorA == null) return;
+        if (launcherMotorA == null || launcherMotorB == null) return;
         double motorVel = getGoalVel(pose);
         launcherMotorA.setVelocity(motorVel);
         launcherMotorB.setVelocity(motorVel);
     }
 
     public boolean isSpinning() {
-        if (launcherMotorA == null) return false;
+        if (launcherMotorA == null || launcherMotorB == null) return false;
         return (launcherMotorA.getVelocity() + launcherMotorB.getVelocity()) / 2 > 100;
     }
 
     public void intakeMotors(double percent) {
-        if (launcherMotorA == null) return;
+        if (launcherMotorA == null || launcherMotorB == null) return;
         launcherMotorA.setPower(-percent * .4);
         launcherMotorB.setPower(-percent * .4);
     }
 
     public boolean toSpeed() {
-        if (launcherMotorA == null) return false;
         double motorVel = getGoalVel();
         return getVel() >= motorVel - 10;
     }
 
     public void stop() {
-        if (launcherMotorA == null) return;
+        if (launcherMotorA == null || launcherMotorB == null) return;
         launcherMotorA.setPower(0);
         launcherMotorB.setPower(0);
     }
@@ -99,6 +100,7 @@ public class Launcher {
     }
 
     public double getVel() {
+        if (launcherMotorA == null || launcherMotorB == null) return 0;
         double aRawVel = launcherMotorA.getVelocity();
         double bRawVel = launcherMotorB.getVelocity();
         double aVel = aRawVel == 0 && bRawVel > 100 ? bRawVel : aRawVel;

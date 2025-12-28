@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
+import androidx.annotation.Nullable;
+
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -13,7 +15,7 @@ import java.util.List;
 
 public class Limelight {
 
-    private Limelight3A limelight;
+    private @Nullable Limelight3A limelight;
 
     public Limelight(HardwareMap hardwareMap, TelemetryUtils tm) {
         try {
@@ -54,12 +56,5 @@ public class Limelight {
         List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
         if (fiducials == null) return new ArrayList<>();
         return fiducials;
-    }
-
-    public double getTx() {
-        if (limelight == null) return Double.NaN;
-        LLResult result = limelight.getLatestResult();
-
-        return result.getTx();
     }
 }

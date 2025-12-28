@@ -188,10 +188,6 @@ public class Indexer {
         return false;
     }
 
-    public int totalArtifacts() {
-        return (int) Arrays.stream(artifacts).filter(a -> a != UNKNOWN && a != EMPTY).count();
-    }
-
     public boolean doesNotContain(RobotConstants.Artifact artifact) {
         return !Arrays.asList(artifacts).contains(artifact);
     }

@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
 import static org.firstinspires.ftc.teamcode.ProjectileSolver.getLaunchSolution;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
-import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_SPEED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.GREEN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.YELLOW;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
@@ -68,7 +66,7 @@ public class LaunchController {
             case ROTATE_INDEXER:
                 robot.feeder.retract();
                 if ((robot.feeder.isUp() || stateTimer.getElapsedTimeSeconds() < .2) &&
-                        stateTimer.getElapsedTimeSeconds() < .6) break;
+                        stateTimer.getElapsedTimeSeconds() < .5) break;
                 pos = robot.indexer.getGoalPos();
                 if (pos == -1) robot.indexer.setPos(0);
                 if (!robot.indexer.isStill()) break;
@@ -81,25 +79,22 @@ public class LaunchController {
                 if (robot.indexer.rotateToArtifact(desired)) break;
                 if (robot.indexer.rotateToArtifact(UNKNOWN)) break;
                 if (robot.indexer.rotateToAny()) break;
+                isBusy = false;
                 setState(State.IDLE);
                 break;
             case PUSH_ARTIFACT:
                 robot.launcher.spin();
                 if (!robot.indexer.isStill() || (!robot.launcher.toSpeed() &&
-                        stateTimer.getElapsedTimeSeconds() < MAX_LAUNCHER_SPIN_WAIT) ||
-                        stateTimer.getElapsedTimeSeconds() < .2 || (
-                        (robot.colorSensor.getArtifact() == EMPTY ||
-                                robot.colorSensor.getArtifact() == UNKNOWN) &&
-                        stateTimer.getElapsedTimeSeconds() < 1 / INDEXER_SPEED)) break;
+                        stateTimer.getElapsedTimeSeconds() < MAX_LAUNCHER_SPIN_WAIT)) break;
                 desired = launchQueue.get(0);
                 current = robot.indexer.getCurrentArtifact();
                 if (current != desired) {
-                    if (failedCount < 10) {
+                    if (failedCount < 5) {
                         failedCount++;
                         break;
                     }
                     failedCount = 0;
-                    setState(State.ROTATE_INDEXER);
+                    setStateNoWait(State.ROTATE_INDEXER);
                     break;
                 }
                 robot.launcher.spin();
@@ -107,12 +102,10 @@ public class LaunchController {
                 setState(State.RETRACT_FEEDER);
                 break;
             case RETRACT_FEEDER:
-                if ((robot.indexer.isActiveSlotEmpty() || stateTimer.getElapsedTimeSeconds() < .4) &&
+                if ((!robot.indexer.isActiveSlotEmpty() || stateTimer.getElapsedTimeSeconds() < .2) &&
                         stateTimer.getElapsedTimeSeconds() < 2) break;
-                current = robot.indexer.getCurrentArtifact();
-                if (current != EMPTY) break;
                 successCount++;
-                if (successCount <= 5) break;
+                if (successCount < 4) break;
                 successCount = 0;
                 numLaunched++;
                 launchQueue.remove(0);
@@ -120,6 +113,7 @@ public class LaunchController {
                 if (!launchQueue.isEmpty()) setState(State.ROTATE_INDEXER);
                 else {
                     robot.launcher.stop();
+                    isBusy = false;
                     setState(State.IDLE);
                 }
                 break;

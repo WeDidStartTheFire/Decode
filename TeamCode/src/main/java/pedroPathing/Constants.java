@@ -26,14 +26,14 @@ public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
             .mass(10)
             .centripetalScaling(0.0004)
-            .forwardZeroPowerAcceleration(-36.835087)
-            .lateralZeroPowerAcceleration(-44.409589)
+            .forwardZeroPowerAcceleration(-34.4785)
+            .lateralZeroPowerAcceleration(-72.6798)
 //            .forwardZeroPowerAcceleration(-37.30993063)
 //            .lateralZeroPowerAcceleration(-63.25810803)
             .translationalPIDFCoefficients(new PIDFCoefficients(0.25, 0, 0.024, 0))
             .headingPIDFCoefficients(new PIDFCoefficients(2, 0, 0.13, 0))
             .drivePIDFCoefficients(
-                    new FilteredPIDFCoefficients(0.014, 0, 0.00001, 0.6, 0)
+                    new FilteredPIDFCoefficients(0.007, 0, 0.00001, 0.6, 0.07)
             );
 
     public static MecanumConstants driveConstants = new MecanumConstants()
@@ -46,15 +46,15 @@ public class Constants {
             .leftRearMotorDirection(Direction.REVERSE)
             .rightFrontMotorDirection(Direction.FORWARD)
             .rightRearMotorDirection(Direction.FORWARD)
-            .xVelocity(65.83987)
-            .yVelocity(51.128357);
+            .xVelocity(64.41191)
+            .yVelocity(49.80192);
 //            .xVelocity(60.4469319341)
 //            .yVelocity(44.8106780766);
 
     public static OTOSConstants otosConstants = new OTOSConstants()
             .hardwareMapName("sensorOtos")
             .offset(new SparkFunOTOS.Pose2D(-6.25, -0.21, Math.toRadians(90)))
-            .linearScalar(1.06828)
+            .linearScalar(1.06828) // 1.221161886113337 max 1.127
             .angularScalar(.9871)
             .linearUnit(DistanceUnit.INCH)
             .angleUnit(AngleUnit.RADIANS);

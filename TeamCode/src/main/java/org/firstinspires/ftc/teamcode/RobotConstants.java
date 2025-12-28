@@ -162,7 +162,7 @@ public class RobotConstants {
     public enum LEDColors {
         OFF, RED, ORANGE, YELLOW, SAGE, GREEN, AZURE, BLUE, INDIGO, VIOLET, WHITE;
 
-        /** sourced from the image at bit.ly/4b14AsU **/
+        /** sourced from <a href="https://bit.ly/4b14AsU">this image</a> **/
         public double position() {
             switch (this) {
                 case RED:

@@ -165,8 +165,6 @@ public class RobotConstants {
         /** sourced from the image at bit.ly/4b14AsU **/
         public double position() {
             switch (this) {
-                case OFF:
-                    return 0.0;
                 case RED:
                     return 0.277;
                 case ORANGE:

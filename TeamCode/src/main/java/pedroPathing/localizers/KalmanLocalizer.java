@@ -3,13 +3,16 @@ package pedroPathing.localizers;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
+import static java.lang.Math.PI;
 import static java.lang.Math.toRadians;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.pedropathing.ftc.FTCCoordinates;
 import com.pedropathing.ftc.localization.localizers.DriveEncoderLocalizer;
 import com.pedropathing.ftc.localization.localizers.OTOSLocalizer;
+import com.pedropathing.geometry.PedroCoordinates;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.localization.Localizer;
 import com.pedropathing.math.Vector;
@@ -156,7 +159,7 @@ public class KalmanLocalizer implements Localizer {
         driveEncoderLocalizer.update();
         Pose driveEncoderVel = driveEncoderLocalizer.getVelocity();
 
-        limelight.updateRobotOrientation(robotYaw);
+        limelight.updateRobotOrientation(robotYaw + (PI/2));
         LLResult result = limelight.getLatestResult();
         Pose3D botpose = result.getBotpose();
         double[] stdevs = result.getStddevMt1();
@@ -227,8 +230,10 @@ public class KalmanLocalizer implements Localizer {
 
         if (Math.abs(yawRate) < 360 && botpose != null && result.getBotposeTagCount() > 0 &&
                 stdevs != null && stdevs.length >= 2) {
-            kalmanZ.set(0, 0, LLLinearUnit.toInches(botpose.getPosition().x));
-            kalmanZ.set(1, 0, LLLinearUnit.toInches(botpose.getPosition().y));
+            pose = new Pose(botpose.getPosition().x, botpose.getPosition().y, robotYaw, FTCCoordinates.INSTANCE);
+            pose = pose.getAsCoordinateSystem(PedroCoordinates.INSTANCE);
+            kalmanZ.set(0, 0, LLLinearUnit.toInches(pose.getX()));
+            kalmanZ.set(1, 0, LLLinearUnit.toInches(pose.getY()));
             kalmanZ.set(2, 0, LLAngleUnit.toRadians(robotYaw));
 
             kalmanR.set(0, 0, LLLinearUnit.toInches(stdevs[0]) * LLLinearUnit.toInches(stdevs[0]));

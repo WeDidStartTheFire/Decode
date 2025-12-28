@@ -7,6 +7,8 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.pedropathing.ftc.FTCCoordinates;
+import com.pedropathing.geometry.PedroCoordinates;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.localization.Localizer;
 import com.pedropathing.math.Vector;
@@ -44,7 +46,8 @@ public class LimelightLocalizer implements Localizer {
     }
 
     public @Nullable Pose getPose() {
-        return pose;
+        if (pose == null) return null;
+        return pose.getAsCoordinateSystem(PedroCoordinates.INSTANCE);
     }
 
     public Pose getVelocity() {
@@ -75,11 +78,11 @@ public class LimelightLocalizer implements Localizer {
             if (botpose_mt2 != null) {
                 double x = botpose_mt2.getPosition().x;
                 double y = botpose_mt2.getPosition().y;
-                pose = new Pose(x, y, botpose_mt2.getOrientation().getYaw());
+                pose = new Pose(x, y, botpose_mt2.getOrientation().getYaw(), FTCCoordinates.INSTANCE);
             } else if (botpose != null) {
                 double x = botpose.getPosition().x;
                 double y = botpose.getPosition().y;
-                pose = new Pose(x, y, botpose.getOrientation().getYaw());
+                pose = new Pose(x, y, botpose.getOrientation().getYaw(), FTCCoordinates.INSTANCE);
             }
         }
 
@@ -88,7 +91,7 @@ public class LimelightLocalizer implements Localizer {
             double dy = pose.getY() - prevPose.getY();
             double dtheta = pose.getHeading() - prevPose.getHeading();
             totalHeading += dtheta;
-            vel = new Pose(dx / dt, dy / dt, dtheta / dt);
+            vel = new Pose(dx / dt, dy / dt, dtheta / dt, FTCCoordinates.INSTANCE);
             prevPose = pose;
             prevTime = currTime;
         }

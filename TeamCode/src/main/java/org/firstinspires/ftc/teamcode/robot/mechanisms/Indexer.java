@@ -117,11 +117,15 @@ public class Indexer {
     }
 
     public void rotateClockwise() {
-        setPos((getGoalPos() + .5) % 1.5);
+        double goalPos = getGoalPos();
+        if (goalPos == -1) setPos(0);
+        else setPos((getGoalPos() + .5) % 1.5);
     }
 
     public void rotateCounterclockwise() {
-        setPos((getGoalPos() + 1) % 1.5);
+        double goalPos = getGoalPos();
+        if (goalPos == -1) setPos(0);
+        else setPos((getGoalPos() + 1) % 1.5);
     }
 
     public boolean isStill() {

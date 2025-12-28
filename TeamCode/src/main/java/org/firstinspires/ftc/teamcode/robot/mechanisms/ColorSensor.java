@@ -35,6 +35,7 @@ public class ColorSensor {
     public Scalar getRGB() {
         if (colorSensor == null) return null;
         float a = colorSensor.alpha();
+        if (a == 0) a = 1;
         float r = colorSensor.red() / a;
         float g = colorSensor.green() / a;
         float b = colorSensor.blue() / a;

@@ -26,6 +26,7 @@ public class LaunchController {
     private int failedCount = 0;
     private int successCount = 0;
     private final ArrayList<RobotConstants.Artifact> launchQueue = new ArrayList<>();
+    private boolean anyExpected = false;
 
     enum State {
         IDLE,
@@ -67,6 +68,7 @@ public class LaunchController {
                 robot.feeder.retract();
                 if ((robot.feeder.isUp() || stateTimer.getElapsedTimeSeconds() < .2) &&
                         stateTimer.getElapsedTimeSeconds() < .5) break;
+                anyExpected = false;
                 pos = robot.indexer.getGoalPos();
                 if (pos == -1) robot.indexer.setPos(0);
                 if (!robot.indexer.isStill()) break;
@@ -83,6 +85,8 @@ public class LaunchController {
                 }
                 if (robot.indexer.rotateToArtifact(desired)) break;
                 if (robot.indexer.rotateToArtifact(UNKNOWN)) break;
+                setState(State.PUSH_ARTIFACT);
+                anyExpected = true;
                 if (robot.indexer.rotateToAny()) break;
                 launchQueue.clear();
                 isBusy = false;
@@ -99,7 +103,7 @@ public class LaunchController {
                 }
                 desired = launchQueue.get(0);
                 current = robot.indexer.getCurrentArtifact();
-                if (current != desired) {
+                if (current != desired && !anyExpected) {
                     if (failedCount < 5) {
                         failedCount++;
                         break;

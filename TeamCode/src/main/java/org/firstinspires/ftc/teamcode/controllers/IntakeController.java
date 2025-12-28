@@ -38,7 +38,7 @@ public class IntakeController {
                     if (robot.indexer.isStill()) robot.intake.power(-1);
                     else {
                         robot.intake.powerInside(1);
-                        robot.intake.powerOutside(-1);
+                        robot.intake.powerOutside(-0.75);
                     }
                 } else {
                     robot.intake.powerInside(1);

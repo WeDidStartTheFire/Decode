@@ -4,8 +4,6 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.turretMotorPID;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static java.lang.Math.toDegrees;
 
-import android.text.method.Touch;
-
 import androidx.annotation.Nullable;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -20,7 +18,7 @@ public class Turret {
 
     public @Nullable DcMotorEx turretMotor;
     public @Nullable TouchSensor turretTouchSensor;
-    private boolean aiming;
+    private boolean aiming = false;
 
     public Turret(HardwareMap hardwareMap, TelemetryUtils tm) {
         try {

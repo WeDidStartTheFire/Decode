@@ -35,13 +35,17 @@ public class ProjectileSolver {
     }
 
     public static @Nullable LaunchSolution getLaunchSolution() {
-        return ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT, vel,
+        LaunchSolution sol = ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT, vel,
                 RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
+        if (sol != null) sol.w = 202.4227772815639;
+        return sol;
     }
 
     public static @Nullable LaunchSolution getLaunchSolutionStationary() {
-        return ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT, new Vector(),
+        LaunchSolution sol = ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT, new Vector(),
                 RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
+        if (sol != null) sol.w = 202.4227772815639;
+        return sol;
     }
 
     public static @Nullable LaunchSolution solveLaunch(

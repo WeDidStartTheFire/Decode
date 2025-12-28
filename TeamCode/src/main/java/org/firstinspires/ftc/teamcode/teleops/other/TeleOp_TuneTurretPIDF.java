@@ -30,12 +30,12 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
     TeleOpController teleop;
 
     // TODO: Set encoder goals based on numbers that make sense from telemetry
-    int encoderGoalA = 0;
-    int enocderGoalB = 0;
-    int encoderGoal = encoderGoalA;
+    static int encoderGoalA = -2500;
+    static int enocderGoalB = 2500;
+    static int encoderGoal = encoderGoalA;
 
-    double P = 0;
-    double D = 0;
+    static double P = 0;
+    static double D = 0;
     @IgnoreConfigurable
     PIDFCoefficients pidf = new PIDFCoefficients(P, 0, D, 0);
     @IgnoreConfigurable
@@ -86,6 +86,7 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
         tm.print("Increment", increments[incIdx]);
         tm.print("---------------------------");
         tm.print("PIDF", pidf);
+        tm.print("Run Mode", robot.turret.turretMotor.getMode());
         tm.update();
     }
 }

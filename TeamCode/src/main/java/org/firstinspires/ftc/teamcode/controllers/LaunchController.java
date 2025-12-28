@@ -84,6 +84,7 @@ public class LaunchController {
                 if (robot.indexer.rotateToArtifact(desired)) break;
                 if (robot.indexer.rotateToArtifact(UNKNOWN)) break;
                 if (robot.indexer.rotateToAny()) break;
+                launchQueue.clear();
                 isBusy = false;
                 setState(State.IDLE);
                 break;

@@ -40,8 +40,6 @@ public class RobotConstants {
     public static final double MIDDLE_INDEXER_POS = 0.455;
     public static final double INDEXER_SPEED = 1.4;
 
-    public static final double INTAKE_WAIT_TIME = 2;
-
     public static final double[] speeds = {0.2, 0.6, 1};
 
     public static final double MAX_LAUNCHER_SPIN_WAIT = 3;

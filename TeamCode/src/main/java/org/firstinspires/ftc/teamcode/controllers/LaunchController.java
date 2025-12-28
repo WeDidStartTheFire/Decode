@@ -154,6 +154,14 @@ public class LaunchController {
         robot.launcher.spin();
     }
 
+    public void manualRaise() {
+        if (robot.indexer.isStill()) robot.feeder.raise();
+    }
+
+    public void manualRetract() {
+        if (!isBusy) robot.feeder.retract();
+    }
+
     public void intake(double percent) {
         robot.launcher.intakeMotors(percent);
     }

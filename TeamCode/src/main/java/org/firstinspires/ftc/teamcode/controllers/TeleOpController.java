@@ -134,7 +134,7 @@ public class TeleOpController {
         tm.print("Feeder Up", robot.feeder.isUp());
         tm.print("Feeder Pos", robot.feeder.getPos());
         if (gamepad2.right_bumper && gamepad2.right_trigger >= 0.5 &&
-                robot.indexer.isStill()) robot.feeder.raise();
-        else robot.feeder.retract();
+                robot.indexer.isStill()) launchController.manualRaise();
+        else launchController.manualRetract();
     }
 }

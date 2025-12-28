@@ -81,12 +81,7 @@ public class Launcher {
     public boolean toSpeed() {
         if (launcherMotorA == null) return false;
         double motorVel = getGoalVel();
-        double aRawVel = launcherMotorA.getVelocity();
-        double bRawVel = launcherMotorB.getVelocity();
-        double aVel = aRawVel == 0 && bRawVel > 100 ? bRawVel : aRawVel;
-        double bVel = bRawVel == 0 && aRawVel > 100 ? aRawVel : bRawVel;
-        double vel = (aVel + bVel / 2);
-        return aVel >= motorVel - 15 && bVel >= motorVel - 15 && vel >= motorVel - 5;
+        return getVel() >= motorVel - 10;
     }
 
     public void stop() {
@@ -104,6 +99,10 @@ public class Launcher {
     }
 
     public double getVel() {
-        return (launcherMotorA.getVelocity() + launcherMotorB.getVelocity()) / 2;
+        double aRawVel = launcherMotorA.getVelocity();
+        double bRawVel = launcherMotorB.getVelocity();
+        double aVel = aRawVel == 0 && bRawVel > 100 ? bRawVel : aRawVel;
+        double bVel = bRawVel == 0 && aRawVel > 100 ? aRawVel : bRawVel;
+        return (aVel + bVel) / 2;
     }
 }

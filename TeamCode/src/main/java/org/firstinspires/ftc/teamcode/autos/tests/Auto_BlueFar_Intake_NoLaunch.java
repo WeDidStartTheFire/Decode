@@ -22,12 +22,12 @@ import org.firstinspires.ftc.teamcode.controllers.IntakeController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 
-@Autonomous(name = "🟦Blue🟦 Far Intake Refactor No Launch", group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
-public class Auto_BlueFar_Intake_Refactor_NoLaunch extends OpMode {
+@Autonomous(name = "🟦Blue🟦 Far Intake No Launch", group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
+public class Auto_BlueFar_Intake_NoLaunch extends OpMode {
     private Robot robot;
 
     private PathChain startToShoot;
-    private PathChain shootToIntake, intake1, intake2, intake3, intakeToShoot, shootToEnd;
+    private PathChain shootToIntake, intake, intakeToShoot, shootToEnd;
     private TelemetryUtils tm;
 
     private final Timer stateTimer = new Timer();
@@ -40,16 +40,15 @@ public class Auto_BlueFar_Intake_Refactor_NoLaunch extends OpMode {
         GO_TO_SHOOT,
         LAUNCH_ARTIFACTS,
         GO_TO_INTAKE,
-        INTAKE_1,
-        INTAKE_2,
-        INTAKE_3,
+        INTAKE,
         RETURN_TO_LAUNCH,
         GO_TO_END,
     }
 
     private final Pose startPose = new Pose(63.500, 8.500, toRadians(90));
     private final Pose shootPose = new Pose(60.000, 20.000, toRadians(114.80566575481602));
-    private final Pose intakePose = new Pose(40.500, 35.000, toRadians(180));
+    private final Pose intakeStart = new Pose(45, 35.000, toRadians(180));
+    private final Pose intakeEnd = new Pose(10, 35, toRadians(180));
     private final Pose endPose = new Pose(25, 9.5, toRadians(180));
 
     private void buildPaths() {
@@ -58,27 +57,17 @@ public class Auto_BlueFar_Intake_Refactor_NoLaunch extends OpMode {
                 .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
         shootToIntake = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, new Pose(53.340, 34.935), intakePose))
+                .addPath(new BezierCurve(shootPose, new Pose(53.340, 34.935), intakeStart))
                 .setTangentHeadingInterpolation()
                 .build();
-        intake1 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(intakePose, new Pose(30.000, 33.500)))
+        intake = robot.drivetrain.follower.pathBuilder()
+                .addPath(new BezierLine(intakeStart, intakeEnd))
+                .setConstantHeadingInterpolation(intakeEnd.getHeading())
                 .setConstraints(slowIntakePathConstraints)
-                .setLinearHeadingInterpolation(intakePose.getHeading(), toRadians(180))
-                .build();
-        intake2 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(30, 33.5), new Pose(25, 35)))
-                .setConstraints(slowIntakePathConstraints)
-                .setConstantHeadingInterpolation(toRadians(180))
-                .build();
-        intake3 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(25, 35), new Pose(20, 35)))
-                .setConstraints(slowIntakePathConstraints)
-                .setConstantHeadingInterpolation(toRadians(180))
                 .build();
         intakeToShoot = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(20, 35), shootPose))
-                .setLinearHeadingInterpolation(toRadians(180), shootPose.getHeading())
+                .addPath(new BezierLine(intakeEnd, shootPose))
+                .setLinearHeadingInterpolation(intakeEnd.getHeading(), shootPose.getHeading())
                 .build();
         shootToEnd = robot.drivetrain.follower.pathBuilder()
                 .addPath(new BezierLine(shootPose, endPose))
@@ -115,8 +104,6 @@ public class Auto_BlueFar_Intake_Refactor_NoLaunch extends OpMode {
     @Override
     public void start() {
         robot.drivetrain.follower.activateAllPIDFs();
-//        startToShoot = new Path(new BezierLine(startPose, shootPose));
-//        startToShoot.setConstantHeadingInterpolation(startPose.getHeading());
         setState(State.GO_TO_SHOOT);
     }
 
@@ -147,27 +134,16 @@ public class Auto_BlueFar_Intake_Refactor_NoLaunch extends OpMode {
             case GO_TO_INTAKE:
                 robot.drivetrain.follower.followPath(shootToIntake, true);
                 intakeController.intake();
-                setState(State.INTAKE_1);
+                setState(State.INTAKE);
                 break;
-            case INTAKE_1:
+            case INTAKE:
                 if (robot.drivetrain.follower.isBusy()) break;
-                robot.drivetrain.follower.followPath(intake1, 0.5, true);
-                setState(State.INTAKE_2);
-                break;
-            case INTAKE_2:
-                if (robot.drivetrain.follower.isBusy() || robot.indexer.totalArtifacts() < 1 ||
-                        intakeController.isNotReady()) break;
-                robot.drivetrain.follower.followPath(intake2, 0.5, true);
-                setState(State.INTAKE_3);
-                break;
-            case INTAKE_3:
-                if (robot.drivetrain.follower.isBusy() || robot.indexer.totalArtifacts() < 2 ||
-                        intakeController.isNotReady()) break;
-                robot.drivetrain.follower.followPath(intake3, 0.5, true);
+                robot.drivetrain.follower.followPath(intake, 0.25, true);
                 setState(State.RETURN_TO_LAUNCH);
                 break;
             case RETURN_TO_LAUNCH:
-                if (robot.drivetrain.follower.isBusy() || intakeController.isBusy()) break;
+                if (robot.drivetrain.follower.isBusy() && intakeController.isBusy()) break;
+                robot.drivetrain.follower.breakFollowing();
                 robot.drivetrain.follower.followPath(intakeToShoot, true);
                 setState(State.LAUNCH_ARTIFACTS);
                 break;

@@ -126,13 +126,9 @@ public class Auto_BlueFar extends OpMode {
         tm.print("Feeder Up", robot.feeder.isUp());
         tm.print("Indexer Pos", robot.indexer.getGoalPos());
         tm.print("Indexer Still", robot.indexer.isStill());
-        tm.print("Indexer Estimate Pos", robot.indexer.getEstimatePos());
         tm.print(pose);
         tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose));
         tm.print("Launcher Vel", robot.launcher.getVel());
-        tm.print("Artifact", robot.colorSensor.getArtifact());
-        tm.print("Color", robot.colorSensor.getColor());
-        tm.print("Inches", robot.colorSensor.getInches());
     }
 
     @Override

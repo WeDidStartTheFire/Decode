@@ -41,7 +41,7 @@ public class Auto_RedClose extends OpMode {
         FOLLOW_PATH_2,
     }
 
-    private final Pose startPose = new Pose(126.729, 121.115, toRadians(36));
+    private final Pose startPose = new Pose(126.729, 121.115, toRadians(126));
     private final Pose shootPose = new Pose(85.709, 84.630, toRadians(45.57421049703793));
     private final Pose endPose = new Pose(103.196, 60.018, toRadians(0));
 
@@ -127,13 +127,9 @@ public class Auto_RedClose extends OpMode {
         tm.print("Feeder Up", robot.feeder.isUp());
         tm.print("Indexer Pos", robot.indexer.getGoalPos());
         tm.print("Indexer Still", robot.indexer.isStill());
-        tm.print("Indexer Estimate Pos", robot.indexer.getEstimatePos());
         tm.print(pose);
         tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose));
         tm.print("Launcher Vel", robot.launcher.getVel());
-        tm.print("Artifact", robot.colorSensor.getArtifact());
-        tm.print("Color", robot.colorSensor.getColor());
-        tm.print("Inches", robot.colorSensor.getInches());
     }
 
     @Override

@@ -40,7 +40,7 @@ public class Auto_BlueClose extends OpMode {
         FOLLOW_PATH_2,
     }
 
-    private final Pose startPose = new Pose(19.541233442405954, 121.478672985782, toRadians(144));
+    private final Pose startPose = new Pose(19.541233442405954, 121.478672985782, toRadians(54));
     private final Pose shootPose = new Pose(58.291, 84.630, toRadians(134.4257895029621));
     private final Pose endPose = new Pose(40.804, 60.018, toRadians(180));
 
@@ -126,13 +126,9 @@ public class Auto_BlueClose extends OpMode {
         tm.print("Feeder Up", robot.feeder.isUp());
         tm.print("Indexer Pos", robot.indexer.getGoalPos());
         tm.print("Indexer Still", robot.indexer.isStill());
-        tm.print("Indexer Estimate Pos", robot.indexer.getEstimatePos());
         tm.print(pose);
         tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose));
         tm.print("Launcher Vel", robot.launcher.getVel());
-        tm.print("Artifact", robot.colorSensor.getArtifact());
-        tm.print("Color", robot.colorSensor.getColor());
-        tm.print("Inches", robot.colorSensor.getInches());
     }
 
     @Override

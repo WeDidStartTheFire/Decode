@@ -23,7 +23,7 @@ import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static java.lang.Math.abs;
 import static java.lang.Math.signum;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
@@ -38,7 +38,7 @@ import pedroPathing.Constants;
 
 public class Drivetrain {
     public DcMotorEx lf, lb, rf, rb;
-    public @Nullable IMU imu;
+    public @NonNull IMU imu;
     public Follower follower;
 
     public volatile boolean loop = false;
@@ -124,8 +124,7 @@ public class Drivetrain {
 
         while (runtime.seconds() < duration && inches != 0) {
             // Display it for the driver.
-            if (imu != null)
-                tm.print("Angle", imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
+            tm.print("Angle", imu.getRobotOrientation(INTRINSIC, ZYX, DEGREES).firstAngle);
             tm.print("Running to", " " + lfTarget + ":" + rfTarget);
             tm.print("Currently at", lf.getCurrentPosition() + ":" + rf.getCurrentPosition());
             if (!loop) tm.update();

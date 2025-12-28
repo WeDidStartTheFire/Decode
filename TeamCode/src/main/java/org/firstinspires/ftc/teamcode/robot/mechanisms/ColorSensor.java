@@ -56,7 +56,9 @@ public class ColorSensor {
 
     public RobotConstants.Artifact getArtifact() {
         RobotConstants.Artifact color = getColor();
-        if (color == EMPTY && getInches() < 3.7) color = UNKNOWN;
+        double distance = getInches();
+        if (color == EMPTY && distance < 3.7) color = UNKNOWN;
+        if (color != EMPTY && distance > 5.5) color = UNKNOWN;
         return color;
     }
 }

@@ -47,7 +47,7 @@ public class Indexer {
         if (!isStill()) return;
         if (artifact == UNKNOWN) return;
         int idx = idxFromPos(getGoalPos());
-        if (idx != -1) artifacts[idx] = artifact;
+        if (idx >= 0 && idx < artifacts.length) artifacts[idx] = artifact;
     }
 
     private int idxFromPos(double pos) {
@@ -119,13 +119,13 @@ public class Indexer {
     public void rotateClockwise() {
         double goalPos = getGoalPos();
         if (goalPos == -1) setPos(0);
-        else setPos((getGoalPos() + .5) % 1.5);
+        else setPos((goalPos + .5) % 1.5);
     }
 
     public void rotateCounterclockwise() {
         double goalPos = getGoalPos();
         if (goalPos == -1) setPos(0);
-        else setPos((getGoalPos() + 1) % 1.5);
+        else setPos((goalPos + 1) % 1.5);
     }
 
     public boolean isStill() {
@@ -148,6 +148,7 @@ public class Indexer {
 
     public boolean rotateToArtifact(RobotConstants.Artifact artifact) {
         double pos = getGoalPos();
+        if (pos == -1) pos = 0;
 
         double first = Math.round(pos * 2) / 2.0;
         double second = (first + 0.5) % 1;

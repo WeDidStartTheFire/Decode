@@ -28,17 +28,20 @@ public class Launcher {
     public Launcher(HardwareMap hardwareMap, TelemetryUtils tm) {
         try {
             launcherMotorA = hardwareMap.get(DcMotorEx.class, "launcherMotorA"); // Expansion Hub 1
+            launcherMotorA.setTargetPosition(0);
+            launcherMotorA.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherPIDF);
+            launcherMotorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        } catch (IllegalArgumentException e) {
+            tm.except("launcherMotorA not connected");
+        }
+        try {
             launcherMotorB = hardwareMap.get(DcMotorEx.class, "launcherMotorB"); // Expansion Hub 2
             launcherMotorB.setDirection(DcMotorSimple.Direction.REVERSE);
-            launcherMotorA.setTargetPosition(0);
             launcherMotorB.setTargetPosition(0);
-            launcherMotorA.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherPIDF);
             launcherMotorB.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherPIDF);
-            launcherMotorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             launcherMotorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         } catch (IllegalArgumentException e) {
-            launcherMotorA = null;
-            tm.except("At least one launcherMotor not connected");
+            tm.except("launcherMotorB not connected");
         }
     }
 
@@ -63,10 +66,9 @@ public class Launcher {
     }
 
     public void spin(Pose pose) {
-        if (launcherMotorA == null || launcherMotorB == null) return;
         double motorVel = getGoalVel(pose);
-        launcherMotorA.setVelocity(motorVel);
-        launcherMotorB.setVelocity(motorVel);
+        if (launcherMotorA != null) launcherMotorA.setVelocity(motorVel);
+        if (launcherMotorB != null) launcherMotorB.setVelocity(motorVel);
     }
 
     public boolean isSpinning() {
@@ -75,9 +77,8 @@ public class Launcher {
     }
 
     public void intakeMotors(double percent) {
-        if (launcherMotorA == null || launcherMotorB == null) return;
-        launcherMotorA.setPower(-percent * .4);
-        launcherMotorB.setPower(-percent * .4);
+        if (launcherMotorA != null) launcherMotorA.setPower(-percent * .4);
+        if (launcherMotorB != null) launcherMotorB.setPower(-percent * .4);
     }
 
     public boolean toSpeed() {
@@ -86,9 +87,8 @@ public class Launcher {
     }
 
     public void stop() {
-        if (launcherMotorA == null || launcherMotorB == null) return;
-        launcherMotorA.setPower(0);
-        launcherMotorB.setPower(0);
+        if (launcherMotorA != null) launcherMotorA.setPower(0);
+        if (launcherMotorB != null) launcherMotorB.setPower(0);
     }
 
     private double ballVelToMotorVel(double ballVel) {
@@ -96,13 +96,12 @@ public class Launcher {
     }
 
     public boolean isConnected() {
-        return launcherMotorA != null;
+        return launcherMotorA != null && launcherMotorB != null;
     }
 
     public double getVel() {
-        if (launcherMotorA == null || launcherMotorB == null) return 0;
-        double aRawVel = launcherMotorA.getVelocity();
-        double bRawVel = launcherMotorB.getVelocity();
+        double aRawVel = launcherMotorA == null ? 0 : launcherMotorA.getVelocity();
+        double bRawVel = launcherMotorB == null ? 0 : launcherMotorB.getVelocity();
         double aVel = aRawVel == 0 && bRawVel > 100 ? bRawVel : aRawVel;
         double bVel = bRawVel == 0 && aRawVel > 100 ? aRawVel : bRawVel;
         return (aVel + bVel) / 2;

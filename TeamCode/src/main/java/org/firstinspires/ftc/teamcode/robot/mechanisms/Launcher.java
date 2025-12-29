@@ -1,13 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_GOAL_POSE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_ANGLE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_HEIGHT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.RED_GOAL_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.launcherPIDF;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
-import static org.firstinspires.ftc.teamcode.RobotState.vel;
 
 import androidx.annotation.Nullable;
 
@@ -18,7 +12,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
-import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 public class Launcher {
@@ -50,14 +43,12 @@ public class Launcher {
     }
 
     public double getGoalVel(Pose pose) {
-        ProjectileSolver.LaunchSolution sol = ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT,
-                vel, RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
+        ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution(pose);
         return sol != null ? ballVelToMotorVel(sol.w) : 0;
     }
 
     public boolean canLaunch() {
-        ProjectileSolver.LaunchSolution sol = ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT,
-                vel, RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
+        ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution();
         return sol != null;
     }
 

@@ -5,11 +5,10 @@ import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.configurables.annotations.IgnoreConfigurable;
+import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
@@ -34,15 +33,16 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
     static int enocderGoalB = 2500;
     static int encoderGoal = encoderGoalA;
 
-    static double P = 0;
-    static double D = 0;
+    static double P = 0.0006;
+    static double D = 0.00004;
+    static double F = 0;
+    static double maxPower = 0.7;
     @IgnoreConfigurable
     PIDFCoefficients pidf = new PIDFCoefficients(P, 0, D, 0);
     @IgnoreConfigurable
-    PIDFCoefficients defaultpidf;
-    @IgnoreConfigurable
     double[] increments = {10, 1, .1, .01, .001};
     int incIdx = 1;
+    double t;
 
     @Override
     public void init() {
@@ -55,14 +55,15 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
         robot.drivetrain.follower.startTeleopDrive();
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
-        tm.print("Tune Flywheel PIDF Initialized");
+        tm.print("Tune Turret PIDF Initialized");
         tm.update();
-        if (robot.drivetrain.lf != null)
-            defaultpidf = robot.drivetrain.lf.getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION);
+        t = getRuntime();
     }
 
     @Override
     public void loop() {
+        double dt = getRuntime() - t;
+        t = getRuntime();
         if (gamepad1.bWasPressed()) incIdx = (incIdx + 1) % increments.length;
         if (gamepad1.aWasPressed())
             encoderGoal = encoderGoal == encoderGoalA ? enocderGoalB : encoderGoalA;
@@ -70,11 +71,15 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
         if (gamepad1.dpadDownWasPressed()) D -= increments[incIdx];
         if (gamepad1.dpadRightWasPressed()) P += increments[incIdx];
         if (gamepad1.dpadLeftWasPressed()) P -= increments[incIdx];
+        if (gamepad1.x) encoderGoal += (int) (500 * dt);
+        if (gamepad1.y) encoderGoal -= (int) (500 * dt);
 
         if (robot.turret.turretMotor == null) return;
-        pidf = new PIDFCoefficients(P, 0, D, 0);
-        robot.turret.turretMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, pidf);
-        robot.turret.turretMotor.setTargetPosition(encoderGoal);
+        RobotConstants.TURRET_MAX_POWER = maxPower;
+        pidf = new PIDFCoefficients(P, 0, D, F);
+        robot.turret.turretPIDController.setCoefficients(pidf);
+        robot.turret.turretPIDController.setTargetPosition(encoderGoal);
+        robot.turret.update();
         double pos = robot.turret.turretMotor.getCurrentPosition();
         double error = pos - encoderGoal;
         tm.print("Position", pos);

@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_MAX_POWER;
 import static org.firstinspires.ftc.teamcode.RobotConstants.turretMotorPID;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.lang.Math.toDegrees;
 
 import androidx.annotation.Nullable;
 
+import com.pedropathing.control.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -15,19 +19,16 @@ import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 public class Turret {
-
     public @Nullable DcMotorEx turretMotor;
     public @Nullable TouchSensor turretTouchSensor;
     private boolean aiming = false;
+    public PIDFController turretPIDController = new PIDFController(turretMotorPID);
 
     public Turret(HardwareMap hardwareMap, TelemetryUtils tm) {
         try {
             turretMotor = hardwareMap.get(DcMotorEx.class, "turretMotor");
-            // TODO: Tune turret PID; use TeleOpTuneTurretPIDF; start by tuning P and add a *tiny* D if necessary
-            turretMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, turretMotorPID);
             turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            turretMotor.setTargetPosition(turretMotor.getCurrentPosition());
-            turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         } catch (IllegalArgumentException e) {
             tm.except("turretMotor not connected");
         }
@@ -51,6 +52,8 @@ public class Turret {
             turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
+        turretPIDController.updatePosition(turretMotor.getCurrentPosition());
+        turretMotor.setPower(max(-TURRET_MAX_POWER, min(TURRET_MAX_POWER, turretPIDController.run())));
 
         // 2. Aiming logic after early return
         if (!aiming) return;
@@ -61,12 +64,13 @@ public class Turret {
 
     public void stop() {
         setAiming(false);
-        if (turretMotor != null) turretMotor.setTargetPosition(turretMotor.getCurrentPosition());
+        if (turretMotor != null)
+            turretPIDController.setTargetPosition(turretMotor.getCurrentPosition());
     }
 
     public void setRobotCentricAngle(double angle) {
         if (turretMotor == null) return;
-        turretMotor.setTargetPosition(Math.clamp(
+        turretPIDController.setTargetPosition(Math.clamp(
                 (int) ((toDegrees(angle) - 0 /* replace with degree offset */)
                         * 1.1) /* replace with encoders per degree */,
                 0, /* replace with min encoder value */

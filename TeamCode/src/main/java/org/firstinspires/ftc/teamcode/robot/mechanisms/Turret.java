@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_ENCODERS_PER_DEGREE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_MAX_POS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_MAX_POWER;
+import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_MIN_POS;
+import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_OFFSET;
 import static org.firstinspires.ftc.teamcode.RobotConstants.turretMotorPID;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
 import static java.lang.Math.toDegrees;
 
 import androidx.annotation.Nullable;
@@ -45,15 +47,13 @@ public class Turret {
 
     public void update() {
         if (turretMotor == null) return;
-        // 1. Check if turret is being zeroed (e.g. touch sensor pressed) and that the velocity
-        // is low enough and zero it (like <15 deg/s or so)
         if (turretTouchSensor != null && turretTouchSensor.isPressed()) {
             turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // sets encoder back to 0
             turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
         turretPIDController.updatePosition(turretMotor.getCurrentPosition());
-        turretMotor.setPower(max(-TURRET_MAX_POWER, min(TURRET_MAX_POWER, turretPIDController.run())));
+        turretMotor.setPower(Math.clamp(turretPIDController.run(), -TURRET_MAX_POWER, TURRET_MAX_POWER));
 
         // 2. Aiming logic after early return
         if (!aiming) return;
@@ -70,11 +70,8 @@ public class Turret {
 
     public void setRobotCentricAngle(double angle) {
         if (turretMotor == null) return;
-        turretPIDController.setTargetPosition(Math.clamp(
-                (int) ((toDegrees(angle) - 0 /* replace with degree offset */)
-                        * 1.1) /* replace with encoders per degree */,
-                0, /* replace with min encoder value */
-                100 /* replace with max encoder value */));
+        turretPIDController.setTargetPosition(Math.clamp((int) ((toDegrees(angle) - TURRET_OFFSET)
+                * TURRET_ENCODERS_PER_DEGREE), TURRET_MIN_POS, TURRET_MAX_POS));
     }
 
     public void setFieldCentricAngle(double angle) {

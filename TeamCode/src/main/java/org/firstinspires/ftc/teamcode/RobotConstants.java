@@ -54,11 +54,16 @@ public class RobotConstants {
             0.4
     );
 
-    public static com.pedropathing.control.PIDFCoefficients teleopHeadingPID =
-            new com.pedropathing.control.PIDFCoefficients(1, 0, .05, 0);
     public static com.pedropathing.control.PIDFCoefficients turretMotorPID =
             new com.pedropathing.control.PIDFCoefficients(0.0006, 0, 0.00004, 0);
     public static double TURRET_MAX_POWER = 0.7;
+    public static final double TURRET_OFFSET = 90; // degrees
+    public static final double TURRET_ENCODERS_PER_DEGREE = 1;
+    public static final double TURRET_MIN_POS = -10000;
+    public static final double TURRET_MAX_POS = 0;
+
+    public static com.pedropathing.control.PIDFCoefficients teleopHeadingPID =
+            new com.pedropathing.control.PIDFCoefficients(1, 0, .05, 0);
     public static PIDFCoefficients launcherPIDF = new PIDFCoefficients(80, 0, 0, 20);
     public static final double LAUNCHER_HEIGHT = 15.5;
     public static final double LAUNCHER_ANGLE = toRadians(50);

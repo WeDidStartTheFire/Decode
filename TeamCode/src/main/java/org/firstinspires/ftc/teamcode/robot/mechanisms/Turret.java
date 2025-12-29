@@ -25,6 +25,7 @@ public class Turret {
     public @Nullable TouchSensor turretTouchSensor;
     private boolean aiming = false;
     public PIDFController turretPIDController = new PIDFController(turretMotorPID);
+    private boolean wasPressed = false;
 
     public Turret(HardwareMap hardwareMap, TelemetryUtils tm) {
         try {
@@ -47,10 +48,17 @@ public class Turret {
 
     public void update() {
         if (turretMotor == null) return;
-        if (turretTouchSensor != null && turretTouchSensor.isPressed()) {
+
+        // > 0 check makes it so it only zeros the touch sensor when coming from one side, so the
+        // "zero" on the touch sensor is always on the right side, and not changing between the left
+        // and right sides
+        if (turretTouchSensor != null && turretTouchSensor.isPressed() && !wasPressed &&
+                turretMotor.getVelocity() > 0) {
+            turretPIDController.updatePosition(0);
             turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // sets encoder back to 0
-            turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
+        wasPressed = turretTouchSensor != null && turretTouchSensor.isPressed();
 
         turretPIDController.updatePosition(turretMotor.getCurrentPosition());
         turretMotor.setPower(Math.clamp(turretPIDController.run(), -TURRET_MAX_POWER, TURRET_MAX_POWER));
@@ -75,6 +83,6 @@ public class Turret {
     }
 
     public void setFieldCentricAngle(double angle) {
-        setRobotCentricAngle(angle - pose.getHeading()); // This should be good but double check
+        setRobotCentricAngle(angle - pose.getHeading());
     }
 }

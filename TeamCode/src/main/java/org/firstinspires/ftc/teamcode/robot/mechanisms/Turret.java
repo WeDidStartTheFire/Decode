@@ -46,19 +46,28 @@ public class Turret {
         this.aiming = aiming;
     }
 
+    private void resetEncoder() {
+        if (turretMotor == null) return;
+        turretPIDController.updatePosition(0);
+        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // sets encoder back to 0
+        turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+    private boolean velocitySign(int sign) {
+        if (turretMotor == null || turretMotor.getVelocity() * sign < 0) return false;
+        return turretMotor.getVelocity() * sign > 0 || turretMotor.getPower() * sign > 0;
+    }
+
     public void update() {
         if (turretMotor == null) return;
 
-        // > 0 check makes it so it only zeros the touch sensor when coming from one side, so the
-        // "zero" on the touch sensor is always on the right side, and not changing between the left
-        // and right sides
-        if (turretTouchSensor != null && turretTouchSensor.isPressed() && !wasPressed &&
-                turretMotor.getVelocity() > 0) {
-            turretPIDController.updatePosition(0);
-            turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // sets encoder back to 0
-            turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        }
-        wasPressed = turretTouchSensor != null && turretTouchSensor.isPressed();
+        // Positive velocity check makes it so it only zeros the touch sensor when coming from one
+        // side, so the "zero" on the touch sensor is always on the right side, and not changing
+        // between the left and right sides
+        boolean isPressed = turretTouchSensor != null && turretTouchSensor.isPressed();
+        if (isPressed && !wasPressed && velocitySign(+1)) resetEncoder();
+        if (!isPressed && wasPressed && velocitySign(-1)) resetEncoder();
+        wasPressed = isPressed;
 
         turretPIDController.updatePosition(turretMotor.getCurrentPosition());
         turretMotor.setPower(Math.clamp(turretPIDController.run(), -TURRET_MAX_POWER, TURRET_MAX_POWER));

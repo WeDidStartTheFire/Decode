@@ -38,12 +38,12 @@ public class Auto_BlueFar_Intake extends OpMode {
 
     private enum State {
         FINISHED,
-        GO_TO_SHOOT,
+        START_TO_SHOOT,
         LAUNCH_ARTIFACTS,
-        GO_TO_INTAKE,
+        SHOOT_TO_INTAKE,
         INTAKE,
-        RETURN_TO_LAUNCH,
-        GO_TO_END,
+        INTAKE_TO_SHOOT,
+        SHOOT_TO_END,
     }
 
     private final Pose startPose = new Pose(63.500, 8.500, toRadians(90));
@@ -94,7 +94,7 @@ public class Auto_BlueFar_Intake extends OpMode {
 
     @Override
     public void start() {
-        setState(State.GO_TO_SHOOT);
+        setState(State.START_TO_SHOOT);
     }
 
     private void setStateNoWait(State state) {
@@ -108,7 +108,7 @@ public class Auto_BlueFar_Intake extends OpMode {
 
     public void pathUpdate() {
         switch (state) {
-            case GO_TO_SHOOT:
+            case START_TO_SHOOT:
                 robot.indexer.setPos(0);
                 robot.drivetrain.follower.followPath(startToShoot, true);
                 launchController.manualSpin();
@@ -117,10 +117,10 @@ public class Auto_BlueFar_Intake extends OpMode {
             case LAUNCH_ARTIFACTS:
                 if (robot.drivetrain.follower.isBusy()) break;
                 launchController.launchArtifacts(3);
-                setState(launchRound == 0 ? State.GO_TO_INTAKE : State.GO_TO_END);
+                setState(launchRound == 0 ? State.SHOOT_TO_INTAKE : State.SHOOT_TO_END);
                 launchRound++;
                 break;
-            case GO_TO_INTAKE:
+            case SHOOT_TO_INTAKE:
                 if (launchController.isBusy()) break;
                 robot.drivetrain.follower.followPath(shootToIntake, true);
                 intakeController.intake();
@@ -129,16 +129,16 @@ public class Auto_BlueFar_Intake extends OpMode {
             case INTAKE:
                 if (robot.drivetrain.follower.isBusy()) break;
                 robot.drivetrain.follower.followPath(intake, 0.5, true);
-                setState(State.RETURN_TO_LAUNCH);
+                setState(State.INTAKE_TO_SHOOT);
                 break;
-            case RETURN_TO_LAUNCH:
+            case INTAKE_TO_SHOOT:
                 if (robot.drivetrain.follower.isBusy() && intakeController.isBusy()) break;
                 robot.drivetrain.follower.breakFollowing();
                 robot.drivetrain.follower.followPath(intakeToShoot, true);
                 launchController.manualSpin();
                 setState(State.LAUNCH_ARTIFACTS);
                 break;
-            case GO_TO_END:
+            case SHOOT_TO_END:
                 if (launchController.isBusy()) break;
                 robot.drivetrain.follower.followPath(shootToEnd, true);
                 setState(State.FINISHED);

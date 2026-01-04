@@ -51,7 +51,7 @@ public class Auto_BlueClose extends OpMode {
     private final Pose startPose = new Pose(19.541233442405954, 121.478672985782, toRadians(54));
     private final Pose motifPose = new Pose(37, 104.5, toRadians(54));
     private final Pose shootPose = new Pose(58.291, 84.670, toRadians(134.4257895029621));
-    private final Pose intakeStart = new Pose(58.291, 84.670, toRadians(180));
+    private final Pose intakeStart = new Pose(47, 84.670, toRadians(180));
     private final Pose intakeEnd = new Pose(20, 84.630, toRadians(180));
     private final Pose endPose = new Pose(40.804, 60.018, toRadians(180));
 

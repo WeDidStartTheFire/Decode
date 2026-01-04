@@ -50,7 +50,7 @@ public class TeleOpController {
     public void update() {
         tm.update();
         follower.update();
-        pose = follower.getPose();
+        if (follower.getPose() != null) pose = follower.getPose();
         vel = follower.getVelocity();
     }
 

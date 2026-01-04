@@ -19,6 +19,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import pedroPathing.localizers.KalmanLocalizer;
+import pedroPathing.localizers.LimelightLocalizer;
 
 @Configurable
 public class Constants {
@@ -54,7 +55,7 @@ public class Constants {
     public static OTOSConstants otosConstants = new OTOSConstants()
             .hardwareMapName("sensorOtos")
             .offset(new SparkFunOTOS.Pose2D(-6.25, -0.21, Math.toRadians(90)))
-            .linearScalar(1.06828) // 1.221161886113337 max 1.127
+            .linearScalar(1.093475) // max 1.127
             .angularScalar(.9871)
             .linearUnit(DistanceUnit.INCH)
             .angleUnit(AngleUnit.RADIANS);
@@ -94,6 +95,14 @@ public class Constants {
         return new FollowerBuilder(followerConstants, hardwareMap)
                 .mecanumDrivetrain(driveConstants)
                 .setLocalizer(new KalmanLocalizer(hardwareMap))
+                .pathConstraints(pathConstraints)
+                .build();
+    }
+
+    public static Follower createLimelightFollower(HardwareMap hardwareMap) {
+        return new FollowerBuilder(followerConstants, hardwareMap)
+                .mecanumDrivetrain(driveConstants)
+                .setLocalizer(new LimelightLocalizer(hardwareMap))
                 .pathConstraints(pathConstraints)
                 .build();
     }

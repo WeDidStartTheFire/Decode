@@ -1,11 +1,10 @@
-package org.firstinspires.ftc.teamcode.teleops.tests;
+package org.firstinspires.ftc.teamcode.teleops;
 
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
 import com.pedropathing.geometry.Pose;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -15,37 +14,33 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
-import pedroPathing.localizers.LimelightHelpers;
-
-@TeleOp(name = "Limelight Test", group = "Test")
-public class Test_Limelight extends OpMode {
+@TeleOp(name = "Kalman Test", group = "Test")
+public class TeleOp_KalmanTest extends OpMode {
     public TeleOpController teleop;
     public Robot robot;
     public TelemetryUtils tm;
-    LimelightHelpers.LimelightTarget_Fiducial limelightTargetFiducial = new LimelightHelpers.LimelightTarget_Fiducial();
 
     @Override
     public void init() {
-        Limelight3A limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(0);
-        limelight.start();
         RobotState.color = RobotConstants.Color.BLUE;
         Pose pose = loadOdometryPosition();
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
-        robot = new Robot(hardwareMap, telemetry, false);
+        robot = new Robot(hardwareMap, telemetry, validStartPose);
+        robot.drivetrain.useKalmanFollower();
         robot.drivetrain.follower.setPose(RobotState.pose);
         robot.drivetrain.follower.startTeleopDrive();
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
+        if (!validStartPose) tm.print("⚠️WARNING⚠️", "Robot Centric driving will be used");
+        else tm.print("Field Centric Driving", "✅");
+        tm.print("Color", "🟦🟦Blue🟦🟦");
     }
 
     @Override
     public void init_loop() {
         teleop.update();
         tm.print(pose);
-        tm.print("Motif", robot.limelight.getMotif());
-        tm.print("Target", limelightTargetFiducial.getCameraPose_TargetSpace2D());
     }
 
     @Override
@@ -56,12 +51,17 @@ public class Test_Limelight extends OpMode {
     @Override
     public void loop() {
         teleop.update();
-        tm.print("Motif", robot.limelight.getMotif());
-        tm.print("Target", limelightTargetFiducial.getCameraPose_TargetSpace2D());
         teleop.drivetrainLogic(validStartPose);
+        teleop.indexerUpdate();
         teleop.updateIntake();
         teleop.feederLogic();
         teleop.updateIndexerTeleOp();
         teleop.updateLauncherTeleOp();
+    }
+
+
+    @Override
+    public void stop() {
+        teleop.stop();
     }
 }

@@ -58,6 +58,7 @@ public class RobotConstants {
             new com.pedropathing.control.PIDFCoefficients(0.0006, 0, 0.00004, 0);
     public static double TURRET_MAX_POWER = 0.7;
     public static final double TURRET_OFFSET = 90; // degrees
+    public static double TURRET_TS_LENGTH_ENC = 0; // length of touch sensor in encoder ticks
     public static final double TURRET_ENCODERS_PER_DEGREE = 54;
     public static final double TURRET_MIN_POS = -8089;
     public static final double TURRET_MAX_POS = 8158;

@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_MAX_POS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_MAX_POWER;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_MIN_POS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_OFFSET;
+import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_TS_LENGTH_ENC;
 import static org.firstinspires.ftc.teamcode.RobotConstants.turretMotorPID;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static java.lang.Math.toDegrees;
@@ -87,7 +88,8 @@ public class Turret {
 
     public void setRobotCentricAngle(double angle) {
         if (turretMotor == null) return;
-        turretPIDController.setTargetPosition(Math.clamp((int) ((toDegrees(angle) - TURRET_OFFSET)
+        turretPIDController.setTargetPosition(
+                Math.clamp((int) ((toDegrees(angle) - TURRET_OFFSET + TURRET_TS_LENGTH_ENC)
                 * TURRET_ENCODERS_PER_DEGREE), TURRET_MIN_POS, TURRET_MAX_POS));
     }
 

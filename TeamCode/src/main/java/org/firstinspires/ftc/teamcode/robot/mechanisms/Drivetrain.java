@@ -46,9 +46,19 @@ public class Drivetrain {
     public boolean useOdometry;
 
     public TelemetryUtils tm;
+    private final HardwareMap hardwareMap;
+
+    public void useKalmanFollower() {
+        follower = Constants.createKalmanFollower(hardwareMap);
+    }
+
+    public void useLimelightFollower() {
+        follower = Constants.createLimelightFollower(hardwareMap);
+    }
 
     public Drivetrain(HardwareMap hardwareMap, TelemetryUtils tm, boolean useOdom) {
         this.tm = tm;
+        this.hardwareMap = hardwareMap;
         follower = Constants.createFollower(hardwareMap);
 
         imu = hardwareMap.get(IMU.class, "imu");

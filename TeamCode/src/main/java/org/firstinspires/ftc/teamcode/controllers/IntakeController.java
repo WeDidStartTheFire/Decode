@@ -17,6 +17,7 @@ public class IntakeController {
 
     private enum State {
         IDLE,
+        INNER_INTAKE,
         INTAKE,
         OUTTAKE,
     }
@@ -32,6 +33,11 @@ public class IntakeController {
             case IDLE:
                 isBusy = false;
                 robot.intake.power(0);
+                break;
+            case INNER_INTAKE:
+                isBusy = false;
+                robot.intake.powerInside(-1);
+                robot.intake.powerOutside(0);
                 break;
             case INTAKE:
                 if (robot.indexer.isActiveSlotEmpty()) {
@@ -65,6 +71,11 @@ public class IntakeController {
     public void intake() {
         isBusy = true;
         setState(State.INTAKE);
+    }
+
+    public void innerIntake() {
+        setState(State.INNER_INTAKE);
+        isBusy = false;
     }
 
     public void stop() {

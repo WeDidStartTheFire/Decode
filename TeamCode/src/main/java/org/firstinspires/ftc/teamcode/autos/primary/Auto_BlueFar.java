@@ -112,6 +112,7 @@ public class Auto_BlueFar extends OpMode {
                 robot.indexer.setPos(0);
                 robot.drivetrain.follower.followPath(startToShoot, true);
                 launchController.manualSpin();
+                intakeController.innerIntake();
                 setState(State.LAUNCH_ARTIFACTS);
                 break;
             case LAUNCH_ARTIFACTS:
@@ -136,6 +137,7 @@ public class Auto_BlueFar extends OpMode {
                 robot.drivetrain.follower.breakFollowing();
                 robot.drivetrain.follower.followPath(intakeToShoot, true);
                 launchController.manualSpin();
+                intakeController.innerIntake();
                 setState(State.LAUNCH_ARTIFACTS);
                 break;
             case SHOOT_TO_END:

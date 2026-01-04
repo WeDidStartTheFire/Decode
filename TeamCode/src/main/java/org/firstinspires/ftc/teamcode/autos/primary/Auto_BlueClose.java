@@ -120,6 +120,7 @@ public class Auto_BlueClose extends OpMode {
                 robot.indexer.setPos(0);
                 robot.drivetrain.follower.followPath(startToMotif, true);
                 launchController.manualSpin();
+                intakeController.innerIntake();
                 setState(State.MOTIF_TO_SHOOT);
                 break;
             case MOTIF_TO_SHOOT:
@@ -151,6 +152,7 @@ public class Auto_BlueClose extends OpMode {
                 robot.drivetrain.follower.breakFollowing();
                 robot.drivetrain.follower.followPath(intakeToShoot, true);
                 launchController.manualSpin();
+                intakeController.innerIntake();
                 setState(State.LAUNCH_ARTIFACTS);
                 break;
             case SHOOT_TO_END:

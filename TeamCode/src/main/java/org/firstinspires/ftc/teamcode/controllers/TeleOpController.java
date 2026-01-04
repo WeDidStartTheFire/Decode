@@ -100,6 +100,7 @@ public class TeleOpController {
 
         if (gamepad2.dpadRightWasPressed()) robot.indexer.rotateClockwise();
         else if (gamepad2.dpadLeftWasPressed()) robot.indexer.rotateCounterclockwise();
+        if (!intakeController.isBusy() && !robot.indexer.isStill()) intakeController.innerIntake();
     }
 
     public void indexerUpdate() {
@@ -109,8 +110,9 @@ public class TeleOpController {
     public void updateIntake() {
         if (gamepad1.right_trigger > 0.3) intakeController.intake();
         else if (gamepad1.right_bumper) intakeController.outtake();
-        else intakeController.stop();
+        else if (intakeController.isBusy()) intakeController.stop();
         intakeController.update();
+        if (gamepad1.right_trigger <= 0.3 && !gamepad1.right_bumper) intakeController.stop();
     }
 
     public void updateLauncherTeleOp() {
@@ -133,8 +135,10 @@ public class TeleOpController {
     public void feederLogic() {
         tm.print("Feeder Up", robot.feeder.isUp());
         tm.print("Feeder Pos", robot.feeder.getPos());
-        if (gamepad2.right_bumper && gamepad2.right_trigger >= 0.5 &&
-                robot.indexer.isStill()) launchController.manualRaise();
+        if (gamepad2.right_bumper && gamepad2.right_trigger >= 0.5 && robot.indexer.isStill()) {
+            launchController.manualRaise();
+            intakeController.innerIntake();
+        }
         else launchController.manualRetract();
     }
 }

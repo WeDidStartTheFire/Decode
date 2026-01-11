@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.controllers.LaunchController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 
-@Autonomous(name = "🟦Blue🟦 Close", group = "!!!Primary", preselectTeleOp = BLUE_TELEOP_NAME)
+@Autonomous(name = "🟦Blue🟦 Close 9", group = "!!!Primary", preselectTeleOp = BLUE_TELEOP_NAME)
 public class Auto_BlueClose_9 extends OpMode {
     private Robot robot;
     private Boolean paths1Done;

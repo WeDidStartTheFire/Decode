@@ -118,8 +118,7 @@ public class LaunchController {
                 setState(State.RETRACT_FEEDER);
                 break;
             case RETRACT_FEEDER:
-                if ((!robot.indexer.isActiveSlotEmpty() || stateTimer.getElapsedTimeSeconds() < .2) &&
-                        stateTimer.getElapsedTimeSeconds() < 2) break;
+                if (stateTimer.getElapsedTimeSeconds() < 1) break;
                 successCount++;
                 if (successCount < 4) break;
                 successCount = 0;

@@ -27,6 +27,7 @@ public class TeleOp_FieldCentric_No_Pedro extends OpMode {
         Pose pose = loadOdometryPosition();
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
+        RobotState.auto = false;
         robot = new Robot(hardwareMap, telemetry, false);
         robot.drivetrain.follower.setPose(RobotState.pose);
         robot.drivetrain.follower.startTeleopDrive();

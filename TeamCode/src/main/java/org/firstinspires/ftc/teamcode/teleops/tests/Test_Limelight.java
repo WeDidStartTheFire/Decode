@@ -31,6 +31,7 @@ public class Test_Limelight extends OpMode {
         limelight.start();
         RobotState.color = RobotConstants.Color.BLUE;
         Pose pose = loadOdometryPosition();
+        RobotState.auto = false;
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
         robot = new Robot(hardwareMap, telemetry, false);

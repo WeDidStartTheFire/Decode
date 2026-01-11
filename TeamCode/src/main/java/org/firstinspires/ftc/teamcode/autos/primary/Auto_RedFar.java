@@ -48,7 +48,7 @@ public class Auto_RedFar extends OpMode {
 
     private final Pose startPose = new Pose(80.500, 8.500, toRadians(90));
     private final Pose shootPose = new Pose(84.000, 20.000, toRadians(65.19433424518398));
-    private final Pose intakeStart = new Pose(99.000, 35.000, toRadians(0));
+    private final Pose intakeStart = new Pose(98.000, 35.000, toRadians(0));
     private final Pose intakeEnd = new Pose(130.000, 35.000, toRadians(0));
     private final Pose endPose = new Pose(119.000, 9.500, toRadians(0));
 

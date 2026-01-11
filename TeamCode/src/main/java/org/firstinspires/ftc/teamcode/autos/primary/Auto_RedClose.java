@@ -51,7 +51,7 @@ public class Auto_RedClose extends OpMode {
     private final Pose startPose = new Pose(124.4587665576, 121.478672985782, toRadians(126));
     private final Pose motifPose = new Pose(107, 104.5, toRadians(126));
     private final Pose shootPose = new Pose(85.709, 84.670, toRadians(45.574210497));
-    private final Pose intakeStart = new Pose(97, 84.670, toRadians(0));
+    private final Pose intakeStart = new Pose(96, 84.670, toRadians(0));
     private final Pose intakeEnd = new Pose(124, 84.670, toRadians(0));
     private final Pose endPose = new Pose(103.196, 60.018, toRadians(0));
 

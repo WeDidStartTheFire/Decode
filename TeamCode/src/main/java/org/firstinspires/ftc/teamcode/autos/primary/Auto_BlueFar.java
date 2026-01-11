@@ -48,7 +48,7 @@ public class Auto_BlueFar extends OpMode {
 
     private final Pose startPose = new Pose(63.500, 8.500, toRadians(90));
     private final Pose shootPose = new Pose(60.000, 20.000, toRadians(114.80566575481602));
-    private final Pose intakeStart = new Pose(45, 35.000, toRadians(180));
+    private final Pose intakeStart = new Pose(46, 35.000, toRadians(180));
     private final Pose intakeEnd = new Pose(14, 35, toRadians(180));
     private final Pose endPose = new Pose(25, 9.5, toRadians(180));
 

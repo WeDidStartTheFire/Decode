@@ -14,6 +14,7 @@ public class IntakeController {
 
     private boolean isBusy;
     private final Robot robot;
+    private final Timer artifactDetectedTimer = new Timer();
 
     private enum State {
         IDLE,
@@ -41,16 +42,19 @@ public class IntakeController {
                 break;
             case INTAKE:
                 if (robot.indexer.isActiveSlotEmpty()) {
+                    artifactDetectedTimer.resetTimer();
                     if (robot.indexer.isStill()) robot.intake.power(-1);
                     else {
                         robot.intake.powerInside(1);
                         robot.intake.powerOutside(-0.75);
                     }
                 } else {
-                    robot.intake.powerInside(1);
                     robot.intake.powerOutside(0.5);
-                    if (robot.indexer.rotateToArtifact(EMPTY)) break;
-                    if (!robot.indexer.rotateToArtifact(UNKNOWN)) setState(State.IDLE);
+                    robot.intake.powerInside(-1);
+                    if (artifactDetectedTimer.getElapsedTimeSeconds() > .35) {
+                        if (robot.indexer.rotateToArtifact(EMPTY)) break;
+                        if (!robot.indexer.rotateToArtifact(UNKNOWN)) setState(State.IDLE);
+                    }
                 }
                 break;
             case OUTTAKE:

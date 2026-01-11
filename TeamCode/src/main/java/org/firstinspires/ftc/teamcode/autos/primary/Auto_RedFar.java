@@ -95,6 +95,7 @@ public class Auto_RedFar extends OpMode {
 
     @Override
     public void start() {
+        robot.feeder.retract();
         setState(State.START_TO_SHOOT);
     }
 

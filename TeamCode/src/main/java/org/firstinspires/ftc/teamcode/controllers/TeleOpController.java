@@ -44,6 +44,7 @@ public class TeleOpController {
     }
 
     public void start() {
+        robot.feeder.retract();
         robot.indexer.setPos(0);
     }
 
@@ -52,6 +53,7 @@ public class TeleOpController {
         follower.update();
         if (follower.getPose() != null) pose = follower.getPose();
         vel = follower.getVelocity();
+        robot.turret.update();
     }
 
     public void stop() {

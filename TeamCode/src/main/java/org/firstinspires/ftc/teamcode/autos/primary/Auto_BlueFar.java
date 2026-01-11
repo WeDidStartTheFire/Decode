@@ -94,6 +94,7 @@ public class Auto_BlueFar extends OpMode {
 
     @Override
     public void start() {
+        robot.feeder.retract();
         setState(State.START_TO_SHOOT);
     }
 

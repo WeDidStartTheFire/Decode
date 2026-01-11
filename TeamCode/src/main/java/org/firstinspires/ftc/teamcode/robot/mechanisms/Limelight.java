@@ -15,7 +15,7 @@ import java.util.List;
 
 public class Limelight {
 
-    private @Nullable Limelight3A limelight;
+    public @Nullable Limelight3A limelight;
 
     public Limelight(HardwareMap hardwareMap, TelemetryUtils tm) {
         try {

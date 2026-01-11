@@ -90,6 +90,7 @@ public class LaunchController {
                 anyExpected = true;
                 if (robot.indexer.rotateToAny()) break;
                 launchQueue.clear();
+                robot.launcher.stop();
                 isBusy = false;
                 setState(State.IDLE);
                 break;

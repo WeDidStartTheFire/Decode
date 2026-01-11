@@ -28,11 +28,17 @@ public class Test_ColorSensor extends OpMode {
         Pose pose = loadOdometryPosition();
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
+        RobotState.auto = false;
         robot = new Robot(hardwareMap, telemetry, false);
         robot.drivetrain.follower.setPose(RobotState.pose);
         robot.drivetrain.follower.startTeleopDrive();
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
+    }
+
+    @Override
+    public void start() {
+        teleop.start();
     }
 
     @Override

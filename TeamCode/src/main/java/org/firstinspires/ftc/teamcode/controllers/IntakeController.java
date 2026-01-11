@@ -43,7 +43,10 @@ public class IntakeController {
             case INTAKE:
                 if (robot.indexer.isActiveSlotEmpty()) {
                     artifactDetectedTimer.resetTimer();
-                    if (robot.indexer.isStill()) robot.intake.power(-1);
+                    if (robot.indexer.isStill()) {
+                        robot.intake.powerInside(-1);
+                        robot.intake.powerOutside(-0.7);
+                    }
                     else {
                         robot.intake.powerInside(1);
                         robot.intake.powerOutside(-0.75);
@@ -51,7 +54,7 @@ public class IntakeController {
                 } else {
                     robot.intake.powerOutside(0.5);
                     robot.intake.powerInside(-1);
-                    if (artifactDetectedTimer.getElapsedTimeSeconds() > .35) {
+                    if (artifactDetectedTimer.getElapsedTimeSeconds() > .3) {
                         if (robot.indexer.rotateToArtifact(EMPTY)) break;
                         if (!robot.indexer.rotateToArtifact(UNKNOWN)) setState(State.IDLE);
                     }

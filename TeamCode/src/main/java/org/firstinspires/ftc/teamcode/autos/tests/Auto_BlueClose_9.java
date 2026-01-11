@@ -1,7 +1,8 @@
-package org.firstinspires.ftc.teamcode.autos.primary;
+package org.firstinspires.ftc.teamcode.autos.tests;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotConstants.slowIntakePathConstraints;
+import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
@@ -23,11 +24,11 @@ import org.firstinspires.ftc.teamcode.controllers.LaunchController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 
-@Autonomous(name = "🟦Blue🟦 Far", group = "!!!Primary", preselectTeleOp = BLUE_TELEOP_NAME)
-public class Auto_BlueFar extends OpMode {
+@Autonomous(name = "🟦Blue🟦 Close 9", group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
+public class Auto_BlueClose_9 extends OpMode {
     private Robot robot;
 
-    private PathChain startToShoot, shootToIntake, intake, intakeToShoot, shootToEnd;
+    private PathChain startToMotif, motifToShoot, shootToIntake, intake, intakeToShoot, shootToEnd;
     private TelemetryUtils tm;
 
     private final Timer stateTimer = new Timer();
@@ -38,7 +39,8 @@ public class Auto_BlueFar extends OpMode {
 
     private enum State {
         FINISHED,
-        START_TO_SHOOT,
+        START_TO_MOTIF,
+        MOTIF_TO_SHOOT,
         LAUNCH_ARTIFACTS,
         SHOOT_TO_INTAKE,
         INTAKE,
@@ -46,20 +48,25 @@ public class Auto_BlueFar extends OpMode {
         SHOOT_TO_END,
     }
 
-    private final Pose startPose = new Pose(63.500, 8.500, toRadians(90));
-    private final Pose shootPose = new Pose(60.000, 20.000, toRadians(114.80566575481602));
-    private final Pose intakeStart = new Pose(45, 35.000, toRadians(180));
-    private final Pose intakeEnd = new Pose(14, 35, toRadians(180));
-    private final Pose endPose = new Pose(25, 9.5, toRadians(180));
+    private final Pose startPose = new Pose(19.541233442405954, 121.478672985782, toRadians(54));
+    private final Pose motifPose = new Pose(37, 104.5, toRadians(54));
+    private final Pose shootPose = new Pose(58.291, 84.670, toRadians(134.4257895029621));
+    private final Pose intakeStart = new Pose(47, 84.670, toRadians(180));
+    private final Pose intakeEnd = new Pose(20, 84.630, toRadians(180));
+    private final Pose endPose = new Pose(40.804, 60.018, toRadians(180));
 
     private void buildPaths() {
-        startToShoot = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(startPose, shootPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
+        startToMotif = robot.drivetrain.follower.pathBuilder()
+                .addPath(new BezierLine(startPose, motifPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), motifPose.getHeading())
+                .build();
+        motifToShoot = robot.drivetrain.follower.pathBuilder()
+                .addPath(new BezierLine(motifPose, shootPose))
+                .setLinearHeadingInterpolation(motifPose.getHeading(), shootPose.getHeading())
                 .build();
         shootToIntake = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, new Pose(53.340, 34.935), intakeStart))
-                .setTangentHeadingInterpolation()
+                .addPath(new BezierCurve(shootPose, intakeStart))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), intakeStart.getHeading())
                 .build();
         intake = robot.drivetrain.follower.pathBuilder()
                 .addPath(new BezierLine(intakeStart, intakeEnd))
@@ -88,17 +95,14 @@ public class Auto_BlueFar extends OpMode {
         buildPaths();
         launchController = new LaunchController(robot);
         intakeController = new IntakeController(robot);
-        tm.print("🟦Blue🟦 Far Refactor Auto initialized");
+        tm.print("🟦Blue🟦 Close Auto initialized");
+        tm.print("Motif", motif);
         tm.update();
     }
 
     @Override
     public void start() {
-        setState(State.START_TO_SHOOT);
-    }
-
-    private void setStateNoWait(State state) {
-        this.state = state;
+        setState(State.START_TO_MOTIF);
     }
 
     private void setState(State state) {
@@ -106,15 +110,26 @@ public class Auto_BlueFar extends OpMode {
         this.stateTimer.resetTimer();
     }
 
+    private void setStateNoWait(State state) {
+        this.state = state;
+    }
+
     public void pathUpdate() {
         switch (state) {
-            case START_TO_SHOOT:
+            case START_TO_MOTIF:
                 robot.indexer.setPos(0);
-                robot.drivetrain.follower.followPath(startToShoot, true);
+                robot.drivetrain.follower.followPath(startToMotif, true);
                 launchController.manualSpin();
                 intakeController.innerIntake();
-                setState(State.LAUNCH_ARTIFACTS);
+                setState(State.MOTIF_TO_SHOOT);
                 break;
+            case MOTIF_TO_SHOOT:
+                RobotConstants.Motif m = robot.limelight.getMotif();
+                if (m != RobotConstants.Motif.UNKNOWN) motif = m;
+                if (robot.drivetrain.follower.isBusy() || motif == RobotConstants.Motif.UNKNOWN)
+                    break;
+                robot.drivetrain.follower.followPath(motifToShoot, true);
+                setState(State.LAUNCH_ARTIFACTS);
             case LAUNCH_ARTIFACTS:
                 if (robot.drivetrain.follower.isBusy()) break;
                 launchController.launchArtifacts(3);
@@ -176,6 +191,7 @@ public class Auto_BlueFar extends OpMode {
     public void stop() {
         robot.drivetrain.follower.update();
         robot.drivetrain.follower.breakFollowing();
-        saveOdometryPosition(robot.drivetrain.follower.getPose());
+        pose = robot.drivetrain.follower.getPose();
+        saveOdometryPosition(pose);
     }
 }

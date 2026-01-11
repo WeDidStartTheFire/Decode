@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.autos.primary;
+package org.firstinspires.ftc.teamcode.autos.tests;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotConstants.slowIntakePathConstraints;
@@ -23,8 +23,8 @@ import org.firstinspires.ftc.teamcode.controllers.LaunchController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 
-@Autonomous(name = "🟦Blue🟦 Far", group = "!!!Primary", preselectTeleOp = BLUE_TELEOP_NAME)
-public class Auto_BlueFar extends OpMode {
+@Autonomous(name = "🟥Red🟥 Far 9", group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
+public class Auto_RedFar_9 extends OpMode {
     private Robot robot;
 
     private PathChain startToShoot, shootToIntake, intake, intakeToShoot, shootToEnd;
@@ -46,11 +46,12 @@ public class Auto_BlueFar extends OpMode {
         SHOOT_TO_END,
     }
 
-    private final Pose startPose = new Pose(63.500, 8.500, toRadians(90));
-    private final Pose shootPose = new Pose(60.000, 20.000, toRadians(114.80566575481602));
-    private final Pose intakeStart = new Pose(45, 35.000, toRadians(180));
-    private final Pose intakeEnd = new Pose(14, 35, toRadians(180));
-    private final Pose endPose = new Pose(25, 9.5, toRadians(180));
+    private final Pose startPose = new Pose(80.500, 8.500, toRadians(90));
+    private final Pose shootPose = new Pose(84.000, 20.000, toRadians(65.19433424518398));
+    private final Pose intakeStart = new Pose(99.000, 35.000, toRadians(0));
+    private final Pose intakeEnd = new Pose(130.000, 35.000, toRadians(0));
+    private final Pose endPose = new Pose(119.000, 9.500, toRadians(0));
+
 
     private void buildPaths() {
         startToShoot = robot.drivetrain.follower.pathBuilder()
@@ -79,7 +80,7 @@ public class Auto_BlueFar extends OpMode {
     @Override
     public void init() {
         RobotState.auto = true;
-        RobotState.color = RobotConstants.Color.BLUE;
+        RobotState.color = RobotConstants.Color.RED;
         robot = new Robot(hardwareMap, telemetry, true);
         robot.drivetrain.follower.setStartingPose(startPose);
         robot.indexer.markAllUnknown();
@@ -88,7 +89,7 @@ public class Auto_BlueFar extends OpMode {
         buildPaths();
         launchController = new LaunchController(robot);
         intakeController = new IntakeController(robot);
-        tm.print("🟦Blue🟦 Far Refactor Auto initialized");
+        tm.print("🟥Red🟥 Far Refactor Auto initialized");
         tm.update();
     }
 

@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.controllers.LaunchController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 
-@Autonomous(name = "🟥Red🟥 Far", group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
+@Autonomous(name = "🟥Red🟥 Far", group = "!!!Primary", preselectTeleOp = BLUE_TELEOP_NAME)
 public class Auto_RedFar extends OpMode {
     private Robot robot;
 

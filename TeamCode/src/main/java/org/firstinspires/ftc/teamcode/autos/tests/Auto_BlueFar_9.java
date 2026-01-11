@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.autos.primary;
+package org.firstinspires.ftc.teamcode.autos.tests;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotConstants.slowIntakePathConstraints;
@@ -23,8 +23,8 @@ import org.firstinspires.ftc.teamcode.controllers.LaunchController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 
-@Autonomous(name = "🟦Blue🟦 Far", group = "!!!Primary", preselectTeleOp = BLUE_TELEOP_NAME)
-public class Auto_BlueFar extends OpMode {
+@Autonomous(name = "🟦Blue🟦 Far 9", group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
+public class Auto_BlueFar_9 extends OpMode {
     private Robot robot;
 
     private PathChain startToShoot, shootToIntake, intake, intakeToShoot, shootToEnd;

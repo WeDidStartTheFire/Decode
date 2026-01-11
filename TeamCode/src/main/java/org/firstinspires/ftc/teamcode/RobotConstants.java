@@ -53,6 +53,7 @@ public class RobotConstants {
             0.5,
             0.4
     );
+    public static double INTAKE_MOVE_MAX_SPEED = 0.4;
 
     public static com.pedropathing.control.PIDFCoefficients turretMotorPID =
             new com.pedropathing.control.PIDFCoefficients(0.0006, 0, 0.00004, 0);

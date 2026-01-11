@@ -20,7 +20,7 @@ public class ColorRange {
     public static final ColorRange ARTIFACT_PURPLE = new ColorRange(
             ColorSpace.RGB,
             new Scalar(.74, .7, 1.05), // min
-            new Scalar(.85, 1.15, 3.0) // max
+            new Scalar(.85, 1.1, 3.0) // max
     );
 
     public ColorRange(ColorSpace colorSpace, Scalar min, Scalar max) {

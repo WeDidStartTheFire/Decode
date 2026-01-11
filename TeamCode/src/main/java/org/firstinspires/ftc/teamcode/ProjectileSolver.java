@@ -35,11 +35,8 @@ public class ProjectileSolver {
     }
 
     public static @Nullable LaunchSolution getLaunchSolution(Pose pose) {
-        LaunchSolution sol = ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT, vel,
+        return ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT, vel,
                 RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
-        if (sol != null) sol.w = 202.42277;
-        else sol = new LaunchSolution(202.42277, 0, 0);
-        return sol;
     }
 
     public static @Nullable LaunchSolution getLaunchSolution() {
@@ -47,11 +44,8 @@ public class ProjectileSolver {
     }
 
     public static @Nullable LaunchSolution getLaunchSolutionStationary() {
-        LaunchSolution sol = ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT, new Vector(),
+        return ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT, new Vector(),
                 RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
-        if (sol != null) sol.w = 202.42277;
-        else sol = new LaunchSolution(202.42277, 0, 0);
-        return sol;
     }
 
     public static @Nullable LaunchSolution solveLaunch(

@@ -18,6 +18,6 @@ public class RobotState {
     public static Pose pose;
     public static Pose savedPose;
     public static Vector vel;
-    public static Motif motif;
+    public static Motif motif = Motif.UNKNOWN;
     public static Artifact[] artifacts = {UNKNOWN, UNKNOWN, UNKNOWN};
 }

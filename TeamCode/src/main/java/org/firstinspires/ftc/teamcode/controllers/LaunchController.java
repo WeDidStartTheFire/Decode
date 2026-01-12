@@ -188,6 +188,7 @@ public class LaunchController {
     }
 
     public void intake(double percent) {
+        stop();
         setState(State.INTAKE);
         intaking = true;
         intakePercent = percent;

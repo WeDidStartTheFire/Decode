@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
 import static org.firstinspires.ftc.teamcode.ProjectileSolver.getLaunchSolution;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.GREEN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.YELLOW;
@@ -27,9 +28,11 @@ public class LaunchController {
     private int successCount = 0;
     private final ArrayList<RobotConstants.Artifact> launchQueue = new ArrayList<>();
     private boolean anyExpected = false;
+    private double intakePercent;
 
     enum State {
         IDLE,
+        INTAKE,
         ROTATE_INDEXER,
         RETRACT_FEEDER,
         PUSH_ARTIFACT
@@ -63,6 +66,12 @@ public class LaunchController {
                 if (launchQueue.isEmpty()) break;
                 isBusy = true;
                 setState(State.ROTATE_INDEXER);
+                break;
+            case INTAKE:
+                setState(State.IDLE);
+                robot.launcher.intakeMotors(intakePercent);
+                if (robot.indexer.rotateToArtifact(EMPTY)) break;
+                robot.indexer.rotateToArtifact(UNKNOWN);
                 break;
             case ROTATE_INDEXER:
                 robot.feeder.retract();
@@ -173,7 +182,8 @@ public class LaunchController {
     }
 
     public void intake(double percent) {
-        robot.launcher.intakeMotors(percent);
+        setState(State.INTAKE);
+        intakePercent = percent;
     }
 
     public boolean isBusy() {

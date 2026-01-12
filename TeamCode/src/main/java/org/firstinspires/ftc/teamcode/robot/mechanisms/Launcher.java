@@ -84,7 +84,7 @@ public class Launcher {
     }
 
     private double ballVelToMotorVel(double ballVel) {
-        return 6.4 * ballVel;
+        return 6.1 * ballVel;
     }
 
     public boolean isConnected() {

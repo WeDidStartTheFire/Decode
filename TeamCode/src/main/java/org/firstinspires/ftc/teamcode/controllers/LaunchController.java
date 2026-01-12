@@ -29,6 +29,7 @@ public class LaunchController {
     private final ArrayList<RobotConstants.Artifact> launchQueue = new ArrayList<>();
     private boolean anyExpected = false;
     private double intakePercent;
+    private boolean intaking;
 
     enum State {
         IDLE,
@@ -68,7 +69,12 @@ public class LaunchController {
                 setState(State.ROTATE_INDEXER);
                 break;
             case INTAKE:
-                setState(State.IDLE);
+                if (!intaking) {
+                    robot.launcher.stop();
+                    setState(State.IDLE);
+                    break;
+                }
+                intaking = false;
                 robot.launcher.intakeMotors(intakePercent);
                 if (robot.indexer.rotateToArtifact(EMPTY)) break;
                 robot.indexer.rotateToArtifact(UNKNOWN);
@@ -183,6 +189,7 @@ public class LaunchController {
 
     public void intake(double percent) {
         setState(State.INTAKE);
+        intaking = true;
         intakePercent = percent;
     }
 

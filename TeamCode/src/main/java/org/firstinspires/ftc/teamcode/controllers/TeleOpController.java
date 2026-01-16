@@ -57,6 +57,7 @@ public class TeleOpController {
         vel = follower.getVelocity();
         robot.turret.update();
         if (motif == RobotConstants.Motif.UNKNOWN) motif = robot.limelight.getMotif();
+        robot.led.update();
     }
 
     public void stop() {

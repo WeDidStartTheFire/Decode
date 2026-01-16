@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.GREEN;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.PURPLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_SPEED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
@@ -26,11 +28,13 @@ public class Indexer {
     private double minIndexerPos = -.25, maxIndexerPos = 1.25, goalIndexerPos = 0;
     private Timer indexerTimer = null;
     private final ColorSensor colorSensor;
+    private final LED led;
     private final TelemetryUtils tm;
 
-    public Indexer(HardwareMap hardwareMap, TelemetryUtils tm, ColorSensor colorSensor) {
+    public Indexer(HardwareMap hardwareMap, TelemetryUtils tm, ColorSensor colorSensor, LED led) {
         this.tm = tm;
         this.colorSensor = colorSensor;
+        this.led = led;
         try {
             indexerServo = hardwareMap.get(Servo.class, "indexerServo"); // Expansion Hub 2
         } catch (IllegalArgumentException e) {
@@ -46,6 +50,7 @@ public class Indexer {
         tm.print("Artifact 1", artifacts[0]);
         tm.print("Artifact 2", artifacts[1]);
         tm.print("Artifact 3", artifacts[2]);
+        updateLED();
         if (!isStill()) return;
         if (artifact == UNKNOWN) return;
         int idx = idxFromPos(getGoalPos());
@@ -122,6 +127,27 @@ public class Indexer {
         if (indexerServo == null) return -1;
         double[] bounds = calculateCurrentBounds();
         return (bounds[0] + bounds[1]) / 2.0;
+    }
+
+    public int getTotalArtifacts() {
+        return Arrays.stream(artifacts).filter(a -> a == GREEN || a == PURPLE).toArray().length;
+    }
+
+    private void updateLED() {
+        switch (getCurrentArtifact()) {
+            case GREEN:
+                led.setColor(RobotConstants.LEDColors.SAGE, LED.Priority.MEDIUM);
+                break;
+            case PURPLE:
+                led.setColor(RobotConstants.LEDColors.VIOLET, LED.Priority.MEDIUM);
+                break;
+            case EMPTY:
+                led.setColor(RobotConstants.LEDColors.WHITE, LED.Priority.LOW);
+                break;
+            case UNKNOWN:
+                led.setColor(RobotConstants.LEDColors.OFF, LED.Priority.LOW);
+                break;
+        }
     }
 
     public void rotateClockwise() {

@@ -2,10 +2,15 @@ package org.firstinspires.ftc.teamcode.controllers;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.AZURE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.BLUE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.GREEN;
 
 import com.pedropathing.util.Timer;
 
+import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 
 public class IntakeController {
 
@@ -30,6 +35,13 @@ public class IntakeController {
     }
 
     public void update() {
+        if (robot.indexer.getTotalArtifacts() == 3)
+            robot.led.setColor(GREEN, isBusy ? LED.Priority.HIGH : LED.Priority.LOW);
+        else if (robot.indexer.getTotalArtifacts() == 2)
+            robot.led.setColor(AZURE, isBusy ? LED.Priority.MEDIUM : LED.Priority.LOW);
+        else if (robot.indexer.getTotalArtifacts() == 1)
+            robot.led.setColor(BLUE, LED.Priority.LOW);
+        else robot.led.setColor(RobotConstants.LEDColors.INDIGO, LED.Priority.LOW);
         switch (state) {
             case IDLE:
                 isBusy = false;

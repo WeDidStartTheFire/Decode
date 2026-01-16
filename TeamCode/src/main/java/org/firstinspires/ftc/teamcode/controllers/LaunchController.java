@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.controllers;
 import static org.firstinspires.ftc.teamcode.ProjectileSolver.getLaunchSolution;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
-import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.GREEN;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.ORANGE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.YELLOW;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
@@ -14,6 +14,7 @@ import com.pedropathing.util.Timer;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 
 import java.util.ArrayList;
 
@@ -55,10 +56,11 @@ public class LaunchController {
     }
 
     public void update() {
-        if (getLaunchSolution() == null) robot.led.setColor(RobotConstants.LEDColors.BLUE);
-        else if (robot.launcher.toSpeed()) robot.led.setColor(GREEN);
-        else if (robot.launcher.isSpinning()) robot.led.setColor(YELLOW);
-        else robot.led.setColor(RobotConstants.LEDColors.RED);
+        if (getLaunchSolution() == null)
+            robot.led.setColor(RobotConstants.LEDColors.RED, isBusy || robot.launcher.isSpinning()
+                    ? LED.Priority.HIGH : LED.Priority.MEDIUM);
+        else if (robot.launcher.toSpeed()) robot.led.setColor(YELLOW, LED.Priority.CRITICAL);
+        else if (robot.launcher.almostToSpeed()) robot.led.setColor(ORANGE, LED.Priority.HIGH);
         RobotConstants.Artifact desired, current;
         double pos;
         switch (state) {

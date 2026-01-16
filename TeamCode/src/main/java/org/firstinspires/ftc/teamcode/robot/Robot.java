@@ -31,10 +31,10 @@ public class Robot {
         intake = new Intake(hardwareMap, tm);
         feeder = new Feeder(hardwareMap, tm);
         colorSensor = new ColorSensor(hardwareMap, tm);
-        indexer = new Indexer(hardwareMap, tm, colorSensor);
+        led = new LED(hardwareMap, tm);
+        indexer = new Indexer(hardwareMap, tm, colorSensor, led);
         limelight = new Limelight(hardwareMap, tm);
         launcher = new Launcher(hardwareMap, tm);
-        led = new LED(hardwareMap, tm);
         turret = new Turret(hardwareMap, tm);
     }
 }

@@ -55,10 +55,7 @@ public class IntakeController {
             case INTAKE:
                 if (robot.indexer.isActiveSlotEmpty()) {
                     artifactDetectedTimer.resetTimer();
-                    if (robot.indexer.isStill()) {
-                        robot.intake.powerInside(-1);
-                        robot.intake.powerOutside(-0.7);
-                    }
+                    if (robot.indexer.isStill()) robot.intake.power(-1);
                     else {
                         robot.intake.powerInside(1);
                         robot.intake.powerOutside(-0.75);

@@ -187,6 +187,7 @@ public class Auto_BlueClose_Timing extends OpMode {
         tm.print("Path State", state);
         tm.print("Launcher State", launchController.getState());
         tm.print("Intake State", intakeController.getState());
+        tm.print("Motif", motif);
         tm.print("Indexer Pos", robot.indexer.getGoalPos());
         if (pose != null) tm.print(pose);
         tm.print("To Speed", robot.launcher.toSpeed());

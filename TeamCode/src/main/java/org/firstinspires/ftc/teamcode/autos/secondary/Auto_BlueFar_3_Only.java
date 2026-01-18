@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.autos.secondary;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
+import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
@@ -127,6 +128,7 @@ public class Auto_BlueFar_3_Only extends OpMode {
         tm.print("Path State", state);
         tm.print("Launcher State", launchController.getState());
         tm.print("Intake State", intakeController.getState());
+        tm.print("Motif", motif);
         tm.print("Indexer Pos", robot.indexer.getGoalPos());
         if (pose != null) tm.print(pose);
         tm.print("To Speed", robot.launcher.toSpeed());

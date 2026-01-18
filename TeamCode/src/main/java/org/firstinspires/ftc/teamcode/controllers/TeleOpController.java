@@ -53,6 +53,7 @@ public class TeleOpController {
     }
 
     public void update() {
+        tm.print("Motif", motif);
         tm.update();
         follower.update();
         if (follower.getPose() != null) pose = follower.getPose();

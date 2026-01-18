@@ -24,6 +24,8 @@ import org.firstinspires.ftc.teamcode.controllers.IntakeController;
 import org.firstinspires.ftc.teamcode.controllers.LaunchController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
+import java.util.ArrayList;
+
 
 @Autonomous(name = "🟥Red🟥 Far 9", group = "Test", preselectTeleOp = RED_TELEOP_NAME)
 public class Auto_RedFar_9 extends OpMode {
@@ -33,6 +35,7 @@ public class Auto_RedFar_9 extends OpMode {
     private TelemetryUtils tm;
 
     private final Timer stateTimer = new Timer();
+    public ArrayList<Double> times = new ArrayList<>();
     private State state;
     private LaunchController launchController;
     private IntakeController intakeController;
@@ -108,6 +111,7 @@ public class Auto_RedFar_9 extends OpMode {
 
     private void setState(State state) {
         setStateNoWait(state);
+        times.add(stateTimer.getElapsedTimeSeconds());
         this.stateTimer.resetTimer();
     }
 
@@ -182,6 +186,10 @@ public class Auto_RedFar_9 extends OpMode {
     public void stop() {
         robot.drivetrain.follower.update();
         robot.drivetrain.follower.breakFollowing();
-        saveOdometryPosition(robot.drivetrain.follower.getPose());
+        pose = robot.drivetrain.follower.getPose();
+        if (pose != null) saveOdometryPosition(pose);
+        for (int i = 0; i < times.size(); i++)
+            tm.print("Time" + i, times.get(i));
+        tm.update();
     }
 }

@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.autos.tests;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INTAKE_MOVE_MAX_SPEED;
+import static org.firstinspires.ftc.teamcode.RobotConstants.RED_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotConstants.slowIntakePathConstraints;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
@@ -25,7 +25,7 @@ import org.firstinspires.ftc.teamcode.controllers.LaunchController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 
-@Autonomous(name = "🟥Red🟥 Close 9", group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
+@Autonomous(name = "🟥Red🟥 Close 9", group = "Test", preselectTeleOp = RED_TELEOP_NAME)
 public class Auto_RedClose_9 extends OpMode {
     private Robot robot;
 
@@ -91,7 +91,6 @@ public class Auto_RedClose_9 extends OpMode {
         robot = new Robot(hardwareMap, telemetry, true);
         robot.drivetrain.follower.setStartingPose(startPose);
         robot.indexer.markAllUnknown();
-        RobotState.motif = robot.limelight.getMotif();
         tm = robot.drivetrain.tm;
         buildPaths();
         launchController = new LaunchController(robot);
@@ -104,6 +103,8 @@ public class Auto_RedClose_9 extends OpMode {
     @Override
     public void start() {
         robot.feeder.retract();
+        robot.limelight.start();
+        RobotState.motif = robot.limelight.getMotif();
         setState(State.START_TO_MOTIF);
     }
 
@@ -163,7 +164,7 @@ public class Auto_RedClose_9 extends OpMode {
                 setState(State.FINISHED);
                 break;
             case FINISHED:
-                if (!robot.drivetrain.follower.isBusy()) saveOdometryPosition(pose);
+                if (!robot.drivetrain.follower.isBusy() && pose != null) saveOdometryPosition(pose);
                 break;
         }
     }
@@ -183,7 +184,7 @@ public class Auto_RedClose_9 extends OpMode {
         tm.print("Launcher State", launchController.getState());
         tm.print("Intake State", intakeController.getState());
         tm.print("Indexer Pos", robot.indexer.getGoalPos());
-        tm.print(pose);
+        if (pose != null) tm.print(pose);
         tm.print("To Speed", robot.launcher.toSpeed());
         tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose));
         tm.print("Launcher Vel", robot.launcher.getVel());

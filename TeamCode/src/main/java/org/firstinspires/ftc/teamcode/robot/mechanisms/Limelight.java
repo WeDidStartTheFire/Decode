@@ -21,10 +21,17 @@ public class Limelight {
         try {
             limelight = hardwareMap.get(Limelight3A.class, "limelight");
             limelight.pipelineSwitch(0);
-            limelight.start();
         } catch (IllegalArgumentException e) {
             tm.except("limelight not connected");
         }
+    }
+
+    public void start() {
+        if (limelight != null) limelight.start();
+    }
+
+    public void stop() {
+        if (limelight != null) limelight.stop();
     }
 
     /**

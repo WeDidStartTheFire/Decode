@@ -48,6 +48,8 @@ public class TeleOpController {
     public void start() {
         robot.feeder.retract();
         robot.indexer.setPos(0);
+        robot.limelight.start();
+        if (motif == RobotConstants.Motif.UNKNOWN) motif = robot.limelight.getMotif();
     }
 
     public void update() {
@@ -57,6 +59,7 @@ public class TeleOpController {
         vel = follower.getVelocity();
         robot.turret.update();
         if (motif == RobotConstants.Motif.UNKNOWN) motif = robot.limelight.getMotif();
+        if (motif != RobotConstants.Motif.UNKNOWN) robot.limelight.stop();
         robot.led.update();
     }
 
@@ -94,7 +97,7 @@ public class TeleOpController {
         tm.print("Robot Centric", robotCentric);
         tm.print("Field Centric", fieldCentric);
         tm.drawRobot(follower);
-        tm.print(pose);
+        if (pose != null) tm.print(pose);
         if (usePedro) driveController.updateTeleOp(gamepad1, fieldCentric);
         else driveController.updateTeleOpNoPedro(gamepad1, fieldCentric);
     }

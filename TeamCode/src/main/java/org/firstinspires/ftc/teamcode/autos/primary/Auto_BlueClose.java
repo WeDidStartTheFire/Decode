@@ -91,7 +91,6 @@ public class Auto_BlueClose extends OpMode {
         robot = new Robot(hardwareMap, telemetry, true);
         robot.drivetrain.follower.setStartingPose(startPose);
         robot.indexer.markAllUnknown();
-        RobotState.motif = robot.limelight.getMotif();
         tm = robot.drivetrain.tm;
         buildPaths();
         launchController = new LaunchController(robot);
@@ -104,6 +103,8 @@ public class Auto_BlueClose extends OpMode {
     @Override
     public void start() {
         robot.feeder.retract();
+        robot.limelight.start();
+        RobotState.motif = robot.limelight.getMotif();
         setState(State.START_TO_MOTIF);
     }
 
@@ -134,6 +135,7 @@ public class Auto_BlueClose extends OpMode {
                 setState(State.LAUNCH_ARTIFACTS);
             case LAUNCH_ARTIFACTS:
                 if (robot.drivetrain.follower.isBusy()) break;
+                intakeController.innerIntake();
                 launchController.launchArtifacts(3);
                 setState(launchRound == 0 ? State.SHOOT_TO_INTAKE : State.SHOOT_TO_END);
                 launchRound++;
@@ -154,7 +156,6 @@ public class Auto_BlueClose extends OpMode {
                 robot.drivetrain.follower.breakFollowing();
                 robot.drivetrain.follower.followPath(intakeToShoot, true);
                 launchController.manualSpin();
-                intakeController.innerIntake();
                 setState(State.LAUNCH_ARTIFACTS);
                 break;
             case SHOOT_TO_END:
@@ -163,7 +164,7 @@ public class Auto_BlueClose extends OpMode {
                 setState(State.FINISHED);
                 break;
             case FINISHED:
-                if (!robot.drivetrain.follower.isBusy()) saveOdometryPosition(pose);
+                if (!robot.drivetrain.follower.isBusy() && pose != null) saveOdometryPosition(pose);
                 break;
         }
     }
@@ -183,7 +184,7 @@ public class Auto_BlueClose extends OpMode {
         tm.print("Launcher State", launchController.getState());
         tm.print("Intake State", intakeController.getState());
         tm.print("Indexer Pos", robot.indexer.getGoalPos());
-        tm.print(pose);
+        if (pose != null) tm.print(pose);
         tm.print("To Speed", robot.launcher.toSpeed());
         tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose));
         tm.print("Launcher Vel", robot.launcher.getVel());

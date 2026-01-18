@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.BALL_VEL_TO_MOTOR_VEL;
 import static org.firstinspires.ftc.teamcode.RobotConstants.launcherPIDF;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 
@@ -80,7 +81,7 @@ public class Launcher {
 
     public boolean toSpeed() {
         double motorVel = getGoalVel();
-        return getVel() >= motorVel - 10;
+        return getVel() >= motorVel;
     }
 
     public void stop() {
@@ -89,7 +90,7 @@ public class Launcher {
     }
 
     private double ballVelToMotorVel(double ballVel) {
-        return 6.1 * ballVel;
+        return BALL_VEL_TO_MOTOR_VEL * ballVel;
     }
 
     public boolean isConnected() {

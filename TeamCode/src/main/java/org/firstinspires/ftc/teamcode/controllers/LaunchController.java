@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
 import static org.firstinspires.ftc.teamcode.ProjectileSolver.getLaunchSolution;
-import static org.firstinspires.ftc.teamcode.RobotConstants.ARTIFACT_LAUNCH_WAIT_TIME;
+import static org.firstinspires.ftc.teamcode.RobotConstants.ARTIFACT_LAUNCH_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.ORANGE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.YELLOW;
+import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_FEEDER_DOWN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.MIN_FEEDER_DOWN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -27,7 +29,6 @@ public class LaunchController {
     private boolean isBusy;
     private int numLaunched = 0;
     private int failedCount = 0;
-    private int successCount = 0;
     private final ArrayList<RobotConstants.Artifact> launchQueue = new ArrayList<>();
     private boolean anyExpected = false;
     private double intakePercent;
@@ -84,8 +85,8 @@ public class LaunchController {
                 break;
             case ROTATE_INDEXER:
                 robot.feeder.retract();
-                if (((robot.feeder.isUp() || stateTimer.getElapsedTimeSeconds() < .2) &&
-                        stateTimer.getElapsedTimeSeconds() < .5) || robot.feeder.getPos() > .5)
+                if (((robot.feeder.isUp() || stateTimer.getElapsedTimeSeconds() < MIN_FEEDER_DOWN_WAIT) &&
+                        stateTimer.getElapsedTimeSeconds() < MAX_FEEDER_DOWN_WAIT) || robot.feeder.getPos() > .5)
                     break;
                 anyExpected = false;
                 pos = robot.indexer.getGoalPos();
@@ -118,6 +119,7 @@ public class LaunchController {
                         stateTimer.getElapsedTimeSeconds() < MAX_LAUNCHER_SPIN_WAIT)) break;
                 if (launchQueue.isEmpty()) {
                     robot.launcher.stop();
+                    robot.feeder.retract();
                     isBusy = false;
                     setState(State.IDLE);
                 }
@@ -137,10 +139,7 @@ public class LaunchController {
                 setState(State.RETRACT_FEEDER);
                 break;
             case RETRACT_FEEDER:
-                if (stateTimer.getElapsedTimeSeconds() < ARTIFACT_LAUNCH_WAIT_TIME) break;
-                successCount++;
-                if (successCount < 4) break;
-                successCount = 0;
+                if (stateTimer.getElapsedTimeSeconds() < ARTIFACT_LAUNCH_WAIT) break;
                 numLaunched++;
                 launchQueue.remove(0);
                 robot.feeder.retract();

@@ -43,6 +43,7 @@ public class RobotConstants {
     public static final double[] speeds = {0.2, 0.6, 1};
 
     public static final double MAX_LAUNCHER_SPIN_WAIT = 3;
+    public static double ARTIFACT_LAUNCH_WAIT_TIME = 1;
 
     public static final double baseSpeedMultiplier = 0.75;
     public static final double baseTurnSpeed = 2.5;

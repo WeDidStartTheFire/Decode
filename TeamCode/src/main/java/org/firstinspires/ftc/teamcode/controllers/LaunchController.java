@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
 import static org.firstinspires.ftc.teamcode.ProjectileSolver.getLaunchSolution;
+import static org.firstinspires.ftc.teamcode.RobotConstants.ARTIFACT_LAUNCH_WAIT_TIME;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.ORANGE;
@@ -136,7 +137,7 @@ public class LaunchController {
                 setState(State.RETRACT_FEEDER);
                 break;
             case RETRACT_FEEDER:
-                if (stateTimer.getElapsedTimeSeconds() < 1) break;
+                if (stateTimer.getElapsedTimeSeconds() < ARTIFACT_LAUNCH_WAIT_TIME) break;
                 successCount++;
                 if (successCount < 4) break;
                 successCount = 0;

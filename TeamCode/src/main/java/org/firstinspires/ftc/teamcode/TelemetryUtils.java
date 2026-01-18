@@ -44,9 +44,9 @@ public class TelemetryUtils {
     }
 
     public void print(Pose pose) {
-        print("Pose: (" + round(pose.getX() * 100) / 100 + ", " +
-                round(pose.getY() * 100) / 100 + ", " +
-                round(toDegrees(pose.getHeading()) * 100) / 100 + ")");
+        print("Pose: (" + round(pose.getX() * 100) / 100.0 + ", " +
+                round(pose.getY() * 100) / 100.0 + ", " +
+                round(toDegrees(pose.getHeading()) * 100) / 100.0 + ")");
     }
 
     /**

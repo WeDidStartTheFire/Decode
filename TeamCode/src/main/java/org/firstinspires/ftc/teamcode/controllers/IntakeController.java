@@ -8,7 +8,6 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.GREEN;
 
 import com.pedropathing.util.Timer;
 
-import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 
@@ -39,9 +38,8 @@ public class IntakeController {
             robot.led.setColor(GREEN, isBusy ? LED.Priority.HIGH : LED.Priority.LOW);
         else if (robot.indexer.getTotalArtifacts() == 2)
             robot.led.setColor(AZURE, isBusy ? LED.Priority.MEDIUM : LED.Priority.LOW);
-        else if (robot.indexer.getTotalArtifacts() == 1)
+        else if (robot.indexer.getTotalArtifacts() <= 1)
             robot.led.setColor(BLUE, LED.Priority.LOW);
-        else robot.led.setColor(RobotConstants.LEDColors.INDIGO, LED.Priority.LOW);
         switch (state) {
             case IDLE:
                 isBusy = false;

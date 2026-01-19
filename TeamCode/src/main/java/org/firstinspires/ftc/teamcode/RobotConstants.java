@@ -78,6 +78,8 @@ public class RobotConstants {
             new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
     public static final Pose3D BLUE_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 5, 139, 44, 0),
             new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
+    public static final Pose RED_HUMAN_PLAYER_POSE = new Pose(0, 9);
+    public static final Pose BLUE_HUMAN_PLAYER_POSE = new Pose(144, 9);
 
     public static final Pose[] RED_ROBOT_POSITIONS = {new Pose(41, 32, toRadians(180))};
     public static final Pose[] BLUE_ROBOT_POSITIONS = {new Pose(103, 32, toRadians(180))};

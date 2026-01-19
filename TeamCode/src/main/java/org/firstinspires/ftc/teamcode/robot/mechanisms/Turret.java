@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_HUMAN_PLAYER_POSE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Color.RED;
+import static org.firstinspires.ftc.teamcode.RobotConstants.RED_HUMAN_PLAYER_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_ENCODERS_PER_DEGREE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_MAX_POS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_MAX_POWER;
@@ -8,25 +11,32 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_OFFSET;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_TS_LENGTH_ENC;
 import static org.firstinspires.ftc.teamcode.RobotConstants.turretMotorPID;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
+import static java.lang.Math.atan2;
 import static java.lang.Math.toDegrees;
 
 import androidx.annotation.Nullable;
 
 import com.pedropathing.control.PIDFController;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
+import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 
 public class Turret {
     public @Nullable DcMotorEx turretMotor;
     public @Nullable TouchSensor turretTouchSensor;
-    private boolean aiming = false;
+    private Target target = Target.NONE;
     public PIDFController turretPIDController = new PIDFController(turretMotorPID);
     private boolean wasPressed = false;
+
+    public enum Target {
+        GOAL, HUMAN_PLAYER, NONE
+    }
 
     public Turret(HardwareMap hardwareMap, TelemetryUtils tm) {
         try {
@@ -43,8 +53,8 @@ public class Turret {
         }
     }
 
-    public void setAiming(boolean aiming) {
-        this.aiming = aiming;
+    public void setTarget(Target target) {
+        this.target = target;
     }
 
     private void resetEncoder() {
@@ -74,14 +84,19 @@ public class Turret {
         turretMotor.setPower(Math.clamp(turretPIDController.run(), -TURRET_MAX_POWER, TURRET_MAX_POWER));
 
         // 2. Aiming logic after early return
-        if (!aiming) return;
-        ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution();
-        if (sol == null) return;
-        setFieldCentricAngle(sol.phi);
+        if (target == Target.GOAL) {
+            ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution();
+            if (sol == null) return;
+            setFieldCentricAngle(sol.phi);
+        } else if (target == Target.HUMAN_PLAYER && pose != null) {
+            Pose targetPose = RobotState.color == RED ? RED_HUMAN_PLAYER_POSE : BLUE_HUMAN_PLAYER_POSE;
+            Pose dPose = targetPose.minus(pose);
+            setFieldCentricAngle(atan2(dPose.getY(), dPose.getX()));
+        }
     }
 
     public void stop() {
-        setAiming(false);
+        setTarget(Target.NONE);
         if (turretMotor != null)
             turretPIDController.setTargetPosition(turretMotor.getCurrentPosition());
     }
@@ -94,6 +109,6 @@ public class Turret {
     }
 
     public void setFieldCentricAngle(double angle) {
-        setRobotCentricAngle(angle - pose.getHeading());
+        if (pose != null) setRobotCentricAngle(angle - pose.getHeading());
     }
 }

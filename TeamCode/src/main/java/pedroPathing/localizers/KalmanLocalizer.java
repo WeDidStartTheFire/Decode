@@ -3,7 +3,7 @@ package pedroPathing.localizers;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
-import static java.lang.Math.PI;
+import static java.lang.Math.abs;
 import static java.lang.Math.toRadians;
 
 import androidx.annotation.NonNull;
@@ -67,9 +67,10 @@ public class KalmanLocalizer implements Localizer {
     DMatrixRMaj R_vel = CommonOps_DDRM.identity(3);
 
     Limelight3A limelight;
+    boolean useMetatag2 = true;
     double IMUoffset;
 
-    private boolean useDriveEncoderLocalizer = false;
+    boolean useDriveEncoderLocalizer = false;
 
     static {
         H_vel.set(0, 3, 1.0);
@@ -118,10 +119,6 @@ public class KalmanLocalizer implements Localizer {
         prevNano = System.nanoTime();
     }
 
-    public void setUseDriveEncoderLocalizer(boolean useDriveEncoderLocalizer) {
-        this.useDriveEncoderLocalizer = useDriveEncoderLocalizer;
-    }
-
     public @Nullable Pose getPose() {
         return pose;
     }
@@ -152,17 +149,20 @@ public class KalmanLocalizer implements Localizer {
         prevNano = currNano;
 
         // TODO: Make sure we have the right axis for yaw
-//        double robotYaw = getIMUHeading();
-        double robotYaw = otosAngleUnit.toRadians(otosLocalizer.getIMUHeading());
+        double robotYaw = getIMUHeading();
+//        double robotYaw = otosAngleUnit.toRadians(otosLocalizer.getIMUHeading());
         double yawRate = imu.getRobotAngularVelocity(RADIANS).zRotationRate;
 
         driveEncoderLocalizer.update();
         Pose driveEncoderVel = driveEncoderLocalizer.getVelocity();
 
-        limelight.updateRobotOrientation(robotYaw + (PI/2));
+        double llYaw = new Pose(0, 0, robotYaw, PedroCoordinates.INSTANCE)
+                .getAsCoordinateSystem(FTCCoordinates.INSTANCE)
+                .getHeading();
+        limelight.updateRobotOrientation(llYaw);
         LLResult result = limelight.getLatestResult();
-        Pose3D botpose = result.getBotpose();
-        double[] stdevs = result.getStddevMt1();
+        Pose3D botpose = useMetatag2 ? result.getBotpose_MT2() : result.getBotpose();
+        double[] stdevs = useMetatag2 ? result.getStddevMt2() : result.getStddevMt1();
 
         otosLocalizer.update();
         SparkFunOTOS.Pose2D otosStdDev = otos.getPositionStdDev();
@@ -181,7 +181,7 @@ public class KalmanLocalizer implements Localizer {
         double wO = otosAngleUnit.toRadians(otosVel.getHeading());
 
         // configure F/Q if dt changed
-        if (Math.abs(lastDt - dtSeconds) > 1e-6) {
+        if (abs(lastDt - dtSeconds) > 1e-6) {
             DMatrixRMaj F = KalmanFilter.createF(dtSeconds);
             DMatrixRMaj Q = KalmanFilter.createQ(dtSeconds, KALMAN_PROCESS_VAR);
             kalmanFilter.configure(F, Q, kalmanH);
@@ -190,6 +190,10 @@ public class KalmanLocalizer implements Localizer {
 
         // Predict once for this loop
         kalmanFilter.predict();
+
+
+        // Temporarily set H to H_vel for encoder and otos velocities
+        kalmanFilter.setH(H_vel);
 
         // Prepare velocity measurement from encoders and its covariance
         if (useDriveEncoderLocalizer) {
@@ -202,9 +206,6 @@ public class KalmanLocalizer implements Localizer {
             R_vel.set(0, 0, vxVar);
             R_vel.set(1, 1, vyVar);
             R_vel.set(2, 2, wVar);
-
-            // Temporarily set H to H_vel, update with encoder velocities
-            kalmanFilter.setH(H_vel);
             kalmanFilter.update(zVel, R_vel);
         }
 
@@ -228,8 +229,11 @@ public class KalmanLocalizer implements Localizer {
         // Restore pose-measurement H for absolute sensor updates (e.g. Limelight)
         kalmanFilter.setH(kalmanH);
 
-        if (Math.abs(yawRate) < 360 && botpose != null && result.getBotposeTagCount() > 0 &&
-                stdevs != null && stdevs.length >= 2) {
+        boolean acceptMT1 = useMetatag2 || (abs(yawRate) < toRadians(360) && botpose != null &&
+                stdevs != null && stdevs.length >= 2 &&
+                !(result.getBotposeTagCount() == 1 && result.getBotposeAvgDist() > 3/*m*/));
+        boolean acceptMT2 = !useMetatag2 || abs(yawRate) < toRadians(360);
+        if (acceptMT1 && acceptMT2 && result.getBotposeTagCount() > 0) {
             pose = new Pose(botpose.getPosition().x, botpose.getPosition().y, robotYaw, FTCCoordinates.INSTANCE);
             pose = pose.getAsCoordinateSystem(PedroCoordinates.INSTANCE);
             kalmanZ.set(0, 0, LLLinearUnit.toInches(pose.getX()));
@@ -240,7 +244,7 @@ public class KalmanLocalizer implements Localizer {
             kalmanR.set(1, 1, LLLinearUnit.toInches(stdevs[1]) * LLLinearUnit.toInches(stdevs[1]));
             // High variance for heading b/c reused from drive encoder measurement (so we don't
             // double dip and it thinks they are separate sensors)
-            kalmanR.set(2, 2, 9999999);
+            kalmanR.set(2, 2, DRIVE_ENC_HEAD_VAR / (safeDt * safeDt));
 
             kalmanFilter.update(kalmanZ, kalmanR);
         }
@@ -248,14 +252,16 @@ public class KalmanLocalizer implements Localizer {
         pose = new Pose(
                 Constants.otosConstants.linearUnit.fromInches(kalmanFilter.getState().get(0, 0)),
                 Constants.otosConstants.linearUnit.fromInches(kalmanFilter.getState().get(1, 0)),
-                Constants.otosConstants.angleUnit.fromRadians(kalmanFilter.getState().get(2, 0))
+                Constants.otosConstants.angleUnit.fromRadians(robotYaw)
         );
 
-        double dx = pose.getX() - prevPose.getX();
-        double dy = pose.getY() - prevPose.getY();
         double dtheta = pose.getHeading() - prevPose.getHeading();
         totalHeading += dtheta;
-        vel = new Pose(dx / safeDt, dy / safeDt, dtheta / safeDt);
+        vel = new Pose(
+                Constants.otosConstants.linearUnit.fromInches(kalmanFilter.getState().get(3, 0)),
+                Constants.otosConstants.linearUnit.fromInches(kalmanFilter.getState().get(4, 0)),
+                Constants.otosConstants.angleUnit.fromRadians(yawRate)
+        );
         prevPose = pose;
     }
 

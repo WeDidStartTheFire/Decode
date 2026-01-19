@@ -59,9 +59,12 @@ public class IntakeController {
                         robot.intake.powerOutside(-0.75);
                     }
                 } else {
-                    robot.intake.powerOutside(0.5);
+                    if (robot.indexer.getTotalArtifacts() == 3) robot.intake.powerOutside(0.5);
+                    else robot.intake.powerOutside(-0.3);
                     robot.intake.powerInside(-1);
                     if (artifactDetectedTimer.getElapsedTimeSeconds() > .3) {
+                        robot.intake.powerInside(1);
+                        robot.intake.powerOutside(-0.75);
                         if (robot.indexer.rotateToArtifact(EMPTY)) break;
                         if (!robot.indexer.rotateToArtifact(UNKNOWN)) setState(State.IDLE);
                     }

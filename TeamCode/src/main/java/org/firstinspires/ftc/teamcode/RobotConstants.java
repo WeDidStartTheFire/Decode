@@ -38,14 +38,16 @@ public class RobotConstants {
     public static final double DRIVETRAIN_VELOCITY = 2000;
 
     public static final double MIDDLE_INDEXER_POS = 0.455;
-    public static double INDEXER_SPEED = 1.15;
+    public static double INDEXER_SPEED = 1.1;
 
     public static final double[] speeds = {0.2, 0.6, 1};
 
     public static double MAX_LAUNCHER_SPIN_WAIT = 3;
-    public static double MAX_FEEDER_DOWN_WAIT = .25;
+    public static double MAX_FEEDER_DOWN_WAIT = .3;
     public static double MIN_FEEDER_DOWN_WAIT = .2;
     public static double ARTIFACT_LAUNCH_WAIT = 0;
+    public static double MAX_MOTIF_DETECT_WAIT = 1;
+    public static double MAX_INTAKE_PATH_WAIT = 4;
 
     public static final double baseSpeedMultiplier = 0.75;
     public static final double baseTurnSpeed = 2.5;

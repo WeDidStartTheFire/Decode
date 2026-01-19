@@ -41,17 +41,24 @@ public class Limelight {
      */
     public RobotConstants.Motif getMotif() {
         List<LLResultTypes.FiducialResult> fiducials = getFiducials();
+        RobotConstants.Motif motif = RobotConstants.Motif.UNKNOWN;
         for (LLResultTypes.FiducialResult fiducial : fiducials) {
             switch (fiducial.getFiducialId()) {
                 case 21:
-                    return RobotConstants.Motif.GPP;
+                    if (motif == RobotConstants.Motif.UNKNOWN) motif = RobotConstants.Motif.GPP;
+                    else return RobotConstants.Motif.UNKNOWN;
+                    break;
                 case 22:
-                    return RobotConstants.Motif.PGP;
+                    if (motif == RobotConstants.Motif.UNKNOWN) motif = RobotConstants.Motif.PGP;
+                    else return RobotConstants.Motif.UNKNOWN;
+                    break;
                 case 23:
-                    return RobotConstants.Motif.PPG;
+                    if (motif == RobotConstants.Motif.UNKNOWN) motif = RobotConstants.Motif.PPG;
+                    else return RobotConstants.Motif.UNKNOWN;
+                    break;
             }
         }
-        return RobotConstants.Motif.UNKNOWN;
+        return motif;
     }
 
     public List<LLResultTypes.FiducialResult> getFiducials() {

@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -57,6 +58,11 @@ public class TeleOp_KalmanTest extends OpMode {
         teleop.feederLogic();
         teleop.updateIndexerTeleOp();
         teleop.updateLauncherTeleOp();
+        if (robot.limelight.limelight == null) return;
+        LLResult result = robot.limelight.limelight.getLatestResult();
+        tm.print("Motif", robot.limelight.getMotif());
+        tm.print("LL Pose MT1", result.getBotpose());
+        tm.print("LL Pose MT2", result.getBotpose_MT2());
     }
 
 

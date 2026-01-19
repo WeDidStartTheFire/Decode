@@ -6,7 +6,6 @@ import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -16,21 +15,14 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
-import pedroPathing.localizers.LimelightHelpers;
-
 @TeleOp(name = "Limelight Test", group = "Test")
 public class Test_Limelight extends OpMode {
     public TeleOpController teleop;
     public Robot robot;
     public TelemetryUtils tm;
-    Limelight3A limelight;
-    LimelightHelpers.LimelightTarget_Fiducial limelightTargetFiducial = new LimelightHelpers.LimelightTarget_Fiducial();
 
     @Override
     public void init() {
-        Limelight3A limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(0);
-        limelight.start();
         RobotState.color = RobotConstants.Color.BLUE;
         Pose pose = loadOdometryPosition();
         RobotState.auto = false;
@@ -49,7 +41,6 @@ public class Test_Limelight extends OpMode {
         teleop.update();
         if (pose != null) tm.print(pose);
         tm.print("Motif", robot.limelight.getMotif());
-        tm.print("Target", limelightTargetFiducial.getCameraPose_TargetSpace2D());
     }
 
     @Override
@@ -59,16 +50,16 @@ public class Test_Limelight extends OpMode {
 
     @Override
     public void loop() {
-        LLResult result = limelight.getLatestResult();
         teleop.update();
-        tm.print("Motif", robot.limelight.getMotif());
-        tm.print("Target", limelightTargetFiducial.getCameraPose_TargetSpace2D());
-        tm.print("LL Pose MT1", result.getBotpose());
-        tm.print("LL Pose MT2", result.getBotpose_MT2());
         teleop.drivetrainLogic(validStartPose);
         teleop.updateIntake();
         teleop.feederLogic();
         teleop.updateIndexerTeleOp();
         teleop.updateLauncherTeleOp();
+        if (robot.limelight.limelight == null) return;
+        LLResult result = robot.limelight.limelight.getLatestResult();
+        tm.print("Motif", robot.limelight.getMotif());
+        tm.print("LL Pose MT1", result.getBotpose());
+        tm.print("LL Pose MT2", result.getBotpose_MT2());
     }
 }

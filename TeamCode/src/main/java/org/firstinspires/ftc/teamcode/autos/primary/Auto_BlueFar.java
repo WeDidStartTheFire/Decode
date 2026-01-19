@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.autos.primary;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INTAKE_MOVE_MAX_SPEED;
+import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_INTAKE_PATH_WAIT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_MOTIF_DETECT_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.slowIntakePathConstraints;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
@@ -118,6 +120,10 @@ public class Auto_BlueFar extends OpMode {
         switch (state) {
             case START_TO_SHOOT:
                 robot.indexer.setPos(0);
+                RobotConstants.Motif m = robot.limelight.getMotif();
+                if (motif != RobotConstants.Motif.UNKNOWN) motif = m;
+                if (motif == RobotConstants.Motif.UNKNOWN &&
+                        stateTimer.getElapsedTimeSeconds() < MAX_MOTIF_DETECT_WAIT) break;
                 robot.drivetrain.follower.followPath(startToShoot, true);
                 launchController.manualSpin();
                 intakeController.innerIntake();
@@ -142,7 +148,8 @@ public class Auto_BlueFar extends OpMode {
                 setState(State.INTAKE_TO_SHOOT);
                 break;
             case INTAKE_TO_SHOOT:
-                if (robot.drivetrain.follower.isBusy() && intakeController.isBusy()) break;
+                if (robot.drivetrain.follower.isBusy() && intakeController.isBusy() &&
+                        stateTimer.getElapsedTimeSeconds() < MAX_INTAKE_PATH_WAIT) break;
                 robot.drivetrain.follower.breakFollowing();
                 robot.drivetrain.follower.followPath(intakeToShoot, true);
                 launchController.manualSpin();
@@ -168,9 +175,12 @@ public class Auto_BlueFar extends OpMode {
         robot.indexer.update();
         launchController.update();
         intakeController.update();
+        robot.led.update();
 
         tm.drawRobot(robot.drivetrain.follower);
         tm.print("Path State", state);
+        tm.print("Follower Busy", robot.drivetrain.follower.isBusy());
+
         tm.print("Launcher State", launchController.getState());
         tm.print("Intake State", intakeController.getState());
         tm.print("Motif", motif);
@@ -188,7 +198,7 @@ public class Auto_BlueFar extends OpMode {
         pose = robot.drivetrain.follower.getPose();
         if (pose != null) saveOdometryPosition(pose);
         for (int i = 0; i < times.size(); i++)
-            tm.print("Time" + i, times.get(i));
+            tm.print("Time " + i, times.get(i));
         tm.update();
     }
 }

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.autos.tests;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INTAKE_MOVE_MAX_SPEED;
+import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_INTAKE_PATH_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.slowIntakePathConstraints;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
@@ -170,7 +171,8 @@ public class Auto_BlueClose_9 extends OpMode {
                 setState(State.INTAKE_TO_SHOOT);
                 break;
             case INTAKE_TO_SHOOT:
-                if (robot.drivetrain.follower.isBusy() && intakeController.isBusy()) break;
+                if (robot.drivetrain.follower.isBusy() && intakeController.isBusy() &&
+                        stateTimer.getElapsedTimeSeconds() < MAX_INTAKE_PATH_WAIT) break;
                 robot.drivetrain.follower.breakFollowing();
                 robot.drivetrain.follower.followPath(paths1Done ? intakeToShoot2 : intakeToShoot1,
                         INTAKE_MOVE_MAX_SPEED, true);
@@ -199,6 +201,7 @@ public class Auto_BlueClose_9 extends OpMode {
         robot.indexer.update();
         launchController.update();
         intakeController.update();
+        robot.led.update();
 
         tm.drawRobot(robot.drivetrain.follower);
         tm.print("Path State", state);

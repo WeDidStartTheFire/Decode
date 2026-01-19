@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.autos.secondary;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
+import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_MOTIF_DETECT_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
@@ -96,6 +97,10 @@ public class Auto_BlueFar_3_Only extends OpMode {
         switch (state) {
             case START_TO_SHOOT:
                 robot.indexer.setPos(0);
+                RobotConstants.Motif m = robot.limelight.getMotif();
+                if (motif != RobotConstants.Motif.UNKNOWN) motif = m;
+                if (motif == RobotConstants.Motif.UNKNOWN &&
+                        stateTimer.getElapsedTimeSeconds() < MAX_MOTIF_DETECT_WAIT) break;
                 robot.drivetrain.follower.followPath(startToShoot, true);
                 launchController.manualSpin();
                 intakeController.innerIntake();
@@ -127,6 +132,7 @@ public class Auto_BlueFar_3_Only extends OpMode {
         robot.indexer.update();
         launchController.update();
         intakeController.update();
+        robot.led.update();
 
         tm.drawRobot(robot.drivetrain.follower);
         tm.print("Path State", state);

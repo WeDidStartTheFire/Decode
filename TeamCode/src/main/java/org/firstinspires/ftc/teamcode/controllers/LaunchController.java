@@ -79,7 +79,8 @@ public class LaunchController {
                     break;
                 }
                 intaking = false;
-                robot.launcher.intakeMotors(intakePercent);
+                if (robot.indexer.isStill()) robot.launcher.intakeMotors(intakePercent);
+                else robot.launcher.stop();
                 if (robot.indexer.rotateToArtifact(EMPTY)) break;
                 robot.indexer.rotateToArtifact(UNKNOWN);
                 break;

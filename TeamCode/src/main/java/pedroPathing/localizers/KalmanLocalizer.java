@@ -229,21 +229,25 @@ public class KalmanLocalizer implements Localizer {
         // Restore pose-measurement H for absolute sensor updates (e.g. Limelight)
         kalmanFilter.setH(kalmanH);
 
-        boolean acceptMT1 = useMetatag2 || (abs(yawRate) < toRadians(360) && botpose != null &&
-                stdevs != null && stdevs.length >= 2 &&
-                !(result.getBotposeTagCount() == 1 && result.getBotposeAvgDist() > 3/*m*/));
-        boolean acceptMT2 = !useMetatag2 || abs(yawRate) < toRadians(360);
-        if (acceptMT1 && acceptMT2 && result.getBotposeTagCount() > 0) {
-            pose = new Pose(botpose.getPosition().x, botpose.getPosition().y, robotYaw, FTCCoordinates.INSTANCE);
+        boolean acceptMT1 = !useMetatag2 && !(result.getBotposeTagCount() == 1 && result.getBotposeAvgDist() > 3/*m*/);
+        boolean acceptMT2 = useMetatag2;
+        if ((acceptMT1 || acceptMT2) && result.getBotposeTagCount() > 0 && botpose != null &&
+                stdevs != null && stdevs.length >= 2 && abs(yawRate) < toRadians(360)) {
+            pose = new Pose(LLLinearUnit.toInches(botpose.getPosition().x),
+                    LLLinearUnit.toInches(botpose.getPosition().y),
+                    LLAngleUnit.toRadians(robotYaw),
+                    FTCCoordinates.INSTANCE);
             pose = pose.getAsCoordinateSystem(PedroCoordinates.INSTANCE);
-            kalmanZ.set(0, 0, LLLinearUnit.toInches(pose.getX()));
-            kalmanZ.set(1, 0, LLLinearUnit.toInches(pose.getY()));
-            kalmanZ.set(2, 0, LLAngleUnit.toRadians(robotYaw));
+            kalmanZ.set(0, 0, pose.getX());
+            kalmanZ.set(1, 0, pose.getY());
+            kalmanZ.set(2, 0, robotYaw);
 
-            kalmanR.set(0, 0, LLLinearUnit.toInches(stdevs[0]) * LLLinearUnit.toInches(stdevs[0]));
-            kalmanR.set(1, 1, LLLinearUnit.toInches(stdevs[1]) * LLLinearUnit.toInches(stdevs[1]));
-            // High variance for heading b/c reused from drive encoder measurement (so we don't
-            // double dip and it thinks they are separate sensors)
+            sx = LLLinearUnit.toInches(stdevs[0]);
+            sy = LLLinearUnit.toInches(stdevs[1]);
+            // swap for Pedro frame
+            kalmanR.set(0, 0, sy * sy);
+            kalmanR.set(1, 1, sx * sx);
+
             kalmanR.set(2, 2, DRIVE_ENC_HEAD_VAR / (safeDt * safeDt));
 
             kalmanFilter.update(kalmanZ, kalmanR);

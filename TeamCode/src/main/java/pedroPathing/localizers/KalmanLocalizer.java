@@ -18,6 +18,7 @@ import com.pedropathing.localization.Localizer;
 import com.pedropathing.math.Vector;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -51,7 +52,7 @@ public class KalmanLocalizer implements Localizer {
     private final DistanceUnit driveLinearUnit = DistanceUnit.INCH;
     private final AngleUnit driveAngleUnit = RADIANS;
     private final double DRIVE_ENC_POSE_VAR = driveLinearUnit.toInches(10) * driveLinearUnit.toInches(10);
-    private final double DRIVE_ENC_HEAD_VAR = toRadians(1) * toRadians(1);
+    private final double DRIVE_ENC_HEAD_VAR = toRadians(1.5) * toRadians(1.5);
 
     private final KalmanFilter kalmanFilter = new KalmanFilterOperations();
 
@@ -84,6 +85,9 @@ public class KalmanLocalizer implements Localizer {
 
     public KalmanLocalizer(@NonNull HardwareMap map, Pose startPose) {
         imu = map.get(IMU.class, "imu");
+        imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
         imu.resetYaw();
 
         driveEncoderLocalizer = new DriveEncoderLocalizer(map, Constants.driveEncoderConstants);
@@ -248,7 +252,7 @@ public class KalmanLocalizer implements Localizer {
             kalmanR.set(0, 0, sy * sy);
             kalmanR.set(1, 1, sx * sx);
 
-            kalmanR.set(2, 2, DRIVE_ENC_HEAD_VAR / (safeDt * safeDt));
+            kalmanR.set(2, 2, DRIVE_ENC_HEAD_VAR);
 
             kalmanFilter.update(kalmanZ, kalmanR);
         }
@@ -259,7 +263,7 @@ public class KalmanLocalizer implements Localizer {
                 Constants.otosConstants.angleUnit.fromRadians(robotYaw)
         );
 
-        double dtheta = pose.getHeading() - prevPose.getHeading();
+        double dtheta = AngleUnit.normalizeRadians(pose.getHeading() - prevPose.getHeading());
         totalHeading += dtheta;
         vel = new Pose(
                 Constants.otosConstants.linearUnit.fromInches(kalmanFilter.getState().get(3, 0)),
@@ -290,7 +294,7 @@ public class KalmanLocalizer implements Localizer {
     }
 
     public double getIMUHeading() {
-        return imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle + IMUoffset;
+        return imu.getRobotYawPitchRollAngles().getYaw(RADIANS) + IMUoffset;
     }
 
     public boolean isNAN() {

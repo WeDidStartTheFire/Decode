@@ -154,7 +154,6 @@ public class KalmanLocalizer implements Localizer {
 
         // TODO: Make sure we have the right axis for yaw
         double robotYaw = getIMUHeading();
-//        double robotYaw = otosAngleUnit.toRadians(otosLocalizer.getIMUHeading());
         double yawRate = imu.getRobotAngularVelocity(RADIANS).zRotationRate;
 
         driveEncoderLocalizer.update();

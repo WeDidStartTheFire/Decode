@@ -69,6 +69,7 @@ public class TeleOpController {
         launchController.stop();
         intakeController.stop();
         robot.indexer.markAllUnknown();
+        tm.showLogs();
     }
 
     /**

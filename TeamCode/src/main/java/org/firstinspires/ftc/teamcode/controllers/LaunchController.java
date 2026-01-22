@@ -16,6 +16,7 @@ import static java.lang.Math.min;
 import com.pedropathing.util.Timer;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
+import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 
@@ -33,6 +34,7 @@ public class LaunchController {
     private boolean anyExpected = false;
     private double intakePercent;
     private boolean intaking;
+    private final TelemetryUtils tm;
 
     enum State {
         IDLE,
@@ -44,11 +46,14 @@ public class LaunchController {
 
     public LaunchController(Robot robot) {
         this.robot = robot;
+        tm = robot.drivetrain.tm;
         setState(State.IDLE);
         isBusy = false;
     }
 
     private void setState(State state) {
+        if (state != null)
+            tm.log("LaunchController: " + this.state + " -> " + state, stateTimer.getElapsedTimeSeconds());
         setStateNoWait(state);
         this.stateTimer.resetTimer();
     }

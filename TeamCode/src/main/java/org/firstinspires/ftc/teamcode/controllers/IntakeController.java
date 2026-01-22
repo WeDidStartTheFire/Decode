@@ -8,6 +8,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.GREEN;
 
 import com.pedropathing.util.Timer;
 
+import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 
@@ -19,6 +20,7 @@ public class IntakeController {
     private boolean isBusy;
     private final Robot robot;
     private final Timer artifactDetectedTimer = new Timer();
+    private final TelemetryUtils tm;
 
     private enum State {
         IDLE,
@@ -28,6 +30,7 @@ public class IntakeController {
     }
 
     public IntakeController(Robot robot) {
+        tm = robot.drivetrain.tm;
         setState(State.IDLE);
         this.robot = robot;
         isBusy = false;
@@ -101,6 +104,8 @@ public class IntakeController {
     }
 
     private void setState(State state) {
+        if (state != null)
+            tm.log("IntakeController: " + this.state + " -> " + state, stateTimer.getElapsedTimeSeconds());
         setStateNoWait(state);
         this.stateTimer.resetTimer();
     }

@@ -31,6 +31,11 @@ public class ColorSensor {
         }
     }
 
+    /**
+     * Gets the RGB reading from the color sensor, normalized by the brightness
+     *
+     * @return Scalar(r, g, b) or null if the color sensor is disconnected
+     */
     @Nullable
     public Scalar getRGB() {
         if (colorSensor == null) return null;
@@ -42,10 +47,20 @@ public class ColorSensor {
         return new Scalar(r, g, b);
     }
 
+    /**
+     * Gets the distance reading from the color sensor
+     *
+     * @return Distance (double) or -1 if the color sensor is disconnected
+     */
     public double getInches() {
         return distanceSensor == null ? -1 : distanceSensor.getDistance(DistanceUnit.INCH);
     }
 
+    /**
+     * Gets the detected color of the artifact
+     *
+     * @return The detected color
+     */
     public RobotConstants.Artifact getColor() {
         Scalar color = getRGB();
         if (color == null) return UNKNOWN;

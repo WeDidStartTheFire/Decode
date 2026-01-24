@@ -56,6 +56,4 @@ public class Feeder {
         feederServoA.setPosition(0);
         feederServoB.setPosition(0);
     }
-
-
 }

@@ -26,18 +26,25 @@ public class Limelight {
         }
     }
 
+    /**
+     * Starts or resumes periodic polling of Limelight data.
+     */
     public void start() {
         if (limelight != null) limelight.start();
     }
 
+    /**
+     * Stops polling of Limelight data.
+     */
     public void stop() {
         if (limelight != null) limelight.stop();
     }
 
     /**
-     * Returns the Motif Enum.
+     * Gets the detected motif
      *
-     * @return Motif Enum, if it doesn't detect a valid ID, will return none.
+     * @return Detected motif. If it doesn't detect a valid ID or multiple motif IDs, will return
+     * Motif.UNKNOWN.
      */
     public RobotConstants.Motif getMotif() {
         List<LLResultTypes.FiducialResult> fiducials = getFiducials();
@@ -61,6 +68,9 @@ public class Limelight {
         return motif;
     }
 
+    /**
+     * @return The fiducial readings from the limelight
+     */
     public List<LLResultTypes.FiducialResult> getFiducials() {
         if (limelight == null) return new ArrayList<>();
         LLResult result = limelight.getLatestResult();

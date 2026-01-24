@@ -97,11 +97,20 @@ public class Drivetrain {
         useOdometry = useOdom;
     }
 
+    /**
+     * Holds the current robot position in a certain orientation (based on RobotState.pose)
+     *
+     * @param heading Orientation for the robot to point at
+     */
     public void holdCurrentPose(double heading) {
+        if (pose == null) return;
         Pose holdPose = pose.withHeading(heading);
         follower.holdPoint(holdPose);
     }
 
+    /**
+     * Holds the current robot position
+     */
     public void holdCurrentPose() {
         follower.holdPoint(pose);
     }

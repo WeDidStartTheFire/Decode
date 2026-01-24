@@ -91,7 +91,7 @@ public class TeleOpController {
      */
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
         if (validStartPose && useOdometry) {
-            if (gamepad1.a) driveController.setHolding(true);
+            if (gamepad1.a) driveController.holdPosition();
             if (gamepad1.yWasPressed()) driveController.followClosest();
             if (gamepad1.bWasPressed()) driveController.toggleAiming();
         }

@@ -39,16 +39,31 @@ public class Intake {
         }
     }
 
+    /**
+     * Powers all intake servos and motor
+     *
+     * @param power Power on [-1, 1]. Negative is inward, positive is outward.
+     */
     public void power(double power) {
         powerInside(power);
         powerOutside(power);
     }
 
+    /**
+     * Powers the inside intake servos
+     *
+     * @param power Power on [-1, 1]. Negative is inward, positive is outward.
+     */
     public void powerInside(double power) {
         if (intakeServoA != null) intakeServoA.setPower(power);
         if (intakeServoC != null) intakeServoC.setPower(power);
     }
 
+    /**
+     * Powers the outside intake motor and roller servo
+     *
+     * @param power Power on [-1, 1]. Negative is inward, positive is outward.
+     */
     public void powerOutside(double power) {
         if (intakeMotor != null) intakeMotor.setPower(power);
         if (intakeServoB != null) intakeServoB.setPower(power);

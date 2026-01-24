@@ -38,11 +38,21 @@ public class LED {
         this.color = color.position();
     }
 
+    /**
+     * Shows the highest and most recent color that has been set since last update
+     */
     public void update() {
         if (led != null) led.setPosition(color);
         highestPriorityThisLoop = -1;
     }
 
+    /**
+     * Sets the color of the LED given a certain priority. When updated, the highest and most recent
+     * color will be shown.
+     *
+     * @param color    LED color
+     * @param priority Priority
+     */
     public void setColor(RobotConstants.LEDColors color, Priority priority) {
         if (priority.value < highestPriorityThisLoop) return;
         highestPriorityThisLoop = priority.value;

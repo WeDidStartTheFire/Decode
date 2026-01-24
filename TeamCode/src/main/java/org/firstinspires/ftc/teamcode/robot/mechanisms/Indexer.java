@@ -42,6 +42,9 @@ public class Indexer {
         }
     }
 
+    /**
+     * Updates what artifact is in the active indexer slot
+     */
     public void update() {
         RobotConstants.Artifact artifact = colorSensor.getArtifact();
         tm.print("Color", colorSensor.getColor());
@@ -65,6 +68,11 @@ public class Indexer {
         return -1;
     }
 
+    /**
+     * Sets the position of the indexer
+     *
+     * @param pos Position to set the indexer to on [0, 1]
+     */
     public void setPos(double pos) {
         updateInternalBounds();
         resetTimer();
@@ -116,23 +124,41 @@ public class Indexer {
     /**
      * Gets the goal position of the indexer servo.
      *
-     * @return The goal position (0.0-1.0), or -1 if servo or timer is not initialized.
+     * @return The goal position on [0, 1], or -1 if servo or timer is not initialized.
      */
     public double getGoalPos() {
         if (indexerServo == null || indexerTimer == null) return -1;
         return abs(indexerServo.getPosition() - MIDDLE_INDEXER_POS) < 1e-3 ? .5 : indexerServo.getPosition();
     }
 
+    /**
+     * Gets the estimate for the current indexer position based on the previous estimated position,
+     * goal position, and time taken
+     *
+     * @return Indexer position estimate on [0, 1]
+     */
     public double getEstimatePos() {
         if (indexerServo == null) return -1;
         double[] bounds = calculateCurrentBounds();
         return (bounds[0] + bounds[1]) / 2.0;
     }
 
+    /**
+     * @return Number of artifacts in the robot
+     */
     public int getTotalArtifacts() {
         return Arrays.stream(artifacts).filter(a -> a == GREEN || a == PURPLE).toArray().length;
     }
 
+    /**
+     * Updates the LED to match the indexer state: <br>
+     * <ul>
+     *   <li>Green Artifact → Sage Color (Medium Priority)</li>
+     *   <li>Purple Artifact → Violet Color (Medium Priority)</li>
+     *   <li>Empty Slot → White Color (Low Priority)</li>
+     *   <li>Unknown Artifact → LED Off (Low Priority)</li>
+     * </ul>
+     */
     private void updateLED() {
         switch (getCurrentArtifact()) {
             case GREEN:
@@ -150,18 +176,27 @@ public class Indexer {
         }
     }
 
+    /**
+     * Rotates the indexer clockwise
+     */
     public void rotateClockwise() {
         double goalPos = getGoalPos();
         if (goalPos == -1) setPos(0);
         else setPos((goalPos + .5) % 1.5);
     }
 
+    /**
+     * Rotates the indexer counterclockwise
+     */
     public void rotateCounterclockwise() {
         double goalPos = getGoalPos();
         if (goalPos == -1) setPos(0);
         else setPos((goalPos + 1) % 1.5);
     }
 
+    /**
+     * @return Whether the indexer is still (based on a timer)
+     */
     public boolean isStill() {
         if (indexerTimer == null) return false;
         double[] bounds = calculateCurrentBounds();
@@ -170,16 +205,34 @@ public class Indexer {
                 abs(bounds[1] - goalIndexerPos) < epsilon;
     }
 
+    /**
+     * Gets the artifact at the specified indexer position
+     *
+     * @param pos Position of the indexer, on [0, 1]
+     * @return Artifact at position pos
+     */
     public RobotConstants.Artifact getArtifactAtPos(double pos) {
         int idx = idxFromPos(pos);
         if (idx >= 0 && idx < artifacts.length) return artifacts[idx];
         return UNKNOWN;
     }
 
+    /**
+     * Gets the artifact in the active indexer slot
+     *
+     * @return Artifact in the active indexer slot
+     */
     public RobotConstants.Artifact getCurrentArtifact() {
         return getArtifactAtPos(getGoalPos());
     }
 
+    /**
+     * Rotates the indexer to the nearest specified artifact. Does not rotate if the artifact is
+     * not present.
+     *
+     * @param artifact Artifact to rotate to
+     * @return Whether that artifact is present
+     */
     public boolean rotateToArtifact(RobotConstants.Artifact artifact) {
         double pos = getGoalPos();
         if (pos == -1) pos = 0;
@@ -206,6 +259,12 @@ public class Indexer {
         return false;
     }
 
+    /**
+     * Rotates to the closest artifact present in the indexer (does not rotate if no artifacts are
+     * present)
+     *
+     * @return Whether there is an artifact present
+     */
     public boolean rotateToAny() {
         double pos = getGoalPos();
         if (pos == -1) pos = 0;
@@ -234,10 +293,18 @@ public class Indexer {
         return !Arrays.asList(artifacts).contains(artifact);
     }
 
+    /**
+     * Returns whether there is an artifact in the active indexer slot
+     *
+     * @return true if no artifact is present, false if there is one or it it is unknown
+     */
     public boolean isActiveSlotEmpty() {
         return getCurrentArtifact() == EMPTY;
     }
 
+    /**
+     * Marks all recorded artifacts as unknown
+     */
     public void markAllUnknown() {
         artifacts[0] = UNKNOWN;
         artifacts[1] = UNKNOWN;

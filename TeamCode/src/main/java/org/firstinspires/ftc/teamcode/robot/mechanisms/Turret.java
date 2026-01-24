@@ -53,6 +53,11 @@ public class Turret {
         }
     }
 
+    /**
+     * Sets the target for the turret
+     *
+     * @param target Turret target. Can be the goal, human player, or none.
+     */
     public void setTarget(Target target) {
         this.target = target;
     }
@@ -69,6 +74,9 @@ public class Turret {
         return turretMotor.getVelocity() * sign > 0 || turretMotor.getPower() * sign > 0;
     }
 
+    /**
+     * Updates the turret PID and continues aiming at the target
+     */
     public void update() {
         if (turretMotor == null) return;
 
@@ -95,20 +103,33 @@ public class Turret {
         }
     }
 
+    /**
+     * Stops the turret
+     */
     public void stop() {
         setTarget(Target.NONE);
         if (turretMotor != null)
             turretPIDController.setTargetPosition(turretMotor.getCurrentPosition());
     }
 
-    public void setRobotCentricAngle(double angle) {
+    /**
+     * Sets the angle of the turret relative to the robot
+     *
+     * @param angle Turret angle, radians
+     */
+    private void setRobotCentricAngle(double angle) {
         if (turretMotor == null) return;
         turretPIDController.setTargetPosition(
                 Math.clamp((int) ((toDegrees(angle) - TURRET_OFFSET + TURRET_TS_LENGTH_ENC)
                 * TURRET_ENCODERS_PER_DEGREE), TURRET_MIN_POS, TURRET_MAX_POS));
     }
 
-    public void setFieldCentricAngle(double angle) {
+    /**
+     * Sets the angle of the turret relative to the field
+     *
+     * @param angle Turret angle, radians
+     */
+    private void setFieldCentricAngle(double angle) {
         if (pose != null) setRobotCentricAngle(angle - pose.getHeading());
     }
 }

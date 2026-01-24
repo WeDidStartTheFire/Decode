@@ -36,6 +36,9 @@ public class IntakeController {
         isBusy = false;
     }
 
+    /**
+     * Updates the intake motors and indexer. Sets led color.
+     */
     public void update() {
         if (robot.indexer.getTotalArtifacts() == 3)
             robot.led.setColor(GREEN, isBusy ? LED.Priority.HIGH : LED.Priority.LOW);
@@ -79,25 +82,40 @@ public class IntakeController {
         }
     }
 
+    /**
+     * @return Whether the robot is actively intaking artifacts
+     */
     public boolean isBusy() {
         return isBusy;
     }
 
+    /**
+     * Turns outtaking on
+     */
     public void outtake() {
         isBusy = true;
         setState(State.OUTTAKE);
     }
 
+    /**
+     * Turns intaking on
+     */
     public void intake() {
         isBusy = true;
         setState(State.INTAKE);
     }
 
+    /**
+     * Turns on intaking the inner intake only
+     */
     public void innerIntake() {
         setState(State.INNER_INTAKE);
         isBusy = false;
     }
 
+    /**
+     * Stops the intake
+     */
     public void stop() {
         setState(State.IDLE);
         isBusy = false;
@@ -114,6 +132,11 @@ public class IntakeController {
         this.state = state;
     }
 
+    /**
+     * Gets the IntakeController's current state
+     *
+     * @return Current IntakeController state as a String
+     */
     public String getState() {
         return state.toString();
     }

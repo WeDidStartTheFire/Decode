@@ -48,21 +48,31 @@ public class DriveController {
         this.tm = robot.drivetrain.tm;
     }
 
+    /**
+     * Stops all robot movement and any automatic paths it was on
+     */
     public void stop() {
         aiming = false;
         holding = false;
         following = false;
+        robot.drivetrain.follower.breakFollowing();
         robot.drivetrain.stop();
     }
 
+    /**
+     * Toggles whether the robot drivetrain is aiming at the goal
+     */
     public void toggleAiming() {
         aiming = !aiming;
         ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolutionStationary();
         if (aiming && holding && sol != null) robot.drivetrain.holdCurrentPose(sol.phi);
     }
 
-    public void setHolding(boolean holding) {
-        this.holding = holding;
+    /**
+     * Holds the robot at its current position
+     */
+    public void holdPosition() {
+        this.holding = true;
         ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolutionStationary();
         if (aiming && sol != null) robot.drivetrain.holdCurrentPose(sol.phi);
         else robot.drivetrain.holdCurrentPose();
@@ -92,6 +102,9 @@ public class DriveController {
         return path;
     }
 
+    /**
+     * Automatically moves the robot to the closest waypoint
+     */
     public void followClosest() {
         following = true;
         holding = false;
@@ -99,6 +112,12 @@ public class DriveController {
         robot.drivetrain.follower.followPath(getShortestPath(pose));
     }
 
+    /**
+     * Updates TeleOp drivetrain movement based on controllers and using Pedro Pathing
+     *
+     * @param gp           Gamepad for drivetrain movement
+     * @param fieldCentric Whether movement is field centric
+     */
     public void updateTeleOp(Gamepad gp, boolean fieldCentric) {
         double speedMultiplier = lerp(gp.left_trigger, speeds[2], speeds[0]);
 
@@ -124,7 +143,7 @@ public class DriveController {
         double turn = -gp.right_stick_x * speedMultiplier;
         if (aiming && !holding) {
             ProjectileSolver.LaunchSolution sol = getLaunchSolution();
-            if (sol != null) {
+            if (sol != null && pose != null) {
                 double error = normalizeRadians(sol.phi - pose.getHeading());
                 headingPIDController.updateError(error);
                 turn = headingPIDController.run();
@@ -140,6 +159,12 @@ public class DriveController {
                 gp.left_stick_x * speedMultiplier * (color == RED || !fieldCentric ? -1 : 1), turn, !fieldCentric);
     }
 
+    /**
+     * Updates TeleOp drivetrain movement based on controllers without using Pedro Pathing
+     *
+     * @param gp           Gamepad for drivetrain movement
+     * @param fieldCentric Whether movement is field centric
+     */
     public void updateTeleOpNoPedro(Gamepad gp, boolean fieldCentric) {
         double axial, lateral, yaw, xMove, yMove;
         double speedMultiplier = lerp(gp.left_trigger, speeds[2], speeds[0]);

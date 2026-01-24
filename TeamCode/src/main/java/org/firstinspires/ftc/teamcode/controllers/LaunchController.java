@@ -22,6 +22,8 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class LaunchController {
 
@@ -66,6 +68,9 @@ public class LaunchController {
         this.state = state;
     }
 
+    /**
+     * Updates the launch motors and indexer. Sets led color.
+     */
     public void update() {
         if (getLaunchSolution() == null)
             robot.led.setColor(RobotConstants.LEDColors.RED, isBusy || robot.launcher.isSpinning()
@@ -176,22 +181,38 @@ public class LaunchController {
         }
     }
 
+    /**
+     * Queues a specified number of artifacts to launch in motif order
+     *
+     * @param n Number of artifacts to launch
+     */
     public void launchArtifacts(int n) {
         n = auto ? min(3, max(n, 0)) : 0;
         for (int i = 0; i < n; i++)
             launchArtifact(motif.getNthArtifact(numLaunched + i));
     }
 
+    /**
+     * Queues a specified artifact to launch
+     *
+     * @param artifact Artifact to launch
+     */
     public void launchArtifact(RobotConstants.Artifact artifact) {
         launchQueue.add(artifact);
     }
 
+    /**
+     * Manually stops the launcher, but does not stop automatic launching if active
+     */
     public void manualStop() {
         if (isBusy) return;
         robot.launcher.stop();
         robot.feeder.retract();
     }
 
+    /**
+     * Stops launcher and clears launch queue
+     */
     public void stop() {
         robot.launcher.stop();
         robot.feeder.retract();
@@ -200,18 +221,36 @@ public class LaunchController {
         setState(State.IDLE);
     }
 
+    /**
+     * Manually spins the launcher
+     */
     public void manualSpin() {
         robot.launcher.spin();
     }
 
+    /**
+     * Raises the feeder to launch an artifact if the indexer is still, even if the robot is
+     * automatically launching
+     */
     public void manualRaise() {
         if (robot.indexer.isStill()) robot.feeder.raise();
     }
 
+    /**
+     * Manually retracts the feeder from launching an artifact. Does not override automatic
+     * launching.
+     */
     public void manualRetract() {
         if (!isBusy) robot.feeder.retract();
     }
 
+    /**
+     * Turns on intaking for the launch motors. Intakes artifacts automatically by rotating the
+     * indexer to empty slots
+     *
+     * @param percent Percent power on [0, 1] to intake the launch motors (linearly scaled to
+     *                between 0 and 0.4 power)
+     */
     public void intake(double percent) {
         stop();
         setState(State.INTAKE);
@@ -219,15 +258,28 @@ public class LaunchController {
         intakePercent = percent;
     }
 
+    /**
+     * @return Whether the launcher is busy. Returns false if intaking or idle.
+     */
     public boolean isBusy() {
         return isBusy;
     }
 
+    /**
+     * Gets the current state of the LaunchController
+     *
+     * @return Current state, as a String
+     */
     public String getState() {
         return state.toString();
     }
 
-    public ArrayList<RobotConstants.Artifact> getQueue() {
-        return launchQueue;
+    /**
+     * Gets the current launch controller queue
+     *
+     * @return Launch queue
+     */
+    public List<RobotConstants.Artifact> getQueue() {
+        return Collections.unmodifiableList(launchQueue);
     }
 }

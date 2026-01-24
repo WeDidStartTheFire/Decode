@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import static java.lang.Math.min;
 import static java.lang.Math.round;
 import static java.lang.Math.toDegrees;
 
@@ -72,6 +73,23 @@ public class TelemetryUtils {
     }
 
     /**
+     * Prints and shows the logs in telemetry in the form of "caption : content" for the n most
+     * recent items in the log from newest to oldest
+     *
+     * @param n Number of log entries to print
+     * @see #log(String, Object)
+     */
+    public void showLogs(int n) {
+        print("======= Logs =======");
+        n = min(log.size(), n);
+        for (int i = log.size() - 1; i >= log.size() - n; i--) {
+            LogEntry entry = log.get(i);
+            print(entry.caption, entry.content);
+        }
+        print("====================");
+    }
+
+    /**
      * Prints and shows the logs in telemetry in the form of "caption : content" for each item (only
      * viewable if shown at program stop in Panels because the Control Hub updates telemtry after
      * this is printed)
@@ -79,12 +97,9 @@ public class TelemetryUtils {
      * @see #log(String, Object)
      */
     public void showLogs() {
-        print("====================");
-        print("Logs");
-        print("====================");
+        print("======= Logs =======");
         for (LogEntry entry : log) print(entry.caption, entry.content);
         print("====================");
-        update();
     }
 
     /**

@@ -54,6 +54,7 @@ public class TeleOpController {
 
     public void update() {
         tm.print("Motif", motif);
+        tm.showLogs(3);
         tm.update();
         follower.update();
         if (follower.getPose() != null) pose = follower.getPose();
@@ -70,6 +71,7 @@ public class TeleOpController {
         intakeController.stop();
         robot.indexer.markAllUnknown();
         tm.showLogs();
+        tm.update();
     }
 
     /**

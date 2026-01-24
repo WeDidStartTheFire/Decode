@@ -147,7 +147,10 @@ public class Indexer {
      * @return Number of artifacts in the robot
      */
     public int getTotalArtifacts() {
-        return Arrays.stream(artifacts).filter(a -> a == GREEN || a == PURPLE).toArray().length;
+        int count = 0;
+        for (RobotConstants.Artifact artifact : artifacts)
+            if (artifact == GREEN || artifact == PURPLE) count++;
+        return count;
     }
 
     /**

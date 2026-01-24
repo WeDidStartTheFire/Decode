@@ -30,8 +30,8 @@ public class ColorRange {
     }
 
     public boolean contains(@NonNull Scalar color) {
-        return (min.val[0] < color.val[0] && color.val[0] < max.val[0]) &&
-                (min.val[1] < color.val[1] && color.val[1] < max.val[1]) &&
-                (min.val[2] < color.val[2] && color.val[2] < max.val[2]);
+        return (min.val[0] <= color.val[0] && color.val[0] <= max.val[0]) &&
+                (min.val[1] <= color.val[1] && color.val[1] <= max.val[1]) &&
+                (min.val[2] <= color.val[2] && color.val[2] <= max.val[2]);
     }
 }

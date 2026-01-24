@@ -138,6 +138,7 @@ public class Auto_RedClose extends OpMode {
                     break;
                 robot.drivetrain.follower.followPath(motifToShoot, true);
                 setState(State.LAUNCH_ARTIFACTS);
+                break;
             case LAUNCH_ARTIFACTS:
                 if (robot.drivetrain.follower.isBusy()) break;
                 intakeController.innerIntake();

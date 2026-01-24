@@ -10,6 +10,7 @@ import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static java.lang.Math.abs;
 import static java.lang.Math.sqrt;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.pedropathing.geometry.Pose;
@@ -34,16 +35,17 @@ public class ProjectileSolver {
         }
     }
 
-    public static @Nullable LaunchSolution getLaunchSolution(Pose pose) {
-        return ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT, vel,
+    public static @Nullable LaunchSolution getLaunchSolution(@NonNull Pose pose) {
+        return ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT, vel == null ? new Vector() : vel,
                 RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
     }
 
     public static @Nullable LaunchSolution getLaunchSolution() {
-        return getLaunchSolution(pose);
+        return pose == null ? null : getLaunchSolution(pose);
     }
 
     public static @Nullable LaunchSolution getLaunchSolutionStationary() {
+        if (pose == null) return null;
         return ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT, new Vector(),
                 RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
     }

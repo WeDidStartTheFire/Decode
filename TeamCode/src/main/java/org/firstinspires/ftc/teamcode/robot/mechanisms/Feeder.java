@@ -41,7 +41,9 @@ public class Feeder {
     }
 
     public double getPos() {
-        if (feederServoA == null || feederServoB == null) return -1;
+        if (feederServoA == null && feederServoB == null) return -1;
+        if (feederServoA == null) return feederServoB.getPosition();
+        if (feederServoB == null) return feederServoA.getPosition();
         return (feederServoA.getPosition() + feederServoB.getPosition()) / 2.0;
     }
 

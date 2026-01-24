@@ -54,7 +54,8 @@ public class Launcher {
      * @param pose Launch position
      * @return The target velocity in ticks/sec
      */
-    public double getGoalVel(Pose pose) {
+    public double getGoalVel(@Nullable Pose pose) {
+        if (pose == null) return 0;
         ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution(pose);
         return sol != null ? ballVelToMotorVel(sol.w) : 0;
     }

@@ -133,6 +133,7 @@ public class LaunchController {
                 setState(State.PUSH_ARTIFACT);
                 anyExpected = true;
                 if (robot.indexer.rotateToAny()) break;
+                anyExpected = false;
                 launchQueue.clear();
                 robot.launcher.stop();
                 isBusy = false;
@@ -187,9 +188,9 @@ public class LaunchController {
      * @param n Number of artifacts to launch
      */
     public void launchArtifacts(int n) {
-        n = auto ? min(3, max(n, 0)) : 0;
+        n = min(3, max(n, 0));
         for (int i = 0; i < n; i++)
-            launchArtifact(motif.getNthArtifact(numLaunched + i));
+            launchArtifact(motif.getNthArtifact(auto ? numLaunched + i : i));
     }
 
     /**

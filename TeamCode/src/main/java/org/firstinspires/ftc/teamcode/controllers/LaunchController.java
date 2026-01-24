@@ -9,6 +9,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.YELLOW;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_FEEDER_DOWN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIN_FEEDER_DOWN_WAIT;
+import static org.firstinspires.ftc.teamcode.RobotState.auto;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -35,6 +36,9 @@ public class LaunchController {
     private double intakePercent;
     private boolean intaking;
     private final TelemetryUtils tm;
+    private final Timer speedDroopTimer = new Timer();
+    private boolean launchCommanded = false;
+    private boolean droopRecorded = false;
 
     enum State {
         IDLE,
@@ -68,6 +72,16 @@ public class LaunchController {
                     ? LED.Priority.HIGH : LED.Priority.MEDIUM);
         else if (robot.launcher.toSpeed()) robot.led.setColor(YELLOW, LED.Priority.CRITICAL);
         else if (robot.launcher.almostToSpeed()) robot.led.setColor(ORANGE, LED.Priority.HIGH);
+
+        if (launchCommanded && !launchQueue.isEmpty() && !robot.launcher.toSpeed()) {
+            launchCommanded = false;
+            speedDroopTimer.resetTimer();
+        }
+        if (!launchCommanded && !droopRecorded && robot.launcher.toSpeed()) {
+            droopRecorded = true;
+            tm.log("Speed Droop (s)", speedDroopTimer.getElapsedTimeSeconds());
+        }
+
         RobotConstants.Artifact desired, current;
         double pos;
         switch (state) {
@@ -140,6 +154,9 @@ public class LaunchController {
                     setStateNoWait(State.ROTATE_INDEXER);
                     break;
                 }
+                failedCount = 0;
+                launchCommanded = true;
+                droopRecorded = false;
                 robot.launcher.spin();
                 robot.feeder.raise();
                 setState(State.RETRACT_FEEDER);
@@ -160,7 +177,7 @@ public class LaunchController {
     }
 
     public void launchArtifacts(int n) {
-        n = min(3, max(n, 0));
+        n = auto ? min(3, max(n, 0)) : 0;
         for (int i = 0; i < n; i++)
             launchArtifact(motif.getNthArtifact(numLaunched + i));
     }

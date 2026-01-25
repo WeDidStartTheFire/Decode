@@ -1,11 +1,9 @@
-package org.firstinspires.ftc.teamcode.teleops;
+package org.firstinspires.ftc.teamcode.teleops.tests;
 
-import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
 import com.pedropathing.geometry.Pose;
-import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -14,9 +12,10 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 
-@TeleOp(name = "Kalman Test", group = "Test")
-public class TeleOp_KalmanTest extends OpMode {
+@TeleOp(name = "Turret", group = "Test")
+public class TeleOp_Turret extends OpMode {
     public TeleOpController teleop;
     public Robot robot;
     public TelemetryUtils tm;
@@ -27,8 +26,8 @@ public class TeleOp_KalmanTest extends OpMode {
         Pose pose = loadOdometryPosition();
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
+        RobotState.auto = false;
         robot = new Robot(hardwareMap, telemetry, validStartPose);
-        robot.drivetrain.useKalmanFollower();
         robot.drivetrain.follower.setPose(RobotState.pose);
         robot.drivetrain.follower.startTeleopDrive();
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
@@ -39,13 +38,8 @@ public class TeleOp_KalmanTest extends OpMode {
     }
 
     @Override
-    public void init_loop() {
-        teleop.update();
-        if (pose != null) tm.print(pose);
-    }
-
-    @Override
     public void start() {
+        robot.turret.setTarget(Turret.Target.GOAL);
         teleop.start();
     }
 
@@ -58,11 +52,6 @@ public class TeleOp_KalmanTest extends OpMode {
         teleop.feederLogic();
         teleop.updateIndexerTeleOp();
         teleop.updateLauncherTeleOp();
-        if (robot.limelight.limelight == null) return;
-        LLResult result = robot.limelight.limelight.getLatestResult();
-        tm.print("Motif", robot.limelight.getMotif());
-        tm.print("LL Pose MT1", result.getBotpose());
-        tm.print("LL Pose MT2", result.getBotpose_MT2());
     }
 
 

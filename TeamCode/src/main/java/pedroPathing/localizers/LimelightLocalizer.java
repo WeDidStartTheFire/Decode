@@ -3,6 +3,8 @@ package pedroPathing.localizers;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
+import static java.lang.Math.abs;
+import static java.lang.Math.toRadians;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,9 +16,12 @@ import com.pedropathing.localization.Localizer;
 import com.pedropathing.math.Vector;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 
@@ -29,6 +34,10 @@ public class LimelightLocalizer implements Localizer {
     private Pose prevPose;
     private Pose vel;
     private double totalHeading;
+    boolean useMetatag2 = true;
+    private final DistanceUnit LLLinearUnit = DistanceUnit.METER;
+    private final AngleUnit LLAngleUnit = RADIANS;
+    private double IMUoffset = 0;
 
     public LimelightLocalizer(HardwareMap map) {
         this(map, new Pose());
@@ -36,6 +45,10 @@ public class LimelightLocalizer implements Localizer {
 
     public LimelightLocalizer(@NonNull HardwareMap map, Pose startPose) {
         imu = map.get(IMU.class, "imu");
+        imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
+        imu.resetYaw();
         limelight = map.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100); // How often Limelight is asked for data (100 times per second)
         limelight.pipelineSwitch(0); // Switch to pipeline number 0
@@ -59,6 +72,7 @@ public class LimelightLocalizer implements Localizer {
     }
 
     public void setStartPose(Pose setStart) {
+        IMUoffset = setStart.getHeading() - toRadians(90);
     }
 
     public void setPose(Pose setPose) {
@@ -67,23 +81,28 @@ public class LimelightLocalizer implements Localizer {
     public void update() {
         long currTime = System.nanoTime();
         double dt = (currTime - prevTime) / 1_000_000.0;
-        double robotYaw = imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle;
-        limelight.updateRobotOrientation(robotYaw);
 
-        pose = null;
+        double robotYaw = getIMUHeading();
+        double yawRate = imu.getRobotAngularVelocity(RADIANS).zRotationRate;
+
+        double llYaw = new Pose(0, 0, robotYaw, PedroCoordinates.INSTANCE)
+                .getAsCoordinateSystem(FTCCoordinates.INSTANCE)
+                .getHeading();
+        limelight.updateRobotOrientation(llYaw);
         LLResult result = limelight.getLatestResult();
-        if (result != null && result.isValid()) {
-            Pose3D botpose_mt2 = result.getBotpose_MT2();
-            Pose3D botpose = result.getBotpose();
-            if (botpose_mt2 != null) {
-                double x = botpose_mt2.getPosition().x;
-                double y = botpose_mt2.getPosition().y;
-                pose = new Pose(x, y, botpose_mt2.getOrientation().getYaw(), FTCCoordinates.INSTANCE);
-            } else if (botpose != null) {
-                double x = botpose.getPosition().x;
-                double y = botpose.getPosition().y;
-                pose = new Pose(x, y, botpose.getOrientation().getYaw(), FTCCoordinates.INSTANCE);
-            }
+        Pose3D botpose = useMetatag2 ? result.getBotpose_MT2() : result.getBotpose();
+        double[] stdevs = useMetatag2 ? result.getStddevMt2() : result.getStddevMt1();
+
+        boolean acceptMT1 = !useMetatag2 && !(result.getBotposeTagCount() == 1 && result.getBotposeAvgDist() > 3/*m*/);
+        boolean acceptMT2 = useMetatag2;
+        pose = null;
+        if ((acceptMT1 || acceptMT2) && result.getBotposeTagCount() > 0 && botpose != null &&
+                stdevs != null && stdevs.length >= 2 && abs(yawRate) < toRadians(360)) {
+            pose = new Pose(LLLinearUnit.toInches(botpose.getPosition().x),
+                    LLLinearUnit.toInches(botpose.getPosition().y),
+                    LLAngleUnit.toRadians(robotYaw),
+                    FTCCoordinates.INSTANCE);
+            pose = pose.getAsCoordinateSystem(PedroCoordinates.INSTANCE);
         }
 
         if (pose != null) {
@@ -114,7 +133,7 @@ public class LimelightLocalizer implements Localizer {
     }
 
     public double getIMUHeading() {
-        return imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle;
+        return imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle + IMUoffset;
     }
 
     public void resetIMU() {

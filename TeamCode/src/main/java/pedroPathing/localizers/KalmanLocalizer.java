@@ -86,7 +86,7 @@ public class KalmanLocalizer implements Localizer {
     public KalmanLocalizer(@NonNull HardwareMap map, Pose startPose) {
         imu = map.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                 RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
         imu.resetYaw();
 
@@ -137,7 +137,7 @@ public class KalmanLocalizer implements Localizer {
 
     public void setStartPose(Pose setStart) {
         otosLocalizer.setStartPose(setStart);
-        IMUoffset = setStart.getHeading();
+        IMUoffset = setStart.getHeading() - toRadians(90);
     }
 
     public void setPose(Pose setPose) {

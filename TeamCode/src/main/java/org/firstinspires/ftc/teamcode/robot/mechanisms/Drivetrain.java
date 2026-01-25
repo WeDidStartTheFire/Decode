@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -62,6 +63,9 @@ public class Drivetrain {
         follower = Constants.createFollower(hardwareMap);
 
         imu = hardwareMap.get(IMU.class, "imu");
+        imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
         if (!imu.initialize(IMU_PARAMS)) throw new RuntimeException("IMU initialization failed");
         imu.resetYaw();
 

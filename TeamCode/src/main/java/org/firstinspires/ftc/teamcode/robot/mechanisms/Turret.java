@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_HUMAN_PLAYER_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.RED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.RED_HUMAN_PLAYER_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_ENCODERS_PER_DEGREE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_FEEDFORWARD;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_MAX_POS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_MAX_POWER;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_MIN_POS;
@@ -21,6 +23,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
@@ -33,12 +36,14 @@ public class Turret {
     private Target target = Target.NONE;
     public PIDFController turretPIDController = new PIDFController(turretMotorPID);
     private boolean wasPressed = false;
+    private final IMU imu;
 
     public enum Target {
         GOAL, HUMAN_PLAYER, NONE
     }
 
-    public Turret(HardwareMap hardwareMap, TelemetryUtils tm) {
+    public Turret(HardwareMap hardwareMap, TelemetryUtils tm, IMU imu) {
+        this.imu = imu;
         try {
             turretMotor = hardwareMap.get(DcMotorEx.class, "turretMotor");
             turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -89,7 +94,9 @@ public class Turret {
         wasPressed = isPressed;
 
         turretPIDController.updatePosition(turretMotor.getCurrentPosition());
-        turretMotor.setPower(Math.clamp(turretPIDController.run(), -TURRET_MAX_POWER, TURRET_MAX_POWER));
+        double power = turretPIDController.run() -
+                imu.getRobotAngularVelocity(DEGREES).zRotationRate * TURRET_FEEDFORWARD;
+        turretMotor.setPower(Math.clamp(power, -TURRET_MAX_POWER, TURRET_MAX_POWER));
 
         // 2. Aiming logic after early return
         if (target == Target.GOAL) {
@@ -104,7 +111,7 @@ public class Turret {
     }
 
     /**
-     * Stops the turret
+     * Stops the turret by aiming for its current position
      */
     public void stop() {
         setTarget(Target.NONE);

@@ -35,6 +35,6 @@ public class Robot {
         indexer = new Indexer(hardwareMap, tm, colorSensor, led);
         limelight = new Limelight(hardwareMap, tm);
         launcher = new Launcher(hardwareMap, tm);
-        turret = new Turret(hardwareMap, tm);
+        turret = new Turret(hardwareMap, tm, drivetrain.imu);
     }
 }

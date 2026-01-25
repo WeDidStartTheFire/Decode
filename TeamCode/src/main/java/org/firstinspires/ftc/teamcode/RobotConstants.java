@@ -62,10 +62,12 @@ public class RobotConstants {
 
     public static com.pedropathing.control.PIDFCoefficients turretMotorPID =
             new com.pedropathing.control.PIDFCoefficients(0.0006, 0, 0.00004, 0);
+    public static final double TURRET_ENCODERS_PER_DEGREE = -77.78;
+    public static double TURRET_TOP_VEL = 10000; // encs per second
+    public static double TURRET_FEEDFORWARD = 0 * TURRET_ENCODERS_PER_DEGREE / TURRET_TOP_VEL; // .00311
     public static double TURRET_MAX_POWER = 0.7;
     public static final double TURRET_OFFSET = 90; // degrees
     public static double TURRET_TS_LENGTH_ENC = 0; // length of touch sensor in encoder ticks
-    public static final double TURRET_ENCODERS_PER_DEGREE = 77.78;
     public static final double TURRET_MIN_POS = -7000;
     public static final double TURRET_MAX_POS = 7000;
 

@@ -73,7 +73,7 @@ public class IntakeController {
                     }
                 } else {
                     if (robot.indexer.getTotalArtifacts() == 3) robot.intake.powerOutside(0.5);
-                    else robot.intake.powerOutside(-0.3);
+                    else robot.intake.powerOutside(0);
                     robot.intake.powerInside(-1);
                     if (artifactDetectedTimer.getElapsedTimeSeconds() > INDEXER_ARTIFACT_DETECTION_WAIT) {
                         robot.intake.powerInside(1);

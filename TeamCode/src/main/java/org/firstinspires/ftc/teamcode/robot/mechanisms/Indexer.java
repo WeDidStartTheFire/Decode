@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_SPEED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotState.artifacts;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -19,12 +20,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 import java.util.Arrays;
 
 public class Indexer {
 
-    private @Nullable Servo indexerServo;
+    private final @Nullable Servo indexerServo;
     private double minIndexerPos = -.25, maxIndexerPos = 1.25, goalIndexerPos = 0;
     private Timer indexerTimer = null;
     private final ColorSensor colorSensor;
@@ -35,11 +37,9 @@ public class Indexer {
         this.tm = tm;
         this.colorSensor = colorSensor;
         this.led = led;
-        try {
-            indexerServo = hardwareMap.get(Servo.class, "indexerServo"); // Expansion Hub 2
-        } catch (IllegalArgumentException e) {
-            tm.except("indexerServo not connected");
-        }
+        indexerServo = HardwareInitializer.init(hardwareMap, Servo.class, "indexerServo");
+        if (indexerServo == null)
+            tm.warn(CRITICAL, "Indexer Servo disconnected. Check Expansion Hub servo port 2.");
     }
 
     /**

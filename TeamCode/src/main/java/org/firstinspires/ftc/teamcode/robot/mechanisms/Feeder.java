@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.HIGH;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.LOW;
+
 import androidx.annotation.Nullable;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -7,32 +10,28 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 public class Feeder {
-    private @Nullable Servo feederServoA, feederServoB;
-    private @Nullable TouchSensor touchSensorA, touchSensorB;
+    private final @Nullable Servo feederServoA, feederServoB;
+    private final @Nullable TouchSensor touchSensorA, touchSensorB;
 
     public Feeder(HardwareMap hardwareMap, TelemetryUtils tm) {
-        try {
-            feederServoA = hardwareMap.get(Servo.class, "feederServoA"); // Expansion Hub 0
-            feederServoB = hardwareMap.get(Servo.class, "feederServoB"); // Expansion Hub 1
-            feederServoA.setDirection(Servo.Direction.REVERSE);
-        } catch (IllegalArgumentException e) {
-            feederServoA = null;
-            tm.except("At least one feeder servo not connected");
-        }
+        feederServoA = HardwareInitializer.init(hardwareMap, Servo.class, "feederServoA");
+        feederServoB = HardwareInitializer.init(hardwareMap, Servo.class, "feederServoB");
+        if (feederServoA == null && feederServoB == null)
+            tm.warn(HIGH, "Both feeder servos are disconnected. Check Expansion Hub" +
+                    " servo ports 0 and 1.");
+        else if (feederServoA == null || feederServoB == null)
+            tm.warn(HIGH, "One feeder servo is disconnected. Check Expansion Hub" +
+                    " servo ports 0 and 1.");
 
-        try {
-            touchSensorA = hardwareMap.get(TouchSensor.class, "touchSensorA");
-        } catch (IllegalArgumentException e) {
-            tm.except("touchSensorA not connected");
-        }
-        try {
-            touchSensorB = hardwareMap.get(TouchSensor.class, "touchSensorB");
-        } catch (IllegalArgumentException e) {
-            tm.except("touchSensorB not connected");
-        }
-
+        touchSensorA = HardwareInitializer.init(hardwareMap, TouchSensor.class, "touchSensorA");
+        touchSensorB = HardwareInitializer.init(hardwareMap, TouchSensor.class, "touchSensorB");
+        if (touchSensorA == null)
+            tm.warn(LOW, "Touch Sensor A for the feeder is disconnected.");
+        if (touchSensorB == null)
+            tm.warn(LOW, "Touch Sensor B for the feeder is disconnected.");
     }
 
     public boolean isUp() {

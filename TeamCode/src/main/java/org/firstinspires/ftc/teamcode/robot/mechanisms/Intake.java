@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.HIGH;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.LOW;
 
 import androidx.annotation.Nullable;
 
@@ -9,34 +11,28 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 public class Intake {
 
-    private @Nullable CRServo intakeServoA, intakeServoB, intakeServoC;
-    private @Nullable DcMotorEx intakeMotor;
+    private final @Nullable CRServo intakeServoA, intakeServoB, intakeServoC;
+    private final @Nullable DcMotorEx intakeMotor;
 
     public Intake(HardwareMap hardwareMap, TelemetryUtils tm) {
-        try {
-            intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor"); // Expansion Hub 0
-        } catch (IllegalArgumentException e) {
-            tm.except("intakeMotor not connected");
-        }
-        try {
-            intakeServoA = hardwareMap.get(CRServo.class, "intakeServoA"); // Expansion Hub 3
-            intakeServoA.setDirection(REVERSE);
-        } catch (IllegalArgumentException e) {
-            tm.except("intakeServoA not connected");
-        }
-        try {
-            intakeServoB = hardwareMap.get(CRServo.class, "intakeServoB"); // Expansion Hub 4
-        } catch (IllegalArgumentException e) {
-            tm.except("intakeServoB not connected");
-        }
-        try {
-            intakeServoC = hardwareMap.get(CRServo.class, "intakeServoC"); // Expansion Hub 5
-        } catch (IllegalArgumentException e) {
-            tm.except("intakeServoC not connected");
-        }
+        intakeMotor = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "intakeMotor");
+        if (intakeMotor == null)
+            tm.warn(HIGH, "Intkae Motor disconnected. Check Expansion hub motor port 0");
+
+        intakeServoA = HardwareInitializer.init(hardwareMap, CRServo.class, "intakeServoA");
+        intakeServoB = HardwareInitializer.init(hardwareMap, CRServo.class, "intakeServoB");
+        intakeServoC = HardwareInitializer.init(hardwareMap, CRServo.class, "intakeServoC");
+        if (intakeServoA == null)
+            tm.warn(HIGH, "Intake Servo A disconnected. Check Expansion Hub servo port 3");
+        else intakeServoA.setDirection(REVERSE);
+        if (intakeServoB == null)
+            tm.warn(LOW, "Intake Servo B (roller) disconnected. Check Expansion Hub servo port 4");
+        if (intakeServoC == null)
+            tm.warn(HIGH, "Intake Servo C disconnected. Check Expansion Hub servo port 5");
     }
 
     /**

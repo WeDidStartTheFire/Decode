@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.robot.mechanisms;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BALL_VEL_TO_MOTOR_VEL;
 import static org.firstinspires.ftc.teamcode.RobotConstants.launcherPIDF;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
 
 import androidx.annotation.Nullable;
 
@@ -14,28 +15,30 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 public class Launcher {
 
-    private @Nullable DcMotorEx launcherMotorA, launcherMotorB;
+    private final @Nullable DcMotorEx launcherMotorA, launcherMotorB;
 
     public Launcher(HardwareMap hardwareMap, TelemetryUtils tm) {
-        try {
-            launcherMotorA = hardwareMap.get(DcMotorEx.class, "launcherMotorA"); // Expansion Hub 1
+        launcherMotorA = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "launcherMotorA");
+        if (launcherMotorA == null)
+            tm.warn(CRITICAL, "Launcher Motor A disconnected. Check Expansion Hub motor port 1.");
+        else {
             launcherMotorA.setTargetPosition(0);
             launcherMotorA.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherPIDF);
             launcherMotorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        } catch (IllegalArgumentException e) {
-            tm.except("launcherMotorA not connected");
         }
-        try {
-            launcherMotorB = hardwareMap.get(DcMotorEx.class, "launcherMotorB"); // Expansion Hub 2
+
+        launcherMotorB = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "launcherMotorB");
+        if (launcherMotorB == null)
+            tm.warn(CRITICAL, "Launcher Motor B disconnected. Check Expansion Hub motor port 2.");
+        else {
             launcherMotorB.setDirection(DcMotorSimple.Direction.REVERSE);
             launcherMotorB.setTargetPosition(0);
             launcherMotorB.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherPIDF);
             launcherMotorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        } catch (IllegalArgumentException e) {
-            tm.except("launcherMotorB not connected");
         }
     }
 

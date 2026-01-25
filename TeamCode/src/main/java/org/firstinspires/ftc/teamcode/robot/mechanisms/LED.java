@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.LOW;
+
 import androidx.annotation.Nullable;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -7,9 +9,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 public class LED {
-    private @Nullable Servo led;
+    private final @Nullable Servo led;
     private int highestPriorityThisLoop = -1;
     private double color;
 
@@ -27,11 +30,9 @@ public class LED {
     }
 
     public LED(HardwareMap hardwareMap, TelemetryUtils tm) {
-        try {
-            led = hardwareMap.get(Servo.class, "led");
-        } catch (IllegalArgumentException e) {
-            tm.except("LED not connected");
-        }
+        led = HardwareInitializer.init(hardwareMap, Servo.class, "led");
+        if (led == null)
+            tm.warn(LOW, "LED disconnected. Check Control Hub servo port 0.");
     }
 
     private void setColor(RobotConstants.LEDColors color) {

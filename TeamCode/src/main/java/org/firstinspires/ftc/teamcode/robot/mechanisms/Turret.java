@@ -13,6 +13,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_OFFSET;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_TS_LENGTH_ENC;
 import static org.firstinspires.ftc.teamcode.RobotConstants.turretMotorPID;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.HIGH;
 import static java.lang.Math.atan2;
 import static java.lang.Math.toDegrees;
 
@@ -29,6 +30,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 public class Turret {
     public @Nullable DcMotorEx turretMotor;
@@ -44,18 +46,16 @@ public class Turret {
 
     public Turret(HardwareMap hardwareMap, TelemetryUtils tm, IMU imu) {
         this.imu = imu;
-        try {
-            turretMotor = hardwareMap.get(DcMotorEx.class, "turretMotor");
+        turretMotor = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "turretMotor");
+        if (turretMotor == null)
+            tm.warn(HIGH, "Turret Motor disconnected. Check Expansion Hub motor port 3.");
+        else {
             turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        } catch (IllegalArgumentException e) {
-            tm.except("turretMotor not connected");
         }
-        try {
-            turretTouchSensor = hardwareMap.get(TouchSensor.class, "turretTouchSensor");
-        } catch (IllegalArgumentException e){
-            tm.except("turretTouchSensor not connected");
-        }
+        turretTouchSensor = HardwareInitializer.init(hardwareMap, TouchSensor.class, "turretTouchSensor");
+        if (turretTouchSensor == null)
+            tm.warn(HIGH, "Turret Touch Sensor disconnected. Check one of the i2c (?) ports.");
     }
 
     /**

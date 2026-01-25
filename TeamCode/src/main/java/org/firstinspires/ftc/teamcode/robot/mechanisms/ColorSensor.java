@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.GREEN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.PURPLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.HIGH;
 
 import androidx.annotation.Nullable;
 
@@ -14,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.ColorRange;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 import org.opencv.core.Scalar;
 
 public class ColorSensor {
@@ -22,12 +24,12 @@ public class ColorSensor {
     private @Nullable DistanceSensor distanceSensor;
 
     public ColorSensor(HardwareMap hardwareMap, TelemetryUtils tm) {
-        try {
-            colorSensor = hardwareMap.get(com.qualcomm.robotcore.hardware.ColorSensor.class, "colorSensor");
-            distanceSensor = hardwareMap.get(DistanceSensor.class, "colorSensor");
-        } catch (IllegalArgumentException e) {
+        colorSensor = HardwareInitializer.init(hardwareMap, com.qualcomm.robotcore.hardware.ColorSensor.class, "colorSensor");
+        distanceSensor = HardwareInitializer.init(hardwareMap, DistanceSensor.class, "colorSensor");
+        if (colorSensor == null || distanceSensor == null) {
             colorSensor = null;
-            tm.except("colorSensor not connected");
+            distanceSensor = null;
+            tm.warn(HIGH, "Color Sensor disconnected.");
         }
     }
 

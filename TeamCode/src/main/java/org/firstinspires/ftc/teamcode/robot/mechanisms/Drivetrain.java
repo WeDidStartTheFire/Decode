@@ -20,6 +20,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.M;
 import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
 import static org.firstinspires.ftc.teamcode.RobotState.auto;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
 import static java.lang.Math.abs;
 import static java.lang.Math.signum;
 
@@ -34,6 +35,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 import pedroPathing.Constants;
 
@@ -69,17 +71,13 @@ public class Drivetrain {
         if (!imu.initialize(IMU_PARAMS)) throw new RuntimeException("IMU initialization failed");
         imu.resetYaw();
 
-        // The following try catch statements "check" if a motor is connected. If it isn't, it sets
-        // that motor's value to null. Later, we check if that value is null. If it is, we don't
-        // run the motor.
         // Drive train
-        try {
-            lf = hardwareMap.get(DcMotorEx.class, "leftFront"); // Port 1
-            lb = hardwareMap.get(DcMotorEx.class, "leftBack"); // Port 3
-            rf = hardwareMap.get(DcMotorEx.class, "rightFront"); // Port 0
-            rb = hardwareMap.get(DcMotorEx.class, "rightBack"); // Port 4
-        } catch (IllegalArgumentException e) {
-            tm.except("At least one drive train motor is not connected, so all will be disabled");
+        lf = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "leftFront"); // Port 1
+        lb = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "leftBack"); // Port 3
+        rf = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "rightFront"); // Port 0
+        rb = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "rightBack"); // Port 4
+        if (lf == null || lb == null || rf == null || rb == null) {
+            tm.warn(CRITICAL, "At least one drive train motor is not connected, so all will be disabled");
             lf = lb = rf = rb = null;
         }
 
@@ -168,7 +166,7 @@ public class Drivetrain {
         rb.setMode(mode);
     }
 
-    public void setMotorZeroPowerBehaviors(DcMotor.ZeroPowerBehavior behavior){
+    public void setMotorZeroPowerBehaviors(DcMotor.ZeroPowerBehavior behavior) {
         if (lb == null) return;
         lf.setZeroPowerBehavior(behavior);
         lb.setZeroPowerBehavior(behavior);

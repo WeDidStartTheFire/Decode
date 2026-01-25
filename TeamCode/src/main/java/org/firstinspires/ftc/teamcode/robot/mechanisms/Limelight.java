@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.MEDIUM;
+
 import androidx.annotation.Nullable;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -9,6 +11,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,12 +21,10 @@ public class Limelight {
     public @Nullable Limelight3A limelight;
 
     public Limelight(HardwareMap hardwareMap, TelemetryUtils tm) {
-        try {
-            limelight = hardwareMap.get(Limelight3A.class, "limelight");
-            limelight.pipelineSwitch(0);
-        } catch (IllegalArgumentException e) {
-            tm.except("limelight not connected");
-        }
+        limelight = HardwareInitializer.init(hardwareMap, Limelight3A.class, "limelight");
+        if (limelight == null)
+            tm.warn(MEDIUM, "Limelight disconnected. Check the Control Hub USB 3.0 port.");
+        else limelight.pipelineSwitch(0);
     }
 
     /**

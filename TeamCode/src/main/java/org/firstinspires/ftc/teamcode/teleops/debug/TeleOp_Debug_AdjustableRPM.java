@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleops.debug;
 
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.LOW;
+
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -8,6 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
+import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 @TeleOp(name = "Test Adjustable RPM", group = "Test")
 @Disabled
@@ -24,37 +27,19 @@ public class TeleOp_Debug_AdjustableRPM extends OpMode {
 
     @Override
     public void init() {
-        try {
-            servoA = hardwareMap.get(Servo.class, "servoA");
-        } catch (Exception e) {
-            tm.except("servoA disconnected");
-        }
-        try {
-            servoB = hardwareMap.get(Servo.class, "servoB");
-        } catch (Exception e) {
-            tm.except("servoB disconnected");
-        }
-        try {
-            servoC = hardwareMap.get(Servo.class, "servoC");
-        } catch (Exception e) {
-            tm.except("servoC disconnected");
-        }
-        try {
-            servoD = hardwareMap.get(Servo.class, "servoD");
-        } catch (Exception e) {
-            tm.except("servoD disconnected");
-        }
+        servoA = HardwareInitializer.init(hardwareMap, Servo.class, "servoA");
+        servoB = HardwareInitializer.init(hardwareMap, Servo.class, "servoB");
+        servoC = HardwareInitializer.init(hardwareMap, Servo.class, "servoC");
+        servoD = HardwareInitializer.init(hardwareMap, Servo.class, "servoD");
+        if (servoA == null) tm.warn(LOW, "servoA disconnected");
+        if (servoB == null) tm.warn(LOW, "servoB disconnected");
+        if (servoC == null) tm.warn(LOW, "servoC disconnected");
+        if (servoD == null) tm.warn(LOW, "servoD disconnected");
 
-        try {
-            motorA = hardwareMap.get(DcMotorEx.class, "leftFront");
-        } catch (Exception e) {
-            tm.except("leftFront motor disconnected (motor A)");
-        }
-        try {
-            motorB = hardwareMap.get(DcMotorEx.class, "leftBack");
-        } catch (Exception e) {
-            tm.except("leftBack motor disconnected (motor B)");
-        }
+        motorA = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "leftFront");
+        motorB = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "leftBack");
+        if (motorA == null) tm.warn(LOW, "leftFront motor disconnected (motor A)");
+        if (motorB == null) tm.warn(LOW, "leftBack motor disconnected (motor B)");
     }
 
     @Override

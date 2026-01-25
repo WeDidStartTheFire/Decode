@@ -67,6 +67,7 @@ public class TelemetryUtils {
      * @param caption The caption to log
      * @param content The content to log
      * @see #showLogs()
+     * @see #showLogs(int)
      */
     public void log(String caption, Object content) {
         log.add(new LogEntry(caption, content));
@@ -129,11 +130,19 @@ public class TelemetryUtils {
     }
 
     /**
-     * Sends an exception message to Driver Station telemetry.
+     * Sends a warning message to Driver Station telemetry with a given serverity level.
      *
-     * @param e The exception.
+     * @param level   The severity level of the warning.
+     * @param message The warning.
      */
-    public void except(Object e) {
-        print("Exception", e);
+    public void warn(ErrorLevel level, Object message) {
+        print(level.toString() + " WARNING", message);
+    }
+
+    public enum ErrorLevel {
+        LOW,
+        MEDIUM,
+        HIGH,
+        CRITICAL,
     }
 }

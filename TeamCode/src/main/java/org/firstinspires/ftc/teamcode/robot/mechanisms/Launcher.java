@@ -8,6 +8,7 @@ import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
 import androidx.annotation.Nullable;
 
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -20,6 +21,7 @@ import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 public class Launcher {
 
     private final @Nullable DcMotorEx launcherMotorA, launcherMotorB;
+    private @Nullable Timer spinningTimer;
 
     public Launcher(HardwareMap hardwareMap, TelemetryUtils tm) {
         launcherMotorA = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "launcherMotorA");
@@ -85,8 +87,13 @@ public class Launcher {
      */
     public void spin(Pose pose) {
         double motorVel = getGoalVel(pose);
+        if (spinningTimer == null) spinningTimer = new Timer();
         if (launcherMotorA != null) launcherMotorA.setVelocity(motorVel);
         if (launcherMotorB != null) launcherMotorB.setVelocity(motorVel);
+    }
+
+    public double getSpinningDuration() {
+        return spinningTimer == null ? 0 : spinningTimer.getElapsedTimeSeconds();
     }
 
     /**
@@ -112,6 +119,7 @@ public class Launcher {
      */
     public void intakeMotors(double percent) {
         percent = Math.max(0, Math.min(1, percent));
+        spinningTimer = null;
         if (launcherMotorA != null) launcherMotorA.setPower(-percent * .4);
         if (launcherMotorB != null) launcherMotorB.setPower(-percent * .4);
     }
@@ -129,6 +137,7 @@ public class Launcher {
      * Stops the launch motors
      */
     public void stop() {
+        spinningTimer = null;
         if (launcherMotorA != null) launcherMotorA.setPower(0);
         if (launcherMotorB != null) launcherMotorB.setPower(0);
     }

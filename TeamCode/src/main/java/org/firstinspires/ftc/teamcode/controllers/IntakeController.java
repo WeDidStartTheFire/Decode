@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.controllers;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
+import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_ARTIFACT_DETECTION_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.AZURE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.BLUE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.GREEN;
@@ -74,7 +75,7 @@ public class IntakeController {
                     if (robot.indexer.getTotalArtifacts() == 3) robot.intake.powerOutside(0.5);
                     else robot.intake.powerOutside(-0.3);
                     robot.intake.powerInside(-1);
-                    if (artifactDetectedTimer.getElapsedTimeSeconds() > .3) {
+                    if (artifactDetectedTimer.getElapsedTimeSeconds() > INDEXER_ARTIFACT_DETECTION_WAIT) {
                         robot.intake.powerInside(1);
                         robot.intake.powerOutside(-0.75);
                         if (robot.indexer.rotateToArtifact(EMPTY)) break;

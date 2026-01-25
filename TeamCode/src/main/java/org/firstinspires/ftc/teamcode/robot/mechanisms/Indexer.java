@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.GREEN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.PURPLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
+import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_POS_EPSILON;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_SPEED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotState.artifacts;
@@ -61,10 +62,10 @@ public class Indexer {
     }
 
     private int idxFromPos(double pos) {
-        double epsilon = 1e-3;
-        if (abs(pos - 0) < epsilon) return 0;
-        if (abs(pos - 0.5) < epsilon || abs(pos - MIDDLE_INDEXER_POS) < epsilon) return 1;
-        if (abs(pos - 1) < epsilon) return 2;
+        if (abs(pos - 0) < INDEXER_POS_EPSILON) return 0;
+        if (abs(pos - 0.5) < INDEXER_POS_EPSILON || abs(pos - MIDDLE_INDEXER_POS) < INDEXER_POS_EPSILON)
+            return 1;
+        if (abs(pos - 1) < INDEXER_POS_EPSILON) return 2;
         return -1;
     }
 
@@ -77,14 +78,18 @@ public class Indexer {
         updateInternalBounds();
         resetTimer();
         pos = max(0, min(1, pos));
-        goalIndexerPos = abs(.5 - pos) < 1e-3 ? MIDDLE_INDEXER_POS : pos;
+        goalIndexerPos = abs(.5 - pos) < INDEXER_POS_EPSILON ? MIDDLE_INDEXER_POS : pos;
         if (indexerServo != null) indexerServo.setPosition(goalIndexerPos);
     }
 
     /**
-     * Updates the max and min indexer pos estimates. Use
-     * <a href="https://www.desmos.com/calculator/pla2kgtybc">this link</a> for a demonstration of
-     * how this estimate works
+     * Updates the max and min indexer pos estimates.<p>
+     * Indexer Position Model:<p>
+     * - Three positions: 0.0, 0.5 (MIDDLE_INDEXER_POS), 1.0<p>
+     * - Uses timer-based estimation to track movement<p>
+     * - Bounds: [minIndexerPos, maxIndexerPos] estimate current position<p>
+     * Click <a href="https://www.desmos.com/calculator/pla2kgtybc">here</a> for a demonstration
+     * of how this estimate works
      */
     private void updateInternalBounds() {
         double[] bounds = calculateCurrentBounds();
@@ -128,7 +133,7 @@ public class Indexer {
      */
     public double getGoalPos() {
         if (indexerServo == null || indexerTimer == null) return -1;
-        return abs(indexerServo.getPosition() - MIDDLE_INDEXER_POS) < 1e-3 ? .5 : indexerServo.getPosition();
+        return abs(indexerServo.getPosition() - MIDDLE_INDEXER_POS) < INDEXER_POS_EPSILON ? .5 : indexerServo.getPosition();
     }
 
     /**
@@ -203,9 +208,8 @@ public class Indexer {
     public boolean isStill() {
         if (indexerTimer == null) return false;
         double[] bounds = calculateCurrentBounds();
-        double epsilon = 1e-3;
-        return abs(bounds[0] - goalIndexerPos) < epsilon &&
-                abs(bounds[1] - goalIndexerPos) < epsilon;
+        return abs(bounds[0] - goalIndexerPos) < INDEXER_POS_EPSILON &&
+                abs(bounds[1] - goalIndexerPos) < INDEXER_POS_EPSILON;
     }
 
     /**

@@ -69,7 +69,15 @@ public class LaunchController {
     }
 
     /**
-     * Updates the launch motors and indexer. Sets led color.
+     * Updates the LaunchController State Machine: <p>
+     * IDLE -> ROTATE_INDEXER: When launch queue has items<p>
+     * ROTATE_INDEXER -> PUSH_ARTIFACT: When indexer reaches desired artifact<p>
+     * ROTATE_INDEXER -> IDLE: When queue is empty<p>
+     * PUSH_ARTIFACT -> RETRACT_FEEDER: When launcher is at speed<p>
+     * RETRACT_FEEDER -> ROTATE_INDEXER: When artifact is launched (if more in queue)<p>
+     * RETRACT_FEEDER -> IDLE: When queue is empty<p>
+     * Special States:<p>
+     * - INTAKE: Manual intake mode, overrides normal flow
      */
     public void update() {
         if (getLaunchSolution() == null)

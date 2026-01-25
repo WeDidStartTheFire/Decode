@@ -37,7 +37,13 @@ public class IntakeController {
     }
 
     /**
-     * Updates the intake motors and indexer. Sets led color.
+     * Updates the LEDs and the IntakeController state machine:<p>
+     * INTAKE -> IDLE: When indexer is full<p>
+     * Other transitions controlled via calling methods
+     * @see #intake()
+     * @see #innerIntake()
+     * @see #outtake()
+     * @see #stop()
      */
     public void update() {
         if (robot.indexer.getTotalArtifacts() == 3)

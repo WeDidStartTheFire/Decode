@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADI
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 import static java.lang.Math.abs;
+import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
 
 import androidx.annotation.NonNull;
@@ -162,7 +163,7 @@ public class KalmanLocalizer implements Localizer {
         double llYaw = new Pose(0, 0, robotYaw, PedroCoordinates.INSTANCE)
                 .getAsCoordinateSystem(FTCCoordinates.INSTANCE)
                 .getHeading();
-        limelight.updateRobotOrientation(llYaw);
+        limelight.updateRobotOrientation(toDegrees(llYaw));
         LLResult result = limelight.getLatestResult();
         Pose3D botpose = useMetatag2 ? result.getBotpose_MT2() : result.getBotpose();
         double[] stdevs = useMetatag2 ? result.getStddevMt2() : result.getStddevMt1();

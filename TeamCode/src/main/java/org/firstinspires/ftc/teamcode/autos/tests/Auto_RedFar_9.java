@@ -32,7 +32,6 @@ import java.util.ArrayList;
 @Autonomous(name = "🟥Red🟥 Far 9", group = "Test", preselectTeleOp = RED_TELEOP_NAME)
 public class Auto_RedFar_9 extends OpMode {
     private Robot robot;
-    private boolean paths1Done;
 
     private PathChain startToShoot, shootToIntake1, intake1, intakeToShoot1, shootToIntake2,
             intake2, intakeToShoot2, shootToEnd;
@@ -137,7 +136,6 @@ public class Auto_RedFar_9 extends OpMode {
     public void pathUpdate() {
         switch (state) {
             case START_TO_SHOOT:
-                paths1Done = false;
                 robot.indexer.setPos(0);
                 RobotConstants.Motif m = robot.limelight.getMotif();
                 if (motif != RobotConstants.Motif.UNKNOWN) motif = m;
@@ -152,19 +150,19 @@ public class Auto_RedFar_9 extends OpMode {
                 if (robot.drivetrain.follower.isBusy()) break;
                 intakeController.innerIntake();
                 launchController.launchArtifacts(3);
-                setState(launchRound <= 1 ? State.SHOOT_TO_INTAKE : State.SHOOT_TO_END);
                 launchRound++;
+                setState(launchRound <= 2 ? State.SHOOT_TO_INTAKE : State.SHOOT_TO_END);
                 break;
             case SHOOT_TO_INTAKE:
                 if (launchController.isBusy()) break;
-                robot.drivetrain.follower.followPath(paths1Done ? shootToIntake2 : shootToIntake1,
+                robot.drivetrain.follower.followPath(launchRound == 1 ? shootToIntake1 : shootToIntake2,
                         true);
                 intakeController.intake();
                 setState(State.INTAKE);
                 break;
             case INTAKE:
                 if (robot.drivetrain.follower.isBusy()) break;
-                robot.drivetrain.follower.followPath(paths1Done ? intake2 : intake1,
+                robot.drivetrain.follower.followPath(launchRound == 1 ? intake1 : intake2,
                         INTAKE_MOVE_MAX_SPEED, true);
                 setState(State.INTAKE_TO_SHOOT);
                 break;
@@ -172,10 +170,9 @@ public class Auto_RedFar_9 extends OpMode {
                 if (robot.drivetrain.follower.isBusy() && intakeController.isBusy() &&
                         stateTimer.getElapsedTimeSeconds() < MAX_INTAKE_PATH_WAIT) break;
                 robot.drivetrain.follower.breakFollowing();
-                robot.drivetrain.follower.followPath(paths1Done ? intakeToShoot2 : intakeToShoot1,
+                robot.drivetrain.follower.followPath(launchRound == 1 ? intakeToShoot1 : intakeToShoot2,
                         true);
                 launchController.manualSpin();
-                paths1Done = true;
                 setState(State.LAUNCH_ARTIFACTS);
                 break;
             case SHOOT_TO_END:

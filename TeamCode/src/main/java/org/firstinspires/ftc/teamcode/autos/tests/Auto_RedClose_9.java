@@ -181,7 +181,7 @@ public class Auto_RedClose_9 extends OpMode {
                         stateTimer.getElapsedTimeSeconds() < MAX_INTAKE_PATH_WAIT) break;
                 robot.drivetrain.follower.breakFollowing();
                 robot.drivetrain.follower.followPath(paths1Done ? intakeToShoot2 : intakeToShoot1,
-                        INTAKE_MOVE_MAX_SPEED, true);
+                        true);
                 launchController.manualSpin();
                 paths1Done = true;
                 setState(State.LAUNCH_ARTIFACTS);
@@ -210,8 +210,10 @@ public class Auto_RedClose_9 extends OpMode {
 
         tm.drawRobot(robot.drivetrain.follower);
         tm.print("Path State", state);
+        tm.print("Follower Busy", robot.drivetrain.follower.isBusy());
         tm.print("Launcher State", launchController.getState());
         tm.print("Intake State", intakeController.getState());
+
         tm.print("Motif", motif);
         tm.print("Indexer Pos", robot.indexer.getGoalPos());
         if (pose != null) tm.print(pose);

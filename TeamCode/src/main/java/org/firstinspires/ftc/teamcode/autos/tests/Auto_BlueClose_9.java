@@ -92,6 +92,7 @@ public class Auto_BlueClose_9 extends OpMode {
         intake2 = robot.drivetrain.follower.pathBuilder()
                 .addPath(new BezierLine(intakeStart2, intakeEnd2))
                 .setLinearHeadingInterpolation(intakeStart2.getHeading(), intakeEnd2.getHeading())
+                .setConstraints(slowIntakePathConstraints)
                 .build();
         intakeToShoot2 = robot.drivetrain.follower.pathBuilder()
                 .addPath(new BezierLine(intakeEnd2, shootPose))

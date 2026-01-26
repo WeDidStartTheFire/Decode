@@ -96,6 +96,7 @@ public class Auto_RedClose_9 extends OpMode {
         intakeToShoot2 = robot.drivetrain.follower.pathBuilder()
                 .addPath(new BezierLine(intakeEnd2, shootPose))
                 .setLinearHeadingInterpolation(intakeEnd2.getHeading(), shootPose.getHeading())
+                .setConstraints(slowIntakePathConstraints)
                 .build();
         shootToEnd = robot.drivetrain.follower.pathBuilder()
                 .addPath(new BezierLine(shootPose, endPose))

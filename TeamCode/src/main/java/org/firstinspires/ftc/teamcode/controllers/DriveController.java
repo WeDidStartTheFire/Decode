@@ -126,17 +126,21 @@ public class DriveController {
             driveInputTimer.resetTimer();
             if (following || holding) robot.drivetrain.follower.startTeleopDrive();
             following = holding = false;
-        } else if (driveInputTimer.getElapsedTimeSeconds() > 0.5 && !holding) {
+        } else if (driveInputTimer.getElapsedTimeSeconds() > 0.5 && !holding && !following) {
             ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolutionStationary();
             if (aiming && sol != null) robot.drivetrain.holdCurrentPose(sol.phi);
             else robot.drivetrain.holdCurrentPose();
             holding = true;
         }
 
-        if (holding) robot.drivetrain.setMotorZeroPowerBehaviors(BRAKE);
+        if (holding || following) robot.drivetrain.setMotorZeroPowerBehaviors(BRAKE);
         else robot.drivetrain.setMotorZeroPowerBehaviors(FLOAT);
 
-        if (!robot.drivetrain.follower.isBusy() && following) robot.drivetrain.holdCurrentPose();
+        if (!robot.drivetrain.follower.isBusy() && following) {
+            following = false;
+            holding = true;
+            robot.drivetrain.holdCurrentPose();
+        }
 
         aiming = aiming && abs(gp.right_stick_x) <= .05;
         tm.print("aiming", aiming);

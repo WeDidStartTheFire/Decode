@@ -10,7 +10,6 @@ import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
 import static java.lang.Math.toRadians;
 
-import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -31,7 +30,7 @@ import java.util.ArrayList;
 @Autonomous(name = "🟦Blue🟦 Close 9", group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
 public class Auto_BlueClose_9 extends OpMode {
     private Robot robot;
-    private Boolean paths1Done;
+    private boolean paths1Done;
 
     private PathChain startToMotif, motifToShoot, shootToIntake1, intake1, intakeToShoot1,
             shootToIntake2, intake2, intakeToShoot2, shootToEnd;
@@ -58,9 +57,11 @@ public class Auto_BlueClose_9 extends OpMode {
     private final Pose startPose = new Pose(19.541233442405954, 121.478672985782, toRadians(54));
     private final Pose motifPose = new Pose(37, 104.5, toRadians(54));
     private final Pose shootPose = new Pose(58.291, 84.670, toRadians(134.4257895029621));
-    private final Pose intakeStart = new Pose(47, 84.670, toRadians(180));
-    private final Pose intakeEnd = new Pose(20, 84.630, toRadians(180));
-    private final Pose endPose = new Pose(40.804, 60.018, toRadians(180));
+    private final Pose intakeStart1 = new Pose(48, 84.670, toRadians(180));
+    private final Pose intakeEnd1 = new Pose(20, 84.630, toRadians(180));
+    private final Pose intakeStart2 = new Pose(48, 60, toRadians(180));
+    private final Pose intakeEnd2 = new Pose(20, 60, toRadians(180));
+    private final Pose endPose = new Pose(33, 72, toRadians(180));
 
     private void buildPaths() {
         startToMotif = robot.drivetrain.follower.pathBuilder()
@@ -72,28 +73,29 @@ public class Auto_BlueClose_9 extends OpMode {
                 .setLinearHeadingInterpolation(motifPose.getHeading(), shootPose.getHeading())
                 .build();
         shootToIntake1 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, intakeStart))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), intakeStart.getHeading())
+                .addPath(new BezierLine(shootPose, intakeStart1))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), intakeStart1.getHeading())
                 .build();
         intake1 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(intakeStart, intakeEnd))
-                .setConstantHeadingInterpolation(intakeEnd.getHeading())
+                .addPath(new BezierLine(intakeStart1, intakeEnd1))
+                .setConstantHeadingInterpolation(intakeEnd1.getHeading())
                 .setConstraints(slowIntakePathConstraints)
                 .build();
         intakeToShoot1 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(intakeEnd, shootPose))
-                .setLinearHeadingInterpolation(intakeEnd.getHeading(), shootPose.getHeading())
+                .addPath(new BezierLine(intakeEnd1, shootPose))
+                .setLinearHeadingInterpolation(intakeEnd1.getHeading(), shootPose.getHeading())
                 .build();
         shootToIntake2 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(58.291, 84.630), new Pose(58.281, 59.988)))
-                .setLinearHeadingInterpolation(Math.toRadians(134.4), Math.toRadians(180))
+                .addPath(new BezierLine(shootPose, intakeStart2))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), intakeStart2.getHeading())
                 .build();
-        intake2 = robot.drivetrain.follower.pathBuilder().addPath(new BezierLine(new Pose(58.281, 59.988), new Pose(20.128, 59.661)))
-                .setTangentHeadingInterpolation()
+        intake2 = robot.drivetrain.follower.pathBuilder()
+                .addPath(new BezierLine(intakeStart2, intakeEnd2))
+                .setLinearHeadingInterpolation(intakeStart2.getHeading(), intakeEnd2.getHeading())
                 .build();
         intakeToShoot2 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(20.128, 59.661), new Pose(58.255, 84.827)))
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(134.4))
+                .addPath(new BezierLine(intakeEnd2, shootPose))
+                .setLinearHeadingInterpolation(intakeEnd2.getHeading(), shootPose.getHeading())
                 .build();
         shootToEnd = robot.drivetrain.follower.pathBuilder()
                 .addPath(new BezierLine(shootPose, endPose))
@@ -152,10 +154,12 @@ public class Auto_BlueClose_9 extends OpMode {
                     break;
                 robot.drivetrain.follower.followPath(motifToShoot, true);
                 setState(State.LAUNCH_ARTIFACTS);
+                break;
             case LAUNCH_ARTIFACTS:
                 if (robot.drivetrain.follower.isBusy()) break;
+                intakeController.innerIntake();
                 launchController.launchArtifacts(3);
-                setState(launchRound <= 0 ? State.SHOOT_TO_INTAKE : State.SHOOT_TO_END);
+                setState(launchRound <= 1 ? State.SHOOT_TO_INTAKE : State.SHOOT_TO_END);
                 launchRound++;
                 break;
             case SHOOT_TO_INTAKE:
@@ -177,7 +181,6 @@ public class Auto_BlueClose_9 extends OpMode {
                 robot.drivetrain.follower.followPath(paths1Done ? intakeToShoot2 : intakeToShoot1,
                         INTAKE_MOVE_MAX_SPEED, true);
                 launchController.manualSpin();
-                intakeController.innerIntake();
                 paths1Done = true;
                 setState(State.LAUNCH_ARTIFACTS);
                 break;
@@ -222,7 +225,7 @@ public class Auto_BlueClose_9 extends OpMode {
         pose = robot.drivetrain.follower.getPose();
         if (pose != null) saveOdometryPosition(pose);
         for (int i = 0; i < times.size(); i++)
-            tm.print("Time" + i, times.get(i));
+            tm.print("Time " + i, times.get(i));
         tm.update();
     }
 }

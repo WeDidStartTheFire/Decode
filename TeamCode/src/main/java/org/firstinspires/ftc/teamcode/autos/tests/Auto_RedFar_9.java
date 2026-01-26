@@ -132,6 +132,7 @@ public class Auto_RedFar_9 extends OpMode {
                 break;
             case LAUNCH_ARTIFACTS:
                 if (robot.drivetrain.follower.isBusy()) break;
+                intakeController.innerIntake();
                 launchController.launchArtifacts(3);
                 setState(launchRound == 0 ? State.SHOOT_TO_INTAKE : State.SHOOT_TO_END);
                 launchRound++;
@@ -153,7 +154,6 @@ public class Auto_RedFar_9 extends OpMode {
                 robot.drivetrain.follower.breakFollowing();
                 robot.drivetrain.follower.followPath(intakeToShoot, true);
                 launchController.manualSpin();
-                intakeController.innerIntake();
                 setState(State.LAUNCH_ARTIFACTS);
                 break;
             case SHOOT_TO_END:
@@ -180,8 +180,10 @@ public class Auto_RedFar_9 extends OpMode {
 
         tm.drawRobot(robot.drivetrain.follower);
         tm.print("Path State", state);
+        tm.print("Follower Busy", robot.drivetrain.follower.isBusy());
         tm.print("Launcher State", launchController.getState());
         tm.print("Intake State", intakeController.getState());
+
         tm.print("Motif", motif);
         tm.print("Indexer Pos", robot.indexer.getGoalPos());
         if (pose != null) tm.print(pose);
@@ -197,7 +199,7 @@ public class Auto_RedFar_9 extends OpMode {
         pose = robot.drivetrain.follower.getPose();
         if (pose != null) saveOdometryPosition(pose);
         for (int i = 0; i < times.size(); i++)
-            tm.print("Time" + i, times.get(i));
+            tm.print("Time " + i, times.get(i));
         tm.update();
     }
 }

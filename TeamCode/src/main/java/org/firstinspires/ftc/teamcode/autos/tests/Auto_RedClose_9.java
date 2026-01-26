@@ -10,7 +10,6 @@ import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
 import static java.lang.Math.toRadians;
 
-import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -31,8 +30,10 @@ import java.util.ArrayList;
 @Autonomous(name = "🟥Red🟥 Close 9", group = "Test", preselectTeleOp = RED_TELEOP_NAME)
 public class Auto_RedClose_9 extends OpMode {
     private Robot robot;
+    private boolean paths1Done;
 
-    private PathChain startToMotif, motifToShoot, shootToIntake, intake, intakeToShoot, shootToEnd;
+    private PathChain startToMotif, motifToShoot, shootToIntake1, intake1, intakeToShoot1,
+            shootToIntake2, intake2, intakeToShoot2, shootToEnd;
     private TelemetryUtils tm;
 
     private final Timer stateTimer = new Timer();
@@ -56,9 +57,11 @@ public class Auto_RedClose_9 extends OpMode {
     private final Pose startPose = new Pose(124.4587665576, 121.478672985782, toRadians(126));
     private final Pose motifPose = new Pose(107, 104.5, toRadians(126));
     private final Pose shootPose = new Pose(85.709, 84.670, toRadians(45.574210497));
-    private final Pose intakeStart = new Pose(97, 84.670, toRadians(0));
-    private final Pose intakeEnd = new Pose(124, 84.670, toRadians(0));
-    private final Pose endPose = new Pose(103.196, 60.018, toRadians(0));
+    private final Pose intakeStart1 = new Pose(97, 84.670, toRadians(0));
+    private final Pose intakeEnd1 = new Pose(124, 84.670, toRadians(0));
+    private final Pose intakeStart2 = new Pose(97, 60, toRadians(0));
+    private final Pose intakeEnd2 = new Pose(124, 60, toRadians(0));
+    private final Pose endPose = new Pose(111, 72, toRadians(0));
 
     private void buildPaths() {
         startToMotif = robot.drivetrain.follower.pathBuilder()
@@ -69,18 +72,30 @@ public class Auto_RedClose_9 extends OpMode {
                 .addPath(new BezierLine(motifPose, shootPose))
                 .setLinearHeadingInterpolation(motifPose.getHeading(), shootPose.getHeading())
                 .build();
-        shootToIntake = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, intakeStart))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), intakeStart.getHeading())
+        shootToIntake1 = robot.drivetrain.follower.pathBuilder()
+                .addPath(new BezierLine(shootPose, intakeStart1))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), intakeStart1.getHeading())
                 .build();
-        intake = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(intakeStart, intakeEnd))
-                .setConstantHeadingInterpolation(intakeEnd.getHeading())
+        intake1 = robot.drivetrain.follower.pathBuilder()
+                .addPath(new BezierLine(intakeStart1, intakeEnd1))
+                .setConstantHeadingInterpolation(intakeEnd1.getHeading())
                 .setConstraints(slowIntakePathConstraints)
                 .build();
-        intakeToShoot = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(intakeEnd, shootPose))
-                .setLinearHeadingInterpolation(intakeEnd.getHeading(), shootPose.getHeading())
+        intakeToShoot1 = robot.drivetrain.follower.pathBuilder()
+                .addPath(new BezierLine(intakeEnd1, shootPose))
+                .setLinearHeadingInterpolation(intakeEnd1.getHeading(), shootPose.getHeading())
+                .build();
+        shootToIntake2 = robot.drivetrain.follower.pathBuilder()
+                .addPath(new BezierLine(shootPose, intakeStart2))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), intakeStart2.getHeading())
+                .build();
+        intake2 = robot.drivetrain.follower.pathBuilder()
+                .addPath(new BezierLine(intakeStart2, intakeEnd2))
+                .setLinearHeadingInterpolation(intakeStart2.getHeading(), intakeEnd2.getHeading())
+                .build();
+        intakeToShoot2 = robot.drivetrain.follower.pathBuilder()
+                .addPath(new BezierLine(intakeEnd2, shootPose))
+                .setLinearHeadingInterpolation(intakeEnd2.getHeading(), shootPose.getHeading())
                 .build();
         shootToEnd = robot.drivetrain.follower.pathBuilder()
                 .addPath(new BezierLine(shootPose, endPose))
@@ -125,6 +140,7 @@ public class Auto_RedClose_9 extends OpMode {
     public void pathUpdate() {
         switch (state) {
             case START_TO_MOTIF:
+                paths1Done = false;
                 robot.indexer.setPos(0);
                 robot.drivetrain.follower.followPath(startToMotif, true);
                 launchController.manualSpin();
@@ -138,30 +154,34 @@ public class Auto_RedClose_9 extends OpMode {
                     break;
                 robot.drivetrain.follower.followPath(motifToShoot, true);
                 setState(State.LAUNCH_ARTIFACTS);
+                break;
             case LAUNCH_ARTIFACTS:
                 if (robot.drivetrain.follower.isBusy()) break;
+                intakeController.innerIntake();
                 launchController.launchArtifacts(3);
-                setState(launchRound == 0 ? State.SHOOT_TO_INTAKE : State.SHOOT_TO_END);
+                setState(launchRound <= 1 ? State.SHOOT_TO_INTAKE : State.SHOOT_TO_END);
                 launchRound++;
                 break;
             case SHOOT_TO_INTAKE:
                 if (launchController.isBusy()) break;
-                robot.drivetrain.follower.followPath(shootToIntake, true);
+                robot.drivetrain.follower.followPath(paths1Done ? shootToIntake2 : shootToIntake1, true);
                 intakeController.intake();
                 setState(State.INTAKE);
                 break;
             case INTAKE:
                 if (robot.drivetrain.follower.isBusy()) break;
-                robot.drivetrain.follower.followPath(intake, INTAKE_MOVE_MAX_SPEED, true);
+                robot.drivetrain.follower.followPath(paths1Done ? intake2 : intake1,
+                        INTAKE_MOVE_MAX_SPEED, true);
                 setState(State.INTAKE_TO_SHOOT);
                 break;
             case INTAKE_TO_SHOOT:
                 if (robot.drivetrain.follower.isBusy() && intakeController.isBusy() &&
                         stateTimer.getElapsedTimeSeconds() < MAX_INTAKE_PATH_WAIT) break;
                 robot.drivetrain.follower.breakFollowing();
-                robot.drivetrain.follower.followPath(intakeToShoot, true);
+                robot.drivetrain.follower.followPath(paths1Done ? intakeToShoot2 : intakeToShoot1,
+                        INTAKE_MOVE_MAX_SPEED, true);
                 launchController.manualSpin();
-                intakeController.innerIntake();
+                paths1Done = true;
                 setState(State.LAUNCH_ARTIFACTS);
                 break;
             case SHOOT_TO_END:
@@ -205,7 +225,7 @@ public class Auto_RedClose_9 extends OpMode {
         pose = robot.drivetrain.follower.getPose();
         if (pose != null) saveOdometryPosition(pose);
         for (int i = 0; i < times.size(); i++)
-            tm.print("Time" + i, times.get(i));
+            tm.print("Time " + i, times.get(i));
         tm.update();
     }
 }

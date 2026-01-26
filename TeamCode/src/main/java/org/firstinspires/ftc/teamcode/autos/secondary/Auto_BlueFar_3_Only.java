@@ -71,7 +71,7 @@ public class Auto_BlueFar_3_Only extends OpMode {
         buildPaths();
         launchController = new LaunchController(robot);
         intakeController = new IntakeController(robot);
-        tm.print("🟦Blue🟦 Far Refactor Auto initialized");
+        tm.print("🟦Blue🟦 Far 3 Only Auto initialized");
         tm.update();
     }
 

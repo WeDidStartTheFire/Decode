@@ -95,7 +95,7 @@ public class Auto_RedFar extends OpMode {
         buildPaths();
         launchController = new LaunchController(robot);
         intakeController = new IntakeController(robot);
-        tm.print("🟥Red🟥 Far Refactor Auto initialized");
+        tm.print("🟥Red🟥 Far Auto initialized");
         tm.update();
     }
 

@@ -114,7 +114,7 @@ public class Auto_RedClose_9 extends OpMode {
         buildPaths();
         launchController = new LaunchController(robot);
         intakeController = new IntakeController(robot);
-        tm.print("🟥Red🟥 Close Auto initialized");
+        tm.print("🟥Red🟥 Close 9 Artifact initialized");
         tm.print("Motif", motif);
         tm.update();
     }

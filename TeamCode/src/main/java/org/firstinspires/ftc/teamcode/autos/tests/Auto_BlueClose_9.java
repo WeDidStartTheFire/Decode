@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.autos.tests;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INTAKE_MOVE_MAX_SPEED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_INTAKE_PATH_WAIT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_MOTIF_DETECT_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.slowIntakePathConstraints;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
@@ -150,7 +151,8 @@ public class Auto_BlueClose_9 extends OpMode {
             case MOTIF_TO_SHOOT:
                 RobotConstants.Motif m = robot.limelight.getMotif();
                 if (m != RobotConstants.Motif.UNKNOWN) motif = m;
-                if (robot.drivetrain.follower.isBusy() || motif == RobotConstants.Motif.UNKNOWN)
+                if (robot.drivetrain.follower.isBusy() || (motif == RobotConstants.Motif.UNKNOWN
+                        && stateTimer.getElapsedTimeSeconds() < MAX_MOTIF_DETECT_WAIT))
                     break;
                 robot.drivetrain.follower.followPath(motifToShoot, true);
                 setState(State.LAUNCH_ARTIFACTS);

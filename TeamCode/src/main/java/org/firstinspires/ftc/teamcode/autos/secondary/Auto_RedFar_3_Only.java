@@ -4,41 +4,27 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_MOTIF_DETECT_WAI
 import static org.firstinspires.ftc.teamcode.RobotConstants.RED_TELEOP_NAME;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
-import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
 import static java.lang.Math.toRadians;
 
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
-import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
-import org.firstinspires.ftc.teamcode.RobotState;
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
-import org.firstinspires.ftc.teamcode.controllers.IntakeController;
-import org.firstinspires.ftc.teamcode.controllers.LaunchController;
-import org.firstinspires.ftc.teamcode.robot.Robot;
-
-import java.util.ArrayList;
+import org.firstinspires.ftc.teamcode.autos.BaseAuto;
 
 
-@Autonomous(name = "🟥Red🟥 Far 3 Only", group = "!!Secondary", preselectTeleOp = RED_TELEOP_NAME)
-public class Auto_RedFar_3_Only extends OpMode {
-    private Robot robot;
+@Autonomous(name = Auto_RedFar_3_Only.name, group = "!!Secondary", preselectTeleOp = RED_TELEOP_NAME)
+public final class Auto_RedFar_3_Only extends BaseAuto<Auto_RedFar_3_Only.State> {
 
     private PathChain startToShoot, shootToEnd;
-    private TelemetryUtils tm;
+    static final String name = "🟥Red🟥 Far 3 Only";
+    private final RobotConstants.Color color = RobotConstants.Color.RED;
+    private final State initialState = State.START_TO_SHOOT;
 
-    private final Timer stateTimer = new Timer();
-    public ArrayList<Double> times = new ArrayList<>();
-    private State state;
-    private LaunchController launchController;
-    private IntakeController intakeController;
-
-    private enum State {
+    protected enum State {
         FINISHED,
         START_TO_SHOOT,
         LAUNCH_ARTIFACTS,
@@ -50,7 +36,15 @@ public class Auto_RedFar_3_Only extends OpMode {
     private final Pose endPose = new Pose(119.000, 9.500, toRadians(0));
 
 
-    private void buildPaths() {
+    protected void configure() {
+        super.color = color;
+        super.name = name;
+        super.startPose = startPose;
+        super.shootPose = shootPose;
+        super.initialState = initialState;
+    }
+
+    protected void buildPaths() {
         startToShoot = robot.drivetrain.follower.pathBuilder()
                 .addPath(new BezierLine(startPose, shootPose))
                 .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
@@ -61,40 +55,7 @@ public class Auto_RedFar_3_Only extends OpMode {
                 .build();
     }
 
-    @Override
-    public void init() {
-        RobotState.auto = true;
-        RobotState.color = RobotConstants.Color.RED;
-        robot = new Robot(hardwareMap, telemetry, true);
-        robot.drivetrain.follower.setStartingPose(startPose);
-        robot.indexer.markAllUnknown();
-        tm = robot.drivetrain.tm;
-        buildPaths();
-        launchController = new LaunchController(robot);
-        intakeController = new IntakeController(robot);
-        tm.print("🟥Red🟥 Far 3 Only Auto initialized");
-        tm.update();
-    }
-
-    @Override
-    public void start() {
-        robot.feeder.retract();
-        robot.limelight.start();
-        RobotState.motif = robot.limelight.getMotif();
-        setState(State.START_TO_SHOOT);
-    }
-
-    private void setStateNoWait(State state) {
-        this.state = state;
-    }
-
-    private void setState(State state) {
-        setStateNoWait(state);
-        times.add(stateTimer.getElapsedTimeSeconds());
-        this.stateTimer.resetTimer();
-    }
-
-    public void pathUpdate() {
+    protected void pathUpdate() {
         switch (state) {
             case START_TO_SHOOT:
                 robot.indexer.setPos(0);
@@ -122,39 +83,5 @@ public class Auto_RedFar_3_Only extends OpMode {
                 if (!robot.drivetrain.follower.isBusy() && pose != null) saveOdometryPosition(pose);
                 break;
         }
-    }
-
-    @Override
-    public void loop() {
-        robot.drivetrain.follower.update();
-        pose = robot.drivetrain.follower.getPose();
-        vel = robot.drivetrain.follower.getVelocity();
-        pathUpdate();
-        robot.indexer.update();
-        launchController.update();
-        intakeController.update();
-        robot.led.update();
-
-        tm.drawRobot(robot.drivetrain.follower);
-        tm.print("Path State", state);
-        tm.print("Launcher State", launchController.getState());
-        tm.print("Intake State", intakeController.getState());
-        tm.print("Motif", motif);
-        tm.print("Indexer Pos", robot.indexer.getGoalPos());
-        if (pose != null) tm.print(pose);
-        tm.print("To Speed", robot.launcher.toSpeed());
-        tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose));
-        tm.print("Launcher Vel", robot.launcher.getVel());
-    }
-
-    @Override
-    public void stop() {
-        robot.drivetrain.follower.update();
-        robot.drivetrain.follower.breakFollowing();
-        pose = robot.drivetrain.follower.getPose();
-        if (pose != null) saveOdometryPosition(pose);
-        for (int i = 0; i < times.size(); i++)
-            tm.print("Time" + i, times.get(i));
-        tm.update();
     }
 }

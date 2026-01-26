@@ -10,7 +10,6 @@ import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
 import static java.lang.Math.toRadians;
 
-import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -70,7 +69,7 @@ public class Auto_BlueClose extends OpMode {
                 .setLinearHeadingInterpolation(motifPose.getHeading(), shootPose.getHeading())
                 .build();
         shootToIntake = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, intakeStart))
+                .addPath(new BezierLine(shootPose, intakeStart))
                 .setLinearHeadingInterpolation(shootPose.getHeading(), intakeStart.getHeading())
                 .build();
         intake = robot.drivetrain.follower.pathBuilder()

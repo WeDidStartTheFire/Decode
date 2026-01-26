@@ -32,8 +32,10 @@ import java.util.ArrayList;
 @Autonomous(name = "🟦Blue🟦 Far 9", group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
 public class Auto_BlueFar_9 extends OpMode {
     private Robot robot;
+    private boolean paths1Done;
 
-    private PathChain startToShoot, shootToIntake, intake, intakeToShoot, shootToEnd;
+    private PathChain startToShoot, shootToIntake1, intake1, intakeToShoot1, shootToIntake2,
+            intake2, intakeToShoot2, shootToEnd;
     private TelemetryUtils tm;
 
     private final Timer stateTimer = new Timer();
@@ -55,8 +57,10 @@ public class Auto_BlueFar_9 extends OpMode {
 
     private final Pose startPose = new Pose(63.500, 8.500, toRadians(90));
     private final Pose shootPose = new Pose(60.000, 20.000, toRadians(114.80566575481602));
-    private final Pose intakeStart = new Pose(46, 35.000, toRadians(180));
-    private final Pose intakeEnd = new Pose(14, 35, toRadians(180));
+    private final Pose intakeStart1 = new Pose(46, 35.000, toRadians(180));
+    private final Pose intakeEnd1 = new Pose(14, 35, toRadians(180));
+    private final Pose intakeStart2 = new Pose(25, 9.5, toRadians(180));
+    private final Pose intakeEnd2 = new Pose(9, 9.5, toRadians(180));
     private final Pose endPose = new Pose(25, 9.5, toRadians(180));
 
     private void buildPaths() {
@@ -64,18 +68,31 @@ public class Auto_BlueFar_9 extends OpMode {
                 .addPath(new BezierLine(startPose, shootPose))
                 .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
-        shootToIntake = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, new Pose(53.340, 34.935), intakeStart))
+        shootToIntake1 = robot.drivetrain.follower.pathBuilder()
+                .addPath(new BezierCurve(shootPose, new Pose(53.340, 34.935), intakeStart1))
                 .setTangentHeadingInterpolation()
                 .build();
-        intake = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(intakeStart, intakeEnd))
-                .setConstantHeadingInterpolation(intakeEnd.getHeading())
+        intake1 = robot.drivetrain.follower.pathBuilder()
+                .addPath(new BezierLine(intakeStart1, intakeEnd1))
+                .setLinearHeadingInterpolation(intakeStart1.getHeading(), intakeEnd1.getHeading())
                 .setConstraints(slowIntakePathConstraints)
                 .build();
-        intakeToShoot = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(intakeEnd, shootPose))
-                .setLinearHeadingInterpolation(intakeEnd.getHeading(), shootPose.getHeading())
+        intakeToShoot1 = robot.drivetrain.follower.pathBuilder()
+                .addPath(new BezierLine(intakeEnd1, shootPose))
+                .setLinearHeadingInterpolation(intakeEnd1.getHeading(), shootPose.getHeading())
+                .build();
+        shootToIntake2 = robot.drivetrain.follower.pathBuilder()
+                .addPath(new BezierLine(shootPose, intakeStart2))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), intakeStart2.getHeading())
+                .build();
+        intake2 = robot.drivetrain.follower.pathBuilder()
+                .addPath(new BezierLine(intakeStart2, intakeEnd2))
+                .setLinearHeadingInterpolation(intakeStart2.getHeading(), intakeEnd2.getHeading())
+                .setConstraints(slowIntakePathConstraints)
+                .build();
+        intakeToShoot2 = robot.drivetrain.follower.pathBuilder()
+                .addPath(new BezierLine(intakeEnd2, shootPose))
+                .setLinearHeadingInterpolation(intakeEnd2.getHeading(), shootPose.getHeading())
                 .build();
         shootToEnd = robot.drivetrain.follower.pathBuilder()
                 .addPath(new BezierLine(shootPose, endPose))
@@ -94,7 +111,7 @@ public class Auto_BlueFar_9 extends OpMode {
         buildPaths();
         launchController = new LaunchController(robot);
         intakeController = new IntakeController(robot);
-        tm.print("🟦Blue🟦 Far Refactor Auto initialized");
+        tm.print("🟦Blue🟦 Far 9 Artifact Auto initialized");
         tm.update();
     }
 
@@ -119,6 +136,7 @@ public class Auto_BlueFar_9 extends OpMode {
     public void pathUpdate() {
         switch (state) {
             case START_TO_SHOOT:
+                paths1Done = false;
                 robot.indexer.setPos(0);
                 RobotConstants.Motif m = robot.limelight.getMotif();
                 if (motif != RobotConstants.Motif.UNKNOWN) motif = m;
@@ -133,26 +151,30 @@ public class Auto_BlueFar_9 extends OpMode {
                 if (robot.drivetrain.follower.isBusy()) break;
                 intakeController.innerIntake();
                 launchController.launchArtifacts(3);
-                setState(launchRound == 0 ? State.SHOOT_TO_INTAKE : State.SHOOT_TO_END);
+                setState(launchRound <= 1 ? State.SHOOT_TO_INTAKE : State.SHOOT_TO_END);
                 launchRound++;
                 break;
             case SHOOT_TO_INTAKE:
                 if (launchController.isBusy()) break;
-                robot.drivetrain.follower.followPath(shootToIntake, true);
+                robot.drivetrain.follower.followPath(paths1Done ? shootToIntake2 : shootToIntake1,
+                        true);
                 intakeController.intake();
                 setState(State.INTAKE);
                 break;
             case INTAKE:
                 if (robot.drivetrain.follower.isBusy()) break;
-                robot.drivetrain.follower.followPath(intake, INTAKE_MOVE_MAX_SPEED, true);
+                robot.drivetrain.follower.followPath(paths1Done ? intake2 : intake1,
+                        INTAKE_MOVE_MAX_SPEED, true);
                 setState(State.INTAKE_TO_SHOOT);
                 break;
             case INTAKE_TO_SHOOT:
                 if (robot.drivetrain.follower.isBusy() && intakeController.isBusy() &&
                         stateTimer.getElapsedTimeSeconds() < MAX_INTAKE_PATH_WAIT) break;
                 robot.drivetrain.follower.breakFollowing();
-                robot.drivetrain.follower.followPath(intakeToShoot, true);
+                robot.drivetrain.follower.followPath(paths1Done ? intakeToShoot2 : intakeToShoot1,
+                        true);
                 launchController.manualSpin();
+                paths1Done = true;
                 setState(State.LAUNCH_ARTIFACTS);
                 break;
             case SHOOT_TO_END:

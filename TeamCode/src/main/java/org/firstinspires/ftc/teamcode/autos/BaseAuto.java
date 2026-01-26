@@ -65,6 +65,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         onInit();
     }
 
+    @Override
     public void start() {
         robot.feeder.retract();
         robot.limelight.start();

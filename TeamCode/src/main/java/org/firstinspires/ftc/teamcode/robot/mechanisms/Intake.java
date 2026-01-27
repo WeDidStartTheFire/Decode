@@ -21,7 +21,7 @@ public class Intake {
     public Intake(HardwareMap hardwareMap, TelemetryUtils tm) {
         intakeMotor = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "intakeMotor");
         if (intakeMotor == null)
-            tm.warn(HIGH, "Intkae Motor disconnected. Check Expansion hub motor port 0");
+            tm.warn(HIGH, "Intake Motor disconnected. Check Expansion hub motor port 0");
 
         intakeServoA = HardwareInitializer.init(hardwareMap, CRServo.class, "intakeServoA");
         intakeServoB = HardwareInitializer.init(hardwareMap, CRServo.class, "intakeServoB");

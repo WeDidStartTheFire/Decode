@@ -67,6 +67,10 @@ public class Turret {
         this.target = target;
     }
 
+
+    /**
+     * Resets the turret encoder to 0 and switches back to RUN_WITHOUT_ENCODER mode.
+     */
     private void resetEncoder() {
         if (turretMotor == null) return;
         turretPIDController.updatePosition(0);
@@ -74,6 +78,17 @@ public class Turret {
         turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
+    /**
+     * Returns true if the turret's velocity or power is in the direction indicated by the sign.
+     * <p>
+     * If the sign is positive, this method will return true if the turret's velocity is positive
+     * or its power is positive. If the sign is negative, this method will return true if the
+     * turret's velocity is negative or its power is negative.
+     *
+     * @param sign The direction in which to check the turret's velocity or power.
+     * @return True if the turret's velocity or power is in the direction indicated by the sign,
+     * false otherwise.
+     */
     private boolean velocitySign(int sign) {
         if (turretMotor == null || turretMotor.getVelocity() * sign < 0) return false;
         return turretMotor.getVelocity() * sign > 0 || turretMotor.getPower() * sign > 0;

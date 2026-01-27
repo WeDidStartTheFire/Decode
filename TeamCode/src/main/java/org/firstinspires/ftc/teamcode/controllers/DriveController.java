@@ -43,6 +43,11 @@ public class DriveController {
     private final Timer driveInputTimer = new Timer();
     private boolean aiming = false, holding = false, following = false;
 
+    /**
+     * Initializes the DriveController with robot instance.
+     *
+     * @param robot Robot instance containing drivetrain hardware
+     */
     public DriveController(Robot robot) {
         this.robot = robot;
         this.tm = robot.drivetrain.tm;
@@ -133,8 +138,8 @@ public class DriveController {
             holding = true;
         }
 
-        if (holding || following) robot.drivetrain.setMotorZeroPowerBehaviors(BRAKE);
-        else robot.drivetrain.setMotorZeroPowerBehaviors(FLOAT);
+        if (holding || following) robot.drivetrain.setZeroPowerBehavior(BRAKE);
+        else robot.drivetrain.setZeroPowerBehavior(FLOAT);
 
         if (!robot.drivetrain.follower.isBusy() && following) {
             following = false;

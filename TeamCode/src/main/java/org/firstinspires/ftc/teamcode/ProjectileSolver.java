@@ -35,21 +35,48 @@ public class ProjectileSolver {
         }
     }
 
+    /**
+     * Gets the launch solution for the specified robot pose.
+     *
+     * @param pose Robot pose to calculate launch solution for
+     * @return LaunchSolution containing launch parameters, or null if no solution exists
+     */
     public static @Nullable LaunchSolution getLaunchSolution(@NonNull Pose pose) {
         return ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT, vel == null ? new Vector() : vel,
                 RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
     }
 
+    /**
+     * Gets the launch solution for the current robot pose and velocity ({@link RobotState#pose} and
+     * {@link RobotState#vel})
+     *
+     * @return LaunchSolution containing launch parameters, or null if no solution exists
+     */
     public static @Nullable LaunchSolution getLaunchSolution() {
         return pose == null ? null : getLaunchSolution(pose);
     }
 
+    /**
+     * Gets the launch solution assuming the robot is stationary.
+     *
+     * @return LaunchSolution containing launch parameters, or null if no solution exists
+     */
     public static @Nullable LaunchSolution getLaunchSolutionStationary() {
         if (pose == null) return null;
         return ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT, new Vector(),
                 RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
     }
 
+    /**
+     * Solves for launch parameters given robot and target positions.
+     *
+     * @param robotPose      Current robot position and orientation
+     * @param launcherHeight Height of the launcher from ground
+     * @param robotVel       Robot velocity vector
+     * @param targetPose     Target 3D position
+     * @param launcherAngle  Launch angle from horizontal
+     * @return LaunchSolution containing launch parameters, or null if no solution exists
+     */
     public static @Nullable LaunchSolution solveLaunch(
             Pose robotPose, double launcherHeight, Vector robotVel, Pose3D targetPose,
             double launcherAngle
@@ -128,10 +155,29 @@ public class ProjectileSolver {
         return abs(solveQuartic(t, a, b, c, d)) > 1 ? -1 : t;
     }
 
+    /**
+     * Evaluates the quartic polynomial at the given value.
+     *
+     * @param t Value at which to evaluate the polynomial
+     * @param a Coefficient of t^4 term
+     * @param b Coefficient of t^2 term
+     * @param c Coefficient of t term
+     * @param d Constant term
+     * @return Result of evaluating the polynomial
+     */
     public static double solveQuartic(double t, double a, double b, double c, double d) {
         return (a * t * t * t * t) + (b * t * t) + (c * t) + d;
     }
 
+    /**
+     * Calculates the derivative of the quartic polynomial.
+     *
+     * @param t Value at which to evaluate the derivative
+     * @param a Coefficient of t^4 term
+     * @param b Coefficient of t^2 term
+     * @param c Coefficient of t term
+     * @return Result of evaluating the derivative
+     */
     public static double quarticDerivative(double t, double a, double b, double c) {
         return (4 * a * t * t * t) + (2 * b * t) + c;
     }

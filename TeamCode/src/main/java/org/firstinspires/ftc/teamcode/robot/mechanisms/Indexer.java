@@ -296,6 +296,12 @@ public class Indexer {
         return false;
     }
 
+    /**
+     * Returns whether the indexer does not contain a specified artifact
+     *
+     * @param artifact The artifact to check for
+     * @return true if the indexer does not contain the artifact or if it is unknown, false if it does
+     */
     public boolean doesNotContain(RobotConstants.Artifact artifact) {
         return !Arrays.asList(artifacts).contains(artifact);
     }

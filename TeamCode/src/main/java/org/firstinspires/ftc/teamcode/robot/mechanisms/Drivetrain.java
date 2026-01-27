@@ -51,14 +51,27 @@ public class Drivetrain {
     public TelemetryUtils tm;
     private final HardwareMap hardwareMap;
 
+    /**
+     * Configures the drivetrain to use Kalman filter localization.
+     */
     public void useKalmanFollower() {
         follower = Constants.createKalmanFollower(hardwareMap);
     }
 
+    /**
+     * Configures the drivetrain to use Limelight localization.
+     */
     public void useLimelightFollower() {
         follower = Constants.createLimelightFollower(hardwareMap);
     }
 
+    /**
+     * Initializes the drivetrain with hardware components.
+     *
+     * @param hardwareMap HardwareMap containing motor and sensor configurations
+     * @param tm          TelemetryUtils instance for debugging output
+     * @param useOdom     Whether to use odometry (because it may be disconnected)
+     */
     public Drivetrain(HardwareMap hardwareMap, TelemetryUtils tm, boolean useOdom) {
         this.tm = tm;
         this.hardwareMap = hardwareMap;
@@ -87,8 +100,8 @@ public class Drivetrain {
             rf.setDirection(DcMotorEx.Direction.FORWARD);
             rb.setDirection(DcMotorEx.Direction.FORWARD);
 
-            if (auto) setMotorZeroPowerBehaviors(BRAKE);
-            else setMotorZeroPowerBehaviors(FLOAT);
+            if (auto) setZeroPowerBehavior(BRAKE);
+            else setZeroPowerBehavior(FLOAT);
 
             lb.setTargetPosition(lb.getCurrentPosition());
             rb.setTargetPosition(rb.getCurrentPosition());
@@ -166,14 +179,11 @@ public class Drivetrain {
         rb.setMode(mode);
     }
 
-    public void setMotorZeroPowerBehaviors(DcMotor.ZeroPowerBehavior behavior) {
-        if (lb == null) return;
-        lf.setZeroPowerBehavior(behavior);
-        lb.setZeroPowerBehavior(behavior);
-        rf.setZeroPowerBehavior(behavior);
-        rb.setZeroPowerBehavior(behavior);
-    }
-
+    /**
+     * Sets the same power for all drivetrain motors.
+     *
+     * @param power Power value to set for all motors on [-1, 1]
+     */
     public void setMotorPowers(double power) {
         setMotorPowers(power, power, power, power);
     }
@@ -195,15 +205,23 @@ public class Drivetrain {
     }
 
     /**
-     * Sets the velocity of all drive train motors to the same value.
+     * Sets the same velocity for all drivetrain motors.
      *
-     * @param velocity Velocity of the motors.
+     * @param velocity Velocity to set for all motors
      */
     public void setMotorVelocities(double velocity) {
         if (lb == null) return;
         setMotorVelocities(velocity, velocity, velocity, velocity);
     }
 
+    /**
+     * Sets individual motor velocities for the drivetrain.
+     *
+     * @param lbPower Left back motor velocity
+     * @param rbPower Right back motor velocity
+     * @param lfPower Left front motor velocity
+     * @param rfPower Right front motor velocity
+     */
     public void setMotorVelocities(double lbPower, double rbPower, double lfPower, double rfPower) {
         if (lb == null) return;
         lf.setVelocity(lfPower);
@@ -212,6 +230,11 @@ public class Drivetrain {
         rb.setVelocity(rbPower);
     }
 
+    /**
+     * Sets zero power behavior for all drivetrain motors.
+     *
+     * @param behavior The zero power behavior (BRAKE or FLOAT)
+     */
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior) {
         if (lb == null) return;
         lf.setZeroPowerBehavior(behavior);

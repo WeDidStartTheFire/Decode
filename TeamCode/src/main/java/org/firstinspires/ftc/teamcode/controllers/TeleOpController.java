@@ -28,6 +28,13 @@ public class TeleOpController {
     boolean useOdometry;
     TelemetryUtils tm;
 
+    /**
+     * Initializes the TeleOpController with robot hardware and gamepads.
+     *
+     * @param robot    Robot instance containing all hardware mechanisms
+     * @param gamepad1 Primary gamepad for drivetrain control
+     * @param gamepad2 Secondary gamepad for launcher/intake control
+     */
     public TeleOpController(Robot robot, Gamepad gamepad1, Gamepad gamepad2) {
         this.robot = robot;
         intakeController = new IntakeController(robot);
@@ -45,6 +52,10 @@ public class TeleOpController {
         tm = robot.drivetrain.tm;
     }
 
+    /**
+     * Initializes robot systems for TeleOp mode.
+     * Sets up feeder, indexer, limelight, and detects the team motif.
+     */
     public void start() {
         robot.feeder.retract();
         robot.indexer.setPos(0);
@@ -52,6 +63,10 @@ public class TeleOpController {
         if (motif == RobotConstants.Motif.UNKNOWN) motif = robot.limelight.getMotif();
     }
 
+    /**
+     * Updates all robot systems including telemetry, odometry, and mechanisms.
+     * Should be called repeatedly during TeleOp operation.
+     */
     public void update() {
         tm.print("Motif", motif);
         tm.showLogs(3);
@@ -65,6 +80,10 @@ public class TeleOpController {
         robot.led.update();
     }
 
+    /**
+     * Stops all robot systems and displays final logs.
+     * Should be called when TeleOp mode ends.
+     */
     public void stop() {
         driveController.stop();
         launchController.stop();
@@ -106,6 +125,10 @@ public class TeleOpController {
         else driveController.updateTeleOpNoPedro(gamepad1, fieldCentric);
     }
 
+    /**
+     * Updates the indexer mechanism during TeleOp.
+     * Handles manual rotation and automatic inner intake control to keep artifacts in the indexer.
+     */
     public void updateIndexerTeleOp() {
         tm.print("Indexer still", robot.indexer.isStill());
         tm.print("Indexer goal pos", robot.indexer.getGoalPos());
@@ -116,10 +139,19 @@ public class TeleOpController {
         if (!intakeController.isBusy() && !robot.indexer.isStill()) intakeController.innerIntake();
     }
 
+
+    /**
+     * Updates the indexer mechanism state.
+     * Should be called every loop iteration.
+     */
     public void indexerUpdate() {
         robot.indexer.update();
     }
 
+    /**
+     * Handles intake control based on gamepad input.
+     * Manages intake, outtake, and automatic stopping.
+     */
     public void updateIntake() {
         if (gamepad1.right_trigger > 0.3) intakeController.intake();
         else if (gamepad1.right_bumper) intakeController.outtake();
@@ -129,6 +161,11 @@ public class TeleOpController {
         if (gamepad1.right_trigger <= 0.3 && !gamepad1.right_bumper) intakeController.stop();
     }
 
+
+    /**
+     * Updates launcher controls during TeleOp mode.
+     * Handles manual spin, intake, and artifact launching.
+     */
     public void updateLauncherTeleOp() {
         if (gamepad2.right_trigger >= 0.5) launchController.manualSpin();
         else launchController.manualStop();
@@ -147,6 +184,10 @@ public class TeleOpController {
         tm.print("To Speed", robot.launcher.toSpeed());
     }
 
+    /**
+     * Controls feeder logic for launching artifacts.
+     * Coordinates feeder movement with launcher and indexer.
+     */
     public void feederLogic() {
         tm.print("Feeder Up", robot.feeder.isUp());
         tm.print("Feeder Pos", robot.feeder.getPos());

@@ -23,6 +23,12 @@ public class Launcher {
     private final @Nullable DcMotorEx launcherMotorA, launcherMotorB;
     private @Nullable Timer spinningTimer;
 
+    /**
+     * Initializes the launcher with hardware components.
+     *
+     * @param hardwareMap HardwareMap containing motor configurations
+     * @param tm          TelemetryUtils instance for debugging output
+     */
     public Launcher(HardwareMap hardwareMap, TelemetryUtils tm) {
         launcherMotorA = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "launcherMotorA");
         if (launcherMotorA == null)
@@ -92,6 +98,11 @@ public class Launcher {
         if (launcherMotorB != null) launcherMotorB.setVelocity(motorVel);
     }
 
+    /**
+     * Gets the duration the launcher has been spinning.
+     *
+     * @return Duration in seconds, or 0 if not currently spinning
+     */
     public double getSpinningDuration() {
         return spinningTimer == null ? 0 : spinningTimer.getElapsedTimeSeconds();
     }
@@ -142,6 +153,12 @@ public class Launcher {
         if (launcherMotorB != null) launcherMotorB.setPower(0);
     }
 
+    /**
+     * Converts ball velocity to motor velocity with a scaling factor.
+     *
+     * @param ballVel Ball velocity in appropriate units (in/s)
+     * @return Motor velocity in ticks per second
+     */
     private double ballVelToMotorVel(double ballVel) {
         return BALL_VEL_TO_MOTOR_VEL * ballVel;
     }

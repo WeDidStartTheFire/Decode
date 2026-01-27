@@ -123,6 +123,12 @@ public class RobotConstants {
             }
         }
 
+        /**
+         * Gets the nth artifact in this motif sequence (0-indexed).
+         *
+         * @param n The position in the motif sequence (0-based, wraps around)
+         * @return The artifact at the specified position
+         */
         public Artifact getNthArtifact(int n) {
             n %= 3;
             switch (this) {
@@ -185,7 +191,12 @@ public class RobotConstants {
     public enum LEDColors {
         OFF, RED, ORANGE, YELLOW, SAGE, GREEN, AZURE, BLUE, INDIGO, VIOLET, WHITE;
 
-        /** sourced from <a href="https://bit.ly/4b14AsU">this image</a> **/
+        /**
+         * Gets the position value for this LED color on the LED strip. <p>
+         * Based on <a href="https://cdn11.bigcommerce.com/s-x56mtydx1w/images/stencil/original/products/2275/15126/3118-0808-0002-Product-Insight-4__88285.1757516465.png?c=1">this image</a>.
+         *
+         * @return Position value from 0.0 to 1.0 representing the color's position on the LED strip
+         */
         public double position() {
             switch (this) {
                 case RED:

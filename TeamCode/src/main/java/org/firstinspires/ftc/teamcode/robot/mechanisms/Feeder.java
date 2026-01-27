@@ -34,11 +34,21 @@ public class Feeder {
             tm.warn(LOW, "Touch Sensor B for the feeder is disconnected.");
     }
 
+    /**
+     * Returns true if the feeder is up. Based on the touch sensors.
+     *
+     * @return true if the feeder is up
+     */
     public boolean isUp() {
         return (touchSensorA != null && !touchSensorA.isPressed()) &&
                 (touchSensorB != null && !touchSensorB.isPressed());
     }
 
+    /**
+     * Returns the goal position of the feeder.
+     *
+     * @return the position of the feeder
+     */
     public double getPos() {
         if (feederServoA == null && feederServoB == null) return -1;
         if (feederServoA == null) return feederServoB.getPosition();
@@ -46,12 +56,18 @@ public class Feeder {
         return (feederServoA.getPosition() + feederServoB.getPosition()) / 2.0;
     }
 
+    /**
+     * Raises the feeder.
+     */
     public void raise() {
         if (feederServoA == null || feederServoB == null) return;
         feederServoB.setPosition(1);
         feederServoA.setPosition(.95);
     }
 
+    /**
+     * Retracts the feeder.
+     */
     public void retract() {
         if (feederServoA == null || feederServoB == null) return;
         feederServoA.setPosition(0);

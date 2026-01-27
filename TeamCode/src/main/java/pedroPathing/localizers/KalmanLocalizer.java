@@ -29,6 +29,7 @@ import org.ejml.dense.row.CommonOps_DDRM;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 import pedroPathing.Constants;
 
@@ -68,6 +69,7 @@ public class KalmanLocalizer implements Localizer {
     DMatrixRMaj zVel = new DMatrixRMaj(3, 1);
     DMatrixRMaj R_vel = CommonOps_DDRM.identity(3);
 
+    @Nullable
     Limelight3A limelight;
     boolean useMetatag2 = true;
     double IMUoffset;
@@ -97,10 +99,12 @@ public class KalmanLocalizer implements Localizer {
 
         otos = map.get(SparkFunOTOS.class, Constants.otosConstants.hardwareMapName);
 
-        limelight = map.get(Limelight3A.class, "limelight");
-        limelight.setPollRateHz(100);
-        limelight.pipelineSwitch(0);
-        limelight.start();
+        limelight = HardwareInitializer.init(map, Limelight3A.class, "limelight");
+        if (limelight != null) {
+            limelight.setPollRateHz(100);
+            limelight.pipelineSwitch(0);
+            limelight.start();
+        }
 
         setStartPose(startPose);
 
@@ -114,9 +118,9 @@ public class KalmanLocalizer implements Localizer {
         priorX.set(2, 0, startPose.getHeading());
 
         DMatrixRMaj priorP = CommonOps_DDRM.identity(KALMAN_STATE_DIM);
-        priorP.set(0,0, 4.0);
-        priorP.set(1,1, 4.0);
-        priorP.set(2,2, Math.toRadians(10.0) * Math.toRadians(10.0));
+        priorP.set(0, 0, 4.0);
+        priorP.set(1, 1, 4.0);
+        priorP.set(2, 2, toRadians(10.0) * toRadians(10.0));
 
         kalmanFilter.setState(priorX, priorP);
 
@@ -128,12 +132,13 @@ public class KalmanLocalizer implements Localizer {
         return pose;
     }
 
-    public Pose getVelocity() {
+    public @Nullable Pose getVelocity() {
         return vel;
     }
 
-    public Vector getVelocityVector() {
-        return getVelocity().getAsVector();
+    public @Nullable Vector getVelocityVector() {
+        Pose vel = getVelocity();
+        return vel == null ? null : vel.getAsVector();
     }
 
     public void setStartPose(Pose setStart) {
@@ -163,10 +168,16 @@ public class KalmanLocalizer implements Localizer {
         double llYaw = new Pose(0, 0, robotYaw, PedroCoordinates.INSTANCE)
                 .getAsCoordinateSystem(FTCCoordinates.INSTANCE)
                 .getHeading();
-        limelight.updateRobotOrientation(toDegrees(llYaw));
-        LLResult result = limelight.getLatestResult();
-        Pose3D botpose = useMetatag2 ? result.getBotpose_MT2() : result.getBotpose();
-        double[] stdevs = useMetatag2 ? result.getStddevMt2() : result.getStddevMt1();
+
+        LLResult result = null;
+        Pose3D botpose = null;
+        double[] stdevs = {};
+        if (limelight != null) {
+            limelight.updateRobotOrientation(toDegrees(llYaw));
+            result = limelight.getLatestResult();
+            botpose = useMetatag2 ? result.getBotpose_MT2() : result.getBotpose();
+            stdevs = useMetatag2 ? result.getStddevMt2() : result.getStddevMt1();
+        }
 
         otosLocalizer.update();
         SparkFunOTOS.Pose2D otosStdDev = otos.getPositionStdDev();
@@ -233,8 +244,11 @@ public class KalmanLocalizer implements Localizer {
         // Restore pose-measurement H for absolute sensor updates (e.g. Limelight)
         kalmanFilter.setH(kalmanH);
 
-        boolean acceptMT1 = !useMetatag2 && !(result.getBotposeTagCount() == 1 && result.getBotposeAvgDist() > 3/*m*/);
-        boolean acceptMT2 = useMetatag2;
+        boolean acceptMT1 = false, acceptMT2 = false;
+        if (limelight != null && result != null) {
+            acceptMT1 = !useMetatag2 && !(result.getBotposeTagCount() == 1 && result.getBotposeAvgDist() > 3/*m*/);
+            acceptMT2 = useMetatag2;
+        }
         if ((acceptMT1 || acceptMT2) && result.getBotposeTagCount() > 0 && botpose != null &&
                 stdevs != null && stdevs.length >= 2 && abs(yawRate) < toRadians(360)) {
             pose = new Pose(LLLinearUnit.toInches(botpose.getPosition().x),

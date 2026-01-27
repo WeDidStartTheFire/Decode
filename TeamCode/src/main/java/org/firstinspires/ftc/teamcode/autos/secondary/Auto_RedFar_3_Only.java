@@ -60,7 +60,7 @@ public final class Auto_RedFar_3_Only extends BaseAuto<Auto_RedFar_3_Only.State>
             case START_TO_SHOOT:
                 robot.indexer.setPos(0);
                 RobotConstants.Motif m = robot.limelight.getMotif();
-                if (motif != RobotConstants.Motif.UNKNOWN) motif = m;
+                if (m != RobotConstants.Motif.UNKNOWN) motif = m;
                 if (motif == RobotConstants.Motif.UNKNOWN &&
                         stateTimer.getElapsedTimeSeconds() < MAX_MOTIF_DETECT_WAIT) break;
                 robot.drivetrain.follower.followPath(startToShoot, true);

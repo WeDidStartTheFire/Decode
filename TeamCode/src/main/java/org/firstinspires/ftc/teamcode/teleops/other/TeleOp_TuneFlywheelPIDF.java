@@ -71,7 +71,7 @@ public class TeleOp_TuneFlywheelPIDF extends OpMode {
         if (gamepad1.dpadRightWasPressed()) P += increments[incIdx];
         if (gamepad1.dpadLeftWasPressed()) P -= increments[incIdx];
 
-        if (robot.launcher.isConnected()) return;
+        if (!robot.launcher.isConnected()) return;
         pidf = new PIDFCoefficients(P, 0, 0, F);
 //        robot.launcherMotorA.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
 //        robot.launcherMotorB.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);

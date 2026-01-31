@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact;
+import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.robotCentric;
@@ -27,6 +28,7 @@ public class TeleOpController {
     public Follower follower;
     boolean useOdometry;
     TelemetryUtils tm;
+    long lastUpdateTime;
 
     /**
      * Initializes the TeleOpController with robot hardware and gamepads. To be called in the init()
@@ -72,7 +74,10 @@ public class TeleOpController {
     public void update() {
         tm.print("Motif", motif);
         tm.update(50, 3);
+        long t = runtime.nanoseconds();
         robot.updateBulkCache();
+        tm.print("dt (ms)", (t - lastUpdateTime) / 1_000_000);
+        lastUpdateTime = t;
         follower.update();
         if (follower.getPose() != null) pose = follower.getPose();
         vel = follower.getVelocity();

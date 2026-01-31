@@ -125,7 +125,7 @@ public class TelemetryUtils {
     public void update(int ms, int numLogs) {
         if (System.currentTimeMillis() - lastUpdate < ms) return;
         lastUpdate = System.currentTimeMillis();
-        showLogs(numLogs);
+        if (numLogs > 0) showLogs(numLogs);
         update();
     }
 

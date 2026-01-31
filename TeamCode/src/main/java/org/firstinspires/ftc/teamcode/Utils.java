@@ -20,28 +20,6 @@ public class Utils {
     }
 
     /**
-     * Sleep a specified number of milliseconds.
-     *
-     * @param ms The amount of milliseconds to sleep.
-     */
-    public static void sleep(long ms) {
-        try {
-            Thread.sleep(ms);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    /**
-     * Sleep a specified number of seconds.
-     *
-     * @param seconds The amount of seconds to sleep.
-     */
-    public static void s(double seconds) {
-        sleep((long) seconds * 1000);
-    }
-
-    /**
      * Saves the current pose to a file.
      *
      * @param pos Pose to save

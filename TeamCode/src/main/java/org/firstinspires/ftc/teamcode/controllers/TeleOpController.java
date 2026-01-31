@@ -29,7 +29,8 @@ public class TeleOpController {
     TelemetryUtils tm;
 
     /**
-     * Initializes the TeleOpController with robot hardware and gamepads.
+     * Initializes the TeleOpController with robot hardware and gamepads. To be called in the init()
+     * method of the OpMode.
      *
      * @param robot    Robot instance containing all hardware mechanisms
      * @param gamepad1 Primary gamepad for drivetrain control
@@ -37,6 +38,7 @@ public class TeleOpController {
      */
     public TeleOpController(Robot robot, Gamepad gamepad1, Gamepad gamepad2) {
         this.robot = robot;
+        this.robot.initBulkCache();
         intakeController = new IntakeController(robot);
         launchController = new LaunchController(robot);
         driveController = new DriveController(robot);
@@ -53,8 +55,8 @@ public class TeleOpController {
     }
 
     /**
-     * Initializes robot systems for TeleOp mode.
-     * Sets up feeder, indexer, limelight, and detects the team motif.
+     * Initializes robot systems for TeleOp mode. Sets up feeder, indexer, limelight, and detects
+     * the team motif. To be called in the start() method of the OpMode.
      */
     public void start() {
         robot.feeder.retract();
@@ -69,8 +71,8 @@ public class TeleOpController {
      */
     public void update() {
         tm.print("Motif", motif);
-        tm.showLogs(3);
-        tm.update();
+        tm.update(50, 3);
+        robot.updateBulkCache();
         follower.update();
         if (follower.getPose() != null) pose = follower.getPose();
         vel = follower.getVelocity();

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -24,8 +25,10 @@ public class Robot {
     public Launcher launcher;
     public LED led;
     public Turret turret;
+    public HardwareMap hardwareMap;
 
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, boolean useOdometry) {
+        this.hardwareMap = hardwareMap;
         TelemetryUtils tm = new TelemetryUtils(telemetry);
         drivetrain = new Drivetrain(hardwareMap, tm, useOdometry);
         intake = new Intake(hardwareMap, tm);
@@ -36,5 +39,15 @@ public class Robot {
         limelight = new Limelight(hardwareMap, tm);
         launcher = new Launcher(hardwareMap, tm);
         turret = new Turret(hardwareMap, tm, drivetrain.imu);
+    }
+
+    public void initBulkCache() {
+        for (LynxModule module : hardwareMap.getAll(LynxModule.class))
+            module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
+    }
+
+    public void updateBulkCache() {
+        for (LynxModule module : hardwareMap.getAll(LynxModule.class))
+            module.clearBulkCache();
     }
 }

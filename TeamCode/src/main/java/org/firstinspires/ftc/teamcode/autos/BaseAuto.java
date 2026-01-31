@@ -62,6 +62,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         tm.print(name + " auto initialized");
         tm.update();
         setStateNoWait(initialState);
+        robot.initBulkCache();
         onInit();
     }
 
@@ -75,6 +76,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
 
     @Override
     public void loop() {
+        robot.updateBulkCache();
         robot.drivetrain.follower.update();
         pose = robot.drivetrain.follower.getPose();
         vel = robot.drivetrain.follower.getVelocity();
@@ -94,7 +96,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         tm.print("To Speed", robot.launcher.toSpeed());
         tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose));
         tm.print("Launcher Vel", robot.launcher.getVel());
-        tm.showLogs(3);
+        tm.update(50, 3);
     }
 
     @Override

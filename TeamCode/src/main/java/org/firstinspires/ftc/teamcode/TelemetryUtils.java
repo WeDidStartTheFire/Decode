@@ -20,6 +20,7 @@ public class TelemetryUtils {
     private final Telemetry telemetry;
     private static final TelemetryManager telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
     private final ArrayList<LogEntry> log = new ArrayList<>();
+    private long lastUpdate = 0;
 
     public TelemetryUtils(Telemetry telemetry) {
         this.telemetry = telemetry;
@@ -55,9 +56,11 @@ public class TelemetryUtils {
      * @param pose The pose to add to telemetry
      */
     public void print(Pose pose) {
-        print("Pose: (" + round(pose.getX() * 100) / 100.0 + ", " +
-                round(pose.getY() * 100) / 100.0 + ", " +
-                round(toDegrees(pose.getHeading()) * 100) / 100.0 + ")");
+        double x = round(pose.getX() * 100) / 100.0;
+        double y = round(pose.getY() * 100) / 100.0;
+        double h = round(toDegrees(pose.getHeading()) * 100) / 100.0;
+
+        print("Pose", "(" + x + ", " + y + ", " + h + ")");
     }
 
     /**
@@ -104,12 +107,28 @@ public class TelemetryUtils {
     }
 
     /**
-     * Updates telemetry on both the Control Hub and Panels
+     * Updates telemetry on both the Control Hub and Panels. WARNING: Avoid using this method every
+     * loop iteration as it can cause lag. Use {@link #update(int ms, int numLogs)} instead when
+     * updating telemetry in a loop.
      */
     public void update() {
         telemetry.update();
         telemetryM.update();
     }
+
+    /**
+     * Updates telemetry on both the Control Hub and Panels
+     *
+     * @param ms      The minimum amount of milliseconds between updates
+     * @param numLogs The number of logs to show
+     */
+    public void update(int ms, int numLogs) {
+        if (System.currentTimeMillis() - lastUpdate < ms) return;
+        lastUpdate = System.currentTimeMillis();
+        showLogs(numLogs);
+        update();
+    }
+
 
     /**
      * Draws the robot in panels

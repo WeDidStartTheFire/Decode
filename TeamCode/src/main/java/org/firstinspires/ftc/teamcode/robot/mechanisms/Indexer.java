@@ -29,6 +29,7 @@ public class Indexer {
 
     private final @Nullable Servo indexerServo;
     private double minIndexerPos = -.25, maxIndexerPos = 1.25, goalIndexerPos = 0;
+    private double tempMinIndexerPos = -.25, tempMaxIndexerPos = 1.25;
     private Timer indexerTimer = null;
     private final ColorSensor colorSensor;
     private final LED led;
@@ -92,33 +93,35 @@ public class Indexer {
      * of how this estimate works
      */
     private void updateInternalBounds() {
-        double[] bounds = calculateCurrentBounds();
-        minIndexerPos = bounds[0];
-        maxIndexerPos = bounds[1];
+        calculateCurrentBounds();
+        minIndexerPos = tempMinIndexerPos;
+        maxIndexerPos = tempMaxIndexerPos;
     }
 
     /**
-     * Calculates where the min and max bounds are right now, without modifying the class state.
-     *
-     * @return double[] { min, max }
+     * Calculates where the min and max bounds are right now, only modifying the temporary bounds
+     * @see #tempMinIndexerPos
+     * @see #tempMaxIndexerPos
      */
-    private double[] calculateCurrentBounds() {
-        if (indexerTimer == null) return new double[]{minIndexerPos, maxIndexerPos};
+    private void calculateCurrentBounds() {
+        if (indexerTimer == null) {
+            tempMinIndexerPos = minIndexerPos;
+            tempMaxIndexerPos = maxIndexerPos;
+            return;
+        }
 
         double time = indexerTimer.getElapsedTimeSeconds();
         double maxMovement = time * INDEXER_SPEED;
 
         double distMin = Math.abs(goalIndexerPos - minIndexerPos);
-        double currentMin = maxMovement > distMin ?
+        tempMinIndexerPos = maxMovement > distMin ?
                 goalIndexerPos :
                 minIndexerPos + Math.signum(goalIndexerPos - minIndexerPos) * maxMovement;
 
         double distMax = Math.abs(goalIndexerPos - maxIndexerPos);
-        double currentMax = maxMovement > distMax ?
+        tempMaxIndexerPos = maxMovement > distMax ?
                 goalIndexerPos :
                 maxIndexerPos + Math.signum(goalIndexerPos - maxIndexerPos) * maxMovement;
-
-        return new double[]{currentMin, currentMax};
     }
 
     private void resetTimer() {
@@ -144,8 +147,8 @@ public class Indexer {
      */
     public double getEstimatePos() {
         if (indexerServo == null) return -1;
-        double[] bounds = calculateCurrentBounds();
-        return (bounds[0] + bounds[1]) / 2.0;
+        calculateCurrentBounds();
+        return (tempMinIndexerPos + tempMaxIndexerPos) / 2.0;
     }
 
     /**
@@ -207,9 +210,9 @@ public class Indexer {
      */
     public boolean isStill() {
         if (indexerTimer == null) return false;
-        double[] bounds = calculateCurrentBounds();
-        return abs(bounds[0] - goalIndexerPos) < INDEXER_POS_EPSILON &&
-                abs(bounds[1] - goalIndexerPos) < INDEXER_POS_EPSILON;
+        calculateCurrentBounds();
+        return abs(tempMinIndexerPos - goalIndexerPos) < INDEXER_POS_EPSILON &&
+                abs(tempMaxIndexerPos - goalIndexerPos) < INDEXER_POS_EPSILON;
     }
 
     /**

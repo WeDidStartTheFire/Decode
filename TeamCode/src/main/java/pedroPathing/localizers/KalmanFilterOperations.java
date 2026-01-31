@@ -18,11 +18,16 @@
 
 package pedroPathing.localizers;
 
+import static org.ejml.dense.row.CommonOps_DDRM.addEquals;
+import static org.ejml.dense.row.CommonOps_DDRM.mult;
+import static org.ejml.dense.row.CommonOps_DDRM.multTransA;
+import static org.ejml.dense.row.CommonOps_DDRM.multTransB;
+import static org.ejml.dense.row.CommonOps_DDRM.subtract;
+import static org.ejml.dense.row.CommonOps_DDRM.subtractEquals;
+
 import org.ejml.data.DMatrixRMaj;
 import org.ejml.dense.row.factory.LinearSolverFactory_DDRM;
 import org.ejml.interfaces.linsol.LinearSolverDense;
-
-import static org.ejml.dense.row.CommonOps_DDRM.*;
 
 /**
  * A Kalman filter that is implemented using the operations API, which is procedural. Much of the excessive
@@ -43,6 +48,8 @@ public class KalmanFilterOperations implements KalmanFilter {
     private DMatrixRMaj y, S, S_inv, c, d;
     private DMatrixRMaj K;
 
+    private int dimenX, dimenZ;
+
     private LinearSolverDense<DMatrixRMaj> solver;
 
     @Override
@@ -51,8 +58,8 @@ public class KalmanFilterOperations implements KalmanFilter {
         this.Q = Q;
         this.H = H;
 
-        int dimenX = F.numCols;
-        int dimenZ = H.numRows;
+        dimenX = F.numCols;
+        dimenZ = H.numRows;
 
         a = new DMatrixRMaj(dimenX, 1);
         b = new DMatrixRMaj(dimenX, dimenX);
@@ -90,17 +97,24 @@ public class KalmanFilterOperations implements KalmanFilter {
 
     @Override
     public void setH(DMatrixRMaj H) {
-        this.H = H;
-
         int dimenX = F.numCols;
         int dimenZ = H.numRows;
 
-        y = new DMatrixRMaj(dimenZ, 1);
-        S = new DMatrixRMaj(dimenZ, dimenZ);
-        S_inv = new DMatrixRMaj(dimenZ, dimenZ);
-        c = new DMatrixRMaj(dimenZ, dimenX);
-        d = new DMatrixRMaj(dimenX, dimenZ);
-        K = new DMatrixRMaj(dimenX, dimenZ);
+        if (dimenZ != this.dimenZ) {
+            this.H = H;
+            y = new DMatrixRMaj(dimenZ, 1);
+            S = new DMatrixRMaj(dimenZ, dimenZ);
+            S_inv = new DMatrixRMaj(dimenZ, dimenZ);
+        } else this.H.setTo(H);
+
+        if (dimenZ != this.dimenZ || dimenX != this.dimenX) {
+            c = new DMatrixRMaj(dimenZ, dimenX);
+            d = new DMatrixRMaj(dimenX, dimenZ);
+            K = new DMatrixRMaj(dimenX, dimenZ);
+        }
+
+        this.dimenX = dimenX;
+        this.dimenZ = dimenZ;
     }
 
     @Override

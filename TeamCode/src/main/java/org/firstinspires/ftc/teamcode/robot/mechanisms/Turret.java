@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.Color.RED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.RED_HUMAN_PLAYER_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_ENCODERS_PER_DEGREE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_FEEDFORWARD;
+import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_FEEDFORWARD_SLOW_START;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_MAX_POS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_MAX_POWER;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_MIN_POS;
@@ -15,6 +16,8 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.turretMotorPID;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.HIGH;
 import static java.lang.Math.atan2;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.lang.Math.toDegrees;
 
 import androidx.annotation.Nullable;
@@ -108,9 +111,11 @@ public class Turret {
         if (!isPressed && wasPressed && velocitySign(-1)) resetEncoder();
         wasPressed = isPressed;
 
-        turretPIDController.updatePosition(turretMotor.getCurrentPosition());
-        double power = turretPIDController.run() -
-                imu.getRobotAngularVelocity(DEGREES).zRotationRate * TURRET_FEEDFORWARD;
+        double pos = turretMotor.getCurrentPosition();
+        turretPIDController.updatePosition(pos);
+        double feedforward = -imu.getRobotAngularVelocity(DEGREES).zRotationRate * TURRET_FEEDFORWARD;
+        feedforward *= max(1, min(max(0, pos - TURRET_MIN_POS), max(0, TURRET_MAX_POS - pos)) / TURRET_FEEDFORWARD_SLOW_START);
+        double power = turretPIDController.run() + feedforward;
         turretMotor.setPower(Math.clamp(power, -TURRET_MAX_POWER, TURRET_MAX_POWER));
 
         // 2. Aiming logic after early return
@@ -143,7 +148,7 @@ public class Turret {
         if (turretMotor == null) return;
         turretPIDController.setTargetPosition(
                 Math.clamp((int) ((toDegrees(angle) - TURRET_OFFSET + TURRET_TS_LENGTH_ENC)
-                * TURRET_ENCODERS_PER_DEGREE), TURRET_MIN_POS, TURRET_MAX_POS));
+                        * TURRET_ENCODERS_PER_DEGREE), TURRET_MIN_POS, TURRET_MAX_POS));
     }
 
     /**

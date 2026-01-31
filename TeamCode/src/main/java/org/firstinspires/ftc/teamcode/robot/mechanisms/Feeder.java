@@ -19,6 +19,7 @@ public class Feeder {
     public Feeder(HardwareMap hardwareMap, TelemetryUtils tm) {
         feederServoA = HardwareInitializer.init(hardwareMap, Servo.class, "feederServoA");
         feederServoB = HardwareInitializer.init(hardwareMap, Servo.class, "feederServoB");
+        if (feederServoA != null) feederServoA.setDirection(Servo.Direction.REVERSE);
         if (feederServoA == null && feederServoB == null)
             tm.warn(HIGH, "Both feeder servos are disconnected. Check Expansion Hub" +
                     " servo ports 0 and 1.");

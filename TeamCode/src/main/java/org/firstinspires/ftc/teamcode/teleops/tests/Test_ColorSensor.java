@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.opencv.core.Scalar;
 
 import java.util.Objects;
 
@@ -43,9 +44,16 @@ public class Test_ColorSensor extends OpMode {
 
     @Override
     public void loop() {
-        tm.print("R", ((int) (Objects.requireNonNull(robot.colorSensor.getRGB()).val[0] * 10000)) / 10000.0);
-        tm.print("G", ((int) (Objects.requireNonNull(robot.colorSensor.getRGB()).val[1] * 10000)) / 10000.0);
-        tm.print("B", ((int) (Objects.requireNonNull(robot.colorSensor.getRGB()).val[2] * 10000)) / 10000.0);
+        Scalar rgb = Objects.requireNonNull(robot.colorSensor.getRGB());
+        int argb = robot.colorSensor.getARGB();
+        tm.print("ARGB", argb);
+        tm.print("a", (argb >> 24) & 0xFF);
+        tm.print("r", (argb >> 16) & 0xFF);
+        tm.print("g", (argb >> 8) & 0xFF);
+        tm.print("b", argb & 0xFF);
+        tm.print("R", ((int) (rgb.val[0] * 10000)) / 10000.0);
+        tm.print("G", ((int) (rgb.val[1] * 10000)) / 10000.0);
+        tm.print("B", ((int) (rgb.val[2] * 10000)) / 10000.0);
         tm.print("Distance (in)", robot.colorSensor.getInches());
         tm.print("Color", robot.colorSensor.getColor());
         tm.print("Artifact", robot.colorSensor.getArtifact());

@@ -63,6 +63,7 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
 
     @Override
     public void loop() {
+        robot.updateBulkCache();
         double dt = getRuntime() - t;
         t = getRuntime();
         if (gamepad1.bWasPressed()) incIdx = (incIdx + 1) % increments.length;

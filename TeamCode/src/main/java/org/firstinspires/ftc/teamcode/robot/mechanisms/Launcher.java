@@ -3,11 +3,14 @@ package org.firstinspires.ftc.teamcode.robot.mechanisms;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BALL_VEL_TO_MOTOR_VEL;
 import static org.firstinspires.ftc.teamcode.RobotConstants.launcherPIDF;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
+import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Vector;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -21,7 +24,11 @@ import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 public class Launcher {
 
     private final @Nullable DcMotorEx launcherMotorA, launcherMotorB;
-    private @Nullable Timer spinningTimer;
+    private final @NonNull Timer spinningTimer;
+    private boolean spinning = false;
+    private @Nullable Pose lastPose;
+    private @Nullable Vector lastVel;
+    private double lastGoalVel;
 
     /**
      * Initializes the launcher with hardware components.
@@ -48,6 +55,7 @@ public class Launcher {
             launcherMotorB.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherPIDF);
             launcherMotorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
+        spinningTimer = new Timer();
     }
 
     /**
@@ -56,7 +64,7 @@ public class Launcher {
      * @return The target velocity in ticks/sec
      */
     public double getGoalVel() {
-        return getGoalVel(pose);
+        return getGoalVel(pose, null);
     }
 
     /**
@@ -65,35 +73,25 @@ public class Launcher {
      * @param pose Launch position
      * @return The target velocity in ticks/sec
      */
-    public double getGoalVel(@Nullable Pose pose) {
+    public double getGoalVel(@Nullable Pose pose, @Nullable Vector vel) {
         if (pose == null) return 0;
-        ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution(pose);
-        return sol != null ? ballVelToMotorVel(sol.w) : 0;
+        if (pose.equals(lastPose) && ((vel == null && lastVel == null) || vel != null && vel.equals(lastVel)))
+            return lastGoalVel;
+        ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution(pose, vel);
+        lastPose = pose;
+        lastVel = vel;
+        lastGoalVel = sol != null ? ballVelToMotorVel(sol.w) : 0;
+        return lastGoalVel;
     }
 
     /**
-     * @return Whether the robot can launch. false if too close to the goal, true otherwise.
-     */
-    public boolean canLaunch() {
-        ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution();
-        return sol != null;
-    }
-
-    /**
-     * Spins the launch motors to the optimal launch velocity at the robot's current position
+     * Spins the launch motors to the optimal launch velocity at the robot's current position and
+     * velocity
      */
     public void spin() {
-        spin(pose);
-    }
-
-    /**
-     * Spins the launch motors to the optimal launch velocity at the specified position
-     *
-     * @param pose Launch position
-     */
-    public void spin(Pose pose) {
-        double motorVel = getGoalVel(pose);
-        if (spinningTimer == null) spinningTimer = new Timer();
+        double motorVel = getGoalVel(pose, vel);
+        if (!spinning) spinningTimer.resetTimer();
+        spinning = true;
         if (launcherMotorA != null) launcherMotorA.setVelocity(motorVel);
         if (launcherMotorB != null) launcherMotorB.setVelocity(motorVel);
     }
@@ -104,7 +102,7 @@ public class Launcher {
      * @return Duration in seconds, or 0 if not currently spinning
      */
     public double getSpinningDuration() {
-        return spinningTimer == null ? 0 : spinningTimer.getElapsedTimeSeconds();
+        return spinning ? spinningTimer.getElapsedTimeSeconds() : 0;
     }
 
     /**
@@ -130,7 +128,7 @@ public class Launcher {
      */
     public void intakeMotors(double percent) {
         percent = Math.max(0, Math.min(1, percent));
-        spinningTimer = null;
+        spinning = false;
         if (launcherMotorA != null) launcherMotorA.setPower(-percent * .4);
         if (launcherMotorB != null) launcherMotorB.setPower(-percent * .4);
     }
@@ -148,7 +146,7 @@ public class Launcher {
      * Stops the launch motors
      */
     public void stop() {
-        spinningTimer = null;
+        spinning = false;
         if (launcherMotorA != null) launcherMotorA.setPower(0);
         if (launcherMotorB != null) launcherMotorB.setPower(0);
     }

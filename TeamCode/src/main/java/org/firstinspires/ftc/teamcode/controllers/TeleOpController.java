@@ -192,7 +192,6 @@ public class TeleOpController {
         launchController.update();
 
         tm.print("Queue", launchController.getQueue());
-        tm.print("Can Launch", robot.launcher.canLaunch());
         tm.print("Launcher Vel", robot.launcher.getVel());
         tm.print("Goal", robot.launcher.getGoalVel());
     }

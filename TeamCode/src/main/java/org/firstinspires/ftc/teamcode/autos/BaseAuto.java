@@ -97,8 +97,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         tm.print("Motif", motif);
         tm.print("Indexer Pos", robot.indexer.getGoalPos());
         if (pose != null) tm.print(pose);
-        tm.print("To Speed", robot.launcher.toSpeed());
-        tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose));
+        tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose, null));
         tm.print("Launcher Vel", robot.launcher.getVel());
         long t = runtime.nanoseconds();
         if (lastUpdateTime != 0) {

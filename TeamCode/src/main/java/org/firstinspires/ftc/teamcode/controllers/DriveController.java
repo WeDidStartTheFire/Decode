@@ -20,7 +20,6 @@ import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.Utils.lerp;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
-import static java.lang.Math.toDegrees;
 
 import androidx.annotation.NonNull;
 
@@ -156,11 +155,6 @@ public class DriveController {
                 double error = normalizeRadians(sol.phi - pose.getHeading());
                 headingPIDController.updateError(error);
                 turn = headingPIDController.run();
-                tm.print("curr angle", toDegrees(pose.getHeading()));
-                tm.print("goal angle", toDegrees(headingPIDController.getTargetPosition()));
-                tm.print("error deg", toDegrees(headingPIDController.getError()));
-                tm.print("angVel deg", toDegrees(headingPIDController.getErrorDerivative()));
-                tm.print("turn", turn);
             }
         }
 

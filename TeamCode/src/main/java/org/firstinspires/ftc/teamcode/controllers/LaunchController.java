@@ -35,7 +35,7 @@ public class LaunchController {
     private boolean isBusy;
     private int numLaunched = 0;
     private int failedCount = 0;
-    private final ArrayList<RobotConstants.Artifact> launchQueue = new ArrayList<>();
+    private final ArrayList<RobotConstants.Artifact> launchQueue = new ArrayList<>(6);
     private boolean anyExpected = false;
     private double intakePercent;
     private boolean intaking;
@@ -83,18 +83,19 @@ public class LaunchController {
      * - INTAKE: Manual intake mode, overrides normal flow
      */
     public void update() {
+        boolean toSpeed = robot.launcher.toSpeed();
         if (getLaunchSolution() == null)
             robot.led.setColor(RobotConstants.LEDColors.RED, isBusy || robot.launcher.isSpinning()
                     ? LED.Priority.HIGH : LED.Priority.MEDIUM);
-        else if (robot.launcher.toSpeed()) robot.led.setColor(YELLOW, LED.Priority.CRITICAL);
+        else if (toSpeed) robot.led.setColor(YELLOW, LED.Priority.CRITICAL);
         else if (robot.launcher.almostToSpeed()) robot.led.setColor(ORANGE, LED.Priority.HIGH);
 
-        if (launchCommanded && !launchQueue.isEmpty() && !robot.launcher.toSpeed()) {
+        if (launchCommanded && !launchQueue.isEmpty() && !toSpeed) {
             launchCommanded = false;
             speedDroopTimer.resetTimer();
         }
-        if (!launchCommanded && !launchQueue.isEmpty() && !robot.launcher.toSpeed()) framesUnder++;
-        if (!launchCommanded && !droopRecorded && robot.launcher.toSpeed()) {
+        if (!launchCommanded && !launchQueue.isEmpty() && !toSpeed) framesUnder++;
+        if (!launchCommanded && !droopRecorded && toSpeed) {
             if (framesUnder > 4) {
                 droopRecorded = true;
                 tm.log("Speed Droop (s)", speedDroopTimer.getElapsedTimeSeconds());
@@ -158,7 +159,7 @@ public class LaunchController {
                 break;
             case PUSH_ARTIFACT:
                 robot.launcher.spin();
-                if (!robot.indexer.isStill() || (!robot.launcher.toSpeed() &&
+                if (!robot.indexer.isStill() || (!toSpeed &&
                         robot.launcher.getSpinningDuration() < MAX_LAUNCHER_SPIN_WAIT &&
                         stateTimer.getElapsedTimeSeconds() < MAX_DROOP_WAIT)) break;
                 tm.log("Spin Up (s)", robot.launcher.getSpinningDuration());

@@ -13,7 +13,6 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Limelight {
@@ -49,6 +48,7 @@ public class Limelight {
      */
     public RobotConstants.Motif getMotif() {
         List<LLResultTypes.FiducialResult> fiducials = getFiducials();
+        if (fiducials == null) return RobotConstants.Motif.UNKNOWN;
         RobotConstants.Motif motif = RobotConstants.Motif.UNKNOWN;
         for (LLResultTypes.FiducialResult fiducial : fiducials) {
             switch (fiducial.getFiducialId()) {
@@ -72,14 +72,10 @@ public class Limelight {
     /**
      * @return The fiducial readings from the limelight
      */
-    public List<LLResultTypes.FiducialResult> getFiducials() {
-        if (limelight == null) return new ArrayList<>();
+    public @Nullable List<LLResultTypes.FiducialResult> getFiducials() {
+        if (limelight == null) return null;
         LLResult result = limelight.getLatestResult();
-
-        if (result == null || !result.isValid()) return new ArrayList<>();
-
-        List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
-        if (fiducials == null) return new ArrayList<>();
-        return fiducials;
+        if (result == null || !result.isValid()) return null;
+        return result.getFiducialResults();
     }
 }

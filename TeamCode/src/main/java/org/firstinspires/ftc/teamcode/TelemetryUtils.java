@@ -20,6 +20,7 @@ public class TelemetryUtils {
     private static final TelemetryManager telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
     private final ArrayList<LogEntry> log = new ArrayList<>();
     private long lastDraw;
+    private final StringBuilder poseStringBuilder = new StringBuilder();
 
     public TelemetryUtils(Telemetry telemetry) {
         this.telemetry = telemetry;
@@ -49,7 +50,7 @@ public class TelemetryUtils {
     }
 
     /**
-     * Adds the pose to telemtry in the from of "Pose: (x, y, z)" rounded to two decimal places on
+     * Adds the pose to telemtry in the from of "Pose : (x, y, z)" rounded to two decimal places on
      * both the Control Hub and Panels
      *
      * @param pose The pose to add to telemetry
@@ -59,7 +60,9 @@ public class TelemetryUtils {
         double y = round(pose.getY() * 100) / 100.0;
         double h = round(toDegrees(pose.getHeading()) * 100) / 100.0;
 
-        print("Pose", "(" + x + ", " + y + ", " + h + ")");
+        poseStringBuilder.setLength(0);
+        poseStringBuilder.append('(').append(x).append(", ").append(y).append(", ").append(h).append(')');
+        print("Pose", poseStringBuilder.toString());
     }
 
     /**

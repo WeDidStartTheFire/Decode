@@ -39,9 +39,12 @@ public class ProjectileSolver {
      * @param pose Robot pose to calculate launch solution for
      * @return LaunchSolution containing launch parameters, or null if no solution exists
      */
-    public static @Nullable LaunchSolution getLaunchSolution(@NonNull Pose pose) {
-        return ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT, vel == null ? new Vector() : vel,
-                RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
+    public static @Nullable LaunchSolution getLaunchSolution(@NonNull Pose pose, @Nullable Vector vel) {
+        Pose3D targetPose = RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE;
+        return solveLaunch(pose.getX(), pose.getY(), LAUNCHER_HEIGHT,
+                vel == null ? 0 : vel.getXComponent(), vel == null ? 0 : vel.getYComponent(),
+                targetPose.getPosition().x, targetPose.getPosition().y, targetPose.getPosition().z,
+                LAUNCHER_ANGLE);
     }
 
     /**
@@ -51,7 +54,7 @@ public class ProjectileSolver {
      * @return LaunchSolution containing launch parameters, or null if no solution exists
      */
     public static @Nullable LaunchSolution getLaunchSolution() {
-        return pose == null ? null : getLaunchSolution(pose);
+        return pose == null ? null : getLaunchSolution(pose, vel);
     }
 
     /**
@@ -61,28 +64,12 @@ public class ProjectileSolver {
      */
     public static @Nullable LaunchSolution getLaunchSolutionStationary() {
         if (pose == null) return null;
-        return ProjectileSolver.solveLaunch(pose, LAUNCHER_HEIGHT, new Vector(),
-                RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE, LAUNCHER_ANGLE);
+        Pose3D targetPose = RobotState.color == BLUE ? BLUE_GOAL_POSE : RED_GOAL_POSE;
+        return solveLaunch(pose.getX(), pose.getY(), LAUNCHER_HEIGHT, 0, 0,
+                targetPose.getPosition().x, targetPose.getPosition().y, targetPose.getPosition().z,
+                LAUNCHER_ANGLE);
     }
 
-    /**
-     * Solves for launch parameters given robot and target positions.
-     *
-     * @param robotPose      Current robot position and orientation
-     * @param launcherHeight Height of the launcher from ground
-     * @param robotVel       Robot velocity vector
-     * @param targetPose     Target 3D position
-     * @param launcherAngle  Launch angle from horizontal
-     * @return LaunchSolution containing launch parameters, or null if no solution exists
-     */
-    public static @Nullable LaunchSolution solveLaunch(
-            Pose robotPose, double launcherHeight, Vector robotVel, Pose3D targetPose,
-            double launcherAngle
-    ) {
-        return solveLaunch(robotPose.getX(), robotPose.getY(), launcherHeight,
-                robotVel.getXComponent(), robotVel.getYComponent(), targetPose.getPosition().x,
-                targetPose.getPosition().y, targetPose.getPosition().z, launcherAngle);
-    }
 
     /**
      * Solves for the launch speed, angle, and time of flight given the robot's position and

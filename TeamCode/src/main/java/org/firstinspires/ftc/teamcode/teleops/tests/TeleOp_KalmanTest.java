@@ -40,8 +40,8 @@ public class TeleOp_KalmanTest extends OpMode {
 
     @Override
     public void init_loop() {
-        teleop.update();
         if (pose != null) tm.print(pose);
+        teleop.update();
     }
 
     @Override

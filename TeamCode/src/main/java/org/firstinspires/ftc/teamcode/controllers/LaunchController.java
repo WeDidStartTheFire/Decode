@@ -163,11 +163,14 @@ public class LaunchController {
                         robot.launcher.getSpinningDuration() < MAX_LAUNCHER_SPIN_WAIT &&
                         stateTimer.getElapsedTimeSeconds() < MAX_DROOP_WAIT)) break;
                 tm.log("Spin Up (s)", robot.launcher.getSpinningDuration());
+                tm.log("Launch Vel", robot.launcher.getVel());
+                tm.log("Goal Launch Vel", robot.launcher.getGoalVel());
                 if (launchQueue.isEmpty()) {
                     robot.launcher.stop();
                     robot.feeder.retract();
                     isBusy = false;
                     setState(State.IDLE);
+                    break;
                 }
                 desired = launchQueue.get(0);
                 current = robot.indexer.getCurrentArtifact();

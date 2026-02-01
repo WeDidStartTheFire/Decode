@@ -94,6 +94,7 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
         tm.print("---------------------------");
         tm.print("PIDF", pidf);
         tm.print("Run Mode", robot.turret.turretMotor.getMode());
+        tm.print("dt (ms)", dt * 1000);
         tm.update();
     }
 }

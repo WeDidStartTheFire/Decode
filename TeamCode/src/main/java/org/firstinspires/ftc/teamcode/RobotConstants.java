@@ -66,11 +66,12 @@ public class RobotConstants {
     public static double INDEXER_ARTIFACT_DETECTION_WAIT = 0.3;
 
     public static com.pedropathing.control.PIDFCoefficients turretMotorPID =
-            new com.pedropathing.control.PIDFCoefficients(0.0015, 0, 0.0001, 0);
+            new com.pedropathing.control.PIDFCoefficients(0, 0, 0, 0);
+    //            new com.pedropathing.control.PIDFCoefficients(0.001, 0, 0.000025, 0);
     public static double TURRET_ENCODERS_PER_DEGREE = 77.78;
     public static double TURRET_TOP_VEL = 10000; // encs per second
     public static double TURRET_FEEDFORWARD = 0 * TURRET_ENCODERS_PER_DEGREE / TURRET_TOP_VEL;
-    public static double TURRET_STATIC_FEEDFORWARD = 0;
+    public static double TURRET_STATIC_FEEDFORWARD = 0; // 0.08;
     public static double TURRET_FEEDFORWARD_SLOW_START = 1500;
     public static double TURRET_MAX_POWER = 0.7;
     public static double TURRET_OFFSET = 90; // degrees

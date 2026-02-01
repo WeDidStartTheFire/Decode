@@ -72,7 +72,7 @@ public class IntakeController {
                         robot.intake.powerOutside(-0.75);
                     }
                 } else {
-                    if (robot.indexer.getTotalArtifacts() == 3) robot.intake.powerOutside(0.5);
+                    if (robot.indexer.getTotalArtifacts() == 3) robot.intake.powerOutside(0.75);
                     else robot.intake.powerOutside(0);
                     robot.intake.powerInside(-1);
                     if (artifactDetectedTimer.getElapsedTimeSeconds() > INDEXER_ARTIFACT_DETECTION_WAIT) {
@@ -136,7 +136,7 @@ public class IntakeController {
     }
 
     private void setState(State state) {
-        if (state != null)
+        if (state != null && state != this.state)
             tm.log("IntakeController: " + this.state + " -> " + state, stateTimer.getElapsedTimeSeconds());
         setStateNoWait(state);
         this.stateTimer.resetTimer();

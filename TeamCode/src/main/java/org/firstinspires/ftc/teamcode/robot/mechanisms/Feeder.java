@@ -62,8 +62,8 @@ public class Feeder {
      */
     public void raise() {
         if (feederServoA == null || feederServoB == null) return;
-        feederServoB.setPosition(1);
-        feederServoA.setPosition(.95);
+        feederServoB.setPosition(.85);
+        feederServoA.setPosition(.85);
     }
 
     /**

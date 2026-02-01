@@ -49,6 +49,11 @@ public class ColorSensor {
         return new Scalar(r, g, b);
     }
 
+    public int getARGB() {
+        if (colorSensor == null) return 0;
+        return colorSensor.argb();
+    }
+
     /**
      * Gets the distance reading from the color sensor
      *

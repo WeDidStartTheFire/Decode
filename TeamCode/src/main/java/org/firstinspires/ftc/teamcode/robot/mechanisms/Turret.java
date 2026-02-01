@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_HUMAN_PLAYER_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.RED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.RED_HUMAN_PLAYER_POSE;
@@ -11,13 +10,16 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_MAX_POS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_MAX_POWER;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_MIN_POS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_OFFSET;
+import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_STATIC_FEEDFORWARD;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_TS_LENGTH_ENC;
 import static org.firstinspires.ftc.teamcode.RobotConstants.turretMotorPID;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
+import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.HIGH;
 import static java.lang.Math.atan2;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static java.lang.Math.signum;
 import static java.lang.Math.toDegrees;
 
 import androidx.annotation.Nullable;
@@ -27,7 +29,6 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
@@ -41,14 +42,14 @@ public class Turret {
     private Target target = Target.NONE;
     public PIDFController turretPIDController = new PIDFController(turretMotorPID);
     private boolean wasPressed = false;
-    private final IMU imu;
+    private final TelemetryUtils tm;
 
     public enum Target {
         GOAL, HUMAN_PLAYER, NONE
     }
 
-    public Turret(HardwareMap hardwareMap, TelemetryUtils tm, IMU imu) {
-        this.imu = imu;
+    public Turret(HardwareMap hardwareMap, TelemetryUtils tm) {
+        this.tm = tm;
         turretMotor = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "turretMotor");
         if (turretMotor == null)
             tm.warn(HIGH, "Turret Motor disconnected. Check Expansion Hub motor port 3.");
@@ -113,11 +114,16 @@ public class Turret {
 
         double pos = turretMotor.getCurrentPosition();
         turretPIDController.updatePosition(pos);
-        double feedforward = -imu.getRobotAngularVelocity(DEGREES).zRotationRate * TURRET_FEEDFORWARD;
+        double feedforward = vel == null ? 0 : -vel.getTheta() * TURRET_FEEDFORWARD;
         feedforward *= max(1, min(max(0, pos - TURRET_MIN_POS), max(0, TURRET_MAX_POS - pos)) / TURRET_FEEDFORWARD_SLOW_START);
+        feedforward = Math.clamp(feedforward, -TURRET_MAX_POWER, TURRET_MAX_POWER);
         if (target == Target.NONE) feedforward = 0;
-        double power = turretPIDController.run() + feedforward;
+        double pid = turretPIDController.run();
+        double staticFeedforward = TURRET_STATIC_FEEDFORWARD * signum(pid);
+        double power = pid + feedforward + staticFeedforward;
         turretMotor.setPower(Math.clamp(power, -TURRET_MAX_POWER, TURRET_MAX_POWER));
+        tm.print("Turret Pos", pos);
+        tm.print("Turret Goal", turretMotor.getTargetPosition());
 
         if (target == Target.GOAL) {
             ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution();

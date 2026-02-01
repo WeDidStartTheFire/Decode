@@ -93,6 +93,7 @@ public class Diagnostics extends LinearOpMode {
         tm.print("SparkFun Sensor",
                 otos == null ? "⚠️ Not Connected (CH I2C Port 1)" : "✅ Connected");
 
+        tm.update();
         waitForStart();
     }
 }

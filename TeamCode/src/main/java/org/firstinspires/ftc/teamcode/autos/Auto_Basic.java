@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.Utils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
-@Autonomous(name = "Basic", group = "!!Secondary", preselectTeleOp = "Main")
+@Autonomous(name = "Basic", group = "B", preselectTeleOp = "Main")
 public class Auto_Basic extends LinearOpMode {
     public Robot robot;
 

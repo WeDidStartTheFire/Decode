@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 
-@TeleOp(name = "Tune Turret PIDF", group = "Test")
+@TeleOp(name = "Tune Turret PIDF", group = "D")
 @Configurable
 public class TeleOp_TuneTurretPIDF extends OpMode {
 

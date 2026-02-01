@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 
-@TeleOp(name = "Tune Flywheel PIDF", group = "Test")
+@TeleOp(name = "Tune Flywheel PIDF", group = "D")
 @Configurable
 public class TeleOp_TuneFlywheelPIDF extends OpMode {
 

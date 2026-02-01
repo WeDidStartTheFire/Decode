@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
-@TeleOp(name = BLUE_TELEOP_NAME, group = "Main")
+@TeleOp(name = BLUE_TELEOP_NAME, group = "B")
 public class TeleOp_Main_Blue extends OpMode {
     public TeleOpController teleop;
     public Robot robot;

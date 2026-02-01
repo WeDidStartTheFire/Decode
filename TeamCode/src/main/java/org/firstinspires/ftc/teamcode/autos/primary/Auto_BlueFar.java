@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.autos.BaseAuto;
 
 
-@Autonomous(name = Auto_BlueFar.name, group = "!!!Primary", preselectTeleOp = BLUE_TELEOP_NAME)
+@Autonomous(name = Auto_BlueFar.name, group = "A", preselectTeleOp = BLUE_TELEOP_NAME)
 public final class Auto_BlueFar extends BaseAuto<Auto_BlueFar.State> {
 
     private PathChain startToShoot, shootToIntake, intake, intakeToShoot, shootToEnd;

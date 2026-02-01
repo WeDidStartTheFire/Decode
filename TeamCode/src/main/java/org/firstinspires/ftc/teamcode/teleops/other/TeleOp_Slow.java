@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
-@TeleOp(name = "Slow", group = "Secondary")
+@TeleOp(name = "Slow", group = "C")
 public class TeleOp_Slow extends OpMode {
     public TelemetryUtils tm = new TelemetryUtils(telemetry);
     public Robot robot;

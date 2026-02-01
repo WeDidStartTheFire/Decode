@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
-@TeleOp(name = "Always Field Centric", group = "Secondary")
+@TeleOp(name = "Always Field Centric", group = "C")
 public class TeleOp_AlwaysFieldCentric extends OpMode {
     public TeleOpController teleop;
     public Robot robot;

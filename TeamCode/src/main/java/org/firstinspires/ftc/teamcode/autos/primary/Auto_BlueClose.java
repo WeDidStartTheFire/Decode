@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.autos.BaseAuto;
 
 
-@Autonomous(name = Auto_BlueClose.name, group = "!!!Primary", preselectTeleOp = BLUE_TELEOP_NAME)
+@Autonomous(name = Auto_BlueClose.name, group = "A", preselectTeleOp = BLUE_TELEOP_NAME)
 public final class Auto_BlueClose extends BaseAuto<Auto_BlueClose.State> {
 
     private PathChain startToMotif, motifToShoot, shootToIntake, intake, intakeToShoot, shootToEnd;

@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
-@TeleOp(name = "Field Centric No Pedro", group = "Secondary")
+@TeleOp(name = "Field Centric No Pedro", group = "C")
 @Disabled
 public class TeleOp_FieldCentric_No_Pedro extends OpMode {
     public TeleOpController teleop;

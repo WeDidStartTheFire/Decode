@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.launcherPIDF;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
+import static org.firstinspires.ftc.teamcode.RobotState.launcherVelModifier;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -56,6 +57,7 @@ public class Launcher {
             launcherMotorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
         spinningTimer = new Timer();
+        launcherVelModifier = 0;
     }
 
     /**
@@ -76,12 +78,12 @@ public class Launcher {
     public double getGoalVel(@Nullable Pose pose, @Nullable Vector vel) {
         if (pose == null) return 0;
         if (pose.equals(lastPose) && ((vel == null && lastVel == null) || vel != null && vel.equals(lastVel)))
-            return lastGoalVel;
+            return lastGoalVel + launcherVelModifier;
         ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution(pose, vel);
         lastPose = pose;
         lastVel = vel;
         lastGoalVel = sol != null ? ballVelToMotorVel(sol.w) : 0;
-        return lastGoalVel;
+        return lastGoalVel + launcherVelModifier;
     }
 
     /**

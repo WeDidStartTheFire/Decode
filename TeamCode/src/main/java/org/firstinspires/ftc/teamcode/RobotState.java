@@ -29,4 +29,6 @@ public class RobotState {
     public static Motif motif = Motif.UNKNOWN;
     @NonNull
     public static Artifact[] artifacts = {UNKNOWN, UNKNOWN, UNKNOWN};
+
+    public static double launcherVelModifier = 0;
 }

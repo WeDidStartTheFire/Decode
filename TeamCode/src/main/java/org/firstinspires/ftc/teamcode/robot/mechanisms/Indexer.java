@@ -49,9 +49,7 @@ public class Indexer {
      */
     public void update() {
         RobotConstants.Artifact artifact = colorSensor.getArtifact();
-        tm.print("Color", colorSensor.getColor());
         tm.print("Artifact", colorSensor.getArtifact());
-        tm.print("Distance", colorSensor.getInches());
         tm.print("Artifact 1", artifacts[0]);
         tm.print("Artifact 2", artifacts[1]);
         tm.print("Artifact 3", artifacts[2]);
@@ -139,17 +137,6 @@ public class Indexer {
         return abs(indexerServo.getPosition() - MIDDLE_INDEXER_POS) < INDEXER_POS_EPSILON ? .5 : indexerServo.getPosition();
     }
 
-    /**
-     * Gets the estimate for the current indexer position based on the previous estimated position,
-     * goal position, and time taken
-     *
-     * @return Indexer position estimate on [0, 1]
-     */
-    public double getEstimatePos() {
-        if (indexerServo == null) return -1;
-        calculateCurrentBounds();
-        return (tempMinIndexerPos + tempMaxIndexerPos) / 2.0;
-    }
 
     /**
      * @return Number of artifacts in the robot
@@ -273,7 +260,7 @@ public class Indexer {
      * Rotates to the closest artifact present in the indexer (does not rotate if no artifacts are
      * present)
      *
-     * @return Whether there is an artifact present
+     * @return Whether there is an artifact present to rotate to
      */
     public boolean rotateToAny() {
         double pos = getGoalPos();

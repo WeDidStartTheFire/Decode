@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import static java.lang.Math.min;
 import static java.lang.Math.round;
 import static java.lang.Math.toDegrees;
+import static pedroPathing.Drawing.drawDebug;
 
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -13,14 +14,12 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import java.util.ArrayList;
 
-import pedroPathing.Drawing;
-
 
 public class TelemetryUtils {
     private final Telemetry telemetry;
     private static final TelemetryManager telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
     private final ArrayList<LogEntry> log = new ArrayList<>();
-    private long lastUpdate = 0;
+    private long lastDraw;
 
     public TelemetryUtils(Telemetry telemetry) {
         this.telemetry = telemetry;
@@ -108,8 +107,8 @@ public class TelemetryUtils {
 
     /**
      * Updates telemetry on both the Control Hub and Panels. WARNING: Avoid using this method every
-     * loop iteration as it can cause lag. Use {@link #update(int ms, int numLogs)} instead when
-     * updating telemetry in a loop.
+     * loop iteration as it can cause lag. Use {@link #updateOnlyPanels(int numLogs)}
+     * instead when updating telemetry in a loop.
      */
     public void update() {
         telemetry.update();
@@ -117,16 +116,13 @@ public class TelemetryUtils {
     }
 
     /**
-     * Updates telemetry on both the Control Hub and Panels
+     * Updates telemetry on Panels
      *
-     * @param ms      The minimum amount of milliseconds between updates
      * @param numLogs The number of logs to show
      */
-    public void update(int ms, int numLogs) {
-        if (System.currentTimeMillis() - lastUpdate < ms) return;
-        lastUpdate = System.currentTimeMillis();
+    public void updateOnlyPanels(int numLogs) {
         if (numLogs > 0) showLogs(numLogs);
-        update();
+        telemetryM.update();
     }
 
 
@@ -136,7 +132,13 @@ public class TelemetryUtils {
      * @param follower The follower that has the pose history of the robot to draw
      */
     public void drawRobot(Follower follower) {
-        Drawing.drawDebug(follower);
+        drawDebug(follower);
+    }
+
+    public void drawRobot(Follower follower, int ms) {
+        if (System.currentTimeMillis() - lastDraw < ms) return;
+        lastDraw = System.currentTimeMillis();
+        drawRobot(follower);
     }
 
     /**

@@ -115,10 +115,10 @@ public class Turret {
         turretPIDController.updatePosition(pos);
         double feedforward = -imu.getRobotAngularVelocity(DEGREES).zRotationRate * TURRET_FEEDFORWARD;
         feedforward *= max(1, min(max(0, pos - TURRET_MIN_POS), max(0, TURRET_MAX_POS - pos)) / TURRET_FEEDFORWARD_SLOW_START);
+        if (target == Target.NONE) feedforward = 0;
         double power = turretPIDController.run() + feedforward;
         turretMotor.setPower(Math.clamp(power, -TURRET_MAX_POWER, TURRET_MAX_POWER));
 
-        // 2. Aiming logic after early return
         if (target == Target.GOAL) {
             ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution();
             if (sol == null) return;

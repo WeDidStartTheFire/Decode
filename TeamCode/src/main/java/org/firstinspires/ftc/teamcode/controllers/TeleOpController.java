@@ -29,6 +29,8 @@ public class TeleOpController {
     boolean useOdometry;
     TelemetryUtils tm;
     long lastUpdateTime;
+    int totalMs;
+    int totalUpdates;
 
     /**
      * Initializes the TeleOpController with robot hardware and gamepads. To be called in the init()
@@ -73,11 +75,16 @@ public class TeleOpController {
      */
     public void update() {
         tm.print("Motif", motif);
-        tm.update(50, 3);
         long t = runtime.nanoseconds();
-        robot.updateBulkCache();
-        tm.print("dt (ms)", (t - lastUpdateTime) / 1_000_000);
+        if (lastUpdateTime != 0) {
+            int ms = Math.toIntExact((t - lastUpdateTime) / 1_000_000);
+            totalMs += ms;
+            totalUpdates++;
+            tm.print("dt (ms)", ms);
+            tm.print("avg dt (ms)", totalMs / totalUpdates);
+        }
         lastUpdateTime = t;
+        robot.updateBulkCache();
         follower.update();
         if (follower.getPose() != null) pose = follower.getPose();
         vel = follower.getVelocity();
@@ -85,6 +92,7 @@ public class TeleOpController {
         if (motif == RobotConstants.Motif.UNKNOWN) motif = robot.limelight.getMotif();
         if (motif != RobotConstants.Motif.UNKNOWN) robot.limelight.stop();
         robot.led.update();
+        tm.updateOnlyPanels(10);
     }
 
     /**
@@ -126,7 +134,7 @@ public class TeleOpController {
         fieldCentric = fieldCentric && !robotCentric;
         tm.print("Robot Centric", robotCentric);
         tm.print("Field Centric", fieldCentric);
-        tm.drawRobot(follower);
+        tm.drawRobot(follower, 250);
         if (pose != null) tm.print(pose);
         if (usePedro) driveController.updateTeleOp(gamepad1, fieldCentric);
         else driveController.updateTeleOpNoPedro(gamepad1, fieldCentric);
@@ -139,7 +147,6 @@ public class TeleOpController {
     public void updateIndexerTeleOp() {
         tm.print("Indexer still", robot.indexer.isStill());
         tm.print("Indexer goal pos", robot.indexer.getGoalPos());
-        tm.print("Indexer pos", robot.indexer.getEstimatePos());
 
         if (gamepad2.dpadRightWasPressed()) robot.indexer.rotateClockwise();
         else if (gamepad2.dpadLeftWasPressed()) robot.indexer.rotateCounterclockwise();
@@ -165,7 +172,7 @@ public class TeleOpController {
         else if (intakeController.isBusy()) intakeController.stop();
         intakeController.update();
         // Stops innerIntake if it isn't called by the next call to updateIntake()
-        if (gamepad1.right_trigger <= 0.3 && !gamepad1.right_bumper) intakeController.stop();
+        intakeController.stopInnerIntake();
     }
 
 
@@ -188,7 +195,6 @@ public class TeleOpController {
         tm.print("Can Launch", robot.launcher.canLaunch());
         tm.print("Launcher Vel", robot.launcher.getVel());
         tm.print("Goal", robot.launcher.getGoalVel());
-        tm.print("To Speed", robot.launcher.toSpeed());
     }
 
     /**

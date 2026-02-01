@@ -18,8 +18,6 @@ import com.pedropathing.math.Vector;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
-// Filename: ProjectileSolver
-// Owen White
 public class ProjectileSolver {
     static final double g = 386.0885826772; // Constant for gravity in in/s^2
 
@@ -112,29 +110,35 @@ public class ProjectileSolver {
         double dx = xt - xr;
         double dy = yt - yr;
         double dz = zt - zr;
+
         // Precomputing tangent functions of theta
         double tanTheta = Math.tan(theta);
         double A = tanTheta * tanTheta;
+
         // Variables for clarity
         double C2 = vx * vx + vy * vy;
         double C0 = dx * dx + dy * dy;
         double S = dx * vx + dy * vy;
+
         // Quartic coefficients of at^4 + bt^2 + ct + d
         double a = g * g;
         double b = g * dz - A * C2;
         double c = 8 * A * S;
         double d = 4 * (dz * dz - A * C0);
+
         // Solve for positive root of quartic
         double t = findPositiveRoot(a, b, c, d);
         if (t <= 0) return null;
+
         // Compute horizontal velocity of the artifact
         double ux = (dx / t) - vx;
         double uy = (dy / t) - vy;
+
         // Launch speed magnitude
         double w = Math.sqrt(ux * ux + uy * uy) / Math.cos(theta);
         // Horizontal launch angle phi (atan2 gives correct quadrant)
         double phi = Math.atan2(uy, ux);
-        // Package solution into container object
+
         return new LaunchSolution(w, phi, t);
     }
 

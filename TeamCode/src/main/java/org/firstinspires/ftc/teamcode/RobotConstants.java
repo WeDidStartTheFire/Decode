@@ -44,10 +44,10 @@ public class RobotConstants {
     public static final double[] speeds = {0.2, 0.6, 1};
 
     public static double MAX_LAUNCHER_SPIN_WAIT = 4;
-    public static double MAX_DROOP_WAIT = 1;
+    public static double MAX_DROOP_WAIT = 2.5;
     public static double MAX_FEEDER_DOWN_WAIT = .3;
     public static double MIN_FEEDER_DOWN_WAIT = .2;
-    public static double ARTIFACT_LAUNCH_WAIT = 0;
+    public static double ARTIFACT_LAUNCH_WAIT = .15;
     public static double MAX_MOTIF_DETECT_WAIT = 1;
     public static double MAX_INTAKE_PATH_WAIT = 2.5;
     public static int MAX_FAILED_ATTEMPTS = 5;
@@ -55,6 +55,7 @@ public class RobotConstants {
     public static final double baseSpeedMultiplier = 0.75;
     public static final double baseTurnSpeed = 2.5;
 
+    //    public static PathConstraints slowIntakePathConstraints = Constants.pathConstraints;
     public static PathConstraints slowIntakePathConstraints = new PathConstraints(
             0.3,
             500,

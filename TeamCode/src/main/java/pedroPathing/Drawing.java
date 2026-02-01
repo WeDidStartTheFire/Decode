@@ -8,7 +8,10 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.Vector;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
-import com.pedropathing.util.PoseHistory; /**
+import com.pedropathing.util.PoseHistory;
+
+
+/**
  * This is the Drawing class. It handles the drawing of stuff on Panels Dashboard, like the robot.
  *
  * @author Lazar - 19234
@@ -19,10 +22,10 @@ public class Drawing {
     private static final FieldManager panelsField = PanelsField.INSTANCE.getField();
 
     private static final Style robotLook = new Style(
-            "", "#3F51B5", 0.0
+            "", "#3F51B5", 0.75
     );
     private static final Style historyLook = new Style(
-            "", "#4CAF50", 0.0
+            "", "#4CAF50", 0.75
     );
 
     /**
@@ -44,7 +47,7 @@ public class Drawing {
             Pose closestPoint = follower.getPointFromPath(follower.getCurrentPath().getClosestPointTValue());
             drawRobot(new Pose(closestPoint.getX(), closestPoint.getY(), follower.getCurrentPath().getHeadingGoal(follower.getCurrentPath().getClosestPointTValue())), robotLook);
         }
-        drawPoseHistory(follower.getPoseHistory(), historyLook);
+        drawPoseHistory(follower.getPoseHistory());
         drawRobot(follower.getPose(), historyLook);
 
         sendPacket();

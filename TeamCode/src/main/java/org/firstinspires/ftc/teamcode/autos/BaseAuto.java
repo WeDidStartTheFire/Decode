@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.autos;
 
+import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
@@ -27,6 +28,9 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     protected S initialState;
     protected RobotConstants.Color color;
     protected String name;
+    private long lastUpdateTime = 0;
+    private int totalMs = 0;
+    private int totalUpdates = 0;
 
     protected abstract void buildPaths();
 
@@ -86,7 +90,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         intakeController.update();
         robot.led.update();
 
-        tm.drawRobot(robot.drivetrain.follower);
+        tm.drawRobot(robot.drivetrain.follower, 250);
         tm.print("Path State", state);
         tm.print("Launcher State", launchController.getState());
         tm.print("Intake State", intakeController.getState());
@@ -96,7 +100,16 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         tm.print("To Speed", robot.launcher.toSpeed());
         tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose));
         tm.print("Launcher Vel", robot.launcher.getVel());
-        tm.update(50, 3);
+        long t = runtime.nanoseconds();
+        if (lastUpdateTime != 0) {
+            int ms = Math.toIntExact((t - lastUpdateTime) / 1_000_000);
+            totalMs += ms;
+            totalUpdates++;
+            tm.print("dt (ms)", ms);
+            tm.print("avg dt (ms)", totalMs / totalUpdates);
+        }
+        lastUpdateTime = t;
+        tm.updateOnlyPanels(5);
     }
 
     @Override

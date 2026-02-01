@@ -43,6 +43,7 @@ public class LaunchController {
     private final Timer speedDroopTimer = new Timer();
     private boolean launchCommanded = false;
     private boolean droopRecorded = false;
+    private int framesUnder;
 
     enum State {
         IDLE,
@@ -92,9 +93,13 @@ public class LaunchController {
             launchCommanded = false;
             speedDroopTimer.resetTimer();
         }
+        if (!launchCommanded && !launchQueue.isEmpty() && !robot.launcher.toSpeed()) framesUnder++;
         if (!launchCommanded && !droopRecorded && robot.launcher.toSpeed()) {
-            droopRecorded = true;
-            tm.log("Speed Droop (s)", speedDroopTimer.getElapsedTimeSeconds());
+            if (framesUnder > 4) {
+                droopRecorded = true;
+                tm.log("Speed Droop (s)", speedDroopTimer.getElapsedTimeSeconds());
+            }
+            framesUnder = 0;
         }
 
         RobotConstants.Artifact desired, current;
@@ -135,11 +140,12 @@ public class LaunchController {
                 }
                 desired = launchQueue.get(0);
                 current = robot.indexer.getCurrentArtifact();
-                if (current == desired) {
+                if (current != UNKNOWN && (current == desired || desired == UNKNOWN && current != EMPTY)) {
                     setState(State.PUSH_ARTIFACT);
                     break;
                 }
-                if (robot.indexer.rotateToArtifact(desired)) break;
+                if (desired == UNKNOWN ? robot.indexer.rotateToAny() :
+                        robot.indexer.rotateToArtifact(desired)) break;
                 if (robot.indexer.rotateToArtifact(UNKNOWN)) break;
                 setStateNoWait(State.PUSH_ARTIFACT);
                 anyExpected = true;
@@ -155,6 +161,7 @@ public class LaunchController {
                 if (!robot.indexer.isStill() || (!robot.launcher.toSpeed() &&
                         robot.launcher.getSpinningDuration() < MAX_LAUNCHER_SPIN_WAIT &&
                         stateTimer.getElapsedTimeSeconds() < MAX_DROOP_WAIT)) break;
+                tm.log("Spin Up (s)", robot.launcher.getSpinningDuration());
                 if (launchQueue.isEmpty()) {
                     robot.launcher.stop();
                     robot.feeder.retract();
@@ -163,7 +170,8 @@ public class LaunchController {
                 }
                 desired = launchQueue.get(0);
                 current = robot.indexer.getCurrentArtifact();
-                if (current != desired && !anyExpected) {
+                if ((desired != UNKNOWN && current != desired && !anyExpected)
+                        || current == UNKNOWN || current == EMPTY) {
                     failedCount++;
                     if (failedCount <= MAX_FAILED_ATTEMPTS) break;
                     failedCount = 0;

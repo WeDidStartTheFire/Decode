@@ -50,7 +50,6 @@ public class Test_Limelight extends OpMode {
 
     @Override
     public void loop() {
-        teleop.update();
         teleop.drivetrainLogic(validStartPose);
         teleop.updateIntake();
         teleop.feederLogic();
@@ -61,5 +60,6 @@ public class Test_Limelight extends OpMode {
         tm.print("Motif", robot.limelight.getMotif());
         tm.print("LL Pose MT1", result.getBotpose());
         tm.print("LL Pose MT2", result.getBotpose_MT2());
+        teleop.update();
     }
 }

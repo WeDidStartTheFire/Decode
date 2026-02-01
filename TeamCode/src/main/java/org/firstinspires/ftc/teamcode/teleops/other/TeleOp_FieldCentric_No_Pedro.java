@@ -45,12 +45,12 @@ public class TeleOp_FieldCentric_No_Pedro extends OpMode {
 
     @Override
     public void loop() {
-        teleop.update();
         teleop.drivetrainLogic(true, false);
         teleop.indexerUpdate();
         teleop.updateIntake();
         teleop.feederLogic();
         teleop.updateIndexerTeleOp();
         teleop.updateLauncherTeleOp();
+        teleop.update();
     }
 }

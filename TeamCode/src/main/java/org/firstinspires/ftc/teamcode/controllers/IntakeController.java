@@ -116,15 +116,22 @@ public class IntakeController {
      * Turns on intaking the inner intake only
      */
     public void innerIntake() {
-        setState(State.INNER_INTAKE);
+        setStateNoWait(State.INNER_INTAKE);
         isBusy = false;
+    }
+
+    /**
+     * Stops the intake only if it is inner intaking
+     */
+    public void stopInnerIntake() {
+        if (state == State.INNER_INTAKE) setStateNoWait(State.IDLE);
     }
 
     /**
      * Stops the intake
      */
     public void stop() {
-        setState(State.IDLE);
+        if (state != State.IDLE) setState(State.IDLE);
         isBusy = false;
     }
 

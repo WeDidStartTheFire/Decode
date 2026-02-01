@@ -31,11 +31,13 @@ public class Constants {
             .lateralZeroPowerAcceleration(-72.6798)
 //            .forwardZeroPowerAcceleration(-37.30993063)
 //            .lateralZeroPowerAcceleration(-63.25810803)
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.25, 0, 0.024, 0))
-            .headingPIDFCoefficients(new PIDFCoefficients(2, 0, 0.13, 0))
-            .drivePIDFCoefficients(
-                    new FilteredPIDFCoefficients(0.007, 0, 0.00001, 0.6, 0.07)
-            );
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.12, 0, 0.008, 0.025))
+            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.18, 0, 0.016, 0.022))
+            .useSecondaryTranslationalPIDF(true)
+            .headingPIDFCoefficients(new PIDFCoefficients(1.5, 0, 0.05, 0.025))
+            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(3, 0, 0.1, 0.02))
+            .useSecondaryHeadingPIDF(true)
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.008, 0, 0.001, 0.6, 0.05));
 
     public static MecanumConstants driveConstants = new MecanumConstants()
             .maxPower(1)
@@ -55,7 +57,7 @@ public class Constants {
     public static OTOSConstants otosConstants = new OTOSConstants()
             .hardwareMapName("sensorOtos")
             .offset(new SparkFunOTOS.Pose2D(-5.7, 0, Math.toRadians(90)))
-            .linearScalar(1.093475) // max 1.127
+            .linearScalar(1.126) // max 1.127
             .angularScalar(.9871)
             .linearUnit(DistanceUnit.INCH)
             .angleUnit(AngleUnit.RADIANS);
@@ -77,10 +79,10 @@ public class Constants {
     ;
 
     public static PathConstraints pathConstraints = new PathConstraints(
-            0.9,
-            500,
-            0.9,
-            0.5
+            0.995,
+            100,
+            1,
+            1
     );
 
     public static Follower createOTOSFollower(HardwareMap hardwareMap) {

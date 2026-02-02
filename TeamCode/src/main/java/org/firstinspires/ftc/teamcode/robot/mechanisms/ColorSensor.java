@@ -105,9 +105,7 @@ public class ColorSensor {
     /**
      * Gets the artifact detected by the sensor
      *
-     * @return The artifact color. Returns UNKNOWN if sensor is disconnected,
-     * if color is EMPTY but distance < 3.7 inches, or if color is not EMPTY
-     * but distance > 5.5 inches.
+     * @return The artifact color. Returns UNKNOWN if sensor is disconnected.
      */
     public RobotConstants.Artifact getArtifact() {
         return getColor();

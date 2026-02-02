@@ -10,17 +10,13 @@ import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 
 import com.pedropathing.follower.Follower;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 public class TeleOpController {
-    DcMotorEx lf, lb, rf, rb;
-    IMU imu;
     Gamepad gamepad1, gamepad2;
     IntakeController intakeController;
     LaunchController launchController;
@@ -47,11 +43,6 @@ public class TeleOpController {
         intakeController = new IntakeController(robot);
         launchController = new LaunchController(robot);
         driveController = new DriveController(robot);
-        lf = robot.drivetrain.lf;
-        lb = robot.drivetrain.lb;
-        rf = robot.drivetrain.rf;
-        rb = robot.drivetrain.rb;
-        imu = robot.drivetrain.imu;
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         follower = robot.drivetrain.follower;

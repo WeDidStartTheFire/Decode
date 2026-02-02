@@ -25,24 +25,29 @@ import static java.lang.Math.abs;
 import static java.lang.Math.signum;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 import pedroPathing.Constants;
 
 public class Drivetrain {
-    public DcMotorEx lf, lb, rf, rb;
-    public @NonNull IMU imu;
+    private DcMotorEx lf, lb, rf, rb;
+    private final @NonNull IMU imu;
     public Follower follower;
+    public final @Nullable SparkFunOTOS otos;
 
     public volatile boolean loop = false;
 
@@ -76,6 +81,7 @@ public class Drivetrain {
         this.tm = tm;
         this.hardwareMap = hardwareMap;
         follower = Constants.createFollower(hardwareMap);
+        otos = HardwareInitializer.init(hardwareMap, SparkFunOTOS.class, "otosSensor");
 
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
@@ -89,7 +95,7 @@ public class Drivetrain {
         lb = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "leftBack"); // Port 3
         rf = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "rightFront"); // Port 0
         rb = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "rightBack"); // Port 4
-        if (lf == null || lb == null || rf == null || rb == null) {
+        if (isMotorDisconnected()) {
             tm.warn(CRITICAL, "At least one drive train motor is not connected, so all will be disabled");
             lf = lb = rf = rb = null;
         }
@@ -110,6 +116,19 @@ public class Drivetrain {
         }
 
         useOdometry = useOdom;
+    }
+
+    public boolean isMotorDisconnected() {
+        return lf == null || lb == null || rf == null || rb == null;
+    }
+
+    public double getYaw(AngleUnit angleUnit) {
+        return imu.getRobotOrientation(INTRINSIC, ZYX, angleUnit).firstAngle;
+    }
+
+    public void setOtosBusSpeed(LynxI2cDeviceSynch.BusSpeed busSpeed) {
+        if (otos == null) return;
+        ((LynxI2cDeviceSynch) otos.getDeviceClient()).setBusSpeed(busSpeed);
     }
 
     /**
@@ -138,7 +157,7 @@ public class Drivetrain {
      * @param direction (opt.) Direction to drive if inches is zero.*
      */
     public void drive(double inches, Dir direction) {
-        if (lf == null) return;
+        if (isMotorDisconnected()) return;
 
         int lfTarget = 0;
         int rfTarget = 0;
@@ -172,7 +191,7 @@ public class Drivetrain {
      * @param mode The mode to set the motors to.
      */
     private void setMotorModes(DcMotor.RunMode mode) {
-        if (lb == null) return;
+        if (isMotorDisconnected()) return;
         lf.setMode(mode);
         lb.setMode(mode);
         rf.setMode(mode);
@@ -197,7 +216,7 @@ public class Drivetrain {
      * @param rfPower Right front motor power.
      */
     public void setMotorPowers(double lbPower, double rbPower, double lfPower, double rfPower) {
-        if (lb == null) return;
+        if (isMotorDisconnected()) return;
         lb.setPower(lbPower);
         rb.setPower(rbPower);
         lf.setPower(lfPower);
@@ -210,7 +229,7 @@ public class Drivetrain {
      * @param velocity Velocity to set for all motors
      */
     public void setMotorVelocities(double velocity) {
-        if (lb == null) return;
+        if (isMotorDisconnected()) return;
         setMotorVelocities(velocity, velocity, velocity, velocity);
     }
 
@@ -223,7 +242,7 @@ public class Drivetrain {
      * @param rfPower Right front motor velocity
      */
     public void setMotorVelocities(double lbPower, double rbPower, double lfPower, double rfPower) {
-        if (lb == null) return;
+        if (isMotorDisconnected()) return;
         lf.setVelocity(lfPower);
         lb.setVelocity(lbPower);
         rf.setVelocity(rfPower);
@@ -236,7 +255,7 @@ public class Drivetrain {
      * @param behavior The zero power behavior (BRAKE or FLOAT)
      */
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior) {
-        if (lb == null) return;
+        if (isMotorDisconnected()) return;
         lf.setZeroPowerBehavior(behavior);
         lb.setZeroPowerBehavior(behavior);
         rf.setZeroPowerBehavior(behavior);
@@ -245,8 +264,9 @@ public class Drivetrain {
 
     /** Stops all drive train motors on the robot. */
     public void stop() {
-        if (lb == null) return;
         follower.breakFollowing();
+
+        if (isMotorDisconnected()) return;
         setMotorPowers(0);
         setMotorVelocities(0);
 

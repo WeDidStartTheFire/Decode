@@ -16,6 +16,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.turretMotorPID;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.HIGH;
+import static java.lang.Math.abs;
 import static java.lang.Math.atan2;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -45,7 +46,7 @@ public class Turret {
     private final TelemetryUtils tm;
 
     public enum Target {
-        GOAL, HUMAN_PLAYER, NONE, MANUAL
+        GOAL, HUMAN_PLAYER, NONE, HOLD, MANUAL
     }
 
     public Turret(HardwareMap hardwareMap, TelemetryUtils tm) {
@@ -77,6 +78,7 @@ public class Turret {
      */
     private void resetEncoder() {
         if (turretMotor == null) return;
+        if (abs(turretMotor.getCurrentPosition()) > 250) turretPIDController.reset();
         turretPIDController.updatePosition(0);
         turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // sets encoder back to 0
         turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -114,16 +116,17 @@ public class Turret {
 
         double pos = turretMotor.getCurrentPosition();
         turretPIDController.updatePosition(pos);
+        tm.print("Turret Pos", pos);
+        tm.print("Turret Goal", turretMotor.getTargetPosition());
+        if (target == Target.NONE) return;
         double feedforward = vel == null ? 0 : -vel.getTheta() * TURRET_FEEDFORWARD;
         feedforward *= max(1, min(max(0, pos - TURRET_MIN_POS), max(0, TURRET_MAX_POS - pos)) / TURRET_FEEDFORWARD_SLOW_START);
         feedforward = Math.clamp(feedforward, -TURRET_MAX_POWER, TURRET_MAX_POWER);
-        if (target == Target.NONE || target == Target.MANUAL) feedforward = 0;
+        if (target == Target.HOLD || target == Target.MANUAL) feedforward = 0;
         double pid = turretPIDController.run();
         double staticFeedforward = TURRET_STATIC_FEEDFORWARD * signum(pid + feedforward);
         double power = pid + feedforward + staticFeedforward;
         turretMotor.setPower(Math.clamp(power, -TURRET_MAX_POWER, TURRET_MAX_POWER));
-        tm.print("Turret Pos", pos);
-        tm.print("Turret Goal", turretMotor.getTargetPosition());
 
         if (target == Target.GOAL) {
             ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution();

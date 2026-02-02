@@ -8,7 +8,6 @@ import com.bylazar.configurables.annotations.IgnoreConfigurable;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
@@ -57,8 +56,8 @@ public class TeleOp_TuneFlywheelPIDF extends OpMode {
         tm = robot.drivetrain.tm;
         tm.print("Tune Flywheel PIDF Initialized");
         tm.update();
-        if (robot.drivetrain.lf != null)
-            defaultpidf = robot.drivetrain.lf.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+//        if (robot.drivetrain.areMotorsConnected())
+//            defaultpidf = robot.launcher.launcherMotorA.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     @Override

@@ -171,16 +171,16 @@ public class KalmanLocalizer implements Localizer {
 
         LLResult result = null;
         Pose3D botpose = null;
-        double[] stdevs = {};
+        double[] stddevs = {};
         if (limelight != null) {
             limelight.updateRobotOrientation(toDegrees(llYaw));
             result = limelight.getLatestResult();
             botpose = useMetatag2 ? result.getBotpose_MT2() : result.getBotpose();
-            stdevs = useMetatag2 ? result.getStddevMt2() : result.getStddevMt1();
+            stddevs = useMetatag2 ? result.getStddevMt2() : result.getStddevMt1();
         }
 
         otosLocalizer.update();
-        SparkFunOTOS.Pose2D otosStdDev = otos.getPositionStdDev();
+        SparkFunOTOS.Pose2D otosStdDev = otos.getVelocityStdDev();
         Pose otosVel = otosLocalizer.getVelocity();
 
 
@@ -250,7 +250,7 @@ public class KalmanLocalizer implements Localizer {
             acceptMT2 = useMetatag2;
         }
         if ((acceptMT1 || acceptMT2) && result.getBotposeTagCount() > 0 && botpose != null &&
-                stdevs != null && stdevs.length >= 2 && abs(yawRate) < toRadians(360)) {
+                stddevs != null && stddevs.length >= 2 && abs(yawRate) < toRadians(360)) {
             pose = new Pose(LLLinearUnit.toInches(botpose.getPosition().x),
                     LLLinearUnit.toInches(botpose.getPosition().y),
                     LLAngleUnit.toRadians(robotYaw),
@@ -260,8 +260,8 @@ public class KalmanLocalizer implements Localizer {
             kalmanZ.set(1, 0, pose.getY());
             kalmanZ.set(2, 0, robotYaw);
 
-            sx = LLLinearUnit.toInches(stdevs[0]);
-            sy = LLLinearUnit.toInches(stdevs[1]);
+            sx = LLLinearUnit.toInches(stddevs[0]);
+            sy = LLLinearUnit.toInches(stddevs[1]);
             // swap for Pedro frame
             kalmanR.set(0, 0, sy * sy);
             kalmanR.set(1, 1, sx * sx);

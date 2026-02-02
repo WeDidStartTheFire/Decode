@@ -73,6 +73,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     @Override
     public void start() {
         robot.feeder.retract();
+        robot.indexer.setPos(0);
         robot.limelight.start();
         RobotState.motif = robot.limelight.getMotif();
         setState(initialState);

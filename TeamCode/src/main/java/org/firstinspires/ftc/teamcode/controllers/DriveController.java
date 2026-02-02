@@ -4,8 +4,6 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 import static org.firstinspires.ftc.teamcode.ProjectileSolver.getLaunchSolution;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_ROBOT_POSITIONS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
@@ -173,7 +171,7 @@ public class DriveController {
         double speedMultiplier = lerp(gp.left_trigger, speeds[2], speeds[0]);
 
         if (fieldCentric) {
-            double angle = PI / 2 - robot.drivetrain.imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle;
+            double angle = PI / 2 - robot.drivetrain.getYaw(RADIANS);
 
             double joystickAngle = Math.atan2(gp.left_stick_y, gp.left_stick_x);
             double moveAngle = joystickAngle - angle;
@@ -209,11 +207,12 @@ public class DriveController {
                 abs(rightBackPower) > .05) robot.drivetrain.follower.breakFollowing();
 
         // Send calculated power to wheels
-        if (robot.drivetrain.lf != null && !robot.drivetrain.follower.isBusy()) {
-            robot.drivetrain.lf.setVelocity(leftFrontPower * 5000 * speedMultiplier);
-            robot.drivetrain.rf.setVelocity(rightFrontPower * 5000 * speedMultiplier);
-            robot.drivetrain.lb.setVelocity(leftBackPower * 5000 * speedMultiplier);
-            robot.drivetrain.rb.setVelocity(rightBackPower * 5000 * speedMultiplier);
-        }
+        if (!robot.drivetrain.follower.isBusy())
+            robot.drivetrain.setMotorVelocities(
+                    leftBackPower * 5000 * speedMultiplier,
+                    rightBackPower * 5000 * speedMultiplier,
+                    leftFrontPower * 5000 * speedMultiplier,
+                    rightFrontPower * 5000 * speedMultiplier
+            );
     }
 }

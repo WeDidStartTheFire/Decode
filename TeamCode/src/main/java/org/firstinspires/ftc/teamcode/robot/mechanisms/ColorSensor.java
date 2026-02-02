@@ -9,6 +9,7 @@ import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.HIGH;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -34,6 +35,11 @@ public class ColorSensor {
             distanceSensor = null;
             tm.warn(HIGH, "Color Sensor disconnected.");
         }
+    }
+
+    public void setBusSpeed(LynxI2cDeviceSynch.BusSpeed busSpeed) {
+        if (colorSensor == null) return;
+        ((LynxI2cDeviceSynch) colorSensor.getDeviceClient()).setBusSpeed(busSpeed);
     }
 
     /**

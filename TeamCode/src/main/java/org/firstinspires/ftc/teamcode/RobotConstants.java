@@ -45,8 +45,8 @@ public class RobotConstants {
 
     public static double MAX_LAUNCHER_SPIN_WAIT = 4;
     public static double MAX_DROOP_WAIT = 2.5;
-    public static double MAX_FEEDER_DOWN_WAIT = .3;
-    public static double MIN_FEEDER_DOWN_WAIT = .2;
+    public static double MAX_FEEDER_DOWN_WAIT = .35;
+    public static double MIN_FEEDER_DOWN_WAIT = .35;
     public static double ARTIFACT_LAUNCH_WAIT = .15;
     public static double MAX_MOTIF_DETECT_WAIT = 1;
     public static double MAX_INTAKE_PATH_WAIT = 2.5;

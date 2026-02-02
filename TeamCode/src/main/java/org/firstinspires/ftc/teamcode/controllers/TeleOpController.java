@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.controllers;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact;
 import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
+import static org.firstinspires.ftc.teamcode.RobotState.launcherVelModifier;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.robotCentric;
@@ -16,8 +17,6 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
-import org.firstinspires.ftc.teamcode.robot.mechanisms.Launcher;
-import static org.firstinspires.ftc.teamcode.RobotState.launcherVelModifier;
 
 public class TeleOpController {
     DcMotorEx lf, lb, rf, rb;
@@ -183,8 +182,8 @@ public class TeleOpController {
      * Handles manual spin, intake, and artifact launching.
      */
     public void updateLauncherTeleOp() {
-        if (gamepad2.dpadUpWasPressed()) launcherVelModifier += 10;
-        if (gamepad2.dpadDownWasPressed()) launcherVelModifier -= 10;
+        if (gamepad2.dpadUpWasPressed()) launcherVelModifier += 25;
+        if (gamepad2.dpadDownWasPressed()) launcherVelModifier -= 25;
         if (gamepad2.right_trigger >= 0.5) launchController.manualSpin();
         else launchController.manualStop();
         if (gamepad2.left_trigger >= 0.3) launchController.intake(gamepad2.left_trigger);

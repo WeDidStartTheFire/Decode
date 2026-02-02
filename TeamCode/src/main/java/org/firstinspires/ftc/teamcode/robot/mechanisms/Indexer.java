@@ -80,7 +80,9 @@ public class Indexer {
         updateInternalBounds();
         resetTimer();
         pos = max(0, min(1, pos));
-        goalIndexerPos = abs(.5 - pos) < INDEXER_POS_EPSILON ? MIDDLE_INDEXER_POS : pos;
+        double newGoalIndexerPos = abs(.5 - pos) < INDEXER_POS_EPSILON ? MIDDLE_INDEXER_POS : pos;
+        if (goalIndexerPos == newGoalIndexerPos) return;
+        goalIndexerPos = newGoalIndexerPos;
         if (indexerServo != null) indexerServo.setPosition(goalIndexerPos);
     }
 
@@ -137,7 +139,7 @@ public class Indexer {
      */
     public double getGoalPos() {
         if (indexerServo == null || indexerTimer == null) return -1;
-        return abs(indexerServo.getPosition() - MIDDLE_INDEXER_POS) < INDEXER_POS_EPSILON ? .5 : indexerServo.getPosition();
+        return abs(goalIndexerPos - MIDDLE_INDEXER_POS) < INDEXER_POS_EPSILON ? .5 : goalIndexerPos;
     }
 
 

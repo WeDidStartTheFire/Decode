@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 public class Feeder {
     private final @Nullable Servo feederServoA, feederServoB;
     private final @Nullable TouchSensor touchSensorA, touchSensorB;
+    private double feederPos = -1;
 
     public Feeder(HardwareMap hardwareMap, TelemetryUtils tm) {
         feederServoA = HardwareInitializer.init(hardwareMap, Servo.class, "feederServoA");
@@ -46,22 +47,20 @@ public class Feeder {
     }
 
     /**
-     * Returns the goal position of the feeder.
+     * Returns the goal position of the feeder. -1 if not yet set.
      *
-     * @return the position of the feeder
+     * @return the goal position of the feeder
      */
-    public double getPos() {
-        if (feederServoA == null && feederServoB == null) return -1;
-        if (feederServoA == null) return feederServoB.getPosition();
-        if (feederServoB == null) return feederServoA.getPosition();
-        return (feederServoA.getPosition() + feederServoB.getPosition()) / 2.0;
+    public double getGoalPos() {
+        return feederPos;
     }
 
     /**
      * Raises the feeder.
      */
     public void raise() {
-        if (feederServoA == null || feederServoB == null) return;
+        if (feederServoA == null || feederServoB == null || feederPos == 1) return;
+        feederPos = 1;
         feederServoB.setPosition(.85);
         feederServoA.setPosition(.85);
     }
@@ -70,7 +69,8 @@ public class Feeder {
      * Retracts the feeder.
      */
     public void retract() {
-        if (feederServoA == null || feederServoB == null) return;
+        if (feederServoA == null || feederServoB == null || feederPos == 0) return;
+        feederPos = 0;
         feederServoA.setPosition(0);
         feederServoB.setPosition(0);
     }

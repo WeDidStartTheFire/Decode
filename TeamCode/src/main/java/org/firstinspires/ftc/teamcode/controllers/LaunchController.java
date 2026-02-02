@@ -128,7 +128,7 @@ public class LaunchController {
             case ROTATE_INDEXER:
                 robot.feeder.retract();
                 if (((robot.feeder.isUp() || stateTimer.getElapsedTimeSeconds() < MIN_FEEDER_DOWN_WAIT) &&
-                        stateTimer.getElapsedTimeSeconds() < MAX_FEEDER_DOWN_WAIT) || robot.feeder.getPos() >= .2)
+                        stateTimer.getElapsedTimeSeconds() < MAX_FEEDER_DOWN_WAIT) || robot.feeder.getGoalPos() >= .2)
                     break;
                 anyExpected = false;
                 pos = robot.indexer.getGoalPos();

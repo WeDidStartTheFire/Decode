@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.LOW;
+import static java.lang.Math.abs;
 
 import androidx.annotation.Nullable;
 
@@ -15,6 +16,7 @@ public class LED {
     private final @Nullable Servo led;
     private int highestPriorityThisLoop = -1;
     private double color;
+    private double goalColor;
 
     public enum Priority {
         LOW(0),
@@ -43,6 +45,8 @@ public class LED {
      * Shows the highest and most recent color that has been set since last update
      */
     public void update() {
+        if (abs(goalColor - color) <= .002) return;
+        goalColor = color;
         if (led != null) led.setPosition(color);
         highestPriorityThisLoop = -1;
     }

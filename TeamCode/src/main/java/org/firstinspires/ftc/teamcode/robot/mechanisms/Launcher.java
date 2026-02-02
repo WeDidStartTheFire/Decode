@@ -2,10 +2,11 @@ package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.BALL_VEL_TO_MOTOR_VEL;
 import static org.firstinspires.ftc.teamcode.RobotConstants.launcherPIDF;
+import static org.firstinspires.ftc.teamcode.RobotState.launcherVelModifier;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
-import static org.firstinspires.ftc.teamcode.RobotState.launcherVelModifier;
+import static java.lang.Math.abs;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,6 +31,8 @@ public class Launcher {
     private @Nullable Pose lastPose;
     private @Nullable Vector lastVel;
     private double lastGoalVel;
+    private double cachedVelocity = 0;
+    private double cachedPower = 0;
 
     /**
      * Initializes the launcher with hardware components.
@@ -93,6 +96,8 @@ public class Launcher {
     public void spin() {
         double motorVel = getGoalVel(pose, vel);
         if (!spinning) spinningTimer.resetTimer();
+        if (spinning && abs(motorVel - cachedVelocity) <= 10) return;
+        cachedVelocity = motorVel;
         spinning = true;
         if (launcherMotorA != null) launcherMotorA.setVelocity(motorVel);
         if (launcherMotorB != null) launcherMotorB.setVelocity(motorVel);
@@ -130,7 +135,10 @@ public class Launcher {
      */
     public void intakeMotors(double percent) {
         percent = Math.max(0, Math.min(1, percent));
+        if (!spinning && abs(cachedPower + percent * .4) <= .02) return;
         spinning = false;
+        cachedPower = -percent * .4;
+        cachedVelocity = 0;
         if (launcherMotorA != null) launcherMotorA.setPower(-percent * .4);
         if (launcherMotorB != null) launcherMotorB.setPower(-percent * .4);
     }
@@ -148,7 +156,10 @@ public class Launcher {
      * Stops the launch motors
      */
     public void stop() {
+        if (!spinning && cachedPower == 0) return;
         spinning = false;
+        cachedPower = 0;
+        cachedVelocity = 0;
         if (launcherMotorA != null) launcherMotorA.setPower(0);
         if (launcherMotorB != null) launcherMotorB.setPower(0);
     }

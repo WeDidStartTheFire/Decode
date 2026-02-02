@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.robot.mechanisms;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.HIGH;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.LOW;
+import static java.lang.Math.abs;
 
 import androidx.annotation.Nullable;
 
@@ -17,6 +18,8 @@ public class Intake {
 
     private final @Nullable CRServo intakeServoA, intakeServoB, intakeServoC;
     private final @Nullable DcMotorEx intakeMotor;
+    private double outsidePower = 0;
+    private double insidePower = 0;
 
     public Intake(HardwareMap hardwareMap, TelemetryUtils tm) {
         intakeMotor = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "intakeMotor");
@@ -51,6 +54,8 @@ public class Intake {
      * @param power Power on [-1, 1]. Negative is inward, positive is outward.
      */
     public void powerInside(double power) {
+        if (abs(insidePower - power) < .02) return;
+        insidePower = power;
         if (intakeServoA != null) intakeServoA.setPower(power);
         if (intakeServoC != null) intakeServoC.setPower(power);
     }
@@ -61,6 +66,8 @@ public class Intake {
      * @param power Power on [-1, 1]. Negative is inward, positive is outward.
      */
     public void powerOutside(double power) {
+        if (abs(outsidePower - power) < .02) return;
+        outsidePower = power;
         if (intakeMotor != null) intakeMotor.setPower(power);
         if (intakeServoB != null) intakeServoB.setPower(power);
     }

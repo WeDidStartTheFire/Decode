@@ -122,7 +122,10 @@ public final class Auto_RedFar extends BaseAuto<Auto_RedFar.State> {
                 setState(State.FINISHED);
                 break;
             case FINISHED:
-                if (!robot.drivetrain.follower.isBusy() && pose != null) saveOdometryPosition(pose);
+                if (!robot.drivetrain.follower.isBusy()) {
+                    intakeController.stop();
+                    if (pose != null) saveOdometryPosition(pose);
+                }
                 break;
         }
     }

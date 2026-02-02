@@ -64,6 +64,7 @@ public class RobotConstants {
     );
     public static double INTAKE_MOVE_MAX_SPEED = 0.4;
     public static double INDEXER_ARTIFACT_DETECTION_WAIT = 0.3;
+    public static double BRIEF_OUTTAKE_TIME = 0.5;
 
     public static com.pedropathing.control.PIDFCoefficients turretMotorPID =
             new com.pedropathing.control.PIDFCoefficients(0, 0, 0, 0);

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.controllers;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
+import static org.firstinspires.ftc.teamcode.RobotConstants.BRIEF_OUTTAKE_TIME;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_ARTIFACT_DETECTION_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.AZURE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.BLUE;
@@ -28,6 +29,7 @@ public class IntakeController {
         INNER_INTAKE,
         INTAKE,
         OUTTAKE,
+        BRIEF_OUTTAKE,
     }
 
     public IntakeController(Robot robot) {
@@ -77,11 +79,16 @@ public class IntakeController {
                     robot.intake.powerInside(-1);
                     if (artifactDetectedTimer.getElapsedTimeSeconds() > INDEXER_ARTIFACT_DETECTION_WAIT) {
                         robot.intake.powerInside(1);
-                        robot.intake.powerOutside(-0.75);
+                        if (robot.indexer.getTotalArtifacts() == 3) robot.intake.powerOutside(0.75);
+                        else robot.intake.powerOutside(-0.75);
                         if (robot.indexer.rotateToArtifact(EMPTY)) break;
-                        if (!robot.indexer.rotateToArtifact(UNKNOWN)) setState(State.IDLE);
+                        if (!robot.indexer.rotateToArtifact(UNKNOWN)) setState(State.BRIEF_OUTTAKE);
                     }
                 }
+                break;
+            case BRIEF_OUTTAKE:
+                robot.intake.power(1);
+                if (stateTimer.getElapsedTimeSeconds() > BRIEF_OUTTAKE_TIME) setState(State.IDLE);
                 break;
             case OUTTAKE:
                 robot.intake.power(1);

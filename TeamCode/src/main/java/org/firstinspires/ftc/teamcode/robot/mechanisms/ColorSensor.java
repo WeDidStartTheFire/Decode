@@ -6,10 +6,13 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.PURPLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.HIGH;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.ColorRange;
@@ -20,11 +23,11 @@ import org.opencv.core.Scalar;
 
 public class ColorSensor {
 
-    private @Nullable com.qualcomm.robotcore.hardware.ColorSensor colorSensor;
+    private @Nullable RevColorSensorV3 colorSensor;
     private @Nullable DistanceSensor distanceSensor;
 
     public ColorSensor(HardwareMap hardwareMap, TelemetryUtils tm) {
-        colorSensor = HardwareInitializer.init(hardwareMap, com.qualcomm.robotcore.hardware.ColorSensor.class, "colorSensor");
+        colorSensor = HardwareInitializer.init(hardwareMap, RevColorSensorV3.class, "colorSensor");
         distanceSensor = HardwareInitializer.init(hardwareMap, DistanceSensor.class, "colorSensor");
         if (colorSensor == null || distanceSensor == null) {
             colorSensor = null;
@@ -49,9 +52,32 @@ public class ColorSensor {
         return new Scalar(r, g, b);
     }
 
-    public int getARGB() {
+    @NonNull
+    public Scalar getARGB() {
+        if (colorSensor == null) return new Scalar(0, 0, 0, 0);
+        NormalizedRGBA color = colorSensor.getNormalizedColors();
+        float r = color.red;
+        float g = color.green;
+        float b = color.blue;
+        float a = color.alpha;
+        return new Scalar(r, g, b, a);
+    }
+
+    public Scalar getRGB2() {
+        if (colorSensor == null) return new Scalar(0, 0, 0);
+        float r = colorSensor.red();
+        float g = colorSensor.green();
+        float b = colorSensor.blue();
+        float a = (r + g + b) / 3.f;
+        r /= a;
+        g /= a;
+        b /= a;
+        return new Scalar(r, g, b);
+    }
+
+    public float getBrightness() {
         if (colorSensor == null) return 0;
-        return colorSensor.argb();
+        return colorSensor.alpha();
     }
 
     /**
@@ -84,10 +110,6 @@ public class ColorSensor {
      * but distance > 5.5 inches.
      */
     public RobotConstants.Artifact getArtifact() {
-        RobotConstants.Artifact color = getColor();
-        double distance = getInches();
-        if (color == EMPTY && distance < 3.7) color = UNKNOWN;
-        if (color != EMPTY && distance > 5.5) color = UNKNOWN;
-        return color;
+        return getColor();
     }
 }

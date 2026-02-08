@@ -24,7 +24,7 @@ import org.opencv.core.Scalar;
 public class ColorSensor {
 
     private final @Nullable RevColorSensorV3 colorSensorA, colorSensorB;
-    private double inches;
+    private double inchesA, inchesB;
     private Scalar rgb;
 
     public ColorSensor(HardwareMap hardwareMap, TelemetryUtils tm) {
@@ -121,15 +121,19 @@ public class ColorSensor {
      * @return Distance (double) or -1 if the color sensor is disconnected
      */
     public double getInchesA() {
-        return inches = colorSensorA == null ? -1 : colorSensorA.getDistance(DistanceUnit.INCH);
+        return inchesA = colorSensorA == null ? -1 : colorSensorA.getDistance(DistanceUnit.INCH);
     }
 
     public double getInchesB() {
-        return inches = colorSensorB == null ? -1 : colorSensorB.getDistance(DistanceUnit.INCH);
+        return inchesB = colorSensorB == null ? -1 : colorSensorB.getDistance(DistanceUnit.INCH);
     }
 
-    public double getLastInches() {
-        return inches;
+    public double getLastInchesA() {
+        return inchesA;
+    }
+
+    public double getLastInchesB() {
+        return inchesB;
     }
 
     /**

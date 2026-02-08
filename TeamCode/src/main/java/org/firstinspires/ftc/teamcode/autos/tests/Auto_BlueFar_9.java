@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.autos.tests;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
+import static org.firstinspires.ftc.teamcode.RobotConstants.INTAKE_AFTER_LAUNCH_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INTAKE_MOVE_MAX_SPEED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_INTAKE_PATH_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_MOTIF_DETECT_WAIT;
@@ -20,7 +21,7 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.autos.BaseAuto;
 
 
-@Autonomous(name = Auto_BlueFar_9.name, group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
+@Autonomous(name = Auto_BlueFar_9.name, group = "A", preselectTeleOp = BLUE_TELEOP_NAME)
 public final class Auto_BlueFar_9 extends BaseAuto<Auto_BlueFar_9.State> {
 
     private PathChain startToShoot, shootToIntake1, intake1, intakeToShoot1, shootToIntake2,
@@ -117,11 +118,13 @@ public final class Auto_BlueFar_9 extends BaseAuto<Auto_BlueFar_9.State> {
                 if (launchController.isBusy()) break;
                 robot.drivetrain.follower.followPath(launchRound == 1 ? shootToIntake1 : shootToIntake2,
                         true);
-                intakeController.intake();
                 setState(State.INTAKE);
                 break;
             case INTAKE:
+                if (stateTimer.getElapsedTimeSeconds() > INTAKE_AFTER_LAUNCH_WAIT)
+                    intakeController.intake();
                 if (robot.drivetrain.follower.isBusy()) break;
+                intakeController.intake();
                 robot.drivetrain.follower.followPath(launchRound == 1 ? intake1 : intake2,
                         INTAKE_MOVE_MAX_SPEED, true);
                 setState(State.INTAKE_TO_SHOOT);

@@ -96,7 +96,7 @@ public class Launcher {
     public void spin() {
         double motorVel = getGoalVel(pose, vel);
         if (!spinning) spinningTimer.resetTimer();
-        if (spinning && abs(motorVel - cachedVelocity) <= 10) return;
+        if (spinning && abs(motorVel - cachedVelocity) <= 5) return;
         cachedVelocity = motorVel;
         spinning = true;
         if (launcherMotorA != null) launcherMotorA.setVelocity(motorVel);

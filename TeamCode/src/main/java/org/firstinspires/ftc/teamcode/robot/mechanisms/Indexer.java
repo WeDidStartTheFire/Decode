@@ -28,7 +28,7 @@ import java.util.Arrays;
 public class Indexer {
 
     private final @Nullable Servo indexerServo;
-    private double minIndexerPos = -.25, maxIndexerPos = 1.25, goalIndexerPos = 0;
+    private double minIndexerPos = -.25, maxIndexerPos = 1.25, goalIndexerPos = -1;
     private double tempMinIndexerPos = -.25, tempMaxIndexerPos = 1.25;
     private Timer indexerTimer = null;
     private final ColorSensor colorSensor;
@@ -53,7 +53,8 @@ public class Indexer {
         long t1 = System.currentTimeMillis();
         tm.print("ColorSensor.getArtifact (ms)", t1 - t0);
         tm.print("Artifact", artifact);
-        tm.print("Distance", colorSensor.getLastInches());
+        tm.print("Distance A", colorSensor.getLastInchesA());
+        tm.print("Distance B", colorSensor.getLastInchesB());
         tm.print("RGB", colorSensor.getLastRGB());
         tm.print("Artifact 1", artifacts[0]);
         tm.print("Artifact 2", artifacts[1]);

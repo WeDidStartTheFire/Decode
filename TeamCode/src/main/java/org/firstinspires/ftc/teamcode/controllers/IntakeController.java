@@ -91,7 +91,7 @@ public class IntakeController {
                 }
                 break;
             case BRIEF_OUTTAKE:
-                robot.intake.power(1);
+                robot.intake.powerOutside(1);
                 if (stateTimer.getElapsedTimeSeconds() > BRIEF_OUTTAKE_TIME) setState(State.IDLE);
                 break;
             case OUTTAKE:

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.autos.tests;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_TELEOP_NAME;
+import static org.firstinspires.ftc.teamcode.RobotConstants.INTAKE_AFTER_LAUNCH_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INTAKE_MOVE_MAX_SPEED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_INTAKE_PATH_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_MOTIF_DETECT_WAIT;
@@ -10,6 +11,7 @@ import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
 import static java.lang.Math.toRadians;
 
+import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -19,7 +21,7 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.autos.BaseAuto;
 
 
-@Autonomous(name = Auto_BlueClose_9.name, group = "Test", preselectTeleOp = BLUE_TELEOP_NAME)
+@Autonomous(name = Auto_BlueClose_9.name, group = "A", preselectTeleOp = BLUE_TELEOP_NAME)
 public final class Auto_BlueClose_9 extends BaseAuto<Auto_BlueClose_9.State> {
 
     private PathChain startToMotif, motifToShoot, shootToIntake1, intake1, intakeToShoot1,
@@ -43,10 +45,10 @@ public final class Auto_BlueClose_9 extends BaseAuto<Auto_BlueClose_9.State> {
     private final Pose startPose = new Pose(19.541233442405954, 121.478672985782, toRadians(54));
     private final Pose motifPose = new Pose(37, 104.5, toRadians(54));
     private final Pose shootPose = new Pose(58.291, 84.670, toRadians(134.4257895029621));
-    private final Pose intakeStart1 = new Pose(48, 84.670, toRadians(180));
-    private final Pose intakeEnd1 = new Pose(20, 84.630, toRadians(180));
-    private final Pose intakeStart2 = new Pose(48, 60, toRadians(180));
-    private final Pose intakeEnd2 = new Pose(20, 60, toRadians(180));
+    private final Pose intakeStart1 = new Pose(48, 60, toRadians(180));
+    private final Pose intakeEnd1 = new Pose(24, 60, toRadians(180));
+    private final Pose intakeStart2 = new Pose(48, 84.670, toRadians(180));
+    private final Pose intakeEnd2 = new Pose(20, 84.630, toRadians(180));
     private final Pose endPose = new Pose(33, 72, toRadians(180));
 
     protected void configure() {
@@ -76,7 +78,7 @@ public final class Auto_BlueClose_9 extends BaseAuto<Auto_BlueClose_9.State> {
                 .setConstraints(slowIntakePathConstraints)
                 .build();
         intakeToShoot1 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(intakeEnd1, shootPose))
+                .addPath(new BezierCurve(intakeEnd1, new Pose(55.464, 59.222), shootPose))
                 .setLinearHeadingInterpolation(intakeEnd1.getHeading(), shootPose.getHeading())
                 .build();
         shootToIntake2 = robot.drivetrain.follower.pathBuilder()
@@ -127,11 +129,13 @@ public final class Auto_BlueClose_9 extends BaseAuto<Auto_BlueClose_9.State> {
                 if (launchController.isBusy()) break;
                 robot.drivetrain.follower.followPath(launchRound == 1 ? shootToIntake1 :
                         shootToIntake2, true);
-                intakeController.intake();
                 setState(State.INTAKE);
                 break;
             case INTAKE:
+                if (stateTimer.getElapsedTimeSeconds() > INTAKE_AFTER_LAUNCH_WAIT)
+                    intakeController.intake();
                 if (robot.drivetrain.follower.isBusy()) break;
+                intakeController.intake();
                 robot.drivetrain.follower.followPath(launchRound == 1 ? intake1 : intake2,
                         INTAKE_MOVE_MAX_SPEED, true);
                 setState(State.INTAKE_TO_SHOOT);

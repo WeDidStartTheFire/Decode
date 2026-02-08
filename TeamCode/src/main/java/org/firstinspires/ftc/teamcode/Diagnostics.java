@@ -19,7 +19,7 @@ public class Diagnostics extends LinearOpMode {
     public Servo feederServoA, feederServoB, indexerServo, led;
     public CRServo intakeServoA, intakeServoB, intakeServoC;
     public Limelight3A limelight;
-    public ColorSensor colorSensor;
+    public ColorSensor colorSensor, colorSensorB;
     public TouchSensor turretTouchSensor;
     public SparkFunOTOS otos;
     public Indexer indexer;
@@ -80,9 +80,12 @@ public class Diagnostics extends LinearOpMode {
         tm.print("Limelight",
                 limelight == null ? "⚠️ Not Connected (CH USB 3.0)" : "✅ Connected");
 
-        colorSensor = HardwareInitializer.init(hardwareMap, ColorSensor.class, "colorSensor");
-        tm.print("Color Sensor",
+        colorSensor = HardwareInitializer.init(hardwareMap, ColorSensor.class, "colorSensorA");
+        tm.print("Color Sensor A",
                 colorSensor == null ? "⚠️ Not Connected (CH I2C 2)" : "✅ Connected");
+        colorSensorB = HardwareInitializer.init(hardwareMap, ColorSensor.class, "colorSensorB");
+        tm.print("Color Sensor B",
+                colorSensor == null ? "⚠️ Not Connected (CH I2C 3)" : "✅ Connected");
 
         turretMotor = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "turretMotor");
         tm.print("Turret Motor",

@@ -25,6 +25,9 @@ public class TeleOp_PanelsVCTest extends OpMode {
 
     @Override
     public void loop() {
+        tm.print("A Button: ", vgamepad1.getCross());
+        tm.print("B Button: ", vgamepad1.getCircle());
+        tm.print("X Button: ", vgamepad1.getSquare());
         tm.print("Y Button: ", vgamepad1.getTriangle());
     }
 }

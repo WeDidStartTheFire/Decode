@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.teleops.tests;
 
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
+import static java.lang.Thread.sleep;
 
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
@@ -66,14 +67,19 @@ public class TeleOp_TestBusSpeed extends OpMode {
         totalColorCalls++;
         tm.print("Bus Speed", fastMode ? "Fast" : "Standard");
         tm.print("Color Sensor Time (ms)", (t1 - t0) * 1000);
-        tm.print("Color Sensor Average Time (ms)", totalColorTime / totalColorCalls);
+        tm.print("Color Sensor Average Time (ms)", totalColorTime / totalColorCalls * 1000);
         t0 = getRuntime();
         if (robot.drivetrain.otos != null) robot.drivetrain.otos.getPosition();
         t1 = getRuntime();
         totalOTOSTime += t1 - t0;
         totalOTOSCalls++;
         tm.print("OTOS Time (ms)", (t1 - t0) * 1000);
-        tm.print("OTOS Average Time (ms)", totalOTOSTime / totalOTOSCalls);
+        tm.print("OTOS Average Time (ms)", totalOTOSTime / totalOTOSCalls * 1000);
         tm.update();
+        try {
+            sleep(100);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

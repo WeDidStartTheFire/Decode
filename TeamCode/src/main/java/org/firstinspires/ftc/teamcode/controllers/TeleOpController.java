@@ -15,14 +15,12 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
-import org.firstinspires.ftc.teamcode.robot.mechanisms.ServoFred;
 
 public class TeleOpController {
     Gamepad gamepad1, gamepad2;
     IntakeController intakeController;
     LaunchController launchController;
     DriveController driveController;
-    ServoFred fred;
     Robot robot;
     public Follower follower;
     boolean useOdometry;
@@ -50,7 +48,6 @@ public class TeleOpController {
         follower = robot.drivetrain.follower;
         useOdometry = robot.drivetrain.useOdometry;
         tm = robot.drivetrain.tm;
-        fred = robot.fred;
     }
 
     /**
@@ -128,7 +125,6 @@ public class TeleOpController {
         }
         if (gamepad1.dpadLeftWasPressed()) robotCentric = true;
         else if (gamepad1.dpadRightWasPressed()) robotCentric = false;
-        if (gamepad1.leftBumperWasPressed() && fred.doClawsExist()) fred.toggleClaws();
         fieldCentric = fieldCentric && !robotCentric;
         tm.print("Robot Centric", robotCentric);
         tm.print("Field Centric", fieldCentric);
@@ -167,6 +163,7 @@ public class TeleOpController {
     public void updateIntake() {
         if (gamepad1.right_trigger > 0.3) intakeController.intake();
         else if (gamepad1.right_bumper) intakeController.outtake();
+        else if (gamepad1.left_bumper) intakeController.manualIntake();
         else if (intakeController.isBusy()) intakeController.stop();
         intakeController.update();
         // Stops innerIntake if it isn't called by the next call to updateIntake()

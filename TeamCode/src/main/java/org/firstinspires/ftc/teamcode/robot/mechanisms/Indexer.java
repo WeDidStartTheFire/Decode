@@ -53,6 +53,8 @@ public class Indexer {
         long t1 = System.currentTimeMillis();
         tm.print("ColorSensor.getArtifact (ms)", t1 - t0);
         tm.print("Artifact", artifact);
+        tm.print("Distance", colorSensor.getLastInches());
+        tm.print("RGB", colorSensor.getLastRGB());
         tm.print("Artifact 1", artifacts[0]);
         tm.print("Artifact 2", artifacts[1]);
         tm.print("Artifact 3", artifacts[2]);

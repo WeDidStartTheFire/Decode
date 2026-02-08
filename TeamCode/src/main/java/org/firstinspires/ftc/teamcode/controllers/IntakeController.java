@@ -28,6 +28,7 @@ public class IntakeController {
         IDLE,
         INNER_INTAKE,
         INTAKE,
+        MANUAL_INTAKE,
         OUTTAKE,
         BRIEF_OUTTAKE,
     }
@@ -64,6 +65,9 @@ public class IntakeController {
                 isBusy = false;
                 robot.intake.powerInside(-1);
                 robot.intake.powerOutside(0);
+                break;
+            case MANUAL_INTAKE:
+                robot.intake.power(-1);
                 break;
             case INTAKE:
                 if (robot.indexer.isActiveSlotEmpty()) {
@@ -117,6 +121,11 @@ public class IntakeController {
     public void intake() {
         isBusy = true;
         setState(State.INTAKE);
+    }
+
+    public void manualIntake() {
+        isBusy = true;
+        setState(State.MANUAL_INTAKE);
     }
 
     /**

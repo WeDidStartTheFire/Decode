@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.pedropathing.geometry.Pose;
-
 public class Utils {
 
     /**
@@ -19,24 +17,6 @@ public class Utils {
         return (b - a) * t + a;
     }
 
-    /**
-     * Saves the current pose to a file.
-     *
-     * @param pos Pose to save
-     */
-    public static void saveOdometryPosition(@NonNull Pose pos) {
-        RobotState.savedPose = pos;
-    }
-
-    /**
-     * Loads the current pose from a file.
-     *
-     * @return The position the robot ended at in the last Auto
-     */
-    @Nullable
-    public static Pose loadOdometryPosition() {
-        return RobotState.savedPose;
-    }
 
     @Deprecated
     public static boolean active() {

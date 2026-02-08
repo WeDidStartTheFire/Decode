@@ -19,7 +19,6 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.IMU_PARAMS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.M;
 import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
 import static org.firstinspires.ftc.teamcode.RobotState.auto;
-import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
 import static java.lang.Math.abs;
 import static java.lang.Math.signum;
@@ -27,8 +26,6 @@ import static java.lang.Math.signum;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -105,16 +102,6 @@ public class Drivetrain {
 
     public double getYaw(AngleUnit angleUnit) {
         return imu.getRobotOrientation(INTRINSIC, ZYX, angleUnit).firstAngle;
-    }
-
-    /**
-     * Holds the current robot position in a certain orientation (based on RobotState.pose)
-     *
-     * @param heading Orientation for the robot to point at
-     */
-    public void holdCurrentPose(double heading) {
-        if (pose == null) return;
-        Pose holdPose = pose.withHeading(heading);
     }
 
     /**

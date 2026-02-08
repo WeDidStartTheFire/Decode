@@ -4,13 +4,10 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADI
 import static org.firstinspires.ftc.teamcode.RobotConstants.baseSpeedMultiplier;
 import static org.firstinspires.ftc.teamcode.RobotConstants.baseTurnSpeed;
 import static org.firstinspires.ftc.teamcode.RobotConstants.speeds;
-import static org.firstinspires.ftc.teamcode.RobotConstants.teleopHeadingPID;
 import static org.firstinspires.ftc.teamcode.Utils.lerp;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 
-import com.pedropathing.control.PIDFController;
-import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
@@ -19,10 +16,7 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
 public class DriveController {
 
     private final Robot robot;
-    PIDFController headingPIDController = new PIDFController(teleopHeadingPID);
     TelemetryUtils tm;
-    private final Timer driveInputTimer = new Timer();
-    private boolean aiming = false, holding = false, following = false;
 
     /**
      * Initializes the DriveController with robot instance.

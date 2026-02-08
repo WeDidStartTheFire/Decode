@@ -9,6 +9,7 @@ import static org.firstinspires.ftc.teamcode.RobotState.robotCentric;
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 
+import com.bylazar.gamepad.PanelsGamepad;
 import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
@@ -43,8 +44,8 @@ public class TeleOpController {
         intakeController = new IntakeController(robot);
         launchController = new LaunchController(robot);
         driveController = new DriveController(robot);
-        this.gamepad1 = gamepad1;
-        this.gamepad2 = gamepad2;
+        this.gamepad1 = PanelsGamepad.INSTANCE.getFirstManager().asCombinedFTCGamepad(gamepad1);
+        this.gamepad2 = PanelsGamepad.INSTANCE.getSecondManager().asCombinedFTCGamepad(gamepad2);
         follower = robot.drivetrain.follower;
         useOdometry = robot.drivetrain.useOdometry;
         tm = robot.drivetrain.tm;

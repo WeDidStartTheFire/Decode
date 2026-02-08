@@ -1,34 +1,18 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
-import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
-import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
-import static org.firstinspires.ftc.teamcode.ProjectileSolver.getLaunchSolution;
-import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_ROBOT_POSITIONS;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Color.RED;
-import static org.firstinspires.ftc.teamcode.RobotConstants.RED_ROBOT_POSITIONS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.baseSpeedMultiplier;
 import static org.firstinspires.ftc.teamcode.RobotConstants.baseTurnSpeed;
 import static org.firstinspires.ftc.teamcode.RobotConstants.speeds;
 import static org.firstinspires.ftc.teamcode.RobotConstants.teleopHeadingPID;
-import static org.firstinspires.ftc.teamcode.RobotState.color;
-import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.Utils.lerp;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 
-import androidx.annotation.NonNull;
-
 import com.pedropathing.control.PIDFController;
-import com.pedropathing.geometry.BezierLine;
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.Path;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
@@ -49,117 +33,6 @@ public class DriveController {
         this.robot = robot;
         this.tm = robot.drivetrain.tm;
     }
-
-    /**
-     * Stops all robot movement and any automatic paths it was on
-     */
-    public void stop() {
-        aiming = false;
-        holding = false;
-        following = false;
-        robot.drivetrain.follower.breakFollowing();
-        robot.drivetrain.stop();
-    }
-
-    /**
-     * Toggles whether the robot drivetrain is aiming at the goal
-     */
-    public void toggleAiming() {
-        aiming = !aiming;
-        ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolutionStationary();
-        if (aiming && holding && sol != null) robot.drivetrain.holdCurrentPose(sol.phi);
-    }
-
-    /**
-     * Holds the robot at its current position
-     */
-    public void holdPosition() {
-        this.holding = true;
-        ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolutionStationary();
-        if (aiming && sol != null) robot.drivetrain.holdCurrentPose(sol.phi);
-        else robot.drivetrain.holdCurrentPose();
-    }
-
-    /**
-     * Returns the path that gets to the closest point in a set of waypoints
-     *
-     * @param poseEstimate current robot position
-     * @return the path to the nearest point in a set of waypoints
-     */
-    @NonNull
-    private static Path getShortestPath(Pose poseEstimate) {
-        Pose[] ROBOT_POSITIONS = color == BLUE ? BLUE_ROBOT_POSITIONS : RED_ROBOT_POSITIONS;
-        if (ROBOT_POSITIONS.length == 0) return new Path();
-        double bestDistance = Double.MAX_VALUE;
-        Pose bestPose = ROBOT_POSITIONS[0];
-        for (Pose pose : ROBOT_POSITIONS) {
-            double distance = poseEstimate.distanceFrom(pose);
-            if (distance < bestDistance) {
-                bestDistance = distance;
-                bestPose = pose;
-            }
-        }
-        Path path = new Path(new BezierLine(poseEstimate, bestPose));
-        path.setLinearHeadingInterpolation(poseEstimate.getHeading(), bestPose.getHeading());
-        return path;
-    }
-
-    /**
-     * Automatically moves the robot to the closest waypoint
-     */
-    public void followClosest() {
-        following = true;
-        holding = false;
-        aiming = false;
-        robot.drivetrain.follower.followPath(getShortestPath(pose));
-    }
-
-    /**
-     * Updates TeleOp drivetrain movement based on controllers and using Pedro Pathing
-     *
-     * @param gp           Gamepad for drivetrain movement
-     * @param fieldCentric Whether movement is field centric
-     */
-    public void updateTeleOp(Gamepad gp, boolean fieldCentric) {
-        double speedMultiplier = lerp(gp.left_trigger, speeds[2], speeds[0]);
-
-        if ((abs(gp.left_stick_y) > .05 ||
-                abs(gp.left_stick_x) > .05 || abs(gp.right_stick_x) > .05)) {
-            driveInputTimer.resetTimer();
-            if (following || holding) robot.drivetrain.follower.startTeleopDrive();
-            following = holding = false;
-        } else if (driveInputTimer.getElapsedTimeSeconds() > 0.5 && !holding && !following) {
-            ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolutionStationary();
-            if (aiming && sol != null) robot.drivetrain.holdCurrentPose(sol.phi);
-            else robot.drivetrain.holdCurrentPose();
-            holding = true;
-        }
-
-        if (holding || following) robot.drivetrain.setZeroPowerBehavior(BRAKE);
-        else robot.drivetrain.setZeroPowerBehavior(FLOAT);
-
-        if (!robot.drivetrain.follower.isBusy() && following) {
-            following = false;
-            holding = true;
-            robot.drivetrain.holdCurrentPose();
-        }
-
-        aiming = aiming && abs(gp.right_stick_x) <= .05;
-        tm.print("aiming", aiming);
-        double turn = -gp.right_stick_x * speedMultiplier;
-        if (aiming && !holding) {
-            ProjectileSolver.LaunchSolution sol = getLaunchSolution();
-            if (sol != null && pose != null) {
-                double error = normalizeRadians(sol.phi - pose.getHeading());
-                headingPIDController.updateError(error);
-                turn = headingPIDController.run();
-            }
-        }
-
-        robot.drivetrain.follower.setTeleOpDrive(gp.left_stick_y * speedMultiplier * (color == RED || !fieldCentric ? -1 : 1),
-                gp.left_stick_x * speedMultiplier * (color == RED || !fieldCentric ? -1 : 1), turn, !fieldCentric);
-    }
-
     /**
      * Updates TeleOp drivetrain movement based on controllers without using Pedro Pathing
      *

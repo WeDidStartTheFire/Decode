@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.teleops.other;
+package org.firstinspires.ftc.teamcode.teleops;
 
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
@@ -12,12 +12,15 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.ServoFred;
 
-@TeleOp(name = "Always Field Centric", group = "C")
-public class TeleOp_AlwaysFieldCentric extends OpMode {
-    public TeleOpController teleop;
-    public Robot robot;
-    public TelemetryUtils tm;
+@TeleOp(name = "TeleOp_Fred", group = "C")
+public class TeleOp_Fred extends OpMode {
+
+    private Robot robot;
+    private TelemetryUtils tm;
+    private TeleOpController teleop;
+    private ServoFred fred;
 
     @Override
     public void init() {
@@ -26,30 +29,23 @@ public class TeleOp_AlwaysFieldCentric extends OpMode {
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
         RobotState.auto = false;
-        robot = new Robot(hardwareMap, telemetry, validStartPose);
+        robot = new Robot(hardwareMap, telemetry, false);
         robot.drivetrain.follower.setPose(RobotState.pose);
         robot.drivetrain.follower.startTeleopDrive();
+        fred = new ServoFred(hardwareMap, tm);
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
-        if (!validStartPose)
-            tm.print("Field Centric Driving️", "☑️Will be used without valid position");
+        if (!validStartPose) tm.print("⚠️WARNING⚠️", "Robot Centric driving will be used");
         else tm.print("Field Centric Driving", "✅");
-        tm.print("Color", "\uD83D\uDFE6Blue\uD83D\uDFE6 (Default)");
-    }
-
-    @Override
-    public void start() {
-        teleop.start();
     }
 
     @Override
     public void loop() {
-        teleop.drivetrainLogic(true);
-        teleop.indexerUpdate();
-        teleop.updateIntake();
-        teleop.feederLogic();
-        teleop.updateIndexerTeleOp();
-        teleop.updateLauncherTeleOp();
-        teleop.update();
+        robot.initBulkCache();
+        robot.updateBulkCache();
+        teleop.drivetrainLogic(true, false);
+        tm.print("Claw 1 Position", fred.getClawPosition(1));
+        tm.print("Claw 2 Position", fred.getClawPosition(2));
+        tm.update();
     }
 }

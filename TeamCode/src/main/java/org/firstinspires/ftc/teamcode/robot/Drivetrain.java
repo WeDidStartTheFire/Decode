@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.robot.mechanisms;
+package org.firstinspires.ftc.teamcode.robot;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
@@ -29,7 +29,6 @@ import androidx.annotation.Nullable;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
-import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -39,9 +38,6 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
-import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
-
-import pedroPathing.Constants;
 
 public class Drivetrain {
     private DcMotorEx lf, lb, rf, rb;
@@ -56,19 +52,6 @@ public class Drivetrain {
     public TelemetryUtils tm;
     private final HardwareMap hardwareMap;
 
-    /**
-     * Configures the drivetrain to use Kalman filter localization.
-     */
-    public void useKalmanFollower() {
-        follower = Constants.createKalmanFollower(hardwareMap);
-    }
-
-    /**
-     * Configures the drivetrain to use Limelight localization.
-     */
-    public void useLimelightFollower() {
-        follower = Constants.createLimelightFollower(hardwareMap);
-    }
 
     /**
      * Initializes the drivetrain with hardware components.
@@ -80,7 +63,6 @@ public class Drivetrain {
     public Drivetrain(HardwareMap hardwareMap, TelemetryUtils tm, boolean useOdom) {
         this.tm = tm;
         this.hardwareMap = hardwareMap;
-        follower = Constants.createFollower(hardwareMap);
         otos = HardwareInitializer.init(hardwareMap, SparkFunOTOS.class, "otosSensor");
 
         imu = hardwareMap.get(IMU.class, "imu");
@@ -124,11 +106,6 @@ public class Drivetrain {
 
     public double getYaw(AngleUnit angleUnit) {
         return imu.getRobotOrientation(INTRINSIC, ZYX, angleUnit).firstAngle;
-    }
-
-    public void setOtosBusSpeed(LynxI2cDeviceSynch.BusSpeed busSpeed) {
-        if (otos == null) return;
-        ((LynxI2cDeviceSynch) otos.getDeviceClient()).setBusSpeed(busSpeed);
     }
 
     /**

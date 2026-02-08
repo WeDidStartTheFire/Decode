@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.robot.mechanisms;
+package org.firstinspires.ftc.teamcode.robot;
 
 import androidx.annotation.Nullable;
 
@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
-import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 public class ServoFred {
 

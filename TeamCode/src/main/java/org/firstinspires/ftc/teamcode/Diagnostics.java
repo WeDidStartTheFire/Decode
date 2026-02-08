@@ -133,7 +133,12 @@ public class Diagnostics extends LinearOpMode {
         if (launcherMotorA != null) launcherMotorA.setVelocity(1000);
         if (launcherMotorB != null) launcherMotorB.setVelocity(1000);
         actionTm("Spinning launcher motors", "End");
-        sleep(5000);
+        resetRuntime();
+        while(getRuntime() < 5.0){
+            tm.print("Launcher Motor A Velocity",  launcherMotorA.getVelocity());
+            tm.print("Launcher Motor B Velocity",  launcherMotorB.getVelocity());
+            tm.update();
+        }
 
         if (launcherMotorA != null) launcherMotorA.setVelocity(0);
         if (launcherMotorB != null) launcherMotorB.setVelocity(0);

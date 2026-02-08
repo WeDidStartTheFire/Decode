@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 
 import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
@@ -24,17 +23,11 @@ import org.opencv.core.Scalar;
 
 public class ColorSensor {
 
-    private @Nullable RevColorSensorV3 colorSensor;
-    private @Nullable DistanceSensor distanceSensor;
+    private final @Nullable RevColorSensorV3 colorSensor;
 
     public ColorSensor(HardwareMap hardwareMap, TelemetryUtils tm) {
         colorSensor = HardwareInitializer.init(hardwareMap, RevColorSensorV3.class, "colorSensor");
-        distanceSensor = HardwareInitializer.init(hardwareMap, DistanceSensor.class, "colorSensor");
-        if (colorSensor == null || distanceSensor == null) {
-            colorSensor = null;
-            distanceSensor = null;
-            tm.warn(HIGH, "Color Sensor disconnected.");
-        }
+        if (colorSensor == null) tm.warn(HIGH, "Color Sensor disconnected.");
     }
 
     public void setBusSpeed(LynxI2cDeviceSynch.BusSpeed busSpeed) {
@@ -92,7 +85,7 @@ public class ColorSensor {
      * @return Distance (double) or -1 if the color sensor is disconnected
      */
     public double getInches() {
-        return distanceSensor == null ? -1 : distanceSensor.getDistance(DistanceUnit.INCH);
+        return colorSensor == null ? -1 : colorSensor.getDistance(DistanceUnit.INCH);
     }
 
     /**

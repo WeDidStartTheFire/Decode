@@ -21,6 +21,7 @@ public class TeleOp_TestBusSpeed extends OpMode {
     private double totalOTOSTime = 0;
     private int totalColorCalls = 0;
     private int totalOTOSCalls = 0;
+    private boolean fastMode = false;
 
     @Override
     public void init() {
@@ -43,6 +44,7 @@ public class TeleOp_TestBusSpeed extends OpMode {
         if (gamepad1.aWasPressed()) {
             robot.colorSensor.setBusSpeed(LynxI2cDeviceSynch.BusSpeed.FAST_400K);
             robot.drivetrain.setOtosBusSpeed(LynxI2cDeviceSynch.BusSpeed.FAST_400K);
+            fastMode = true;
             totalColorCalls = 0;
             totalOTOSCalls = 0;
             totalColorTime = 0;
@@ -51,6 +53,7 @@ public class TeleOp_TestBusSpeed extends OpMode {
         if (gamepad1.bWasPressed()) {
             robot.colorSensor.setBusSpeed(LynxI2cDeviceSynch.BusSpeed.STANDARD_100K);
             robot.drivetrain.setOtosBusSpeed(LynxI2cDeviceSynch.BusSpeed.STANDARD_100K);
+            fastMode = false;
             totalColorCalls = 0;
             totalOTOSCalls = 0;
             totalColorTime = 0;
@@ -61,6 +64,7 @@ public class TeleOp_TestBusSpeed extends OpMode {
         double t1 = getRuntime();
         totalColorTime += t1 - t0;
         totalColorCalls++;
+        tm.print("Bus Speed", fastMode ? "Fast" : "Standard");
         tm.print("Color Sensor Time (ms)", (t1 - t0) * 1000);
         tm.print("Color Sensor Average Time (ms)", totalColorTime / totalColorCalls);
         t0 = getRuntime();

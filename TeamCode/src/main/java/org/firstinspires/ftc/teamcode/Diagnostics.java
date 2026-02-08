@@ -132,6 +132,10 @@ public class Diagnostics extends LinearOpMode {
         if (intakeServoB != null) intakeServoB.setPower(1);
         actionTm("Intake moving", "Spinning launcher motors");
         sleep(1000);
+        if (intakeServoA != null) intakeServoA.setPower(0);
+        if (intakeServoC != null) intakeServoC.setPower(0);
+        if (intakeMotor != null) intakeMotor.setPower(0);
+        if (intakeServoB != null) intakeServoB.setPower(0);
 
         if (launcherMotorA != null) launcherMotorA.setVelocity(1000);
         if (launcherMotorB != null) launcherMotorB.setVelocity(1000);

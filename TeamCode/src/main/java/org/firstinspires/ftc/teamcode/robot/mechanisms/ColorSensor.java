@@ -24,10 +24,13 @@ import org.opencv.core.Scalar;
 public class ColorSensor {
 
     private final @Nullable RevColorSensorV3 colorSensor;
+    private double inches;
+    private Scalar rgb;
 
     public ColorSensor(HardwareMap hardwareMap, TelemetryUtils tm) {
         colorSensor = HardwareInitializer.init(hardwareMap, RevColorSensorV3.class, "colorSensor");
         if (colorSensor == null) tm.warn(HIGH, "Color Sensor disconnected.");
+        else setBusSpeed(LynxI2cDeviceSynch.BusSpeed.FAST_400K);
     }
 
     public void setBusSpeed(LynxI2cDeviceSynch.BusSpeed busSpeed) {
@@ -48,7 +51,11 @@ public class ColorSensor {
         float r = colorSensor.red() / a;
         float g = colorSensor.green() / a;
         float b = colorSensor.blue() / a;
-        return new Scalar(r, g, b);
+        return rgb = new Scalar(r, g, b);
+    }
+
+    public Scalar getLastRGB() {
+        return rgb;
     }
 
     @NonNull
@@ -85,7 +92,11 @@ public class ColorSensor {
      * @return Distance (double) or -1 if the color sensor is disconnected
      */
     public double getInches() {
-        return colorSensor == null ? -1 : colorSensor.getDistance(DistanceUnit.INCH);
+        return inches = colorSensor == null ? -1 : colorSensor.getDistance(DistanceUnit.INCH);
+    }
+
+    public double getLastInches() {
+        return inches;
     }
 
     /**
@@ -104,9 +115,14 @@ public class ColorSensor {
     /**
      * Gets the artifact detected by the sensor
      *
-     * @return The artifact color. Returns UNKNOWN if sensor is disconnected.
+     * @return The artifact color. Returns UNKNOWN if sensor is disconnected, and returns UNKNOWN
+     * if the distance doesn't match up with the color
      */
     public RobotConstants.Artifact getArtifact() {
-        return getColor();
+        RobotConstants.Artifact color = getColor();
+        double distance = getInches();
+        if (color == EMPTY && distance < 3) color = UNKNOWN;
+        if (color != EMPTY && distance > 5.5) color = UNKNOWN;
+        return color;
     }
 }

@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
-@TeleOp(name = "Test Bus Speed", group = "Tests")
+@TeleOp(name = "Test Bus Speed", group = "Test")
 public class TeleOp_TestBusSpeed extends OpMode {
     private Robot robot;
     private TelemetryUtils tm;

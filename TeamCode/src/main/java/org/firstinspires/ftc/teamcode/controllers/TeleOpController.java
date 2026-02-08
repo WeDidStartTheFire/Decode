@@ -15,12 +15,14 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.mechanisms.ServoFred;
 
 public class TeleOpController {
     Gamepad gamepad1, gamepad2;
     IntakeController intakeController;
     LaunchController launchController;
     DriveController driveController;
+    ServoFred fred;
     Robot robot;
     public Follower follower;
     boolean useOdometry;
@@ -48,6 +50,7 @@ public class TeleOpController {
         follower = robot.drivetrain.follower;
         useOdometry = robot.drivetrain.useOdometry;
         tm = robot.drivetrain.tm;
+        fred = robot.fred;
     }
 
     /**
@@ -117,12 +120,15 @@ public class TeleOpController {
      */
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
         if (validStartPose && useOdometry) {
-            if (gamepad1.a) driveController.holdPosition();
+            if (gamepad1.a) {
+                driveController.holdPosition();
+            }
             if (gamepad1.yWasPressed()) driveController.followClosest();
             if (gamepad1.bWasPressed()) driveController.toggleAiming();
         }
         if (gamepad1.dpadLeftWasPressed()) robotCentric = true;
         else if (gamepad1.dpadRightWasPressed()) robotCentric = false;
+        if (gamepad1.leftBumperWasPressed() && fred.doClawsExist()) fred.toggleClaws();
         fieldCentric = fieldCentric && !robotCentric;
         tm.print("Robot Centric", robotCentric);
         tm.print("Field Centric", fieldCentric);

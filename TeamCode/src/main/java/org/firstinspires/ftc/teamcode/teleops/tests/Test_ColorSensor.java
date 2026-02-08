@@ -72,7 +72,8 @@ public class Test_ColorSensor extends OpMode {
         tm.print("B2", ((int) (rgb2.val[2] * 10000)) / 10000.0);
         tm.print("dt2", dt2);
         tm.print("==============");
-        tm.print("Distance (in)", robot.colorSensor.getInches());
+        tm.print("Distance A (in)", robot.colorSensor.getInchesA());
+        tm.print("Distance B (in)", robot.colorSensor.getInchesB());
         tm.print("Color", robot.colorSensor.getColor());
         tm.print("Artifact", robot.colorSensor.getArtifact());
         tm.update();

@@ -21,7 +21,6 @@ import static java.lang.Math.abs;
 
 import androidx.annotation.NonNull;
 
-import com.bylazar.gamepad.PanelsGamepad;
 import com.pedropathing.control.PIDFController;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -123,7 +122,6 @@ public class DriveController {
      */
     public void updateTeleOp(Gamepad gp, boolean fieldCentric) {
         double speedMultiplier = lerp(gp.left_trigger, speeds[2], speeds[0]);
-        gp = PanelsGamepad.INSTANCE.getFirstManager().asCombinedFTCGamepad(gp);
 
         if ((abs(gp.left_stick_y) > .05 ||
                 abs(gp.left_stick_x) > .05 || abs(gp.right_stick_x) > .05)) {
@@ -171,7 +169,6 @@ public class DriveController {
     public void updateTeleOpNoPedro(Gamepad gp, boolean fieldCentric) {
         double axial, lateral, yaw, xMove, yMove;
         double speedMultiplier = lerp(gp.left_trigger, speeds[2], speeds[0]);
-        gp = PanelsGamepad.INSTANCE.getFirstManager().asCombinedFTCGamepad(gp);
 
         if (fieldCentric) {
             double angle = PI / 2 - robot.drivetrain.getYaw(RADIANS);

@@ -14,7 +14,6 @@ import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Launcher;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Limelight;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
-import org.firstinspires.ftc.teamcode.robot.mechanisms.ServoFred;
 
 public class Robot {
     public Drivetrain drivetrain;
@@ -27,7 +26,6 @@ public class Robot {
     public LED led;
     public Turret turret;
     public HardwareMap hardwareMap;
-    public ServoFred fred;
 
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, boolean useOdometry) {
         this.hardwareMap = hardwareMap;
@@ -41,7 +39,6 @@ public class Robot {
         limelight = new Limelight(hardwareMap, tm);
         launcher = new Launcher(hardwareMap, tm);
         turret = new Turret(hardwareMap, tm);
-        fred = new ServoFred(hardwareMap, tm);
     }
 
     public void initBulkCache() {

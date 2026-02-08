@@ -17,6 +17,10 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
 public class TeleOp_TestBusSpeed extends OpMode {
     private Robot robot;
     private TelemetryUtils tm;
+    private double totalColorTime = 0;
+    private double totalOTOSTime = 0;
+    private int totalColorCalls = 0;
+    private int totalOTOSCalls = 0;
 
     @Override
     public void init() {
@@ -39,19 +43,33 @@ public class TeleOp_TestBusSpeed extends OpMode {
         if (gamepad1.aWasPressed()) {
             robot.colorSensor.setBusSpeed(LynxI2cDeviceSynch.BusSpeed.FAST_400K);
             robot.drivetrain.setOtosBusSpeed(LynxI2cDeviceSynch.BusSpeed.FAST_400K);
+            totalColorCalls = 0;
+            totalOTOSCalls = 0;
+            totalColorTime = 0;
+            totalOTOSTime = 0;
         }
         if (gamepad1.bWasPressed()) {
             robot.colorSensor.setBusSpeed(LynxI2cDeviceSynch.BusSpeed.STANDARD_100K);
             robot.drivetrain.setOtosBusSpeed(LynxI2cDeviceSynch.BusSpeed.STANDARD_100K);
+            totalColorCalls = 0;
+            totalOTOSCalls = 0;
+            totalColorTime = 0;
+            totalOTOSTime = 0;
         }
         double t0 = getRuntime();
         robot.colorSensor.getRGB();
         double t1 = getRuntime();
+        totalColorTime += t1 - t0;
+        totalColorCalls++;
         tm.print("Color Sensor Time (ms)", (t1 - t0) * 1000);
+        tm.print("Color Sensor Average Time (ms)", totalColorTime / totalColorCalls);
         t0 = getRuntime();
         if (robot.drivetrain.otos != null) robot.drivetrain.otos.getPosition();
         t1 = getRuntime();
+        totalOTOSTime += t1 - t0;
+        totalOTOSCalls++;
         tm.print("OTOS Time (ms)", (t1 - t0) * 1000);
+        tm.print("OTOS Average Time (ms)", totalOTOSTime / totalOTOSCalls);
         tm.update();
     }
 }

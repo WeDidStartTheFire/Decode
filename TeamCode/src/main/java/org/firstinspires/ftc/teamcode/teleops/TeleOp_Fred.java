@@ -30,8 +30,6 @@ public class TeleOp_Fred extends OpMode {
         RobotState.pose = validStartPose ? pose : new Pose();
         RobotState.auto = false;
         robot = new Robot(hardwareMap, telemetry, false);
-        robot.drivetrain.follower.setPose(RobotState.pose);
-        robot.drivetrain.follower.startTeleopDrive();
         fred = new ServoFred(hardwareMap, tm);
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;

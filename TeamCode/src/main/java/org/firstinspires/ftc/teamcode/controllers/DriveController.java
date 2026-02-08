@@ -76,16 +76,11 @@ public class DriveController {
             rightBackPower /= max;
         }
 
-        if (abs(leftFrontPower) > .05 || abs(rightFrontPower) > .05 || abs(leftBackPower) > .05 ||
-                abs(rightBackPower) > .05) robot.drivetrain.follower.breakFollowing();
-
-        // Send calculated power to wheels
-        if (!robot.drivetrain.follower.isBusy())
-            robot.drivetrain.setMotorVelocities(
-                    leftBackPower * 5000 * speedMultiplier,
-                    rightBackPower * 5000 * speedMultiplier,
-                    leftFrontPower * 5000 * speedMultiplier,
-                    rightFrontPower * 5000 * speedMultiplier
-            );
+        robot.drivetrain.setMotorVelocities(
+                leftBackPower * 5000 * speedMultiplier,
+                rightBackPower * 5000 * speedMultiplier,
+                leftFrontPower * 5000 * speedMultiplier,
+                rightFrontPower * 5000 * speedMultiplier
+        );
     }
 }

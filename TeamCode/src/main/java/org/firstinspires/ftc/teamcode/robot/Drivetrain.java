@@ -42,7 +42,6 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 public class Drivetrain {
     private DcMotorEx lf, lb, rf, rb;
     private final @NonNull IMU imu;
-    public Follower follower;
     public final @Nullable SparkFunOTOS otos;
 
     public volatile boolean loop = false;
@@ -116,14 +115,6 @@ public class Drivetrain {
     public void holdCurrentPose(double heading) {
         if (pose == null) return;
         Pose holdPose = pose.withHeading(heading);
-        follower.holdPoint(holdPose);
-    }
-
-    /**
-     * Holds the current robot position
-     */
-    public void holdCurrentPose() {
-        follower.holdPoint(pose);
     }
 
     /**
@@ -241,7 +232,6 @@ public class Drivetrain {
 
     /** Stops all drive train motors on the robot. */
     public void stop() {
-        follower.breakFollowing();
 
         if (isMotorDisconnected()) return;
         setMotorPowers(0);

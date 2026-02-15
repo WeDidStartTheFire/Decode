@@ -35,8 +35,8 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
 public class DriveController {
 
     private final Robot robot;
-    PIDFController headingPIDController = new PIDFController(teleopHeadingPID);
-    TelemetryUtils tm;
+    private final PIDFController headingPIDController = new PIDFController(teleopHeadingPID);
+    private final TelemetryUtils tm;
     private final Timer driveInputTimer = new Timer();
     private boolean aiming = false, holding = false, following = false;
 

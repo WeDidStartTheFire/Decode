@@ -55,11 +55,12 @@ public class Test_Limelight extends OpMode {
         teleop.feederLogic();
         teleop.updateIndexerTeleOp();
         teleop.updateLauncherTeleOp();
-        if (robot.limelight.limelight == null) return;
-        LLResult result = robot.limelight.limelight.getLatestResult();
+        LLResult result = robot.limelight.getLatestResult();
         tm.print("Motif", robot.limelight.getMotif());
-        tm.print("LL Pose MT1", result.getBotpose());
-        tm.print("LL Pose MT2", result.getBotpose_MT2());
+        if (result != null) {
+            tm.print("LL Pose MT1", result.getBotpose());
+            tm.print("LL Pose MT2", result.getBotpose_MT2());
+        }
         teleop.update();
     }
 }

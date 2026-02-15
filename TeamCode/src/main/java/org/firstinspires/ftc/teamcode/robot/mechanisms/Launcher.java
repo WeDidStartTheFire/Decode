@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot.mechanisms;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.BALL_VEL_TO_MOTOR_VEL;
+import static org.firstinspires.ftc.teamcode.RobotConstants.BALL_VEL_TO_MOTOR_VEL_COEFF;
+import static org.firstinspires.ftc.teamcode.RobotConstants.BALL_VEL_TO_MOTOR_VEL_CONST;
 import static org.firstinspires.ftc.teamcode.RobotConstants.launcherPIDF;
 import static org.firstinspires.ftc.teamcode.RobotState.launcherVelModifier;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
@@ -171,7 +172,7 @@ public class Launcher {
      * @return Motor velocity in ticks per second
      */
     private double ballVelToMotorVel(double ballVel) {
-        return BALL_VEL_TO_MOTOR_VEL * ballVel;
+        return BALL_VEL_TO_MOTOR_VEL_COEFF * ballVel + BALL_VEL_TO_MOTOR_VEL_CONST;
     }
 
     /**

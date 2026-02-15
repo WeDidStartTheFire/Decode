@@ -9,7 +9,6 @@ import static org.firstinspires.ftc.teamcode.RobotState.robotCentric;
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 
-import com.bylazar.gamepad.PanelsGamepad;
 import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
@@ -18,17 +17,17 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 public class TeleOpController {
-    Gamepad gamepad1, gamepad2;
-    IntakeController intakeController;
-    LaunchController launchController;
-    DriveController driveController;
-    Robot robot;
-    public Follower follower;
-    boolean useOdometry;
-    TelemetryUtils tm;
-    long lastUpdateTime;
-    int totalMs;
-    int totalUpdates;
+    private final Gamepad gamepad1, gamepad2;
+    private final IntakeController intakeController;
+    private final LaunchController launchController;
+    private final DriveController driveController;
+    private final Robot robot;
+    private final Follower follower;
+    private final boolean useOdometry;
+    private final TelemetryUtils tm;
+    private long lastUpdateTime;
+    private int totalMs;
+    private int totalUpdates;
 
     /**
      * Initializes the TeleOpController with robot hardware and gamepads. To be called in the init()
@@ -44,8 +43,8 @@ public class TeleOpController {
         intakeController = new IntakeController(robot);
         launchController = new LaunchController(robot);
         driveController = new DriveController(robot);
-        this.gamepad1 = PanelsGamepad.INSTANCE.getFirstManager().asCombinedFTCGamepad(gamepad1);
-        this.gamepad2 = PanelsGamepad.INSTANCE.getSecondManager().asCombinedFTCGamepad(gamepad2);
+        this.gamepad1 = gamepad1;
+        this.gamepad2 = gamepad2;
         follower = robot.drivetrain.follower;
         useOdometry = robot.drivetrain.useOdometry;
         tm = robot.drivetrain.tm;

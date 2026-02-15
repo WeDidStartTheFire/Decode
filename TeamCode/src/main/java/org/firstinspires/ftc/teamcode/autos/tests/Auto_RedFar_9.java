@@ -45,8 +45,8 @@ public final class Auto_RedFar_9 extends BaseAuto<Auto_RedFar_9.State> {
     private final Pose shootPose = new Pose(84.000, 20.000, toRadians(65.19433424518398));
     private final Pose intakeStart1 = new Pose(99.000, 35.000, toRadians(0));
     private final Pose intakeEnd1 = new Pose(130.000, 35.000, toRadians(0));
-    private final Pose intakeStart2 = new Pose(119, 9.5, toRadians(0));
-    private final Pose intakeEnd2 = new Pose(135, 9.5, toRadians(0));
+    private final Pose intakeStart2 = new Pose(119, 11, toRadians(0));
+    private final Pose intakeEnd2 = new Pose(137, 11, toRadians(0));
     private final Pose endPose = new Pose(119, 9.500, toRadians(0));
 
     protected void configure() {

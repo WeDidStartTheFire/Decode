@@ -17,7 +17,7 @@ import java.util.List;
 
 public class Limelight {
 
-    public @Nullable Limelight3A limelight;
+    private final @Nullable Limelight3A limelight;
 
     public Limelight(HardwareMap hardwareMap, TelemetryUtils tm) {
         limelight = HardwareInitializer.init(hardwareMap, Limelight3A.class, "limelight");
@@ -73,9 +73,13 @@ public class Limelight {
      * @return The fiducial readings from the limelight
      */
     public @Nullable List<LLResultTypes.FiducialResult> getFiducials() {
-        if (limelight == null) return null;
-        LLResult result = limelight.getLatestResult();
+        LLResult result = getLatestResult();
         if (result == null || !result.isValid()) return null;
         return result.getFiducialResults();
+    }
+
+    public @Nullable LLResult getLatestResult() {
+        if (limelight == null) return null;
+        return limelight.getLatestResult();
     }
 }

@@ -57,7 +57,7 @@ public class Constants {
     public static OTOSConstants otosConstants = new OTOSConstants()
             .hardwareMapName("sensorOtos")
             .offset(new SparkFunOTOS.Pose2D(-5.7, 0, Math.toRadians(90)))
-            .linearScalar(1.126) // max 1.127
+            .linearScalar(1.12545) // max 1.127
             .angularScalar(.9871)
             .linearUnit(DistanceUnit.INCH)
             .angleUnit(AngleUnit.RADIANS);

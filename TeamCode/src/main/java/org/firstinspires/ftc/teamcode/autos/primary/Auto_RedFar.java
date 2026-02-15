@@ -11,7 +11,6 @@ import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;
 import static java.lang.Math.toRadians;
 
-import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -43,11 +42,11 @@ public final class Auto_RedFar extends BaseAuto<Auto_RedFar.State> {
 
     private final Pose startPose = new Pose(80.500, 8.500, toRadians(90));
     private final Pose shootPose = new Pose(84.000, 20.000, toRadians(65.19433424518398));
-    private final Pose intakeStart1 = new Pose(99.000, 35.000, toRadians(0));
-    private final Pose intakeEnd1 = new Pose(130.000, 35.000, toRadians(0));
-    private final Pose intakeStart2 = new Pose(119, 11, toRadians(0));
-    private final Pose intakeEnd2 = new Pose(137, 11, toRadians(0));
-    private final Pose endPose = new Pose(119, 9.500, toRadians(0));
+    private final Pose intakeStart1 = new Pose(99.000, 36, toRadians(0));
+    private final Pose intakeEnd1 = new Pose(130.000, 36, toRadians(0));
+    private final Pose intakeStart2 = new Pose(119, 12, toRadians(0));
+    private final Pose intakeEnd2 = new Pose(137, 12, toRadians(0));
+    private final Pose endPose = new Pose(119, 12, toRadians(0));
 
     protected void configure() {
         super.color = color;
@@ -63,8 +62,8 @@ public final class Auto_RedFar extends BaseAuto<Auto_RedFar.State> {
                 .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
                 .build();
         shootToIntake1 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierCurve(shootPose, new Pose(90.66, 34.935), intakeStart1))
-                .setTangentHeadingInterpolation()
+                .addPath(new BezierLine(shootPose, intakeStart1))
+                .setLinearHeadingInterpolation(shootPose.getHeading(), intakeStart1.getHeading())
                 .build();
         intake1 = robot.drivetrain.follower.pathBuilder()
                 .addPath(new BezierLine(intakeStart1, intakeEnd1))

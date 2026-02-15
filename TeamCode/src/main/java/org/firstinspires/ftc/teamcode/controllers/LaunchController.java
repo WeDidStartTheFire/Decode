@@ -121,7 +121,7 @@ public class LaunchController {
                 }
                 intaking = false;
                 if (robot.indexer.isStill()) robot.launcher.intakeMotors(intakePercent);
-                else robot.launcher.stop();
+                else robot.launcher.intakeMotors(0.1);
                 if (robot.indexer.rotateToArtifact(EMPTY)) break;
                 robot.indexer.rotateToArtifact(UNKNOWN);
                 break;
@@ -160,8 +160,8 @@ public class LaunchController {
             case PUSH_ARTIFACT:
                 robot.launcher.spin();
                 if (!robot.indexer.isStill() || (!toSpeed &&
-                        robot.launcher.getSpinningDuration() < MAX_LAUNCHER_SPIN_WAIT &&
-                        stateTimer.getElapsedTimeSeconds() < MAX_DROOP_WAIT)) break;
+                        (robot.launcher.getSpinningDuration() < MAX_LAUNCHER_SPIN_WAIT ||
+                                stateTimer.getElapsedTimeSeconds() < MAX_DROOP_WAIT))) break;
                 tm.log("Spin Up (s)", robot.launcher.getSpinningDuration());
                 tm.log("Launch Vel", robot.launcher.getVel());
                 tm.log("Goal Launch Vel", robot.launcher.getGoalVel());

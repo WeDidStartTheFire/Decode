@@ -34,7 +34,7 @@ public class LimelightLocalizer implements Localizer {
     private Pose prevPose;
     private Pose vel;
     private double totalHeading;
-    boolean useMetatag2 = true;
+    boolean useMetatag2 = false;
     private final DistanceUnit LLLinearUnit = DistanceUnit.METER;
     private final AngleUnit LLAngleUnit = RADIANS;
     private double IMUoffset = 0;

@@ -10,7 +10,6 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathConstraints;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -49,7 +48,7 @@ public class RobotConstants {
     public static double MIN_FEEDER_DOWN_WAIT = .35;
     public static double ARTIFACT_LAUNCH_WAIT = .15;
     public static double MAX_MOTIF_DETECT_WAIT = 1;
-    public static double MAX_INTAKE_PATH_WAIT = 3;
+    public static double MAX_INTAKE_PATH_WAIT = 2.5;
     public static int MAX_FAILED_ATTEMPTS = 5;
     public static double INTAKE_AFTER_LAUNCH_WAIT = 1;
 
@@ -64,7 +63,7 @@ public class RobotConstants {
             0.4
     );
     public static double INTAKE_MOVE_MAX_SPEED = 0.4;
-    public static double INDEXER_ARTIFACT_DETECTION_WAIT = 0.5;
+    public static double INDEXER_ARTIFACT_DETECTION_WAIT = 0.6;
     public static double BRIEF_OUTTAKE_TIME = 0.5;
 
     public static com.pedropathing.control.PIDFCoefficients turretMotorPID =
@@ -82,11 +81,11 @@ public class RobotConstants {
 
     public static com.pedropathing.control.PIDFCoefficients teleopHeadingPID =
             new com.pedropathing.control.PIDFCoefficients(1, 0, .05, 0);
-    public static PIDFCoefficients launcherPIDF = new PIDFCoefficients(80, 0, 0, 20);
+    public static com.pedropathing.control.PIDFCoefficients launcherPIDF = new com.pedropathing.control.PIDFCoefficients(.002, 0, 0, .0006);
     public static final double LAUNCHER_HEIGHT = 15.5;
     public static final double LAUNCHER_ANGLE = toRadians(50);
-    public static double BALL_VEL_TO_MOTOR_VEL_COEFF = 6.33;
-    public static double BALL_VEL_TO_MOTOR_VEL_CONST = 200;
+    public static double BALL_VEL_TO_MOTOR_VEL_COEFF = 4.45;
+    public static double BALL_VEL_TO_MOTOR_VEL_CONST = 466;
 
     public static final Pose3D RED_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 139, 139, 44, 0),
             new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
@@ -95,8 +94,8 @@ public class RobotConstants {
     public static final Pose RED_HUMAN_PLAYER_POSE = new Pose(0, 9);
     public static final Pose BLUE_HUMAN_PLAYER_POSE = new Pose(144, 9);
 
-    public static final Pose[] RED_ROBOT_POSITIONS = {new Pose(41, 32, toRadians(180))};
-    public static final Pose[] BLUE_ROBOT_POSITIONS = {new Pose(103, 32, toRadians(180))};
+    public static final Pose[] RED_ROBOT_POSITIONS = {new Pose(41, 33, toRadians(180))};
+    public static final Pose[] BLUE_ROBOT_POSITIONS = {new Pose(103, 33, toRadians(180))};
 
     public static final String BLUE_TELEOP_NAME = "🟦Blue🟦 Main";
     public static final String RED_TELEOP_NAME = "🟥Red🟥 Main";

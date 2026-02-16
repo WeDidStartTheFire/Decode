@@ -50,7 +50,9 @@ public class TeleOpController {
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
         if (gamepad1.dpadLeftWasPressed()) robotCentric = true;
         else if (gamepad1.dpadRightWasPressed()) robotCentric = false;
-        if (gamepad1.leftBumperWasPressed() && fred.doClawsExist()) fred.toggleClaws();
+        if (gamepad1.leftBumperWasPressed() && fred.doesClawsExist()) fred.toggleClaws();
+        if (gamepad1.leftBumperWasPressed() && fred.doesMotorExist()) fred.setMotorPower(1);
+        if (gamepad1.leftTriggerWasPressed() && fred.doesMotorExist()) fred.setMotorPower(0);
         fieldCentric = fieldCentric && !robotCentric;
         tm.print("Robot Centric", robotCentric);
         tm.print("Field Centric", fieldCentric);

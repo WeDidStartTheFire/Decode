@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import androidx.annotation.Nullable;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -10,6 +12,7 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 public class ServoFred {
 
     private @Nullable Servo claw1, claw2;
+    private @Nullable DcMotor motor;
     private final TelemetryUtils tm;
 
     // Sets up the servos and make sure that actually works.
@@ -18,12 +21,14 @@ public class ServoFred {
 
         claw1 = HardwareInitializer.init(hardwareMap, Servo.class, "claw1");
         claw2 = HardwareInitializer.init(hardwareMap, Servo.class, "claw2");
+        motor = HardwareInitializer.init(hardwareMap, DcMotor.class, "motor");
 
         if (claw1 == null) {tm.warn(TelemetryUtils.ErrorLevel.CRITICAL,
                 "Claw1 is returning null! Please check the servo.");}
         if (claw2 == null) {tm.warn(TelemetryUtils.ErrorLevel.CRITICAL,
                 "Claw2 is returning null! Please check the servo.");}
-
+        if (motor == null) {tm.warn(TelemetryUtils.ErrorLevel.CRITICAL,
+                "Motor is returning null! Please check the motor");}
     }
 
     /** Returns the position of the selected position. Returns "404" if selected claw is null or is
@@ -40,9 +45,11 @@ public class ServoFred {
         } else { return (404); }
     }
 
-    public boolean doClawsExist() {
+    public boolean doesClawsExist() {
         return claw1 != null && claw2 != null;
     }
+
+    public boolean doesMotorExist() {return motor != null;}
 
     /** Opens or closes the claws **/
     public void toggleClaws() {
@@ -56,4 +63,8 @@ public class ServoFred {
         }
     }
 
+    public void setMotorPower(int power) {
+        assert motor != null;
+        motor.setPower(power);
+    }
 }

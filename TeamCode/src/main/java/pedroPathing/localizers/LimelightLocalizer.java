@@ -1,9 +1,8 @@
 package pedroPathing.localizers;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 import static java.lang.Math.abs;
+import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
 
 import androidx.annotation.NonNull;
@@ -88,21 +87,23 @@ public class LimelightLocalizer implements Localizer {
         double llYaw = new Pose(0, 0, robotYaw, PedroCoordinates.INSTANCE)
                 .getAsCoordinateSystem(FTCCoordinates.INSTANCE)
                 .getHeading();
-        limelight.updateRobotOrientation(llYaw);
+        limelight.updateRobotOrientation(toDegrees(llYaw));
         LLResult result = limelight.getLatestResult();
-        Pose3D botpose = useMetatag2 ? result.getBotpose_MT2() : result.getBotpose();
-        double[] stdevs = useMetatag2 ? result.getStddevMt2() : result.getStddevMt1();
-
-        boolean acceptMT1 = !useMetatag2 && !(result.getBotposeTagCount() == 1 && result.getBotposeAvgDist() > 3/*m*/);
-        boolean acceptMT2 = useMetatag2;
         pose = null;
-        if ((acceptMT1 || acceptMT2) && result.getBotposeTagCount() > 0 && botpose != null &&
+        if (result != null) {
+            Pose3D botpose = useMetatag2 ? result.getBotpose_MT2() : result.getBotpose();
+            double[] stdevs = useMetatag2 ? result.getStddevMt2() : result.getStddevMt1();
+
+            boolean acceptMT1 = !useMetatag2 && !(result.getBotposeTagCount() == 1 && result.getBotposeAvgDist() > 3/*m*/);
+            boolean acceptMT2 = useMetatag2;
+            if ((acceptMT1 || acceptMT2) && result.getBotposeTagCount() > 0 && botpose != null &&
                 stdevs != null && stdevs.length >= 2 && abs(yawRate) < toRadians(360)) {
-            pose = new Pose(LLLinearUnit.toInches(botpose.getPosition().x),
+                pose = new Pose(LLLinearUnit.toInches(botpose.getPosition().x),
                     LLLinearUnit.toInches(botpose.getPosition().y),
                     LLAngleUnit.toRadians(robotYaw),
                     FTCCoordinates.INSTANCE);
-            pose = pose.getAsCoordinateSystem(PedroCoordinates.INSTANCE);
+                pose = pose.getAsCoordinateSystem(PedroCoordinates.INSTANCE);
+            }
         }
 
         if (pose != null) {
@@ -133,7 +134,7 @@ public class LimelightLocalizer implements Localizer {
     }
 
     public double getIMUHeading() {
-        return imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle + IMUoffset;
+        return imu.getRobotYawPitchRollAngles().getYaw(RADIANS) + IMUoffset;
     }
 
     public void resetIMU() {

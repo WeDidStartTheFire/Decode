@@ -55,7 +55,7 @@ public class RobotConstants {
     public static double SOFT_RESET_WAIT = 1;
     public static double HARD_RESET_WAIT = 2;
     public static double SNAP_THRESHOLD_DISTANCE = 24;
-    public static double SNAP_THRESHOLD_HEADING = PI / 6;
+    public static double SNAP_THRESHOLD_HEADING = toRadians(15);
     public static double WALL_LOW = 9;
     public static double WALL_HIGH = 135;
 

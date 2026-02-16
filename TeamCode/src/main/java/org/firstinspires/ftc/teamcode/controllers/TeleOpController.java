@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
-import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.robotCentric;
 
-import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
@@ -15,7 +13,6 @@ public class TeleOpController {
     DriveController driveController;
     ServoFred fred;
     Robot robot;
-    public Follower follower;
     boolean useOdometry;
     TelemetryUtils tm;
     long lastUpdateTime;
@@ -56,7 +53,6 @@ public class TeleOpController {
         fieldCentric = fieldCentric && !robotCentric;
         tm.print("Robot Centric", robotCentric);
         tm.print("Field Centric", fieldCentric);
-        if (pose != null) tm.print(pose);
-        else driveController.updateTeleOpNoPedro(gamepad1, fieldCentric);
+        driveController.updateTeleOpNoPedro(gamepad1, fieldCentric);
     }
 }

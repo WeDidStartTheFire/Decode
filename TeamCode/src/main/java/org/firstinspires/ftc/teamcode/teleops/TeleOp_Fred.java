@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleops;
 
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
-import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
-
-import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -25,9 +22,6 @@ public class TeleOp_Fred extends OpMode {
     @Override
     public void init() {
         RobotState.color = RobotConstants.Color.BLUE;
-        Pose pose = loadOdometryPosition();
-        validStartPose = pose != null;
-        RobotState.pose = validStartPose ? pose : new Pose();
         RobotState.auto = false;
         robot = new Robot(hardwareMap, telemetry, false);
         fred = new ServoFred(hardwareMap, tm);

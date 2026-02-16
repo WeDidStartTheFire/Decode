@@ -1,6 +1,13 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.HARD_RESET_WAIT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.SNAP_THRESHOLD_DISTANCE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.SNAP_THRESHOLD_HEADING;
+import static org.firstinspires.ftc.teamcode.RobotConstants.SOFT_RESET_WAIT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.WALL_HIGH;
+import static org.firstinspires.ftc.teamcode.RobotConstants.WALL_LOW;
 import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
 import static org.firstinspires.ftc.teamcode.RobotState.launcherVelModifier;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
@@ -8,13 +15,19 @@ import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.robotCentric;
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
+import static java.lang.Math.PI;
+import static java.lang.Math.abs;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
+import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 
 public class TeleOpController {
     private final Gamepad gamepad1, gamepad2;
@@ -28,6 +41,8 @@ public class TeleOpController {
     private long lastUpdateTime;
     private int totalMs;
     private int totalUpdates;
+    private final Timer softZeroTimer = new Timer(), hardZeroTimer = new Timer();
+    private boolean softResetDone = false, hardResetDone = false;
 
     /**
      * Initializes the TeleOpController with robot hardware and gamepads. To be called in the init()
@@ -113,15 +128,59 @@ public class TeleOpController {
      * Logic for the drivetrain during TeleOp
      *
      * @param fieldCentric Whether to use field centric driving
-     * @param usePedro Whether to use Pedro Pathing
+     * @param usePedro     Whether to use Pedro Pathing
      */
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
         if (validStartPose && useOdometry) {
-            if (gamepad1.a) {
-                driveController.holdPosition();
-            }
+            if (gamepad1.a) driveController.holdPosition();
             if (gamepad1.yWasPressed()) driveController.followClosest();
             if (gamepad1.bWasPressed()) driveController.toggleAiming();
+        }
+        if (gamepad1.dpadDownWasPressed()) {
+            softZeroTimer.resetTimer();
+            softResetDone = false;
+        }
+        if (gamepad1.dpad_down) {
+            robot.led.setColor(RobotConstants.LEDColors.WHITE, LED.Priority.CRITICAL);
+            if (softZeroTimer.getElapsedTimeSeconds() < SOFT_RESET_WAIT)
+                robot.led.setColor(RobotConstants.LEDColors.OFF, LED.Priority.HIGH);
+            else if (!softResetDone) {
+                softResetDone = true;
+                // Snaps to closest 90° angle or wall position if close enough, otherwise keeps
+                // current angle. If pose == null (unlikely) it makes an assumption about where it's
+                // getting zeroed (human player zone corner facing human player)
+                double heading = pose == null ? (RobotState.color == BLUE ? 0 : PI) : pose.getHeading();
+                heading = abs(heading) <= SNAP_THRESHOLD_HEADING ? 0 :
+                    abs(heading - PI * 2) <= SNAP_THRESHOLD_HEADING ? 0 :
+                        abs(heading - PI / 2) <= SNAP_THRESHOLD_HEADING ? PI / 2 :
+                            abs(heading - PI) <= SNAP_THRESHOLD_HEADING ? PI :
+                                abs(heading - PI * 1.5) <= SNAP_THRESHOLD_HEADING ? PI * 1.5 :
+                                    heading;
+                double x = pose == null ? (RobotState.color == BLUE ? WALL_HIGH : WALL_LOW) : pose.getX();
+                x = abs(x - WALL_LOW) <= SNAP_THRESHOLD_DISTANCE ? WALL_LOW : abs(x - WALL_HIGH) <= SNAP_THRESHOLD_DISTANCE ? WALL_HIGH : x;
+                double y = pose == null ? WALL_LOW : pose.getY();
+                y = abs(y - WALL_LOW) <= SNAP_THRESHOLD_DISTANCE ? WALL_LOW : abs(y - WALL_HIGH) <= SNAP_THRESHOLD_DISTANCE ? WALL_HIGH : y;
+                robot.drivetrain.follower.setPose(new Pose(x, y, heading));
+                robot.led.setColor(RobotConstants.LEDColors.WHITE, LED.Priority.CRITICAL);
+            }
+        }
+        if (gamepad1.dpadUpWasPressed()) {
+            hardZeroTimer.resetTimer();
+            hardResetDone = false;
+        }
+        if (gamepad1.dpad_up) {
+            robot.led.setColor(RobotConstants.LEDColors.WHITE, LED.Priority.CRITICAL);
+            if (hardZeroTimer.getElapsedTimeSeconds() < HARD_RESET_WAIT)
+                robot.led.setColor(RobotConstants.LEDColors.OFF, LED.Priority.HIGH);
+            else if (!hardResetDone) {
+                // Resets the robots position to the corner of the human player zone facing the
+                // human player
+                hardResetDone = true;
+                double heading = (RobotState.color == BLUE ? 0 : PI);
+                double x = (RobotState.color == BLUE ? WALL_HIGH : WALL_LOW);
+                double y = WALL_LOW;
+                robot.drivetrain.follower.setPose(new Pose(x, y, heading));
+            }
         }
         if (gamepad1.dpadLeftWasPressed()) robotCentric = true;
         else if (gamepad1.dpadRightWasPressed()) robotCentric = false;
@@ -203,7 +262,6 @@ public class TeleOpController {
         if (gamepad2.right_bumper && gamepad2.right_trigger >= 0.5 && robot.indexer.isStill()) {
             launchController.manualRaise();
             intakeController.innerIntake();
-        }
-        else launchController.manualRetract();
+        } else launchController.manualRetract();
     }
 }

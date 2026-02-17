@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.pedroPathing.Drawing.drawDebug;
 import static java.lang.Math.min;
 import static java.lang.Math.round;
 import static java.lang.Math.toDegrees;
-import static pedroPathing.Drawing.drawDebug;
 
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;

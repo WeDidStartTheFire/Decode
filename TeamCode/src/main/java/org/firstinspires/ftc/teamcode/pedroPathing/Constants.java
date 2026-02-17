@@ -1,4 +1,4 @@
-package pedroPathing;
+package org.firstinspires.ftc.teamcode.pedroPathing;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.control.FilteredPIDFCoefficients;
@@ -17,9 +17,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
-import pedroPathing.localizers.KalmanLocalizer;
-import pedroPathing.localizers.LimelightLocalizer;
+import org.firstinspires.ftc.teamcode.pedroPathing.localizers.KalmanLocalizer;
+import org.firstinspires.ftc.teamcode.pedroPathing.localizers.LimelightLocalizer;
 
 @Configurable
 public class Constants {

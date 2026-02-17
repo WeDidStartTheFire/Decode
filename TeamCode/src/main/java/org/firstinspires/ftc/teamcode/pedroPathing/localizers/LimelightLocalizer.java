@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.localizers;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
-import static java.lang.Math.abs;
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
 
@@ -20,7 +19,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 
@@ -33,9 +31,9 @@ public class LimelightLocalizer implements Localizer {
     private Pose prevPose;
     private Pose vel;
     private double totalHeading;
-    boolean useMetatag2 = false;
-    private final DistanceUnit LLLinearUnit = DistanceUnit.METER;
-    private final AngleUnit LLAngleUnit = RADIANS;
+    //    boolean useMetatag2 = false;
+//    private final DistanceUnit LLLinearUnit = DistanceUnit.METER;
+//    private final AngleUnit LLAngleUnit = RADIANS;
     private double IMUoffset = 0;
 
     public LimelightLocalizer(HardwareMap map) {
@@ -82,36 +80,48 @@ public class LimelightLocalizer implements Localizer {
         double dt = (currTime - prevTime) / 1_000_000.0;
 
         double robotYaw = getIMUHeading();
-        double yawRate = imu.getRobotAngularVelocity(RADIANS).zRotationRate;
+//        double yawRate = imu.getRobotAngularVelocity(RADIANS).zRotationRate;
 
         double llYaw = new Pose(0, 0, robotYaw, PedroCoordinates.INSTANCE)
                 .getAsCoordinateSystem(FTCCoordinates.INSTANCE)
                 .getHeading();
         limelight.updateRobotOrientation(toDegrees(llYaw));
+
         LLResult result = limelight.getLatestResult();
         pose = null;
-        if (result != null) {
-            Pose3D botpose = useMetatag2 ? result.getBotpose_MT2() : result.getBotpose();
-            double[] stdevs = useMetatag2 ? result.getStddevMt2() : result.getStddevMt1();
+        if (result != null && result.isValid()) {
+            Pose3D robotPos = result.getBotpose();
 
-            boolean acceptMT1 = !useMetatag2 && !(result.getBotposeTagCount() == 1 && result.getBotposeAvgDist() > 3/*m*/);
-            boolean acceptMT2 = useMetatag2;
-            if ((acceptMT1 || acceptMT2) && result.getBotposeTagCount() > 0 && botpose != null &&
-                stdevs != null && stdevs.length >= 2 && abs(yawRate) < toRadians(360)) {
-                pose = new Pose(LLLinearUnit.toInches(botpose.getPosition().x),
-                    LLLinearUnit.toInches(botpose.getPosition().y),
-                    LLAngleUnit.toRadians(robotYaw),
-                    FTCCoordinates.INSTANCE);
-                pose = pose.getAsCoordinateSystem(PedroCoordinates.INSTANCE);
-            }
+            double angle = robotPos.getOrientation().getYaw(AngleUnit.DEGREES) + 90;
+            if (angle > 360) angle -= 360;
+
+            pose = new Pose(-robotPos.getPosition().x / 0.0254 + 72, robotPos.getPosition().y / 0.0254 + 72,
+                Math.toRadians(angle));
         }
+
+//        pose = null;
+//        if (result != null) {
+//            Pose3D botpose = useMetatag2 ? result.getBotpose_MT2() : result.getBotpose();
+//            double[] stdevs = useMetatag2 ? result.getStddevMt2() : result.getStddevMt1();
+//
+//            boolean acceptMT1 = !useMetatag2 && !(result.getBotposeTagCount() == 1 && result.getBotposeAvgDist() > 3/*m*/);
+//            boolean acceptMT2 = useMetatag2;
+//            if ((acceptMT1 || acceptMT2) && result.getBotposeTagCount() > 0 && botpose != null &&
+//                stdevs != null && stdevs.length >= 2 && abs(yawRate) < toRadians(360)) {
+//                pose = new Pose(LLLinearUnit.toInches(botpose.getPosition().x),
+//                    LLLinearUnit.toInches(botpose.getPosition().y),
+//                    LLAngleUnit.toRadians(robotYaw),
+//                    FTCCoordinates.INSTANCE);
+//                pose = pose.getAsCoordinateSystem(PedroCoordinates.INSTANCE);
+//            }
+//        }
 
         if (pose != null) {
             double dx = pose.getX() - prevPose.getX();
             double dy = pose.getY() - prevPose.getY();
             double dtheta = pose.getHeading() - prevPose.getHeading();
             totalHeading += dtheta;
-            vel = new Pose(dx / dt, dy / dt, dtheta / dt, FTCCoordinates.INSTANCE);
+            vel = new Pose(dx / dt, dy / dt, dtheta / dt);
             prevPose = pose;
             prevTime = currTime;
         }

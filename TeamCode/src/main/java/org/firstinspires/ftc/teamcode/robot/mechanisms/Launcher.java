@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.robot.mechanisms;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BALL_VEL_TO_MOTOR_VEL_COEFF;
 import static org.firstinspires.ftc.teamcode.RobotConstants.BALL_VEL_TO_MOTOR_VEL_CONST;
 import static org.firstinspires.ftc.teamcode.RobotConstants.launcherPIDF;
+import static org.firstinspires.ftc.teamcode.RobotConstants.launcherReversePIDF;
 import static org.firstinspires.ftc.teamcode.RobotState.launcherVelModifier;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
@@ -53,6 +54,7 @@ public class Launcher {
             tm.warn(CRITICAL, "Launcher Motor A disconnected. Check Expansion Hub motor port 1.");
         else {
             launcherMotorA.setTargetPosition(0);
+            launcherMotorA.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherReversePIDF);
             launcherMotorA.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
 
@@ -62,6 +64,7 @@ public class Launcher {
         else {
             launcherMotorB.setDirection(DcMotorSimple.Direction.REVERSE);
             launcherMotorB.setTargetPosition(0);
+            launcherMotorB.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherReversePIDF);
             launcherMotorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
         spinningTimer = new Timer();

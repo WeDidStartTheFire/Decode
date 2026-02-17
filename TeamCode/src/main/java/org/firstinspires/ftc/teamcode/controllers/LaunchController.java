@@ -122,7 +122,7 @@ public class LaunchController {
                 }
                 intaking = false;
                 if (robot.indexer.isStill()) robot.launcher.intakeMotors(intakePercent);
-                else robot.launcher.intakeMotors(0.1);
+                else robot.launcher.intakeMotors(0.75 * intakePercent);
                 if (robot.indexer.rotateToArtifact(EMPTY)) break;
                 robot.indexer.rotateToArtifact(UNKNOWN);
                 break;

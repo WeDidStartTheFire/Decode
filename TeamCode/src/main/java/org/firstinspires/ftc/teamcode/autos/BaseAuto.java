@@ -41,6 +41,12 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     protected void onInit() {
     }
 
+    protected void onStart() {
+    }
+
+    protected void onStop() {
+    }
+
     protected void setState(S state) {
         stateTimer.resetTimer();
         tm.log(this.state + " -> " + state, stateTimer.getElapsedTimeSeconds());
@@ -71,16 +77,18 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     }
 
     @Override
-    public void start() {
+    public final void start() {
+        robot.drivetrain.follower.setPose(startPose);
         robot.feeder.retract();
         robot.indexer.setPos(0);
         robot.limelight.start();
         RobotState.motif = robot.limelight.getMotif();
         setState(initialState);
+        onStart();
     }
 
     @Override
-    public void loop() {
+    public final void loop() {
         robot.updateBulkCache();
         robot.drivetrain.follower.update();
         pose = robot.drivetrain.follower.getPose();
@@ -113,12 +121,13 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     }
 
     @Override
-    public void stop() {
+    public final void stop() {
         robot.drivetrain.follower.update();
         robot.drivetrain.follower.breakFollowing();
         pose = robot.drivetrain.follower.getPose();
         if (pose != null) saveOdometryPosition(pose);
         tm.showLogs();
         tm.update();
+        onStop();
     }
 }

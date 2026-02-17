@@ -11,6 +11,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_FAILED_ATTEMPTS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_FEEDER_DOWN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIN_FEEDER_DOWN_WAIT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.STOP_LAUNCHER_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotState.auto;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static java.lang.Math.max;
@@ -138,6 +139,7 @@ public class LaunchController {
                     robot.launcher.stop();
                     isBusy = false;
                     setState(State.IDLE);
+                    break;
                 }
                 desired = launchQueue.get(0);
                 current = robot.indexer.getCurrentArtifact();
@@ -159,6 +161,7 @@ public class LaunchController {
                 break;
             case PUSH_ARTIFACT:
                 robot.launcher.spin();
+                tm.print("Launching", robot.indexer.getCurrentArtifact());
                 if (!robot.indexer.isStill() || (!toSpeed &&
                         (robot.launcher.getSpinningDuration() < MAX_LAUNCHER_SPIN_WAIT ||
                                 stateTimer.getElapsedTimeSeconds() < MAX_DROOP_WAIT))) break;
@@ -190,11 +193,14 @@ public class LaunchController {
                 break;
             case RETRACT_FEEDER:
                 if (stateTimer.getElapsedTimeSeconds() < ARTIFACT_LAUNCH_WAIT) break;
-                numLaunched++;
-                launchQueue.remove(0);
                 robot.feeder.retract();
-                if (!launchQueue.isEmpty()) setState(State.ROTATE_INDEXER);
-                else {
+                if (!launchQueue.isEmpty() && !robot.indexer.isEmpty()) {
+                    numLaunched++;
+                    launchQueue.remove(0);
+                    setState(State.ROTATE_INDEXER);
+                } else if (stateTimer.getElapsedTimeSeconds() > STOP_LAUNCHER_WAIT) {
+                    numLaunched++;
+                    launchQueue.remove(0);
                     robot.launcher.stop();
                     isBusy = false;
                     setState(State.IDLE);

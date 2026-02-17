@@ -51,6 +51,7 @@ public class RobotConstants {
     public static double MAX_INTAKE_PATH_WAIT = 2.5;
     public static int MAX_FAILED_ATTEMPTS = 5;
     public static double INTAKE_AFTER_LAUNCH_WAIT = 1;
+    public static double STOP_LAUNCHER_WAIT = 0.25;
 
     public static double SOFT_RESET_WAIT = 1;
     public static double HARD_RESET_WAIT = 2;
@@ -88,7 +89,7 @@ public class RobotConstants {
 
     public static com.pedropathing.control.PIDFCoefficients teleopHeadingPID =
             new com.pedropathing.control.PIDFCoefficients(1, 0, .05, 0);
-    public static com.pedropathing.control.PIDFCoefficients launcherPIDF = new com.pedropathing.control.PIDFCoefficients(.002, 0, 0, .0006);
+    public static com.pedropathing.control.PIDFCoefficients launcherPIDF = new com.pedropathing.control.PIDFCoefficients(.002, 0, 0, .00063);
     public static final double LAUNCHER_HEIGHT = 15.5;
     public static final double LAUNCHER_ANGLE = toRadians(50);
     public static double BALL_VEL_TO_MOTOR_VEL_COEFF = 4.45;
@@ -101,8 +102,8 @@ public class RobotConstants {
     public static final Pose RED_HUMAN_PLAYER_POSE = new Pose(0, 9);
     public static final Pose BLUE_HUMAN_PLAYER_POSE = new Pose(144, 9);
 
-    public static final Pose[] RED_ROBOT_POSITIONS = {new Pose(41, 33, toRadians(180))};
-    public static final Pose[] BLUE_ROBOT_POSITIONS = {new Pose(103, 33, toRadians(180))};
+    public static final Pose[] RED_ROBOT_POSITIONS = {new Pose(38, 33, toRadians(180))};
+    public static final Pose[] BLUE_ROBOT_POSITIONS = {new Pose(106, 33, toRadians(180))};
 
     public static final String BLUE_TELEOP_NAME = "🟦Blue🟦 Main";
     public static final String RED_TELEOP_NAME = "🟥Red🟥 Main";

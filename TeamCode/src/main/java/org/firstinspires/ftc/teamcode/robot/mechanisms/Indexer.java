@@ -83,9 +83,7 @@ public class Indexer {
         updateInternalBounds();
         resetTimer();
         pos = max(0, min(1, pos));
-        double newGoalIndexerPos = abs(.5 - pos) < INDEXER_POS_EPSILON ? MIDDLE_INDEXER_POS : pos;
-        if (goalIndexerPos == newGoalIndexerPos) return;
-        goalIndexerPos = newGoalIndexerPos;
+        goalIndexerPos = abs(.5 - pos) < INDEXER_POS_EPSILON ? MIDDLE_INDEXER_POS : pos;
         if (indexerServo != null) indexerServo.setPosition(goalIndexerPos);
     }
 
@@ -144,7 +142,6 @@ public class Indexer {
         if (indexerServo == null || indexerTimer == null) return -1;
         return abs(goalIndexerPos - MIDDLE_INDEXER_POS) < INDEXER_POS_EPSILON ? .5 : goalIndexerPos;
     }
-
 
     /**
      * @return Number of artifacts in the robot
@@ -231,6 +228,10 @@ public class Indexer {
         return getArtifactAtPos(getGoalPos());
     }
 
+    public boolean isEmpty() {
+        return Arrays.stream(artifacts).allMatch(a -> a == EMPTY);
+    }
+
     /**
      * Rotates the indexer to the nearest specified artifact. Does not rotate if the artifact is
      * not present.
@@ -307,7 +308,7 @@ public class Indexer {
     /**
      * Returns whether there is an artifact in the active indexer slot
      *
-     * @return true if no artifact is present, false if there is one or it it is unknown
+     * @return true if no artifact is present, false if there is one or if it is unknown
      */
     public boolean isActiveSlotEmpty() {
         return getCurrentArtifact() == EMPTY;

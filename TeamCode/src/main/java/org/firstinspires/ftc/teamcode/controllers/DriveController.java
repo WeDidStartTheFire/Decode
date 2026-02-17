@@ -29,6 +29,7 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
+import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
@@ -59,6 +60,12 @@ public class DriveController {
         following = false;
         robot.drivetrain.follower.breakFollowing();
         robot.drivetrain.stop();
+    }
+
+    public void resetPose(Pose pose) {
+        robot.drivetrain.follower.setPose(pose);
+        RobotState.pose = pose;
+        if (holding) holdPosition();
     }
 
     /**
@@ -124,7 +131,7 @@ public class DriveController {
         double speedMultiplier = lerp(gp.left_trigger, speeds[2], speeds[0]);
 
         if ((abs(gp.left_stick_y) > .05 ||
-                abs(gp.left_stick_x) > .05 || abs(gp.right_stick_x) > .05)) {
+            abs(gp.left_stick_x) > .05 || abs(gp.right_stick_x) > .05)) {
             driveInputTimer.resetTimer();
             if (following || holding) robot.drivetrain.follower.startTeleopDrive();
             following = holding = false;
@@ -141,7 +148,7 @@ public class DriveController {
         if (!robot.drivetrain.follower.isBusy() && following) {
             following = false;
             holding = true;
-            robot.drivetrain.holdCurrentPose();
+            robot.drivetrain.follower.holdPoint(getShortestPath(pose).endPose());
         }
 
         aiming = aiming && abs(gp.right_stick_x) <= .05;
@@ -157,7 +164,7 @@ public class DriveController {
         }
 
         robot.drivetrain.follower.setTeleOpDrive(gp.left_stick_y * speedMultiplier * (color == RED || !fieldCentric ? -1 : 1),
-                gp.left_stick_x * speedMultiplier * (color == RED || !fieldCentric ? -1 : 1), turn, !fieldCentric);
+            gp.left_stick_x * speedMultiplier * (color == RED || !fieldCentric ? -1 : 1), turn, !fieldCentric);
     }
 
     /**
@@ -204,15 +211,15 @@ public class DriveController {
         }
 
         if (abs(leftFrontPower) > .05 || abs(rightFrontPower) > .05 || abs(leftBackPower) > .05 ||
-                abs(rightBackPower) > .05) robot.drivetrain.follower.breakFollowing();
+            abs(rightBackPower) > .05) robot.drivetrain.follower.breakFollowing();
 
         // Send calculated power to wheels
         if (!robot.drivetrain.follower.isBusy())
             robot.drivetrain.setMotorVelocities(
-                    leftBackPower * 5000 * speedMultiplier,
-                    rightBackPower * 5000 * speedMultiplier,
-                    leftFrontPower * 5000 * speedMultiplier,
-                    rightFrontPower * 5000 * speedMultiplier
+                leftBackPower * 5000 * speedMultiplier,
+                rightBackPower * 5000 * speedMultiplier,
+                leftFrontPower * 5000 * speedMultiplier,
+                rightFrontPower * 5000 * speedMultiplier
             );
     }
 }

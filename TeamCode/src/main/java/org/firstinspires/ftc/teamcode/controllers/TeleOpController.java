@@ -141,9 +141,9 @@ public class TeleOpController {
             softResetDone = false;
         }
         if (gamepad1.dpad_down) {
-            robot.led.setColor(RobotConstants.LEDColors.WHITE, LED.Priority.CRITICAL);
+            robot.led.setColor(RobotConstants.LEDColors.GREEN, LED.Priority.CRITICAL);
             if (softZeroTimer.getElapsedTimeSeconds() < SOFT_RESET_WAIT)
-                robot.led.setColor(RobotConstants.LEDColors.OFF, LED.Priority.HIGH);
+                robot.led.setColor(RobotConstants.LEDColors.WHITE, LED.Priority.CRITICAL);
             else if (!softResetDone) {
                 softResetDone = true;
                 // Snaps to closest 90° angle or wall position if close enough, otherwise keeps
@@ -160,8 +160,7 @@ public class TeleOpController {
                 x = abs(x - WALL_LOW) <= SNAP_THRESHOLD_DISTANCE ? WALL_LOW : abs(x - WALL_HIGH) <= SNAP_THRESHOLD_DISTANCE ? WALL_HIGH : x;
                 double y = pose == null ? WALL_LOW : pose.getY();
                 y = abs(y - WALL_LOW) <= SNAP_THRESHOLD_DISTANCE ? WALL_LOW : abs(y - WALL_HIGH) <= SNAP_THRESHOLD_DISTANCE ? WALL_HIGH : y;
-                robot.drivetrain.follower.setPose(new Pose(x, y, heading));
-                robot.led.setColor(RobotConstants.LEDColors.WHITE, LED.Priority.CRITICAL);
+                driveController.resetPose(new Pose(x, y, heading));
             }
         }
         if (gamepad1.dpadUpWasPressed()) {
@@ -169,9 +168,9 @@ public class TeleOpController {
             hardResetDone = false;
         }
         if (gamepad1.dpad_up) {
-            robot.led.setColor(RobotConstants.LEDColors.WHITE, LED.Priority.CRITICAL);
+            robot.led.setColor(RobotConstants.LEDColors.GREEN, LED.Priority.CRITICAL);
             if (hardZeroTimer.getElapsedTimeSeconds() < HARD_RESET_WAIT)
-                robot.led.setColor(RobotConstants.LEDColors.OFF, LED.Priority.HIGH);
+                robot.led.setColor(RobotConstants.LEDColors.WHITE, LED.Priority.CRITICAL);
             else if (!hardResetDone) {
                 // Resets the robots position to the corner of the human player zone facing the
                 // human player
@@ -179,7 +178,7 @@ public class TeleOpController {
                 double heading = (RobotState.color == BLUE ? 0 : PI);
                 double x = (RobotState.color == BLUE ? WALL_HIGH : WALL_LOW);
                 double y = WALL_LOW;
-                robot.drivetrain.follower.setPose(new Pose(x, y, heading));
+                driveController.resetPose(new Pose(x, y, heading));
             }
         }
         if (gamepad1.dpadLeftWasPressed()) robotCentric = true;

@@ -1,7 +1,14 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact;
+import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_BASE_ZONE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_FAR_LAUNCH;
+import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_HUMAN_PLAYER;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.HARD_RESET_WAIT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.RED_BASE_ZONE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.RED_FAR_LAUNCH;
+import static org.firstinspires.ftc.teamcode.RobotConstants.RED_HUMAN_PLAYER;
 import static org.firstinspires.ftc.teamcode.RobotConstants.SOFT_RESET_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.runtime;
 import static org.firstinspires.ftc.teamcode.RobotState.launcherVelModifier;
@@ -16,6 +23,7 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
+import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
@@ -123,8 +131,12 @@ public class TeleOpController {
      */
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
         if (validStartPose && useOdometry) {
-            if (gamepad1.a) driveController.holdPosition();
-            if (gamepad1.yWasPressed()) driveController.followClosest();
+            if (gamepad1.aWasPressed())
+                driveController.follow(RobotState.color == BLUE ? BLUE_FAR_LAUNCH : RED_FAR_LAUNCH);
+            if (gamepad1.xWasPressed())
+                driveController.follow(RobotState.color == BLUE ? BLUE_HUMAN_PLAYER : RED_HUMAN_PLAYER);
+            if (gamepad1.yWasPressed())
+                driveController.follow(RobotState.color == BLUE ? BLUE_BASE_ZONE : RED_BASE_ZONE);
             if (gamepad1.bWasPressed()) driveController.toggleAiming();
         }
         if (gamepad1.dpadDownWasPressed()) {

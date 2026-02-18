@@ -5,10 +5,8 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
 import static org.firstinspires.ftc.teamcode.ProjectileSolver.getLaunchSolution;
-import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_ROBOT_POSITIONS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.RED;
-import static org.firstinspires.ftc.teamcode.RobotConstants.RED_ROBOT_POSITIONS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.SNAP_THRESHOLD_DISTANCE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.SNAP_THRESHOLD_HEADING;
 import static org.firstinspires.ftc.teamcode.RobotConstants.WALL_HIGH;
@@ -22,8 +20,6 @@ import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.Utils.lerp;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
-
-import androidx.annotation.NonNull;
 
 import com.pedropathing.control.PIDFController;
 import com.pedropathing.geometry.BezierLine;
@@ -127,37 +123,16 @@ public class DriveController {
     }
 
     /**
-     * Returns the path that gets to the closest point in a set of waypoints
-     *
-     * @param poseEstimate current robot position
-     * @return the path to the nearest point in a set of waypoints
-     */
-    @NonNull
-    private static Path getShortestPath(Pose poseEstimate) {
-        Pose[] ROBOT_POSITIONS = color == BLUE ? BLUE_ROBOT_POSITIONS : RED_ROBOT_POSITIONS;
-        if (ROBOT_POSITIONS.length == 0) return new Path();
-        double bestDistance = Double.MAX_VALUE;
-        Pose bestPose = ROBOT_POSITIONS[0];
-        for (Pose pose : ROBOT_POSITIONS) {
-            double distance = poseEstimate.distanceFrom(pose);
-            if (distance < bestDistance) {
-                bestDistance = distance;
-                bestPose = pose;
-            }
-        }
-        Path path = new Path(new BezierLine(poseEstimate, bestPose));
-        path.setLinearHeadingInterpolation(poseEstimate.getHeading(), bestPose.getHeading());
-        return path;
-    }
-
-    /**
      * Automatically moves the robot to the closest waypoint
      */
-    public void followClosest() {
+    public void follow(Pose pose) {
+        if (RobotState.pose == null) return;
         following = true;
         holding = false;
         aiming = false;
-        robot.drivetrain.follower.followPath(getShortestPath(pose));
+        Path path = new Path(new BezierLine(RobotState.pose, pose));
+        path.setLinearHeadingInterpolation(RobotState.pose.getHeading(), pose.getHeading());
+        robot.drivetrain.follower.followPath(path, true);
     }
 
     /**
@@ -187,7 +162,6 @@ public class DriveController {
         if (!robot.drivetrain.follower.isBusy() && following) {
             following = false;
             holding = true;
-            robot.drivetrain.follower.holdPoint(getShortestPath(pose).endPose());
         }
 
         aiming = aiming && abs(gp.right_stick_x) <= .05;

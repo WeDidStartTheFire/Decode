@@ -103,8 +103,12 @@ public class RobotConstants {
     public static final Pose RED_HUMAN_PLAYER_POSE = new Pose(0, 9);
     public static final Pose BLUE_HUMAN_PLAYER_POSE = new Pose(144, 9);
 
-    public static final Pose[] RED_ROBOT_POSITIONS = {new Pose(38, 33, toRadians(180))};
-    public static final Pose[] BLUE_ROBOT_POSITIONS = {new Pose(106, 33, toRadians(180))};
+    public static final Pose RED_BASE_ZONE = new Pose(38, 33, toRadians(90));
+    public static final Pose BLUE_BASE_ZONE = new Pose(106, 33, toRadians(90));
+    public static final Pose RED_FAR_LAUNCH = new Pose(84, 20, toRadians(90));
+    public static final Pose BLUE_FAR_LAUNCH = new Pose(60, 20, toRadians(90));
+    public static final Pose RED_HUMAN_PLAYER = new Pose(124, 14, toRadians(90));
+    public static final Pose BLUE_HUMAN_PLAYER = new Pose(20, 14, toRadians(90));
 
     public static final String BLUE_TELEOP_NAME = "🟦Blue🟦 Main";
     public static final String RED_TELEOP_NAME = "🟥Red🟥 Main";

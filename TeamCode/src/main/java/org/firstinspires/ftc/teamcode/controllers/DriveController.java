@@ -9,6 +9,10 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_ROBOT_POSITIONS
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.RED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.RED_ROBOT_POSITIONS;
+import static org.firstinspires.ftc.teamcode.RobotConstants.SNAP_THRESHOLD_DISTANCE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.SNAP_THRESHOLD_HEADING;
+import static org.firstinspires.ftc.teamcode.RobotConstants.WALL_HIGH;
+import static org.firstinspires.ftc.teamcode.RobotConstants.WALL_LOW;
 import static org.firstinspires.ftc.teamcode.RobotConstants.baseSpeedMultiplier;
 import static org.firstinspires.ftc.teamcode.RobotConstants.baseTurnSpeed;
 import static org.firstinspires.ftc.teamcode.RobotConstants.speeds;
@@ -62,6 +66,41 @@ public class DriveController {
         robot.drivetrain.stop();
     }
 
+    /**
+     * Resets the robots position to the corner of the human player zone facing the human player
+     */
+    public void hardReset() {
+        double heading = (RobotState.color == BLUE ? 0 : PI);
+        double x = (RobotState.color == BLUE ? WALL_HIGH : WALL_LOW);
+        double y = WALL_LOW;
+        resetPose(new Pose(x, y, heading));
+    }
+
+    /**
+     * Snaps to closest 90° angle or wall position if close enough, otherwise keeps the current
+     * angle. If {@code RobotState.pose == null} (unlikely) it makes an assumption about where it's
+     * getting zeroed (human player zone corner facing human player, like in {@link #hardReset()})
+     */
+    public void softReset() {
+        double heading = pose == null ? (RobotState.color == BLUE ? 0 : PI) : pose.getHeading();
+        heading = abs(heading) <= SNAP_THRESHOLD_HEADING ? 0 :
+            abs(heading - PI * 2) <= SNAP_THRESHOLD_HEADING ? 0 :
+                abs(heading - PI / 2) <= SNAP_THRESHOLD_HEADING ? PI / 2 :
+                    abs(heading - PI) <= SNAP_THRESHOLD_HEADING ? PI :
+                        abs(heading - PI * 1.5) <= SNAP_THRESHOLD_HEADING ? PI * 1.5 :
+                            heading;
+        double x = pose == null ? (RobotState.color == BLUE ? WALL_HIGH : WALL_LOW) : pose.getX();
+        x = abs(x - WALL_LOW) <= SNAP_THRESHOLD_DISTANCE ? WALL_LOW : abs(x - WALL_HIGH) <= SNAP_THRESHOLD_DISTANCE ? WALL_HIGH : x;
+        double y = pose == null ? WALL_LOW : pose.getY();
+        y = abs(y - WALL_LOW) <= SNAP_THRESHOLD_DISTANCE ? WALL_LOW : abs(y - WALL_HIGH) <= SNAP_THRESHOLD_DISTANCE ? WALL_HIGH : y;
+        resetPose(new Pose(x, y, heading));
+    }
+
+    /**
+     * Sets the position of the robot
+     *
+     * @param pose Pose to set
+     */
     public void resetPose(Pose pose) {
         robot.drivetrain.follower.setPose(pose);
         RobotState.pose = pose;

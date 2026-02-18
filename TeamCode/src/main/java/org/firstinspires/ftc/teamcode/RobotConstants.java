@@ -54,8 +54,8 @@ public class RobotConstants {
     public static double INTAKE_AFTER_LAUNCH_WAIT = 1;
     public static double STOP_LAUNCHER_WAIT = 0.25;
 
-    public static double SOFT_RESET_WAIT = 1;
-    public static double HARD_RESET_WAIT = 2;
+    public static double SOFT_RESET_WAIT = .75;
+    public static double HARD_RESET_WAIT = 1.5;
     public static double SNAP_THRESHOLD_DISTANCE = 24;
     public static double SNAP_THRESHOLD_HEADING = toRadians(15);
     public static double WALL_LOW = 9;
@@ -64,7 +64,6 @@ public class RobotConstants {
     public static final double baseSpeedMultiplier = 0.75;
     public static final double baseTurnSpeed = 2.5;
 
-    //    public static PathConstraints slowIntakePathConstraints = Constants.pathConstraints;
     public static PathConstraints slowIntakePathConstraints = new PathConstraints(
             0.3,
             500,

@@ -161,7 +161,6 @@ public class LaunchController {
                 break;
             case PUSH_ARTIFACT:
                 robot.launcher.spin();
-                tm.print("Launching", robot.indexer.getCurrentArtifact());
                 if (!robot.indexer.isStill() || (!toSpeed &&
                         (robot.launcher.getSpinningDuration() < MAX_LAUNCHER_SPIN_WAIT ||
                                 stateTimer.getElapsedTimeSeconds() < MAX_DROOP_WAIT))) break;
@@ -210,14 +209,21 @@ public class LaunchController {
     }
 
     /**
-     * Queues a specified number of artifacts to launch in motif order
+     * Queues a specified number of artifacts to launch in specified order
      *
      * @param n Number of artifacts to launch
+     * @param motifOrder Whether to launch in motif order or fastest order
      */
-    public void launchArtifacts(int n) {
+    public void launchArtifacts(int n, boolean motifOrder) {
         n = min(3, max(n, 0));
         for (int i = 0; i < n; i++)
-            launchArtifact(motif.getNthArtifact(auto ? numLaunched + i : i));
+            launchArtifact(motifOrder ? motif.getNthArtifact(auto ? numLaunched + i : i) : UNKNOWN);
+        if (!motifOrder && !robot.launcher.almostToSpeed()) {
+            if (robot.indexer.getGoalPos() == .5) {
+                if (robot.indexer.getArtifactAtPos(0) != EMPTY) robot.indexer.setPos(0);
+                else if (robot.indexer.getArtifactAtPos(1) != EMPTY) robot.indexer.setPos(1);
+            } else if (robot.indexer.getCurrentArtifact() == EMPTY) robot.indexer.rotateToAny();
+        }
     }
 
     /**

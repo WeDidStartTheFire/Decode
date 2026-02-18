@@ -224,7 +224,7 @@ public class TeleOpController {
         else launchController.manualStop();
         if (gamepad2.left_trigger >= 0.4) launchController.intake(gamepad2.left_trigger);
         else if (gamepad2.left_bumper) launchController.intake(0.4);
-        if (gamepad2.yWasPressed()) launchController.launchArtifacts(3);
+        if (gamepad2.yWasPressed()) launchController.launchArtifacts(3, false);
         if (gamepad2.aWasPressed()) launchController.launchArtifact(Artifact.GREEN);
         if (gamepad2.bWasPressed()) launchController.launchArtifact(Artifact.PURPLE);
         if (gamepad2.xWasPressed()) launchController.stop();

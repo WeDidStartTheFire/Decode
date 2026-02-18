@@ -121,7 +121,7 @@ public final class Auto_RedClose extends BaseAuto<Auto_RedClose.State> {
             case LAUNCH_ARTIFACTS:
                 if (robot.drivetrain.follower.isBusy()) break;
                 intakeController.innerIntake();
-                launchController.launchArtifacts(3);
+                launchController.launchArtifacts(3, true);
                 launchRound++;
                 setState(launchRound <= 2 ? State.SHOOT_TO_INTAKE : State.SHOOT_TO_END);
                 break;

@@ -135,7 +135,10 @@ public class Launcher {
     }
 
     /**
-     * @return Whether the launch motors are almost to speed (within 100 ticks/sec)
+     * Returns whether the launch motors are almost to speed (within 100 ticks/sec).
+     * WARNING: Will return true even if over required speed
+     *
+     * @return Whether the launch motors are almost to speed (within 100 ticks/sec).
      */
     public boolean almostToSpeed() {
         if (launcherMotorA == null || launcherMotorB == null) return false;

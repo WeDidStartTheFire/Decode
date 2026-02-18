@@ -71,7 +71,7 @@ public final class Auto_RedFar_3_Only extends BaseAuto<Auto_RedFar_3_Only.State>
             case LAUNCH_ARTIFACTS:
                 if (robot.drivetrain.follower.isBusy()) break;
                 intakeController.innerIntake();
-                launchController.launchArtifacts(3);
+                launchController.launchArtifacts(3, true);
                 setState(State.SHOOT_TO_END);
                 break;
             case SHOOT_TO_END:

@@ -148,8 +148,9 @@ public class TeleOpController {
             if (softZeroTimer.getElapsedTimeSeconds() < SOFT_RESET_WAIT)
                 robot.led.setColor(RobotConstants.LEDColors.WHITE, LED.Priority.CRITICAL);
             else if (!softResetDone) {
-                softResetDone = true;
-                driveController.softReset();
+                softResetDone = driveController.softReset();
+                if (!softResetDone)
+                    robot.led.setColor(RobotConstants.LEDColors.RED, LED.Priority.CRITICAL);
             }
         }
         if (gamepad1.dpadUpWasPressed()) {

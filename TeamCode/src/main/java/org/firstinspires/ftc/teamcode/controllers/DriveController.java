@@ -78,10 +78,10 @@ public class DriveController {
      * angle. If {@code RobotState.pose == null} (unlikely) it makes an assumption about where it's
      * getting zeroed (human player zone corner facing human player, like in {@link #hardReset()})
      */
-    public void softReset() {
+    public boolean softReset() {
         double heading = pose == null ? (RobotState.color == BLUE ? 0 : PI) : pose.getHeading();
         double newHeading = round(heading * 2 / PI) * PI / 2;
-        if (abs(newHeading - heading) > SNAP_THRESHOLD_HEADING) return;
+        if (abs(newHeading - heading) > SNAP_THRESHOLD_HEADING) return false;
         heading = newHeading;
         if (heading >= 2 * PI) heading -= 2 * PI;
         else if (heading < 0) heading += 2 * PI;
@@ -94,6 +94,7 @@ public class DriveController {
         else if (heading == PI) x -= 2;
         else if (heading == PI * 1.5) y += 2;
         resetPose(new Pose(x, y, heading));
+        return true;
     }
 
     /**

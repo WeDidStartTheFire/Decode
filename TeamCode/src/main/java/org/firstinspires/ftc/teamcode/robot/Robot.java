@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import androidx.annotation.NonNull;
+
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -27,7 +29,7 @@ public class Robot {
     public Turret turret;
     public HardwareMap hardwareMap;
 
-    public Robot(HardwareMap hardwareMap, Telemetry telemetry, boolean useOdometry) {
+    public Robot(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry, boolean useOdometry) {
         this.hardwareMap = hardwareMap;
         TelemetryUtils tm = new TelemetryUtils(telemetry);
         drivetrain = new Drivetrain(hardwareMap, tm, useOdometry);
@@ -35,7 +37,7 @@ public class Robot {
         feeder = new Feeder(hardwareMap, tm);
         colorSensor = new ColorSensor(hardwareMap, tm);
         led = new LED(hardwareMap, tm);
-        indexer = new Indexer(hardwareMap, tm, colorSensor, led);
+        indexer = new Indexer(hardwareMap, tm, colorSensor, led, feeder);
         limelight = new Limelight(hardwareMap, tm);
         launcher = new Launcher(hardwareMap, tm);
         turret = new Turret(hardwareMap, tm);

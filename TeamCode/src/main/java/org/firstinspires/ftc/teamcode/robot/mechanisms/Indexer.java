@@ -13,6 +13,7 @@ import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.pedropathing.util.Timer;
@@ -34,11 +35,14 @@ public class Indexer {
     private final ColorSensor colorSensor;
     private final LED led;
     private final TelemetryUtils tm;
+    private final Feeder feeder;
 
-    public Indexer(HardwareMap hardwareMap, TelemetryUtils tm, ColorSensor colorSensor, LED led) {
+    public Indexer(@NonNull HardwareMap hardwareMap, @NonNull TelemetryUtils tm,
+                   @NonNull ColorSensor colorSensor, @NonNull LED led, @NonNull Feeder feeder) {
         this.tm = tm;
         this.colorSensor = colorSensor;
         this.led = led;
+        this.feeder = feeder;
         indexerServo = HardwareInitializer.init(hardwareMap, Servo.class, "indexerServo");
         if (indexerServo == null)
             tm.warn(CRITICAL, "Indexer Servo disconnected. Check Expansion Hub servo port 2.");
@@ -80,6 +84,7 @@ public class Indexer {
      * @param pos Position to set the indexer to on [0, 1]
      */
     public void setPos(double pos) {
+        if (feeder.getGoalPos() > 0.2) return;
         updateInternalBounds();
         resetTimer();
         pos = max(0, min(1, pos));

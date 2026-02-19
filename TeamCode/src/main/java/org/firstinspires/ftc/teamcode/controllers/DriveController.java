@@ -20,6 +20,7 @@ import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.Utils.lerp;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
+import static java.lang.Math.round;
 
 import com.pedropathing.control.PIDFController;
 import com.pedropathing.geometry.BezierLine;
@@ -67,7 +68,7 @@ public class DriveController {
      */
     public void hardReset() {
         double heading = (RobotState.color == BLUE ? 0 : PI);
-        double x = (RobotState.color == BLUE ? WALL_HIGH : WALL_LOW);
+        double x = (RobotState.color == BLUE ? WALL_HIGH - 2 : WALL_LOW + 2);
         double y = WALL_LOW;
         resetPose(new Pose(x, y, heading));
     }
@@ -79,16 +80,19 @@ public class DriveController {
      */
     public void softReset() {
         double heading = pose == null ? (RobotState.color == BLUE ? 0 : PI) : pose.getHeading();
-        heading = abs(heading) <= SNAP_THRESHOLD_HEADING ? 0 :
-            abs(heading - PI * 2) <= SNAP_THRESHOLD_HEADING ? 0 :
-                abs(heading - PI / 2) <= SNAP_THRESHOLD_HEADING ? PI / 2 :
-                    abs(heading - PI) <= SNAP_THRESHOLD_HEADING ? PI :
-                        abs(heading - PI * 1.5) <= SNAP_THRESHOLD_HEADING ? PI * 1.5 :
-                            heading;
+        double newHeading = round(heading * 2 / PI) * PI / 2;
+        if (abs(newHeading - heading) > SNAP_THRESHOLD_HEADING) return;
+        heading = newHeading;
+        if (heading >= 2 * PI) heading -= 2 * PI;
+        else if (heading < 0) heading += 2 * PI;
         double x = pose == null ? (RobotState.color == BLUE ? WALL_HIGH : WALL_LOW) : pose.getX();
         x = abs(x - WALL_LOW) <= SNAP_THRESHOLD_DISTANCE ? WALL_LOW : abs(x - WALL_HIGH) <= SNAP_THRESHOLD_DISTANCE ? WALL_HIGH : x;
         double y = pose == null ? WALL_LOW : pose.getY();
         y = abs(y - WALL_LOW) <= SNAP_THRESHOLD_DISTANCE ? WALL_LOW : abs(y - WALL_HIGH) <= SNAP_THRESHOLD_DISTANCE ? WALL_HIGH : y;
+        if (heading == 0) x += 2;
+        else if (heading == PI / 2) y -= 2;
+        else if (heading == PI) x -= 2;
+        else if (heading == PI * 1.5) y += 2;
         resetPose(new Pose(x, y, heading));
     }
 

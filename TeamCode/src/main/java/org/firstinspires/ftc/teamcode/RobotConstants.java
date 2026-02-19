@@ -58,8 +58,8 @@ public class RobotConstants {
     public static double HARD_RESET_WAIT = 1.5;
     public static double SNAP_THRESHOLD_DISTANCE = 24;
     public static double SNAP_THRESHOLD_HEADING = toRadians(15);
-    public static double WALL_LOW = 9;
-    public static double WALL_HIGH = 135;
+    public static double WALL_LOW = 11;
+    public static double WALL_HIGH = 133;
 
     public static final double baseSpeedMultiplier = 0.75;
     public static final double baseTurnSpeed = 2.5;

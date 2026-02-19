@@ -28,7 +28,9 @@ public class LimelightLocalizer implements Localizer {
     private long prevTime;
     @Nullable
     private Pose pose;
+    @NonNull
     private Pose prevPose;
+    @NonNull
     private Pose vel;
     private double totalHeading;
     //    boolean useMetatag2 = false;
@@ -40,27 +42,29 @@ public class LimelightLocalizer implements Localizer {
         this(map, new Pose());
     }
 
-    public LimelightLocalizer(@NonNull HardwareMap map, Pose startPose) {
+    public LimelightLocalizer(@NonNull HardwareMap map, @Nullable Pose startPose) {
         imu = map.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                 RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
         imu.resetYaw();
         limelight = map.get(Limelight3A.class, "limelight");
-        limelight.setPollRateHz(100); // How often Limelight is asked for data (100 times per second)
-        limelight.pipelineSwitch(0); // Switch to pipeline number 0
-        limelight.start(); // This tells Limelight to start looking!
+        limelight.setPollRateHz(100);
+        limelight.pipelineSwitch(0);
+        limelight.start();
         prevTime = System.currentTimeMillis();
+        if (startPose == null) startPose = new Pose();
         prevPose = startPose;
         setStartPose(startPose);
+        vel = new Pose();
     }
 
-    public @Nullable Pose getPose() {
-        if (pose == null) return null;
+    public @NonNull Pose getPose() {
+        if (pose == null) return prevPose;
         return pose.getAsCoordinateSystem(PedroCoordinates.INSTANCE);
     }
 
-    public Pose getVelocity() {
+    public @NonNull Pose getVelocity() {
         return vel;
     }
 
@@ -96,7 +100,7 @@ public class LimelightLocalizer implements Localizer {
             if (angle > 360) angle -= 360;
 
             pose = new Pose(-robotPos.getPosition().x / 0.0254 + 72, robotPos.getPosition().y / 0.0254 + 72,
-                Math.toRadians(angle));
+                toRadians(angle));
         }
 
 //        pose = null;
@@ -152,7 +156,7 @@ public class LimelightLocalizer implements Localizer {
     }
 
     public boolean isNAN() {
-        return getPose() == null || Double.isNaN(getPose().getX()) || Double.isNaN(getPose().getY())
+        return pose == null || Double.isNaN(getPose().getX()) || Double.isNaN(getPose().getY())
                 || Double.isNaN(getPose().getHeading());
     }
 }

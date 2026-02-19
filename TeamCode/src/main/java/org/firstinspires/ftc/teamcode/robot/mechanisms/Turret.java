@@ -44,6 +44,7 @@ public class Turret {
     public PIDFController turretPIDController = new PIDFController(turretMotorPID);
     private boolean wasPressed = false;
     private final TelemetryUtils tm;
+    public final boolean disabled = true;
 
     public enum Target {
         GOAL, HUMAN_PLAYER, NONE, HOLD, MANUAL
@@ -69,7 +70,7 @@ public class Turret {
      * @param target Turret target. Can be the goal, human player, or none.
      */
     public void setTarget(Target target) {
-        this.target = target;
+        this.target = disabled ? Target.NONE : target;
     }
 
 

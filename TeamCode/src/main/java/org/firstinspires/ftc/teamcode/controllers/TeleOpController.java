@@ -243,7 +243,8 @@ public class TeleOpController {
     public void feederLogic() {
         tm.print("Feeder Up", robot.feeder.isUp());
         tm.print("Feeder Pos", robot.feeder.getGoalPos());
-        if (gamepad2.right_bumper && gamepad2.right_trigger >= 0.5 && robot.indexer.isStill()) {
+        if (gamepad2.right_bumper && (launchController.isBusy() || gamepad2.right_trigger >= 0.5)
+            && robot.indexer.isStill()) {
             launchController.manualRaise();
             intakeController.innerIntake();
         } else launchController.manualRetract();

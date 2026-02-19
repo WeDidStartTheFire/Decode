@@ -23,6 +23,7 @@ import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
+import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -115,6 +116,7 @@ public class LaunchController {
                 setState(State.ROTATE_INDEXER);
                 break;
             case INTAKE:
+                robot.turret.setTarget(Turret.Target.HUMAN_PLAYER);
                 if (!intaking) {
                     robot.launcher.stop();
                     setState(State.IDLE);
@@ -127,6 +129,7 @@ public class LaunchController {
                 robot.indexer.rotateToArtifact(UNKNOWN);
                 break;
             case ROTATE_INDEXER:
+                robot.turret.setTarget(Turret.Target.GOAL);
                 robot.feeder.retract();
                 if (((robot.feeder.isUp() || stateTimer.getElapsedTimeSeconds() < MIN_FEEDER_DOWN_WAIT) &&
                         stateTimer.getElapsedTimeSeconds() < MAX_FEEDER_DOWN_WAIT) || robot.feeder.getGoalPos() >= .2)
@@ -160,6 +163,7 @@ public class LaunchController {
                 setState(State.IDLE);
                 break;
             case PUSH_ARTIFACT:
+                robot.turret.setTarget(Turret.Target.GOAL);
                 robot.launcher.spin();
                 if (!robot.indexer.isStill() || (!toSpeed &&
                         (robot.launcher.getSpinningDuration() < MAX_LAUNCHER_SPIN_WAIT ||
@@ -191,6 +195,7 @@ public class LaunchController {
                 setState(State.RETRACT_FEEDER);
                 break;
             case RETRACT_FEEDER:
+                robot.turret.setTarget(Turret.Target.GOAL);
                 if (stateTimer.getElapsedTimeSeconds() < ARTIFACT_LAUNCH_WAIT) break;
                 robot.feeder.retract();
                 if (!launchQueue.isEmpty() && !robot.indexer.isEmpty()) {
@@ -259,6 +264,7 @@ public class LaunchController {
      * Manually spins the launcher
      */
     public void manualSpin() {
+        robot.turret.setTarget(Turret.Target.GOAL);
         robot.launcher.spin();
     }
 

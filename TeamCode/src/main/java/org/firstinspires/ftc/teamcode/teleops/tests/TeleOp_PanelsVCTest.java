@@ -20,14 +20,17 @@ public class TeleOp_PanelsVCTest extends OpMode {
         robot = new Robot(hardwareMap, telemetry, false);
         tm = robot.drivetrain.tm;
         vgamepad1 = PanelsGamepad.INSTANCE.getFirstManager();
-        tm.print("Note: This is meant for Panels and will not work on the main Driver Station");
+        tm.print("Panels Virtual Controller Test Initialized");
+        tm.update();
     }
 
     @Override
     public void loop() {
+        vgamepad1.update$Gamepad_release(vgamepad1.getCurrentState$Gamepad_release());
         tm.print("A Button: ", vgamepad1.getCross());
         tm.print("B Button: ", vgamepad1.getCircle());
         tm.print("X Button: ", vgamepad1.getSquare());
         tm.print("Y Button: ", vgamepad1.getTriangle());
+        tm.updateOnlyPanels(3);
     }
 }

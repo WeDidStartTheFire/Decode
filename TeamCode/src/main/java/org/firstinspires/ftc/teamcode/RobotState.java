@@ -31,4 +31,6 @@ public class RobotState {
     public static Artifact[] artifacts = {UNKNOWN, UNKNOWN, UNKNOWN};
     public static double launcherVelModifier = 0;
     public static boolean panelsResetTurret;
+    public static boolean launcherIntaking = false;
+    public static boolean normalIntaking = false;
 }

@@ -20,6 +20,7 @@ import static java.lang.Math.min;
 import com.pedropathing.util.Timer;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
+import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
@@ -109,6 +110,7 @@ public class LaunchController {
         double pos;
         switch (state) {
             case IDLE:
+                RobotState.launcherIntaking = false;
                 isBusy = false;
                 if (launchQueue.isEmpty()) break;
                 isBusy = true;
@@ -116,6 +118,7 @@ public class LaunchController {
                 setState(State.ROTATE_INDEXER);
                 break;
             case INTAKE:
+                RobotState.launcherIntaking = true;
                 robot.turret.setTarget(Turret.Target.HUMAN_PLAYER);
                 if (!intaking) {
                     robot.launcher.stop();
@@ -129,10 +132,11 @@ public class LaunchController {
                 robot.indexer.rotateToArtifact(UNKNOWN);
                 break;
             case ROTATE_INDEXER:
+                RobotState.launcherIntaking = false;
                 robot.turret.setTarget(Turret.Target.GOAL);
                 robot.feeder.retract();
                 if (((robot.feeder.isUp() || stateTimer.getElapsedTimeSeconds() < MIN_FEEDER_DOWN_WAIT) &&
-                        stateTimer.getElapsedTimeSeconds() < MAX_FEEDER_DOWN_WAIT) || robot.feeder.getGoalPos() >= .2)
+                    stateTimer.getElapsedTimeSeconds() < MAX_FEEDER_DOWN_WAIT) || robot.feeder.isGoalUp())
                     break;
                 anyExpected = false;
                 pos = robot.indexer.getGoalPos();
@@ -163,6 +167,7 @@ public class LaunchController {
                 setState(State.IDLE);
                 break;
             case PUSH_ARTIFACT:
+                RobotState.launcherIntaking = false;
                 robot.turret.setTarget(Turret.Target.GOAL);
                 robot.launcher.spin();
                 if (!robot.indexer.isStill() || (!toSpeed &&
@@ -195,6 +200,7 @@ public class LaunchController {
                 setState(State.RETRACT_FEEDER);
                 break;
             case RETRACT_FEEDER:
+                RobotState.launcherIntaking = false;
                 robot.turret.setTarget(Turret.Target.GOAL);
                 if (stateTimer.getElapsedTimeSeconds() < ARTIFACT_LAUNCH_WAIT) break;
                 robot.feeder.retract();

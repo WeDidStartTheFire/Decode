@@ -10,6 +10,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.GREEN;
 
 import com.pedropathing.util.Timer;
 
+import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
@@ -58,18 +59,22 @@ public class IntakeController {
             robot.led.setColor(BLUE, LED.Priority.LOW);
         switch (state) {
             case IDLE:
+                RobotState.normalIntaking = false;
                 isBusy = false;
                 robot.intake.power(0);
                 break;
             case INNER_INTAKE:
+                RobotState.normalIntaking = false;
                 isBusy = false;
                 robot.intake.powerInside(-1);
                 robot.intake.powerOutside(0);
                 break;
             case MANUAL_INTAKE:
+                RobotState.normalIntaking = true;
                 robot.intake.power(-1);
                 break;
             case INTAKE:
+                RobotState.normalIntaking = true;
                 if (robot.indexer.isActiveSlotEmpty()) {
                     artifactDetectedTimer.resetTimer();
                     if (robot.indexer.isStill()) robot.intake.power(-1);
@@ -91,10 +96,12 @@ public class IntakeController {
                 }
                 break;
             case BRIEF_OUTTAKE:
+                RobotState.normalIntaking = false;
                 robot.intake.powerOutside(1);
                 if (stateTimer.getElapsedTimeSeconds() > BRIEF_OUTTAKE_TIME) setState(State.IDLE);
                 break;
             case OUTTAKE:
+                RobotState.normalIntaking = false;
                 robot.intake.power(1);
                 break;
         }

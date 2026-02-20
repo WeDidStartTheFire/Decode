@@ -47,6 +47,15 @@ public class Feeder {
     }
 
     /**
+     * Returns if the feeder is up/moving up. Based on the feeder's set position.
+     *
+     * @return Whether the feeder is up/moving up
+     */
+    public boolean isGoalUp() {
+        return getGoalPos() >= 0.2;
+    }
+
+    /**
      * Returns the goal position of the feeder. -1 if not yet set.
      *
      * @return the goal position of the feeder

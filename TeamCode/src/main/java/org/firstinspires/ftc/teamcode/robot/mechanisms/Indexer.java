@@ -8,6 +8,8 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_POS_EPSILON;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_SPEED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotState.artifacts;
+import static org.firstinspires.ftc.teamcode.RobotState.launcherIntaking;
+import static org.firstinspires.ftc.teamcode.RobotState.normalIntaking;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
@@ -52,11 +54,6 @@ public class Indexer {
      * Updates what artifact is in the active indexer slot
      */
     public void update() {
-        long t0 = System.currentTimeMillis();
-        RobotConstants.Artifact artifact = colorSensor.getArtifact();
-        long t1 = System.currentTimeMillis();
-        tm.print("ColorSensor.getArtifact (ms)", t1 - t0);
-        tm.print("Artifact", artifact);
         tm.print("Distance A", colorSensor.getLastInchesA());
         tm.print("Distance B", colorSensor.getLastInchesB());
         tm.print("RGB", colorSensor.getLastRGB());
@@ -64,7 +61,16 @@ public class Indexer {
         tm.print("Artifact 2", artifacts[1]);
         tm.print("Artifact 3", artifacts[2]);
         updateLED();
-        if (!isStill()) return;
+        if (!isStill() || feeder.isGoalUp()) {
+            colorSensor.skipLoop();
+            return;
+        }
+        long t0 = System.currentTimeMillis();
+        colorSensor.update(normalIntaking || launcherIntaking);
+        RobotConstants.Artifact artifact = colorSensor.getArtifact();
+        long t1 = System.currentTimeMillis();
+        tm.print("ColorSensor Update (ms)", t1 - t0);
+        tm.print("Artifact", artifact);
         if (artifact == UNKNOWN) return;
         int idx = idxFromPos(getGoalPos());
         if (idx >= 0 && idx < artifacts.length) artifacts[idx] = artifact;
@@ -84,7 +90,7 @@ public class Indexer {
      * @param pos Position to set the indexer to on [0, 1]
      */
     public void setPos(double pos) {
-        if (feeder.getGoalPos() > 0.2) return;
+        if (feeder.isGoalUp()) return;
         updateInternalBounds();
         resetTimer();
         pos = max(0, min(1, pos));

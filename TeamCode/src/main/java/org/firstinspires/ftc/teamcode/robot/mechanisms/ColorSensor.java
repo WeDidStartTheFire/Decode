@@ -25,15 +25,18 @@ public class ColorSensor {
 
     private final @Nullable RevColorSensorV3 colorSensorA, colorSensorB;
     private double inchesA, inchesB;
-    private Scalar rgb;
+    private Scalar lastRGB;
+    private Scalar colorA, colorB;
+    private RobotConstants.Artifact color;
+    private boolean aLast, lastSkipped = true;
+    private double distanceA, distanceB;
 
     public ColorSensor(HardwareMap hardwareMap, TelemetryUtils tm) {
         colorSensorA = HardwareInitializer.init(hardwareMap, RevColorSensorV3.class, "colorSensorA");
         colorSensorB = HardwareInitializer.init(hardwareMap, RevColorSensorV3.class, "colorSensorB");
         if (colorSensorA == null || colorSensorB == null) {
             tm.warn(HIGH, ">= 1 Color Sensor disconnected. Check CH I2C 2 and CH I2C 3");
-        }
-        else setBusSpeed(LynxI2cDeviceSynch.BusSpeed.FAST_400K);
+        } else setBusSpeed(LynxI2cDeviceSynch.BusSpeed.FAST_400K);
     }
 
     public void setBusSpeed(LynxI2cDeviceSynch.BusSpeed busSpeed) {
@@ -56,7 +59,7 @@ public class ColorSensor {
         float r = colorSensorA.red() / a;
         float g = colorSensorA.green() / a;
         float b = colorSensorA.blue() / a;
-        return rgb = new Scalar(r, g, b);
+        return lastRGB = new Scalar(r, g, b);
     }
 
     /**
@@ -72,19 +75,20 @@ public class ColorSensor {
         float r = colorSensorB.red() / a;
         float g = colorSensorB.green() / a;
         float b = colorSensorB.blue() / a;
-        return rgb = new Scalar(r, g, b);
+        return lastRGB = new Scalar(r, g, b);
     }
 
-    public Scalar getRGB() {
-        Scalar rgba = getRGBA();
-        Scalar rgbb = getRGBB();
-        if (rgba != null && rgbb != null)
-            return new Scalar((rgba.val[0] + rgbb.val[0]) / 2, (rgba.val[1] + rgbb.val[1]) / 2, (rgba.val[2] + rgbb.val[2]) / 2);
-        return rgba != null ? rgba : rgbb;
+    public Scalar getRGB(boolean bothSensors) {
+        colorA = lastSkipped || bothSensors || !aLast ? getRGBA() : colorA;
+        colorB = lastSkipped || bothSensors || aLast ? getRGBB() : colorB;
+        aLast = !aLast;
+        if (colorA != null && colorB != null)
+            return new Scalar((colorA.val[0] + colorB.val[0]) / 2, (colorA.val[1] + colorB.val[1]) / 2, (colorA.val[2] + colorB.val[2]) / 2);
+        return lastRGB = colorA != null ? colorA : colorB;
     }
 
     public Scalar getLastRGB() {
-        return rgb;
+        return lastRGB;
     }
 
     @NonNull
@@ -136,13 +140,24 @@ public class ColorSensor {
         return inchesB;
     }
 
+    public void update(boolean bothSensors) {
+        if (lastSkipped || bothSensors || !aLast) distanceA = getInchesA();
+        if (lastSkipped || bothSensors || aLast) distanceB = getInchesB();
+        color = getColor(bothSensors);
+        if (distanceA != -1 && distanceB != -1) {
+            if (color == EMPTY && distanceA < 3 && distanceB < 3) color = UNKNOWN;
+            if (color != EMPTY && distanceA > 5.5 && distanceB > 5.5) color = UNKNOWN;
+        }
+        lastSkipped = false;
+    }
+
     /**
      * Gets the detected color of the artifact
      *
      * @return The detected color
      */
-    public RobotConstants.Artifact getColor() {
-        Scalar color = getRGB();
+    public RobotConstants.Artifact getColor(boolean bothSensors) {
+        Scalar color = getRGB(bothSensors);
         if (color == null) return UNKNOWN;
         if (ColorRange.ARTIFACT_GREEN.contains(color)) return GREEN;
         if (ColorRange.ARTIFACT_PURPLE.contains(color)) return PURPLE;
@@ -156,13 +171,10 @@ public class ColorSensor {
      * if the distance doesn't match up with the color
      */
     public RobotConstants.Artifact getArtifact() {
-        RobotConstants.Artifact color = getColor();
-        double distanceA = getInchesA();
-        double distanceB = getInchesB();
-        if (distanceA != -1 && distanceB != -1) {
-            if (color == EMPTY && distanceA < 3 && distanceB < 3) color = UNKNOWN;
-            if (color != EMPTY && distanceA > 5.5 && distanceB > 5.5) color = UNKNOWN;
-        }
         return color;
+    }
+
+    public void skipLoop() {
+        lastSkipped = true;
     }
 }

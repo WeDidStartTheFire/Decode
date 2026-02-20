@@ -13,6 +13,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_OFFSET;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_STATIC_FEEDFORWARD;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_TS_LENGTH_ENC;
 import static org.firstinspires.ftc.teamcode.RobotConstants.turretMotorPID;
+import static org.firstinspires.ftc.teamcode.RobotState.panelsResetTurret;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.HIGH;
@@ -44,7 +45,7 @@ public class Turret {
     public PIDFController turretPIDController = new PIDFController(turretMotorPID);
     private boolean wasPressed = false;
     private final TelemetryUtils tm;
-    public final boolean disabled = true;
+    public final boolean disabled = false;
 
     public enum Target {
         GOAL, HUMAN_PLAYER, NONE, HOLD, MANUAL
@@ -107,6 +108,9 @@ public class Turret {
     public void update() {
         if (turretMotor == null) return;
 
+        if (panelsResetTurret) resetEncoder();
+        panelsResetTurret = false;
+
         // Positive velocity check makes it so it only zeros the touch sensor when coming from one
         // side, so the "zero" on the touch sensor is always on the right side, and not changing
         // between the left and right sides
@@ -118,7 +122,7 @@ public class Turret {
         double pos = turretMotor.getCurrentPosition();
         turretPIDController.updatePosition(pos);
         tm.print("Turret Pos", pos);
-        tm.print("Turret Goal", turretMotor.getTargetPosition());
+        tm.print("Turret Goal", turretPIDController.getTargetPosition());
         if (target == Target.NONE) return;
         double feedforward = vel == null ? 0 : -vel.getTheta() * TURRET_FEEDFORWARD;
         feedforward *= max(1, min(max(0, pos - TURRET_MIN_POS), max(0, TURRET_MAX_POS - pos)) / TURRET_FEEDFORWARD_SLOW_START);
@@ -157,8 +161,23 @@ public class Turret {
     private void setRobotCentricAngle(double angle) {
         if (turretMotor == null) return;
         turretPIDController.setTargetPosition(
-                Math.clamp((int) ((toDegrees(angle) - TURRET_OFFSET + TURRET_TS_LENGTH_ENC)
-                        * TURRET_ENCODERS_PER_DEGREE), TURRET_MIN_POS, TURRET_MAX_POS));
+            Math.clamp((int) (normalizeAngle(toDegrees(angle) - TURRET_OFFSET)
+                * TURRET_ENCODERS_PER_DEGREE + TURRET_TS_LENGTH_ENC), TURRET_MIN_POS, TURRET_MAX_POS));
+    }
+
+    private double normalizeAngle(double angle) {
+        // Sets the range start to the midpoint between the max and min turret positions so the
+        // turret snaps to the closest point it's able to reach. This means the +/-180° wraparound
+        // is in the middle of the deadzone and technically has different numbers (e.g. +210, -150)
+        double rangeStart = TURRET_MIN_POS / TURRET_ENCODERS_PER_DEGREE -
+            (360 - (TURRET_MAX_POS - TURRET_MIN_POS) / TURRET_ENCODERS_PER_DEGREE) / 2;
+        return normalizeAngle(angle, rangeStart);
+    }
+
+    private double normalizeAngle(double angle, double rangeStart) {
+        while (angle < rangeStart) angle += 360;
+        while (angle >= rangeStart + 360) angle -= 360;
+        return angle;
     }
 
     /**

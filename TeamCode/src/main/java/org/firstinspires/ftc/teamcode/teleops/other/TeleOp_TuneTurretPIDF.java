@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.teleops.other;
 
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
+import static java.lang.Thread.sleep;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.configurables.annotations.IgnoreConfigurable;
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 
 
 @TeleOp(name = "Tune Turret PIDF", group = "D")
@@ -29,14 +31,16 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
     TeleOpController teleop;
 
     // TODO: Set encoder goals based on numbers that make sense from telemetry
-    static int encoderGoalA = -2500;
-    static int enocderGoalB = 2500;
+    static int encoderGoalA = 0;
+    static int enocderGoalB = 5000;
     static int encoderGoal = encoderGoalA;
+    static int increase = 1000;
+    static int delay = 50;
 
-    static double P = 0.0006;
-    static double D = 0.00004;
+    static double P = 0.00029;
+    static double D = 0.000031;
     static double F = 0;
-    static double maxPower = 0.7;
+    static double maxPower = 0.4;
     @IgnoreConfigurable
     PIDFCoefficients pidf = new PIDFCoefficients(P, 0, D, 0);
     @IgnoreConfigurable
@@ -63,6 +67,7 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
 
     @Override
     public void loop() {
+        robot.turret.setTarget(Turret.Target.HOLD);
         robot.updateBulkCache();
         double dt = getRuntime() - t;
         t = getRuntime();
@@ -73,8 +78,8 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
         if (gamepad1.dpadDownWasPressed()) D -= increments[incIdx];
         if (gamepad1.dpadRightWasPressed()) P += increments[incIdx];
         if (gamepad1.dpadLeftWasPressed()) P -= increments[incIdx];
-        if (gamepad1.x) encoderGoal += (int) (500 * dt);
-        if (gamepad1.y) encoderGoal -= (int) (500 * dt);
+        if (gamepad1.x) encoderGoal += (int) (increase * dt);
+        if (gamepad1.y) encoderGoal -= (int) (increase * dt);
 
         if (robot.turret.turretMotor == null) return;
         RobotConstants.TURRET_MAX_POWER = maxPower;
@@ -96,5 +101,10 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
         tm.print("Run Mode", robot.turret.turretMotor.getMode());
         tm.print("dt (ms)", dt * 1000);
         tm.update();
+        try {
+            sleep(delay);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

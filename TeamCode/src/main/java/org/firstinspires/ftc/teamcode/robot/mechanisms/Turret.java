@@ -120,6 +120,16 @@ public class Turret {
         if (!isPressed && wasPressed && velocitySign(-1)) resetEncoder();
         wasPressed = isPressed;
 
+        if (target == Target.GOAL) {
+            ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution();
+            if (sol == null) return;
+            setFieldCentricAngle(sol.phi + PI);
+        } else if (target == Target.HUMAN_PLAYER && pose != null) {
+            Pose targetPose = RobotState.color == RED ? RED_HUMAN_PLAYER_POSE : BLUE_HUMAN_PLAYER_POSE;
+            Pose dPose = targetPose.minus(pose);
+            setFieldCentricAngle(atan2(dPose.getY(), dPose.getX()));
+        }
+
         double pos = turretMotor.getCurrentPosition();
         turretPIDController.updatePosition(pos);
         tm.print("Turret Pos", pos);
@@ -133,16 +143,6 @@ public class Turret {
         double staticFeedforward = TURRET_STATIC_FEEDFORWARD * signum(pid);
         double power = pid + feedforward + staticFeedforward;
         turretMotor.setPower(Math.clamp(power, -TURRET_MAX_POWER, TURRET_MAX_POWER));
-
-        if (target == Target.GOAL) {
-            ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution();
-            if (sol == null) return;
-            setFieldCentricAngle(sol.phi + PI);
-        } else if (target == Target.HUMAN_PLAYER && pose != null) {
-            Pose targetPose = RobotState.color == RED ? RED_HUMAN_PLAYER_POSE : BLUE_HUMAN_PLAYER_POSE;
-            Pose dPose = targetPose.minus(pose);
-            setFieldCentricAngle(atan2(dPose.getY(), dPose.getX()));
-        }
     }
 
     /**

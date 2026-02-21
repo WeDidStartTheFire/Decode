@@ -79,7 +79,7 @@ public class RobotConstants {
     public static double TURRET_ENCODERS_PER_DEGREE = 77.78;
     public static double TURRET_TOP_VEL = 10000; // encs per second
     public static double TURRET_FEEDFORWARD = 0 * TURRET_ENCODERS_PER_DEGREE / TURRET_TOP_VEL;
-    public static double TURRET_STATIC_FEEDFORWARD = 0.06;
+    public static double TURRET_STATIC_FEEDFORWARD = 0.055;
     public static double TURRET_FEEDFORWARD_SLOW_START = 1500;
     public static double TURRET_MAX_POWER = 0.6;
     public static double TURRET_OFFSET = 90; // degrees

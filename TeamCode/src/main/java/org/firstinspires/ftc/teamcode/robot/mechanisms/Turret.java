@@ -17,6 +17,7 @@ import static org.firstinspires.ftc.teamcode.RobotState.panelsResetTurret;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.HIGH;
+import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 import static java.lang.Math.atan2;
 import static java.lang.Math.max;
@@ -125,18 +126,18 @@ public class Turret {
         tm.print("Turret Goal", turretPIDController.getTargetPosition());
         if (target == Target.NONE) return;
         double feedforward = vel == null ? 0 : -vel.getTheta() * TURRET_FEEDFORWARD;
-        feedforward *= max(1, min(max(0, pos - TURRET_MIN_POS), max(0, TURRET_MAX_POS - pos)) / TURRET_FEEDFORWARD_SLOW_START);
+        feedforward *= min(1, min(max(0, pos - TURRET_MIN_POS), max(0, TURRET_MAX_POS - pos)) / TURRET_FEEDFORWARD_SLOW_START);
         feedforward = Math.clamp(feedforward, -TURRET_MAX_POWER, TURRET_MAX_POWER);
         if (target == Target.HOLD || target == Target.MANUAL) feedforward = 0;
         double pid = turretPIDController.run();
-        double staticFeedforward = TURRET_STATIC_FEEDFORWARD * signum(pid + feedforward);
+        double staticFeedforward = TURRET_STATIC_FEEDFORWARD * signum(pid);
         double power = pid + feedforward + staticFeedforward;
         turretMotor.setPower(Math.clamp(power, -TURRET_MAX_POWER, TURRET_MAX_POWER));
 
         if (target == Target.GOAL) {
             ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution();
             if (sol == null) return;
-            setFieldCentricAngle(sol.phi);
+            setFieldCentricAngle(sol.phi + PI);
         } else if (target == Target.HUMAN_PLAYER && pose != null) {
             Pose targetPose = RobotState.color == RED ? RED_HUMAN_PLAYER_POSE : BLUE_HUMAN_PLAYER_POSE;
             Pose dPose = targetPose.minus(pose);

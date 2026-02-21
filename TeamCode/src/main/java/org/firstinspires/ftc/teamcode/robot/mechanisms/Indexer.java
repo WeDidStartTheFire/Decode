@@ -67,7 +67,7 @@ public class Indexer {
             return;
         }
         long t0 = System.currentTimeMillis();
-        colorSensor.update(normalIntaking || launcherIntaking);
+        colorSensor.update(normalIntaking || launcherIntaking || getCurrentArtifact() == UNKNOWN);
         RobotConstants.Artifact artifact = colorSensor.getArtifact();
         long t1 = System.currentTimeMillis();
         tm.print("ColorSensor Update (ms)", t1 - t0);

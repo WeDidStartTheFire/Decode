@@ -5,6 +5,8 @@ import static java.lang.Math.min;
 import static java.lang.Math.round;
 import static java.lang.Math.toDegrees;
 
+import androidx.annotation.NonNull;
+
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
@@ -34,7 +36,7 @@ public class TelemetryUtils {
      * @param caption String
      * @param content Object
      */
-    public void print(String caption, Object content) {
+    public void print(@NonNull String caption, @NonNull Object content) {
         telemetry.addData(caption, content);
         telemetryM.addData(caption, content);
     }
@@ -44,18 +46,18 @@ public class TelemetryUtils {
      *
      * @param content Content to display in telemetry
      */
-    public void print(String content) {
+    public void print(@NonNull String content) {
         telemetry.addLine(content);
         telemetryM.addLine(content);
     }
 
     /**
-     * Adds the pose to telemtry in the from of "Pose : (x, y, z)" rounded to two decimal places on
+     * Adds the pose to telemtry in the form of "Pose : (x, y, z)" rounded to two decimal places on
      * both the Control Hub and Panels
      *
      * @param pose The pose to add to telemetry
      */
-    public void print(Pose pose) {
+    public void print(@NonNull Pose pose) {
         double x = round(pose.getX() * 100) / 100.0;
         double y = round(pose.getY() * 100) / 100.0;
         double h = round(toDegrees(pose.getHeading()) * 100) / 100.0;

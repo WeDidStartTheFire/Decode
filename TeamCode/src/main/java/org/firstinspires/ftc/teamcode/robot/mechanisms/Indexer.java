@@ -25,6 +25,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
+import org.opencv.core.Scalar;
 
 import java.util.Arrays;
 
@@ -56,7 +57,7 @@ public class Indexer {
     public void update() {
         tm.print("Distance A", colorSensor.getLastInchesA());
         tm.print("Distance B", colorSensor.getLastInchesB());
-        tm.print("RGB", colorSensor.getLastRGB());
+        tm.print("RGB", colorSensor.getLastRGB() == null ? new Scalar(0, 0, 0) : colorSensor.getLastRGB());
         tm.print("Artifact 1", artifacts[0]);
         tm.print("Artifact 2", artifacts[1]);
         tm.print("Artifact 3", artifacts[2]);

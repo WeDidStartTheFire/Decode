@@ -25,9 +25,9 @@ public class ColorSensor {
 
     private final @Nullable RevColorSensorV3 colorSensorA, colorSensorB;
     private double inchesA, inchesB;
-    private Scalar lastRGB;
-    private Scalar colorA, colorB;
-    private RobotConstants.Artifact color;
+    private @Nullable Scalar lastRGB;
+    private @Nullable Scalar colorA, colorB;
+    private @NonNull RobotConstants.Artifact color = UNKNOWN;
     private boolean aLast, lastSkipped = true;
     private double distanceA, distanceB;
 
@@ -87,6 +87,7 @@ public class ColorSensor {
         return lastRGB = colorA != null ? colorA : colorB;
     }
 
+    @Nullable
     public Scalar getLastRGB() {
         return lastRGB;
     }

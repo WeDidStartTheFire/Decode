@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.teleops;
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.RobotState;
@@ -26,6 +27,8 @@ public class TeleOp_Fred extends OpMode {
         robot = new Robot(hardwareMap, telemetry, false);
         fred = new ServoFred(hardwareMap, tm);
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
+        robot.drivetrain.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         tm = robot.drivetrain.tm;
         if (!validStartPose) tm.print("⚠️WARNING⚠️", "Robot Centric driving will be used");
         else tm.print("Field Centric Driving", "✅");
@@ -35,7 +38,7 @@ public class TeleOp_Fred extends OpMode {
     public void loop() {
         robot.initBulkCache();
         robot.updateBulkCache();
-        teleop.drivetrainLogic(true, false);
+        teleop.drivetrainLogic(false, false);
         tm.print("Claw 1 Position", fred.getClawPosition(1));
         tm.print("Claw 2 Position", fred.getClawPosition(2));
         tm.update();

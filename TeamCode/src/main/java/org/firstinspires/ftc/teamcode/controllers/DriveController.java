@@ -8,6 +8,7 @@ import static org.firstinspires.ftc.teamcode.Utils.lerp;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
@@ -71,10 +72,14 @@ public class DriveController {
         }
 
         robot.drivetrain.setMotorVelocities(
-                leftBackPower * 5000 * speedMultiplier,
-                rightBackPower * 5000 * speedMultiplier,
-                leftFrontPower * 5000 * speedMultiplier,
-                rightFrontPower * 5000 * speedMultiplier
+                leftBackPower * 200,
+                rightBackPower * 200,
+                leftFrontPower * 200,
+                rightFrontPower * 200
         );
+        tm.print("left back: ", leftBackPower * 200);
+        tm.print("right back: ", rightBackPower * 200);
+        tm.print("left front: ", leftFrontPower * 200);
+        tm.print("right front: ", rightFrontPower * 200);
     }
 }

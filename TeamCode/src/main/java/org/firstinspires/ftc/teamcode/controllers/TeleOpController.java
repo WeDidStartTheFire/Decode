@@ -18,6 +18,7 @@ public class TeleOpController {
     long lastUpdateTime;
     int totalMs;
     int totalUpdates;
+    int something;
 
     /**
      * Initializes the TeleOpController with robot hardware and gamepads. To be called in the init()

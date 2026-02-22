@@ -35,7 +35,7 @@ public class RobotConstants {
 
     public static final double[] speeds = {0.2, 0.6, 1};
 
-    public static final double baseSpeedMultiplier = 0.75;
+    public static final double baseSpeedMultiplier = 0.5;
     public static final double baseTurnSpeed = 2.5;
 
     public enum Dir {

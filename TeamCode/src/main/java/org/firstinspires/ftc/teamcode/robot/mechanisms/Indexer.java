@@ -67,11 +67,15 @@ public class Indexer {
         boolean needsRecovery = colorSensor.wasSkipped();
         if (!lastNormalSkip && !highPriority && !needsRecovery) {
             lastNormalSkip = true;
+            tm.print("ColorSensor Update (ms)", 0);
+            tm.print("Artifact", getCurrentArtifact());
             return;
         }
         lastNormalSkip = false;
         if (!isStill() || feeder.isGoalUp()) {
             colorSensor.skipLoop();
+            tm.print("ColorSensor Update (ms)", 0);
+            tm.print("Artifact", getCurrentArtifact());
             return;
         }
         long t0 = System.currentTimeMillis();

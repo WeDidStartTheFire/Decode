@@ -39,7 +39,6 @@ public class Indexer {
     private final LED led;
     private final TelemetryUtils tm;
     private final Feeder feeder;
-    private boolean lastNormalSkip = true;
 
     public Indexer(@NonNull HardwareMap hardwareMap, @NonNull TelemetryUtils tm,
                    @NonNull ColorSensor colorSensor, @NonNull LED led, @NonNull Feeder feeder) {
@@ -64,14 +63,6 @@ public class Indexer {
         tm.print("Artifact 3", artifacts[2]);
         updateLED();
         boolean highPriority = normalIntaking || launcherIntaking || getCurrentArtifact() == UNKNOWN;
-        boolean needsRecovery = colorSensor.wasSkipped();
-        if (!lastNormalSkip && !highPriority && !needsRecovery) {
-            lastNormalSkip = true;
-            tm.print("ColorSensor Update (ms)", 0);
-            tm.print("Artifact", getCurrentArtifact());
-            return;
-        }
-        lastNormalSkip = false;
         if (!isStill() || feeder.isGoalUp()) {
             colorSensor.skipLoop();
             tm.print("ColorSensor Update (ms)", 0);

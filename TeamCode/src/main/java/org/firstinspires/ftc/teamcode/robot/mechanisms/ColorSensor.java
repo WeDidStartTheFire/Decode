@@ -178,4 +178,8 @@ public class ColorSensor {
     public void skipLoop() {
         lastSkipped = true;
     }
+
+    public boolean wasSkipped() {
+        return lastSkipped;
+    }
 }

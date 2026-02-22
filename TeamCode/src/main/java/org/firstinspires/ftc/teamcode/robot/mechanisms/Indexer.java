@@ -39,6 +39,7 @@ public class Indexer {
     private final LED led;
     private final TelemetryUtils tm;
     private final Feeder feeder;
+    private boolean lastNormalSkip = true;
 
     public Indexer(@NonNull HardwareMap hardwareMap, @NonNull TelemetryUtils tm,
                    @NonNull ColorSensor colorSensor, @NonNull LED led, @NonNull Feeder feeder) {
@@ -62,12 +63,19 @@ public class Indexer {
         tm.print("Artifact 2", artifacts[1]);
         tm.print("Artifact 3", artifacts[2]);
         updateLED();
+        boolean highPriority = normalIntaking || launcherIntaking || getCurrentArtifact() == UNKNOWN;
+        boolean needsRecovery = colorSensor.wasSkipped();
+        if (!lastNormalSkip && !highPriority && !needsRecovery) {
+            lastNormalSkip = true;
+            return;
+        }
+        lastNormalSkip = false;
         if (!isStill() || feeder.isGoalUp()) {
             colorSensor.skipLoop();
             return;
         }
         long t0 = System.currentTimeMillis();
-        colorSensor.update(normalIntaking || launcherIntaking || getCurrentArtifact() == UNKNOWN);
+        colorSensor.update(highPriority);
         RobotConstants.Artifact artifact = colorSensor.getArtifact();
         long t1 = System.currentTimeMillis();
         tm.print("ColorSensor Update (ms)", t1 - t0);

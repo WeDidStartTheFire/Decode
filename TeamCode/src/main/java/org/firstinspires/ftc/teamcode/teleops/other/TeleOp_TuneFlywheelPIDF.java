@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.configurables.annotations.IgnoreConfigurable;
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -19,6 +20,7 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = "Tune Flywheel PIDF", group = "D")
 @Configurable
+@Disabled
 public class TeleOp_TuneFlywheelPIDF extends OpMode {
 
     @IgnoreConfigurable

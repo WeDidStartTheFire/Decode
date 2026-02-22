@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 import static java.lang.Thread.sleep;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = "Test Bus Speed", group = "Test")
+@Configurable
 public class TeleOp_TestBusSpeed extends OpMode {
     private Robot robot;
     private TelemetryUtils tm;
@@ -23,6 +25,7 @@ public class TeleOp_TestBusSpeed extends OpMode {
     private int totalColorCalls = 0;
     private int totalOTOSCalls = 0;
     private boolean fastMode = false;
+    public static int ARTIFICIAL_WAIT = 50;
 
     @Override
     public void init() {
@@ -69,7 +72,7 @@ public class TeleOp_TestBusSpeed extends OpMode {
         tm.print("Color Sensor Time (ms)", (t1 - t0) * 1000);
         tm.print("Color Sensor Average Time (ms)", totalColorTime / totalColorCalls * 1000);
         t0 = getRuntime();
-        if (robot.drivetrain.otos != null) robot.drivetrain.otos.getPosition();
+        if (robot.drivetrain.otos != null) robot.drivetrain.follower.update();
         t1 = getRuntime();
         totalOTOSTime += t1 - t0;
         totalOTOSCalls++;
@@ -77,7 +80,7 @@ public class TeleOp_TestBusSpeed extends OpMode {
         tm.print("OTOS Average Time (ms)", totalOTOSTime / totalOTOSCalls * 1000);
         tm.update();
         try {
-            sleep(100);
+            sleep(ARTIFICIAL_WAIT);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

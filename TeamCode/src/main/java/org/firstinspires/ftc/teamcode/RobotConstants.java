@@ -75,17 +75,17 @@ public class RobotConstants {
     public static double BRIEF_OUTTAKE_TIME = 0.5;
 
     public static com.pedropathing.control.PIDFCoefficients turretMotorPID =
-        new com.pedropathing.control.PIDFCoefficients(.0004, 0, 0.000035, 0);
+        new com.pedropathing.control.PIDFCoefficients(.00055, 0, 0.00003, 0);
     public static double TURRET_ENCODERS_PER_DEGREE = 77.78;
     public static double TURRET_TOP_VEL = 10000; // encs per second
     public static double TURRET_FEEDFORWARD = 0 * TURRET_ENCODERS_PER_DEGREE / TURRET_TOP_VEL;
     public static double TURRET_STATIC_FEEDFORWARD = 0.055;
     public static double TURRET_FEEDFORWARD_SLOW_START = 1500;
-    public static double TURRET_MAX_POWER = 0.6;
+    public static double TURRET_MAX_POWER = 0.75;
     public static double TURRET_OFFSET = 90; // degrees
     public static double TURRET_TS_LENGTH_ENC = 0; // length of touch sensor in encoder ticks
-    public static double TURRET_MIN_POS = -3000;
-    public static double TURRET_MAX_POS = 14000;
+    public static double TURRET_MIN_POS = -4000;
+    public static double TURRET_MAX_POS = 18000;
 
     public static com.pedropathing.control.PIDFCoefficients teleopHeadingPID =
             new com.pedropathing.control.PIDFCoefficients(1, 0, .05, 0);

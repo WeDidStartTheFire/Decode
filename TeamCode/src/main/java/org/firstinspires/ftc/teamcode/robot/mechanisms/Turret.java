@@ -41,11 +41,11 @@ import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 public class Turret {
     public @Nullable DcMotorEx turretMotor;
     public @Nullable TouchSensor turretTouchSensor;
-    private Target target = Target.NONE;
+    private Target target = Target.HOLD;
     public PIDFController turretPIDController = new PIDFController(turretMotorPID);
     private boolean wasPressed = false;
     private final TelemetryUtils tm;
-    public final boolean disabled = false;
+    public final boolean changeable = true;
 
     public enum Target {
         GOAL, HUMAN_PLAYER, NONE, HOLD, MANUAL
@@ -59,6 +59,8 @@ public class Turret {
         else {
             turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            int currentPos = turretMotor.getCurrentPosition();
+            turretPIDController.setTargetPosition(abs(currentPos - 7000) < 250 ? 7000 : currentPos);
         }
         turretTouchSensor = HardwareInitializer.init(hardwareMap, TouchSensor.class, "turretTouchSensor");
         if (turretTouchSensor == null)
@@ -71,7 +73,7 @@ public class Turret {
      * @param target Turret target. Can be the goal, human player, or none.
      */
     public void setTarget(Target target) {
-        this.target = disabled ? Target.NONE : target;
+        if (changeable) this.target = target;
     }
 
 

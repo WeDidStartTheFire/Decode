@@ -37,10 +37,10 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
     static int increase = 1000;
     static int delay = 50;
 
-    static double P = 0.00029;
-    static double D = 0.000031;
+    static double P = 0.00055;
+    static double D = 0.00003;
     static double F = 0;
-    static double maxPower = 0.4;
+    static double maxPower = 0.75;
     @IgnoreConfigurable
     PIDFCoefficients pidf = new PIDFCoefficients(P, 0, D, 0);
     @IgnoreConfigurable

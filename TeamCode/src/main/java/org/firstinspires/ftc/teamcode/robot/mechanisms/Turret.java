@@ -81,11 +81,11 @@ public class Turret {
 
     public void rotateManual(double speed) {
         if (target == Target.MANUAL) {
-            turretPIDController.setTargetPosition(turretPIDController.getTargetPosition() +
+            turretPIDController.setTargetPosition(-turretPIDController.getTargetPosition() +
                 speed * TURRET_SPEED_MANUAL);
             return;
         }
-        offset += TURRET_SPEED_OFFSET * speed;
+        offset -= TURRET_SPEED_OFFSET * speed;
     }
 
 

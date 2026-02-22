@@ -28,7 +28,7 @@ public class Test_RedundantLocalizer extends OpMode {
         RobotState.auto = false;
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
-        robot = new Robot(hardwareMap, telemetry, false);
+        robot = new Robot(hardwareMap, telemetry, true);
         robot.drivetrain.useRedundantFollower();
         robot.drivetrain.follower.setPose(RobotState.pose);
         robot.drivetrain.follower.startTeleopDrive();

@@ -27,14 +27,15 @@ public class TeleOp_KalmanTest extends OpMode {
         Pose pose = loadOdometryPosition();
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
-        robot = new Robot(hardwareMap, telemetry, validStartPose);
+        robot = new Robot(hardwareMap, telemetry, true);
         robot.drivetrain.useKalmanFollower();
         robot.drivetrain.follower.setPose(RobotState.pose);
         robot.drivetrain.follower.startTeleopDrive();
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         teleop.keepLimelightOn();
         tm = robot.drivetrain.tm;
-        if (!validStartPose) tm.print("⚠️WARNING⚠️", "Robot Centric driving will be used");
+        if (!validStartPose)
+            tm.print("⚠️WARNING⚠️", "Robot Centric driving will be used until the position is reset");
         else tm.print("Field Centric Driving", "✅");
         tm.print("Color", "🟦🟦Blue🟦🟦");
     }

@@ -17,6 +17,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.speeds;
 import static org.firstinspires.ftc.teamcode.RobotConstants.teleopHeadingPID;
 import static org.firstinspires.ftc.teamcode.RobotState.color;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
+import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
 import static org.firstinspires.ftc.teamcode.Utils.lerp;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
@@ -103,6 +104,7 @@ public class DriveController {
      * @param pose Pose to set
      */
     public void resetPose(Pose pose) {
+        validStartPose = true;
         robot.drivetrain.follower.setPose(pose);
         RobotState.pose = pose;
         if (holding) holdPosition();

@@ -43,7 +43,7 @@ public final class Auto_BlueFar extends BaseAuto<Auto_BlueFar.State> {
     private final Pose startPose = new Pose(63.500, 8.500, toRadians(90));
     private final Pose shootPose = new Pose(60.000, 20.000, toRadians(114.80566575481602));
     private final Pose intakeStart1 = new Pose(46, 36, toRadians(180));
-    private final Pose intakeEnd1 = new Pose(14, 36, toRadians(180));
+    private final Pose intakeEnd1 = new Pose(9, 36, toRadians(180));
     private final Pose intakeStart2 = new Pose(25, 12, toRadians(180));
     private final Pose intakeEnd2 = new Pose(7, 12, toRadians(180));
     private final Pose endPose = new Pose(25, 12, toRadians(180));

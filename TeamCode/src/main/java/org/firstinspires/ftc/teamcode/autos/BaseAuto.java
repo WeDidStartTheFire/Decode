@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.IntakeController;
 import org.firstinspires.ftc.teamcode.controllers.LaunchController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 
 public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
     protected Robot robot;
@@ -82,6 +83,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         robot.feeder.retract();
         robot.indexer.setPos(0);
         robot.limelight.start();
+        robot.turret.setTarget(Turret.Target.GOAL);
         RobotState.motif = robot.limelight.getMotif();
         setState(initialState);
         onStart();
@@ -94,6 +96,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         pose = robot.drivetrain.follower.getPose();
         vel = robot.drivetrain.follower.getVelocity();
         pathUpdate();
+        robot.turret.update();
         robot.indexer.update();
         launchController.update();
         intakeController.update();

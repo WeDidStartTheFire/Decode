@@ -32,6 +32,7 @@ public class TeleOp_KalmanTest extends OpMode {
         robot.drivetrain.follower.setPose(RobotState.pose);
         robot.drivetrain.follower.startTeleopDrive();
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
+        teleop.keepLimelightOn();
         tm = robot.drivetrain.tm;
         if (!validStartPose) tm.print("⚠️WARNING⚠️", "Robot Centric driving will be used");
         else tm.print("Field Centric Driving", "✅");

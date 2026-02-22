@@ -70,6 +70,13 @@ public class Drivetrain {
     }
 
     /**
+     * Configures the drivetrain to use Limelight localization.
+     */
+    public void useRedundantFollower() {
+        follower = Constants.createRedundantFollower(hardwareMap);
+    }
+
+    /**
      * Initializes the drivetrain with hardware components.
      *
      * @param hardwareMap HardwareMap containing motor and sensor configurations

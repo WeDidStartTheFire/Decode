@@ -15,8 +15,8 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
-@TeleOp(name = "Limelight Test", group = "Test")
-public class Test_Limelight extends OpMode {
+@TeleOp(name = "Redundant Localizer Test", group = "Test")
+public class Test_RedundantLocalizer extends OpMode {
     public TeleOpController teleop;
     public Robot robot;
     public TelemetryUtils tm;
@@ -29,7 +29,7 @@ public class Test_Limelight extends OpMode {
         validStartPose = pose != null;
         RobotState.pose = validStartPose ? pose : new Pose();
         robot = new Robot(hardwareMap, telemetry, false);
-        robot.drivetrain.useLimelightFollower();
+        robot.drivetrain.useRedundantFollower();
         robot.drivetrain.follower.setPose(RobotState.pose);
         robot.drivetrain.follower.startTeleopDrive();
         teleop = new TeleOpController(robot, gamepad1, gamepad2);

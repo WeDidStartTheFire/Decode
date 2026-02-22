@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.localizers;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
-
 import static java.lang.Math.toRadians;
 
 import com.pedropathing.geometry.Pose;
@@ -75,8 +74,8 @@ public class RedundantLocalizer implements Localizer {
             previousHeading = this.pose.getHeading();
             return;
         }
-        setPose(primaryPose);
-        vel = primaryLocalizer.getVelocity();
+        setPose(primaryPose.withHeading(secondaryLocalizer.getPose().getHeading()));
+        vel = secondaryLocalizer.getVelocity();
         totalHeading += MathFunctions.getSmallestAngleDifference(this.pose.getHeading(), this.previousHeading);
         previousHeading = this.pose.getHeading();
     }

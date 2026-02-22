@@ -19,6 +19,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.pedroPathing.localizers.KalmanLocalizer;
 import org.firstinspires.ftc.teamcode.pedroPathing.localizers.LimelightLocalizer;
+import org.firstinspires.ftc.teamcode.pedroPathing.localizers.RedundantLocalizer;
 
 @Configurable
 public class Constants {
@@ -83,6 +84,14 @@ public class Constants {
             1,
             1
     );
+
+    public static Follower createRedundantFollower(HardwareMap hardwareMap) {
+        return new FollowerBuilder(followerConstants, hardwareMap)
+            .mecanumDrivetrain(driveConstants)
+            .setLocalizer(new RedundantLocalizer(hardwareMap))
+            .pathConstraints(pathConstraints)
+            .build();
+    }
 
     public static Follower createOTOSFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)

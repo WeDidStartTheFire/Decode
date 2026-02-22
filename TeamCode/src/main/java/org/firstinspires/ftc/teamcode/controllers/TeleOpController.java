@@ -27,6 +27,7 @@ import org.firstinspires.ftc.teamcode.RobotState;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
+import org.firstinspires.ftc.teamcode.robot.mechanisms.Turret;
 
 public class TeleOpController {
     private final Gamepad gamepad1, gamepad2;
@@ -82,8 +83,9 @@ public class TeleOpController {
     public void update() {
         tm.print("Motif", motif);
         long t = runtime.nanoseconds();
+        int ms = 0;
         if (lastUpdateTime != 0) {
-            int ms = Math.toIntExact((t - lastUpdateTime) / 1_000_000);
+            ms = Math.toIntExact((t - lastUpdateTime) / 1_000_000);
             totalMs += ms;
             totalUpdates++;
             tm.print("dt (ms)", ms);
@@ -94,6 +96,11 @@ public class TeleOpController {
         follower.update();
         if (follower.getPose() != null) pose = follower.getPose();
         vel = follower.getVelocity();
+        if (gamepad2.rightStickButtonWasPressed()) {
+            robot.turret.setTarget(Turret.Target.MANUAL);
+            robot.turret.changeable = !robot.turret.changeable;
+        }
+        robot.turret.rotateManual(-gamepad2.right_stick_x * .001 * ms);
         robot.turret.update();
         if (motif == RobotConstants.Motif.UNKNOWN) motif = robot.limelight.getMotif();
         if (motif != RobotConstants.Motif.UNKNOWN) robot.limelight.stop();

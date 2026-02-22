@@ -71,7 +71,7 @@ public class RobotConstants {
             0.4
     );
     public static double INTAKE_MOVE_MAX_SPEED = 0.4;
-    public static double INDEXER_ARTIFACT_DETECTION_WAIT = 0.6;
+    public static double INDEXER_ARTIFACT_DETECTION_WAIT = 0.8;
     public static double BRIEF_OUTTAKE_TIME = 0.5;
 
     public static com.pedropathing.control.PIDFCoefficients turretMotorPID =
@@ -83,9 +83,11 @@ public class RobotConstants {
     public static double TURRET_FEEDFORWARD_SLOW_START = 1500;
     public static double TURRET_MAX_POWER = 0.75;
     public static double TURRET_OFFSET = 90; // degrees
-    public static double TURRET_TS_LENGTH_ENC = 0; // length of touch sensor in encoder ticks
+    public static double TURRET_TS_OFFSET_ENC = 150; // length of touch sensor in encoder ticks
     public static double TURRET_MIN_POS = -4000;
     public static double TURRET_MAX_POS = 18000;
+    public static double TURRET_SPEED_OFFSET = 4000;
+    public static double TURRET_SPEED_MANUAL = 5000;
 
     public static com.pedropathing.control.PIDFCoefficients teleopHeadingPID =
             new com.pedropathing.control.PIDFCoefficients(1, 0, .05, 0);
@@ -107,8 +109,8 @@ public class RobotConstants {
     public static final Pose BLUE_BASE_ZONE = new Pose(106, 33, toRadians(90));
     public static final Pose RED_FAR_LAUNCH = new Pose(84, 20, toRadians(90));
     public static final Pose BLUE_FAR_LAUNCH = new Pose(60, 20, toRadians(90));
-    public static final Pose RED_HUMAN_PLAYER = new Pose(124, 14, toRadians(90));
-    public static final Pose BLUE_HUMAN_PLAYER = new Pose(20, 14, toRadians(90));
+    public static final Pose RED_HUMAN_PLAYER = new Pose(20, 14, toRadians(90));
+    public static final Pose BLUE_HUMAN_PLAYER = new Pose(124, 14, toRadians(90));
 
     public static final String BLUE_TELEOP_NAME = "🟦Blue🟦 Main";
     public static final String RED_TELEOP_NAME = "🟥Red🟥 Main";

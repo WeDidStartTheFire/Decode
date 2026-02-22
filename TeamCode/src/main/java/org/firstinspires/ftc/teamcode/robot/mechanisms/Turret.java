@@ -10,8 +10,10 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_MAX_POS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_MAX_POWER;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_MIN_POS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_OFFSET;
+import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_SPEED_MANUAL;
+import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_SPEED_OFFSET;
 import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_STATIC_FEEDFORWARD;
-import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_TS_LENGTH_ENC;
+import static org.firstinspires.ftc.teamcode.RobotConstants.TURRET_TS_OFFSET_ENC;
 import static org.firstinspires.ftc.teamcode.RobotConstants.turretMotorPID;
 import static org.firstinspires.ftc.teamcode.RobotState.panelsResetTurret;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
@@ -45,7 +47,8 @@ public class Turret {
     public PIDFController turretPIDController = new PIDFController(turretMotorPID);
     private boolean wasPressed = false;
     private final TelemetryUtils tm;
-    public final boolean changeable = true;
+    public boolean changeable = true;
+    private double offset = 0;
 
     public enum Target {
         GOAL, HUMAN_PLAYER, NONE, HOLD, MANUAL
@@ -64,7 +67,7 @@ public class Turret {
         }
         turretTouchSensor = HardwareInitializer.init(hardwareMap, TouchSensor.class, "turretTouchSensor");
         if (turretTouchSensor == null)
-            tm.warn(HIGH, "Turret Touch Sensor disconnected. Check one of the i2c (?) ports.");
+            tm.warn(HIGH, "Turret Touch Sensor disconnected. Check one of the CH Digital 2:3 port.");
     }
 
     /**
@@ -76,14 +79,24 @@ public class Turret {
         if (changeable) this.target = target;
     }
 
+    public void rotateManual(double speed) {
+        if (target == Target.MANUAL) {
+            turretPIDController.setTargetPosition(turretPIDController.getTargetPosition() +
+                speed * TURRET_SPEED_MANUAL);
+            return;
+        }
+        offset += TURRET_SPEED_OFFSET * speed;
+    }
+
 
     /**
      * Resets the turret encoder to 0 and switches back to RUN_WITHOUT_ENCODER mode.
      */
     private void resetEncoder() {
         if (turretMotor == null) return;
-        if (abs(turretMotor.getCurrentPosition()) > 250) turretPIDController.reset();
+        if (abs(turretMotor.getCurrentPosition()) > 50) turretPIDController.reset();
         turretPIDController.updatePosition(0);
+        if (target == Target.MANUAL) turretPIDController.setTargetPosition(0);
         turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // sets encoder back to 0
         turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
@@ -118,7 +131,9 @@ public class Turret {
         // between the left and right sides
         boolean isPressed = turretTouchSensor != null && turretTouchSensor.isPressed();
         if (isPressed && !wasPressed && velocitySign(+1)) resetEncoder();
+        else if (isPressed && abs(turretMotor.getCurrentPosition()) > 250) resetEncoder();
         if (!isPressed && wasPressed && velocitySign(-1)) resetEncoder();
+
         wasPressed = isPressed;
 
         if (target == Target.GOAL) {
@@ -135,6 +150,7 @@ public class Turret {
         turretPIDController.updatePosition(pos);
         tm.print("Turret Pos", pos);
         tm.print("Turret Goal", turretPIDController.getTargetPosition());
+        tm.print("Turret Offset", offset);
         if (target == Target.NONE) return;
         double feedforward = vel == null ? 0 : -vel.getTheta() * TURRET_FEEDFORWARD;
         feedforward *= min(1, min(max(0, pos - TURRET_MIN_POS), max(0, TURRET_MAX_POS - pos)) / TURRET_FEEDFORWARD_SLOW_START);
@@ -164,7 +180,8 @@ public class Turret {
         if (turretMotor == null) return;
         turretPIDController.setTargetPosition(
             Math.clamp((int) (normalizeAngle(toDegrees(angle) + TURRET_OFFSET)
-                * TURRET_ENCODERS_PER_DEGREE + TURRET_TS_LENGTH_ENC), TURRET_MIN_POS, TURRET_MAX_POS));
+                    * TURRET_ENCODERS_PER_DEGREE + offset - TURRET_TS_OFFSET_ENC),
+                TURRET_MIN_POS, TURRET_MAX_POS));
     }
 
     private double normalizeAngle(double angle) {

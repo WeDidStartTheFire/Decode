@@ -162,13 +162,29 @@ public class TelemetryUtils {
      * @param message The warning.
      */
     public void warn(ErrorLevel level, Object message) {
-        print(level.toString() + " WARNING", message);
+        print(level.toString(), message);
     }
 
     public enum ErrorLevel {
         LOW,
         MEDIUM,
         HIGH,
-        CRITICAL,
+        CRITICAL;
+
+        @NonNull
+        @Override
+        public String toString() {
+            switch (this) {
+                case LOW:
+                    return "⚠️LOW WARNING⚠️";
+                case MEDIUM:
+                    return "⚠️MEDIUM WARNING⚠️";
+                case HIGH:
+                    return "🚨HIGH WARNING🚨";
+                case CRITICAL:
+                    return "🚨CRITICAL WARNING🚨";
+            }
+            return "⚠️WARNING⚠️";
+        }
     }
 }

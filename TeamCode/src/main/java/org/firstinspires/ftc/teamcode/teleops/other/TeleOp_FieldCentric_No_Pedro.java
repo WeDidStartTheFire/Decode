@@ -33,7 +33,8 @@ public class TeleOp_FieldCentric_No_Pedro extends OpMode {
         robot.drivetrain.follower.startTeleopDrive();
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         tm = robot.drivetrain.tm;
-        if (!validStartPose) tm.print("⚠️WARNING⚠️", "Field centric driving without valid position");
+        if (!validStartPose)
+            tm.warn(TelemetryUtils.ErrorLevel.MEDIUM, "Field centric driving without valid position");
         else tm.print("Field Centric Driving", "✅");
         tm.print("Color", "\uD83D\uDFE6Blue\uD83D\uDFE6 (Default)");
     }

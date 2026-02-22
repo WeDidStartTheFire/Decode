@@ -39,7 +39,7 @@ public class TeleOp_TestBusSpeed extends OpMode {
         robot.drivetrain.follower.startTeleopDrive();
         tm = robot.drivetrain.tm;
         if (!validStartPose)
-            tm.print("⚠️WARNING⚠️", "Robot Centric driving will be used until the position is reset");
+            tm.warn(TelemetryUtils.ErrorLevel.LOW, "Robot Centric driving will be used until the position is reset");
         else tm.print("Field Centric Driving", "✅");
         tm.print("Color", "🟦Blue🟦");
     }

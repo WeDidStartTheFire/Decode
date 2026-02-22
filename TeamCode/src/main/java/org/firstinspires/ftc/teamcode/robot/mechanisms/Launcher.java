@@ -8,6 +8,7 @@ import static org.firstinspires.ftc.teamcode.RobotState.launcherVelModifier;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
+import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.MEDIUM;
 import static java.lang.Math.abs;
 
 import androidx.annotation.NonNull;
@@ -209,8 +210,8 @@ public class Launcher {
         double bRawVel = launcherMotorB == null ? 0 : launcherMotorB.getVelocity();
         double aVel = aRawVel == 0 && bRawVel > 100 ? bRawVel : aRawVel;
         double bVel = bRawVel == 0 && aRawVel > 100 ? aRawVel : bRawVel;
-        if (aRawVel == 0 && bRawVel > 100 || bRawVel == 0 && aRawVel > 100)
-            tm.print("Warning goal a different");
+        if (aRawVel == 0 && bRawVel > 100) tm.warn(MEDIUM, "Launch encoder A disconnected");
+        if (bRawVel == 0 && aRawVel > 100) tm.warn(MEDIUM, "Launch encoder B disconnected");
         return (aVel + bVel) / 2;
     }
 }

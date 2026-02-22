@@ -67,7 +67,7 @@ public class Turret {
         }
         turretTouchSensor = HardwareInitializer.init(hardwareMap, TouchSensor.class, "turretTouchSensor");
         if (turretTouchSensor == null)
-            tm.warn(HIGH, "Turret Touch Sensor disconnected. Check one of the CH Digital 2:3 port.");
+            tm.warn(HIGH, "Turret Touch Sensor disconnected. Check Expansion Hub digital port 2:3.");
     }
 
     /**

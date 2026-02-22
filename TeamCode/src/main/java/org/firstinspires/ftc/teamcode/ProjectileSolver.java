@@ -141,7 +141,7 @@ public class ProjectileSolver {
      */
     public static double findPositiveRoot(double a, double b, double c, double d) {
         double t = sqrt((-b + sqrt(b * b - 4 * a * d)) / (2 * a));
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 10; i++)
             t -= solveQuartic(t, a, b, c, d) / quarticDerivative(t, a, b, c);
         return abs(solveQuartic(t, a, b, c, d)) > 1 ? -1 : t;
     }

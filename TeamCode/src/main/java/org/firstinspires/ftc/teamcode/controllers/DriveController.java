@@ -90,9 +90,9 @@ public class DriveController {
         x = abs(x - WALL_LOW) <= SNAP_THRESHOLD_DISTANCE ? WALL_LOW : abs(x - WALL_HIGH) <= SNAP_THRESHOLD_DISTANCE ? WALL_HIGH : x;
         double y = pose == null ? WALL_LOW : pose.getY();
         y = abs(y - WALL_LOW) <= SNAP_THRESHOLD_DISTANCE ? WALL_LOW : abs(y - WALL_HIGH) <= SNAP_THRESHOLD_DISTANCE ? WALL_HIGH : y;
-        if (heading == 0) x += 2;
+        if (heading == 0) x -= 2;
         else if (heading == PI / 2) y -= 2;
-        else if (heading == PI) x -= 2;
+        else if (heading == PI) x += 2;
         else if (heading == PI * 1.5) y += 2;
         resetPose(new Pose(x, y, heading));
         return true;

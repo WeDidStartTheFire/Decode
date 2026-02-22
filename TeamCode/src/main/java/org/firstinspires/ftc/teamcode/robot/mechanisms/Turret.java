@@ -17,7 +17,6 @@ import static org.firstinspires.ftc.teamcode.RobotState.panelsResetTurret;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.HIGH;
-import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 import static java.lang.Math.atan2;
 import static java.lang.Math.max;
@@ -123,7 +122,7 @@ public class Turret {
         if (target == Target.GOAL) {
             ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution();
             if (sol == null) return;
-            setFieldCentricAngle(sol.phi + PI);
+            setFieldCentricAngle(sol.phi);
         } else if (target == Target.HUMAN_PLAYER && pose != null) {
             Pose targetPose = RobotState.color == RED ? RED_HUMAN_PLAYER_POSE : BLUE_HUMAN_PLAYER_POSE;
             Pose dPose = targetPose.minus(pose);
@@ -162,7 +161,7 @@ public class Turret {
     private void setRobotCentricAngle(double angle) {
         if (turretMotor == null) return;
         turretPIDController.setTargetPosition(
-            Math.clamp((int) (normalizeAngle(toDegrees(angle) - TURRET_OFFSET)
+            Math.clamp((int) (normalizeAngle(toDegrees(angle) + TURRET_OFFSET)
                 * TURRET_ENCODERS_PER_DEGREE + TURRET_TS_LENGTH_ENC), TURRET_MIN_POS, TURRET_MAX_POS));
     }
 

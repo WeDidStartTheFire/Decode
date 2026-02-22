@@ -34,7 +34,7 @@ public class DriveController {
      * @param gp           Gamepad for drivetrain movement
      * @param fieldCentric Whether movement is field centric
      */
-    public void updateTeleOpNoPedro(Gamepad gp, boolean fieldCentric) {
+    public void updateTeleOpNoPedro(Gamepad gp, boolean fieldCentric, int speed) {
         double axial, lateral, yaw, xMove, yMove;
         double speedMultiplier = lerp(gp.left_trigger, speeds[2], speeds[0]);
 
@@ -72,14 +72,14 @@ public class DriveController {
         }
 
         robot.drivetrain.setMotorVelocities(
-                leftBackPower * 200,
-                rightBackPower * 200,
-                leftFrontPower * 200,
-                rightFrontPower * 200
+                leftBackPower * speed,
+                rightBackPower * speed,
+                leftFrontPower * speed,
+                rightFrontPower * speed
         );
-        tm.print("left back: ", leftBackPower * 200);
-        tm.print("right back: ", rightBackPower * 200);
-        tm.print("left front: ", leftFrontPower * 200);
-        tm.print("right front: ", rightFrontPower * 200);
+        tm.print("left back: ", leftBackPower * speed);
+        tm.print("right back: ", rightBackPower * speed);
+        tm.print("left front: ", leftFrontPower * speed);
+        tm.print("right front: ", rightFrontPower * speed);
     }
 }

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleops;
 
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,7 +14,7 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.ServoFred;
 
 @TeleOp(name = "TeleOp_Fred", group = "C")
-public class TeleOp_Fred extends OpMode {
+public class TeleOp_Fred_Slow extends OpMode {
 
     private Robot robot;
     private TelemetryUtils tm;
@@ -38,7 +39,7 @@ public class TeleOp_Fred extends OpMode {
     public void loop() {
         robot.initBulkCache();
         robot.updateBulkCache();
-        teleop.drivetrainLogic(false, false, 200);
+        teleop.drivetrainLogic(false, false, 100);
         tm.print("Claw 1 Position", fred.getClawPosition(1));
         tm.print("Claw 2 Position", fred.getClawPosition(2));
         tm.update();

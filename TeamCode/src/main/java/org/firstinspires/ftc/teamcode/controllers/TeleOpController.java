@@ -45,7 +45,7 @@ public class TeleOpController {
      * @param fieldCentric Whether to use field centric driving
      * @param usePedro Whether to use Pedro Pathing
      */
-    public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
+    public void drivetrainLogic(boolean fieldCentric, boolean usePedro, int speed) {
         if (gamepad1.dpadLeftWasPressed()) robotCentric = true;
         else if (gamepad1.dpadRightWasPressed()) robotCentric = false;
         if (gamepad1.leftBumperWasPressed() && fred.doesClawsExist()) fred.toggleClaws();
@@ -54,6 +54,6 @@ public class TeleOpController {
         fieldCentric = fieldCentric && !robotCentric;
         tm.print("Robot Centric", robotCentric);
         tm.print("Field Centric", fieldCentric);
-        driveController.updateTeleOpNoPedro(gamepad1, fieldCentric);
+        driveController.updateTeleOpNoPedro(gamepad1, fieldCentric, speed);
     }
 }

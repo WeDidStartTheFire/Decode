@@ -172,6 +172,15 @@ public class Launcher {
     }
 
     /**
+     * @return Whether the launch motors spinning too fast (above the target launch velocity at the
+     * current position + 50 ticks/sec)
+     */
+    public boolean overSpeed() {
+        double motorVel = getGoalVel();
+        return getVel() > motorVel + 50;
+    }
+
+    /**
      * Stops the launch motors
      */
     public void stop() {

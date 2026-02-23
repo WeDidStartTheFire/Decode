@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.controllers;
 import static org.firstinspires.ftc.teamcode.ProjectileSolver.getLaunchSolution;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.GREEN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.ORANGE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.YELLOW;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.ARTIFACT_LAUNCH_WAIT;
@@ -86,11 +87,13 @@ public class LaunchController {
      * - INTAKE: Manual intake mode, overrides normal flow
      */
     public void update() {
-        boolean toSpeed = robot.launcher.toSpeed();
+        boolean overSpeed = robot.launcher.overSpeed();
+        boolean toSpeed = robot.launcher.toSpeed() && !overSpeed;
         if (getLaunchSolution() == null)
             robot.led.setColor(RobotConstants.LEDColors.RED, isBusy || robot.launcher.isSpinning()
                     ? LED.Priority.HIGH : LED.Priority.MEDIUM);
         else if (toSpeed) robot.led.setColor(YELLOW, LED.Priority.CRITICAL);
+        else if (overSpeed) robot.led.setColor(GREEN, LED.Priority.CRITICAL);
         else if (robot.launcher.almostToSpeed()) robot.led.setColor(ORANGE, LED.Priority.HIGH);
 
         if (launchCommanded && !launchQueue.isEmpty() && !toSpeed) {

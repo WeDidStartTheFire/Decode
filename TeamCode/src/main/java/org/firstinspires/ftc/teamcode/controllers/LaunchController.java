@@ -1,17 +1,17 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
 import static org.firstinspires.ftc.teamcode.ProjectileSolver.getLaunchSolution;
-import static org.firstinspires.ftc.teamcode.RobotConstants.ARTIFACT_LAUNCH_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.ORANGE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.YELLOW;
-import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_DROOP_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_FAILED_ATTEMPTS;
-import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_FEEDER_DOWN_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_LAUNCHER_SPIN_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.MIN_FEEDER_DOWN_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.STOP_LAUNCHER_WAIT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.ARTIFACT_LAUNCH_WAIT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MAX_DROOP_WAIT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MAX_FAILED_ATTEMPTS;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MAX_FEEDER_DOWN_WAIT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MAX_LAUNCHER_SPIN_WAIT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MIN_FEEDER_DOWN_WAIT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.STOP_LAUNCHER_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotState.auto;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static java.lang.Math.max;

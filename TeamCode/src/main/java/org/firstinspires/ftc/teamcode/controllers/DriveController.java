@@ -7,10 +7,10 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.norm
 import static org.firstinspires.ftc.teamcode.ProjectileSolver.getLaunchSolution;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.RED;
-import static org.firstinspires.ftc.teamcode.RobotConstants.SNAP_THRESHOLD_DISTANCE;
-import static org.firstinspires.ftc.teamcode.RobotConstants.SNAP_THRESHOLD_HEADING;
-import static org.firstinspires.ftc.teamcode.RobotConstants.WALL_HIGH;
-import static org.firstinspires.ftc.teamcode.RobotConstants.WALL_LOW;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Reset.SNAP_THRESHOLD_DISTANCE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Reset.SNAP_THRESHOLD_HEADING;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Reset.WALL_HIGH;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Reset.WALL_LOW;
 import static org.firstinspires.ftc.teamcode.RobotConstants.baseSpeedMultiplier;
 import static org.firstinspires.ftc.teamcode.RobotConstants.baseTurnSpeed;
 import static org.firstinspires.ftc.teamcode.RobotConstants.speeds;

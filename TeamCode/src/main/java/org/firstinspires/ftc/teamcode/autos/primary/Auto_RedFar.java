@@ -1,11 +1,11 @@
 package org.firstinspires.ftc.teamcode.autos.primary;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.INTAKE_AFTER_LAUNCH_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.INTAKE_MOVE_MAX_SPEED;
-import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_INTAKE_PATH_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_MOTIF_DETECT_WAIT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Autonomous.INTAKE_AFTER_LAUNCH_WAIT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Autonomous.INTAKE_MOVE_MAX_SPEED;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Autonomous.MAX_INTAKE_PATH_WAIT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Autonomous.MAX_MOTIF_DETECT_WAIT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Autonomous.slowIntakePathConstraints;
 import static org.firstinspires.ftc.teamcode.RobotConstants.RED_TELEOP_NAME;
-import static org.firstinspires.ftc.teamcode.RobotConstants.slowIntakePathConstraints;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.Utils.saveOdometryPosition;

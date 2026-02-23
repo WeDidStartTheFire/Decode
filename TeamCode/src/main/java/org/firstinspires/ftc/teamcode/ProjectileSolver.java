@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.RobotConstants.BLUE_GOAL_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.BLUE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_ANGLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LAUNCHER_HEIGHT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.RED_GOAL_POSE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.BLUE_GOAL_POSE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.RED_GOAL_POSE;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
 import static java.lang.Math.abs;

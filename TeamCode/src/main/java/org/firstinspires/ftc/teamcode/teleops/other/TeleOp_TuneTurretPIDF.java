@@ -82,7 +82,7 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
         if (gamepad1.y) encoderGoal -= (int) (increase * dt);
 
         if (robot.turret.turretMotor == null) return;
-        RobotConstants.TURRET_MAX_POWER = maxPower;
+        RobotConstants.Turret.TURRET_MAX_POWER = maxPower;
         pidf = new PIDFCoefficients(P, 0, D, F);
         robot.turret.turretPIDController.setCoefficients(pidf);
         robot.turret.turretPIDController.setTargetPosition(encoderGoal);

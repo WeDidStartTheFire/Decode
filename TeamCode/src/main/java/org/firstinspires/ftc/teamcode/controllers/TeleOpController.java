@@ -143,9 +143,9 @@ public class TeleOpController {
      */
     public void drivetrainLogic(boolean fieldCentric, boolean usePedro) {
         if (validStartPose && useOdometry) {
-            if (gamepad1.aWasPressed())
-                driveController.follow(RobotState.color == BLUE ? BLUE_FAR_LAUNCH : RED_FAR_LAUNCH);
             if (gamepad1.xWasPressed())
+                driveController.follow(RobotState.color == BLUE ? BLUE_FAR_LAUNCH : RED_FAR_LAUNCH);
+            if (gamepad1.aWasPressed())
                 driveController.follow(RobotState.color == BLUE ? BLUE_HUMAN_PLAYER : RED_HUMAN_PLAYER);
             if (gamepad1.yWasPressed())
                 driveController.follow(RobotState.color == BLUE ? BLUE_BASE_ZONE : RED_BASE_ZONE);

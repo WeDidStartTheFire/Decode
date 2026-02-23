@@ -1,14 +1,12 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.localizers;
 
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
-import static java.lang.Math.toRadians;
+import androidx.annotation.NonNull;
 
+import com.pedropathing.ftc.localization.localizers.OTOSLocalizer;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.localization.Localizer;
-import com.pedropathing.math.MathFunctions;
 import com.pedropathing.math.Vector;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
@@ -16,72 +14,53 @@ public class RedundantLocalizer implements Localizer {
 
     private final Localizer primaryLocalizer;
     private final Localizer secondaryLocalizer;
-    private Pose startPose;
-    private Pose pose;
-    private Pose vel;
-    private double totalHeading;
-    private double previousHeading;
-    private final IMU imu;
-    private double IMUoffset;
 
     public RedundantLocalizer(HardwareMap map) {
         this(map, new Pose());
     }
 
     public RedundantLocalizer(HardwareMap map, Pose setStartPose) {
-        imu = map.get(IMU.class, "imu");
-        primaryLocalizer = Constants.createLimelightFollower(map).getPoseTracker().getLocalizer();
-        secondaryLocalizer = Constants.createOTOSFollower(map).getPoseTracker().getLocalizer();
+        primaryLocalizer = new LimelightLocalizer(map);
+        secondaryLocalizer = new OTOSLocalizer(map, Constants.otosConstants);
         setStartPose(setStartPose);
-        pose = new Pose();
     }
 
+    @NonNull
     public Pose getPose() {
-        Vector vec = pose.getAsVector();
-        vec.rotateVector(this.startPose.getHeading());
-        return this.startPose.plus(new Pose(vec.getXComponent(), vec.getYComponent(), pose.getHeading()));
+        return secondaryLocalizer.getPose();
     }
 
+    @NonNull
     public Pose getVelocity() {
-        return vel;
+        return secondaryLocalizer.getVelocity();
     }
 
+    @NonNull
     public Vector getVelocityVector() {
-        return this.getVelocity().getAsVector();
+        return secondaryLocalizer.getVelocityVector();
     }
 
     public void setStartPose(Pose setStart) {
         primaryLocalizer.setStartPose(setStart);
         secondaryLocalizer.setStartPose(setStart);
-        startPose = setStart;
-        IMUoffset = setStart.getHeading() - toRadians(90);
     }
 
     public void setPose(Pose setPose) {
         primaryLocalizer.setPose(setPose);
         secondaryLocalizer.setPose(setPose);
-        pose = setPose.minus(startPose);
     }
 
     public void update() {
         primaryLocalizer.update();
         secondaryLocalizer.update();
         Pose primaryPose = primaryLocalizer.getPose();
-        if (primaryPose == null || primaryLocalizer.isNAN()) {
-            setPose(secondaryLocalizer.getPose());
-            vel = secondaryLocalizer.getVelocity();
-            totalHeading += MathFunctions.getSmallestAngleDifference(this.pose.getHeading(), this.previousHeading);
-            previousHeading = this.pose.getHeading();
-            return;
-        }
-        setPose(primaryPose.withHeading(secondaryLocalizer.getPose().getHeading()));
-        vel = secondaryLocalizer.getVelocity();
-        totalHeading += MathFunctions.getSmallestAngleDifference(this.pose.getHeading(), this.previousHeading);
-        previousHeading = this.pose.getHeading();
+        Pose secondaryPose = secondaryLocalizer.getPose();
+        if (!primaryLocalizer.isNAN() && primaryPose.distanceFrom(secondaryPose) > 0.5)
+            secondaryLocalizer.setPose(primaryLocalizer.getPose().withHeading(secondaryLocalizer.getPose().getHeading()));
     }
 
     public double getTotalHeading() {
-        return totalHeading;
+        return secondaryLocalizer.getTotalHeading();
     }
 
     public double getForwardMultiplier() {
@@ -102,7 +81,7 @@ public class RedundantLocalizer implements Localizer {
     }
 
     public double getIMUHeading() {
-        return imu.getRobotYawPitchRollAngles().getYaw(RADIANS) + IMUoffset;
+        return secondaryLocalizer.getPose().getHeading();
     }
 
     public boolean isNAN() {

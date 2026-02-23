@@ -65,6 +65,7 @@ public class Indexer {
         boolean highPriority = normalIntaking || launcherIntaking || getCurrentArtifact() == UNKNOWN;
         if (!isStill() || feeder.isGoalUp()) {
             colorSensor.skipLoop();
+            if (feeder.isGoalUp()) artifacts[idxFromPos(getGoalPos())] = UNKNOWN;
             tm.print("ColorSensor Update (ms)", 0);
             tm.print("Artifact", getCurrentArtifact());
             return;

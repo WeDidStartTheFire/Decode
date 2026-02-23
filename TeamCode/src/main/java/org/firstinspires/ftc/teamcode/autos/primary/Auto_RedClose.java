@@ -42,7 +42,7 @@ public final class Auto_RedClose extends BaseAuto<Auto_RedClose.State> {
         SHOOT_TO_END,
     }
 
-    private final Pose startPose = new Pose(124.4587665576, 121.478672985782, toRadians(126));
+    private final Pose startPose = new Pose(124.459, 121.479, toRadians(126));
     private final Pose motifPose = new Pose(107, 104.5, toRadians(126));
     private final Pose shootPose = new Pose(85.709, 84.670, toRadians(45.574210497));
     private final Pose intakeStart1 = new Pose(92, 58, toRadians(0));

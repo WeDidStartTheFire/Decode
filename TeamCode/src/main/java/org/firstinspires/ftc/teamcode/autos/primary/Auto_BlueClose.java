@@ -42,7 +42,7 @@ public final class Auto_BlueClose extends BaseAuto<Auto_BlueClose.State> {
         SHOOT_TO_END,
     }
 
-    private final Pose startPose = new Pose(19.541233442405954, 121.478672985782, toRadians(54));
+    private final Pose startPose = new Pose(19.541, 121.479, toRadians(54));
     private final Pose motifPose = new Pose(37, 104.5, toRadians(54));
     private final Pose shootPose = new Pose(58.291, 84.670, toRadians(134.4257895029621));
     private final Pose intakeStart1 = new Pose(52, 58, toRadians(180));

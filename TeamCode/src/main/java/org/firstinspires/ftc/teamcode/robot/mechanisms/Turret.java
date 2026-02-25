@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.robot.mechanisms;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.RED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.BLUE_HUMAN_PLAYER_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.RED_HUMAN_PLAYER_POSE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_ADJUST_FOR_VOLTAGE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_ENCODERS_PER_DEGREE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_FEEDFORWARD;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_FEEDFORWARD_SLOW_START;
@@ -34,6 +35,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.RobotState;
@@ -41,8 +43,9 @@ import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 
 public class Turret {
-    public @Nullable DcMotorEx turretMotor;
-    public @Nullable TouchSensor turretTouchSensor;
+    public final @Nullable DcMotorEx turretMotor;
+    public final @Nullable TouchSensor turretTouchSensor;
+    private final VoltageSensor voltageSensor;
     private Target target = Target.HOLD;
     public PIDFController turretPIDController = new PIDFController(turretMotorPID);
     private boolean wasPressed = false;
@@ -56,6 +59,7 @@ public class Turret {
 
     public Turret(HardwareMap hardwareMap, TelemetryUtils tm) {
         this.tm = tm;
+        voltageSensor = hardwareMap.voltageSensor.iterator().next();
         turretMotor = HardwareInitializer.init(hardwareMap, DcMotorEx.class, "turretMotor");
         if (turretMotor == null)
             tm.warn(HIGH, "Turret Motor disconnected. Check Expansion Hub motor port 3.");
@@ -159,7 +163,9 @@ public class Turret {
         double pid = turretPIDController.run();
         double staticFeedforward = TURRET_STATIC_FEEDFORWARD * signum(pid);
         double power = pid + feedforward + staticFeedforward;
-        turretMotor.setPower(Math.clamp(power, -TURRET_MAX_POWER, TURRET_MAX_POWER));
+        double modifier = TURRET_ADJUST_FOR_VOLTAGE ? 12 / Math.max(voltageSensor.getVoltage(), 1e-6) : 1;
+        power *= modifier;
+        turretMotor.setPower(Math.clamp(power, -TURRET_MAX_POWER * modifier, TURRET_MAX_POWER * modifier));
     }
 
     /**

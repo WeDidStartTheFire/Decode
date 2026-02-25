@@ -98,6 +98,7 @@ public class RobotConstants {
         public static double TURRET_MAX_POS = 18000;
         public static double TURRET_SPEED_OFFSET = 4000;
         public static double TURRET_SPEED_MANUAL = 5000;
+        public static boolean TURRET_ADJUST_FOR_VOLTAGE = false;
     }
 
     public static com.pedropathing.control.PIDFCoefficients teleopHeadingPID =

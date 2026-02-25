@@ -13,6 +13,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MAX
 import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MAX_LAUNCHER_SPIN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MIN_FEEDER_DOWN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.STOP_LAUNCHER_WAIT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.MIN_ARTIFACT_READINGS;
 import static org.firstinspires.ftc.teamcode.RobotState.auto;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static java.lang.Math.max;
@@ -111,6 +112,7 @@ public class LaunchController {
 
         RobotConstants.Artifact desired, current;
         double pos;
+        int currentReadings;
         switch (state) {
             case IDLE:
                 RobotState.launcherIntaking = false;
@@ -153,10 +155,12 @@ public class LaunchController {
                 }
                 desired = launchQueue.get(0);
                 current = robot.indexer.getCurrentArtifact();
-                if (current != UNKNOWN && (current == desired || desired == UNKNOWN && current != EMPTY)) {
+                currentReadings = robot.indexer.getCurrentArtifactReadings();
+                if (currentReadings >= MIN_ARTIFACT_READINGS && (current == desired || desired == UNKNOWN && current != EMPTY)) {
                     setState(State.PUSH_ARTIFACT);
                     break;
                 }
+                if (currentReadings < MIN_ARTIFACT_READINGS) break;
                 if (desired == UNKNOWN ? robot.indexer.rotateToAny() :
                         robot.indexer.rotateToArtifact(desired)) break;
                 if (robot.indexer.rotateToArtifact(UNKNOWN)) break;
@@ -188,8 +192,9 @@ public class LaunchController {
                 }
                 desired = launchQueue.get(0);
                 current = robot.indexer.getCurrentArtifact();
+                currentReadings = robot.indexer.getCurrentArtifactReadings();
                 if ((desired != UNKNOWN && current != desired && !anyExpected)
-                        || current == UNKNOWN || current == EMPTY) {
+                    || currentReadings < MIN_ARTIFACT_READINGS || current == EMPTY) {
                     failedCount++;
                     if (failedCount <= MAX_FAILED_ATTEMPTS) break;
                     failedCount = 0;

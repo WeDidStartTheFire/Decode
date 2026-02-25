@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_ARTIFACT_DET
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.AZURE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.BLUE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.GREEN;
+import static org.firstinspires.ftc.teamcode.RobotConstants.MIN_ARTIFACT_READINGS;
 
 import com.pedropathing.util.Timer;
 
@@ -75,7 +76,7 @@ public class IntakeController {
                 break;
             case INTAKE:
                 RobotState.normalIntaking = true;
-                if (robot.indexer.isActiveSlotEmpty()) {
+                if (robot.indexer.isActiveSlotEmpty() && robot.indexer.getCurrentArtifactReadings() >= MIN_ARTIFACT_READINGS) {
                     artifactDetectedTimer.resetTimer();
                     if (robot.indexer.isStill()) robot.intake.power(-1);
                     else {

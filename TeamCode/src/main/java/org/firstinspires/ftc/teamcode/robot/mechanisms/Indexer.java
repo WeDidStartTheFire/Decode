@@ -6,7 +6,10 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.PURPLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_POS_EPSILON;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_SPEED;
+import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_ARTIFACT_READINGS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
+import static org.firstinspires.ftc.teamcode.RobotConstants.MIN_ARTIFACT_READINGS;
+import static org.firstinspires.ftc.teamcode.RobotState.artifactReadings;
 import static org.firstinspires.ftc.teamcode.RobotState.artifacts;
 import static org.firstinspires.ftc.teamcode.RobotState.launcherIntaking;
 import static org.firstinspires.ftc.teamcode.RobotState.normalIntaking;
@@ -62,10 +65,10 @@ public class Indexer {
         tm.print("Artifact 2", artifacts[1]);
         tm.print("Artifact 3", artifacts[2]);
         updateLED();
-        boolean highPriority = normalIntaking || launcherIntaking || getCurrentArtifact() == UNKNOWN;
+        boolean highPriority = normalIntaking || launcherIntaking || getCurrentArtifactReadings() < MIN_ARTIFACT_READINGS;
         if (!isStill() || feeder.isGoalUp()) {
             colorSensor.skipLoop();
-            if (feeder.isGoalUp()) artifacts[idxFromPos(getGoalPos())] = UNKNOWN;
+            if (feeder.isGoalUp()) setCurrentArtifact(UNKNOWN, false);
             tm.print("ColorSensor Update (ms)", 0);
             tm.print("Artifact", getCurrentArtifact());
             return;
@@ -76,9 +79,35 @@ public class Indexer {
         long t1 = System.currentTimeMillis();
         tm.print("ColorSensor Update (ms)", t1 - t0);
         tm.print("Artifact", artifact);
-        if (artifact == UNKNOWN) return;
+        if (artifact == UNKNOWN) {
+            reduceCurrentArtifactReadings();
+            return;
+        }
+        setCurrentArtifact(artifact, highPriority);
+    }
+
+    private void reduceCurrentArtifactReadings() {
         int idx = idxFromPos(getGoalPos());
-        if (idx >= 0 && idx < artifacts.length) artifacts[idx] = artifact;
+        if (idx < 0 || idx >= artifactReadings.length) return;
+        artifactReadings[idx] -= 2;
+        if (artifactReadings[idx] < 0) setCurrentArtifact(UNKNOWN, false);
+    }
+
+    public int getCurrentArtifactReadings() {
+        int idx = idxFromPos(getGoalPos());
+        if (idx < 0 || idx >= artifactReadings.length) return 0;
+        return artifactReadings[idx];
+    }
+
+    private void setCurrentArtifact(RobotConstants.Artifact artifact, boolean doubleReading) {
+        int idx = idxFromPos(getGoalPos());
+        if (idx < 0 || idx >= artifacts.length) return;
+        int numReads = doubleReading ? 2 : 1;
+        if (artifact == UNKNOWN) artifactReadings[idx] = 0;
+        else if (artifacts[idx] == artifact)
+            artifactReadings[idx] = Math.min(MAX_ARTIFACT_READINGS, artifactReadings[idx] + numReads);
+        else artifactReadings[idx] = numReads;
+        artifacts[idx] = artifact;
     }
 
     private int idxFromPos(double pos) {
@@ -120,6 +149,7 @@ public class Indexer {
 
     /**
      * Calculates where the min and max bounds are right now, only modifying the temporary bounds
+     *
      * @see #tempMinIndexerPos
      * @see #tempMaxIndexerPos
      */
@@ -135,13 +165,13 @@ public class Indexer {
 
         double distMin = Math.abs(goalIndexerPos - minIndexerPos);
         tempMinIndexerPos = maxMovement > distMin ?
-                goalIndexerPos :
-                minIndexerPos + Math.signum(goalIndexerPos - minIndexerPos) * maxMovement;
+            goalIndexerPos :
+            minIndexerPos + Math.signum(goalIndexerPos - minIndexerPos) * maxMovement;
 
         double distMax = Math.abs(goalIndexerPos - maxIndexerPos);
         tempMaxIndexerPos = maxMovement > distMax ?
-                goalIndexerPos :
-                maxIndexerPos + Math.signum(goalIndexerPos - maxIndexerPos) * maxMovement;
+            goalIndexerPos :
+            maxIndexerPos + Math.signum(goalIndexerPos - maxIndexerPos) * maxMovement;
     }
 
     private void resetTimer() {
@@ -220,7 +250,7 @@ public class Indexer {
         if (indexerTimer == null) return false;
         calculateCurrentBounds();
         return abs(tempMinIndexerPos - goalIndexerPos) < INDEXER_POS_EPSILON &&
-                abs(tempMaxIndexerPos - goalIndexerPos) < INDEXER_POS_EPSILON;
+            abs(tempMaxIndexerPos - goalIndexerPos) < INDEXER_POS_EPSILON;
     }
 
     /**

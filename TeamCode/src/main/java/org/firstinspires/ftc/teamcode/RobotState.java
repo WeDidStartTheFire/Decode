@@ -29,6 +29,7 @@ public class RobotState {
     public static Motif motif = Motif.UNKNOWN;
     @NonNull
     public static Artifact[] artifacts = {UNKNOWN, UNKNOWN, UNKNOWN};
+    public static int[] artifactReadings = {0, 0, 0};
     public static double launcherVelModifier = 0;
     public static boolean panelsResetTurret;
     public static boolean launcherIntaking = false;

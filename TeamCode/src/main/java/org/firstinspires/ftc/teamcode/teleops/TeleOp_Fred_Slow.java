@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.ServoFred;
 
-@TeleOp(name = "TeleOp_Fred", group = "C")
+@TeleOp(name = "TeleOp_Fred_Slow", group = "C")
 public class TeleOp_Fred_Slow extends OpMode {
 
     private Robot robot;
@@ -38,7 +38,7 @@ public class TeleOp_Fred_Slow extends OpMode {
     public void loop() {
         robot.initBulkCache();
         robot.updateBulkCache();
-        teleop.drivetrainLogic(false, false, 100);
+        teleop.drivetrainLogic(false, false, 0.5);
         tm.print("Claw 1 Position", fred.getClawPosition(1));
         tm.print("Claw 2 Position", fred.getClawPosition(2));
         tm.update();

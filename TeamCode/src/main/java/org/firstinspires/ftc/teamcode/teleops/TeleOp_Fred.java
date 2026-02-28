@@ -28,7 +28,6 @@ public class TeleOp_Fred extends OpMode {
         fred = new ServoFred(hardwareMap, tm);
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
         robot.drivetrain.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
         tm = robot.drivetrain.tm;
         if (!validStartPose) tm.print("⚠️WARNING⚠️", "Robot Centric driving will be used");
         else tm.print("Field Centric Driving", "✅");

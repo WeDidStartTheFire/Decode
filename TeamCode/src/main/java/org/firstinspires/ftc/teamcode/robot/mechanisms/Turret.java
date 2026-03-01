@@ -77,7 +77,8 @@ public class Turret {
     /**
      * Sets the target for the turret
      *
-     * @param target Turret target. Can be the goal, human player, or none.
+     * @param target Turret target.
+     * @see Target
      */
     public void setTarget(Target target) {
         if (changeable) this.target = target;

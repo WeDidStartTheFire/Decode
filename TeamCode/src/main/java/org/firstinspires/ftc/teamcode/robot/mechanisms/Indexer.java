@@ -90,7 +90,7 @@ public class Indexer {
         int idx = idxFromPos(getGoalPos());
         if (idx < 0 || idx >= artifactReadings.length) return;
         artifactReadings[idx] -= 2;
-        if (artifactReadings[idx] < 0) setCurrentArtifact(UNKNOWN, false);
+        if (artifactReadings[idx] <= 0) setCurrentArtifact(UNKNOWN, false);
     }
 
     public int getCurrentArtifactReadings() {

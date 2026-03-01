@@ -115,6 +115,7 @@ public class LaunchController {
         int currentReadings;
         switch (state) {
             case IDLE:
+                robot.turret.setTarget(Turret.Target.MANUAL);
                 RobotState.launcherIntaking = false;
                 isBusy = false;
                 if (launchQueue.isEmpty()) break;
@@ -124,7 +125,7 @@ public class LaunchController {
                 break;
             case INTAKE:
                 RobotState.launcherIntaking = true;
-                robot.turret.setTarget(Turret.Target.HUMAN_PLAYER);
+                robot.turret.setTarget(Turret.Target.MANUAL);
                 if (!intaking) {
                     robot.launcher.stop();
                     setState(State.IDLE);

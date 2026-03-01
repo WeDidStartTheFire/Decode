@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.controllers;
 
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.EMPTY;
-import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
-import static org.firstinspires.ftc.teamcode.RobotConstants.BRIEF_OUTTAKE_TIME;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_ARTIFACT_DETECTION_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.AZURE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.BLUE;
@@ -32,7 +30,6 @@ public class IntakeController {
         INTAKE,
         MANUAL_INTAKE,
         OUTTAKE,
-        BRIEF_OUTTAKE,
     }
 
     public IntakeController(Robot robot) {
@@ -76,30 +73,12 @@ public class IntakeController {
                 break;
             case INTAKE:
                 RobotState.normalIntaking = true;
+                robot.intake.power(-1);
                 if (robot.indexer.isActiveSlotEmpty() && robot.indexer.getCurrentArtifactReadings() >= MIN_ARTIFACT_READINGS) {
                     artifactDetectedTimer.resetTimer();
-                    if (robot.indexer.isStill()) robot.intake.power(-1);
-                    else {
-                        robot.intake.powerInside(1);
-                        robot.intake.powerOutside(-0.75);
-                    }
-                } else {
-                    if (robot.indexer.getTotalArtifacts() == 3) robot.intake.powerOutside(0.75);
-                    else robot.intake.powerOutside(0);
-                    robot.intake.powerInside(-1);
-                    if (artifactDetectedTimer.getElapsedTimeSeconds() > INDEXER_ARTIFACT_DETECTION_WAIT) {
-                        robot.intake.powerInside(1);
-                        if (robot.indexer.getTotalArtifacts() == 3) robot.intake.powerOutside(0.75);
-                        else robot.intake.powerOutside(-0.75);
-                        if (robot.indexer.rotateToArtifact(EMPTY)) break;
-                        if (!robot.indexer.rotateToArtifact(UNKNOWN)) setState(State.BRIEF_OUTTAKE);
-                    }
+                } else if (artifactDetectedTimer.getElapsedTimeSeconds() > INDEXER_ARTIFACT_DETECTION_WAIT) {
+                    robot.indexer.rotateToArtifact(EMPTY);
                 }
-                break;
-            case BRIEF_OUTTAKE:
-                RobotState.normalIntaking = false;
-                robot.intake.powerOutside(1);
-                if (stateTimer.getElapsedTimeSeconds() > BRIEF_OUTTAKE_TIME) setState(State.IDLE);
                 break;
             case OUTTAKE:
                 RobotState.normalIntaking = false;

@@ -58,6 +58,7 @@ public class TeleOpController {
         this.robot.initBulkCache();
         intakeController = new IntakeController(robot);
         launchController = new LaunchController(robot);
+        RobotState.launcherVelModifier = 0;
         driveController = new DriveController(robot);
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
@@ -122,6 +123,7 @@ public class TeleOpController {
         launchController.stop();
         intakeController.stop();
         robot.indexer.markAllUnknown();
+        RobotState.launcherVelModifier = 0;
         tm.showLogs();
         tm.update();
     }

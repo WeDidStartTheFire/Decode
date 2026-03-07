@@ -48,7 +48,6 @@ public class Turret {
     private final VoltageSensor voltageSensor;
     private Target target = Target.HOLD;
     public PIDFController turretPIDController = new PIDFController(turretMotorPID);
-    private boolean wasPressed = false;
     private final TelemetryUtils tm;
     public boolean changeable = true;
     private double offset = 0;
@@ -107,22 +106,6 @@ public class Turret {
     }
 
     /**
-     * Returns true if the turret's velocity or power is in the direction indicated by the sign.
-     * <p>
-     * If the sign is positive, this method will return true if the turret's velocity is positive
-     * or its power is positive. If the sign is negative, this method will return true if the
-     * turret's velocity is negative or its power is negative.
-     *
-     * @param sign The direction in which to check the turret's velocity or power.
-     * @return True if the turret's velocity or power is in the direction indicated by the sign,
-     * false otherwise.
-     */
-    private boolean velocitySign(int sign) {
-        if (turretMotor == null || turretMotor.getVelocity() * sign < 0) return false;
-        return turretMotor.getVelocity() * sign > 0 || turretMotor.getPower() * sign > 0;
-    }
-
-    /**
      * Updates the turret PID and continues aiming at the target
      */
     public void update() {
@@ -134,12 +117,7 @@ public class Turret {
         // Positive velocity check makes it so it only zeros the touch sensor when coming from one
         // side, so the "zero" on the touch sensor is always on the right side, and not changing
         // between the left and right sides
-        boolean isPressed = turretTouchSensor != null && turretTouchSensor.isPressed();
-        if (isPressed && !wasPressed && velocitySign(+1)) resetEncoder();
-        else if (isPressed && abs(turretMotor.getCurrentPosition()) > 250) resetEncoder();
-        if (!isPressed && wasPressed && velocitySign(-1)) resetEncoder();
-
-        wasPressed = isPressed;
+        if (turretTouchSensor != null && turretTouchSensor.isPressed()) resetEncoder();
 
         if (target == Target.GOAL) {
             ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution();

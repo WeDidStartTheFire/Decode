@@ -40,21 +40,23 @@ public class RobotConstants {
     public static final double MIDDLE_INDEXER_POS = 0.455;
     public static double INDEXER_SPEED = 1;
     public static final double INDEXER_POS_EPSILON = 1e-4;
-    public static int MIN_ARTIFACT_READINGS = 6;
-    public static int MAX_ARTIFACT_READINGS = 12;
+    public static int MIN_ARTIFACT_READINGS = 10;
+    public static int MAX_ARTIFACT_READINGS = 20;
 
     public static final double[] speeds = {0.2, 0.6, 1};
 
+    @Configurable
     public static class LaunchController {
         public static double MAX_LAUNCHER_SPIN_WAIT = 5;
         public static double MAX_DROOP_WAIT = 3;
-        public static double MAX_FEEDER_DOWN_WAIT = .35;
-        public static double MIN_FEEDER_DOWN_WAIT = .35;
+        public static double MAX_FEEDER_DOWN_WAIT = .25;
+        public static double MIN_FEEDER_DOWN_WAIT = .15;
         public static double ARTIFACT_LAUNCH_WAIT = .15;
         public static int MAX_FAILED_ATTEMPTS = 5;
         public static double STOP_LAUNCHER_WAIT = 0.25;
     }
 
+    @Configurable
     public static class Reset {
         public static double SOFT_RESET_WAIT = .5;
         public static double HARD_RESET_WAIT = 1;
@@ -67,6 +69,7 @@ public class RobotConstants {
     public static final double baseSpeedMultiplier = 0.75;
     public static final double baseTurnSpeed = 2.5;
 
+    @Configurable
     public static class Autonomous {
         public static PathConstraints slowIntakePathConstraints = new PathConstraints(
             0.3,
@@ -81,8 +84,8 @@ public class RobotConstants {
     }
 
     public static double INDEXER_ARTIFACT_DETECTION_WAIT = 0.8;
-    public static double BRIEF_OUTTAKE_TIME = 0.5;
 
+    @Configurable
     public static class Turret {
         public static com.pedropathing.control.PIDFCoefficients turretMotorPID =
             new com.pedropathing.control.PIDFCoefficients(.00055, 0, 0.00003, 0);
@@ -94,10 +97,10 @@ public class RobotConstants {
         public static double TURRET_MAX_POWER = 0.75;
         public static double TURRET_OFFSET = 90; // degrees
         public static double TURRET_TS_OFFSET_ENC = 150; // length of touch sensor in encoder ticks
-        public static double TURRET_MIN_POS = -4000;
-        public static double TURRET_MAX_POS = 18000;
-        public static double TURRET_SPEED_OFFSET = 4000;
-        public static double TURRET_SPEED_MANUAL = 5000;
+        public static double TURRET_MIN_POS = -2500;
+        public static double TURRET_MAX_POS = 16500;
+        public static double TURRET_SPEED_OFFSET = 3000;
+        public static double TURRET_SPEED_MANUAL = 6000;
         public static boolean TURRET_ADJUST_FOR_VOLTAGE = false;
     }
 
@@ -110,20 +113,21 @@ public class RobotConstants {
     public static double BALL_VEL_TO_MOTOR_VEL_COEFF = 4.45;
     public static double BALL_VEL_TO_MOTOR_VEL_CONST = 466;
 
+    @Configurable
     public static class Positions {
-        public static final Pose3D RED_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 139, 139, 44, 0),
+        public static Pose3D RED_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 139, 139, 44, 0),
             new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
-        public static final Pose3D BLUE_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 5, 139, 44, 0),
+        public static Pose3D BLUE_GOAL_POSE = new Pose3D(new Position(DistanceUnit.INCH, 5, 139, 44, 0),
             new YawPitchRollAngles(AngleUnit.RADIANS, 0, 0, 0, 0));
-        public static final Pose RED_HUMAN_PLAYER_POSE = new Pose(0, 9);
-        public static final Pose BLUE_HUMAN_PLAYER_POSE = new Pose(144, 9);
+        public static Pose RED_HUMAN_PLAYER_POSE = new Pose(0, 9);
+        public static Pose BLUE_HUMAN_PLAYER_POSE = new Pose(144, 9);
 
-        public static final Pose RED_BASE_ZONE = new Pose(38, 33, toRadians(90));
-        public static final Pose BLUE_BASE_ZONE = new Pose(106, 33, toRadians(90));
-        public static final Pose RED_FAR_LAUNCH = new Pose(84, 20, toRadians(90));
-        public static final Pose BLUE_FAR_LAUNCH = new Pose(60, 20, toRadians(90));
-        public static final Pose RED_HUMAN_PLAYER = new Pose(20, 14, toRadians(90));
-        public static final Pose BLUE_HUMAN_PLAYER = new Pose(124, 14, toRadians(90));
+        public static Pose RED_BASE_ZONE = new Pose(38, 33, toRadians(90));
+        public static Pose BLUE_BASE_ZONE = new Pose(106, 33, toRadians(90));
+        public static Pose RED_FAR_LAUNCH = new Pose(84, 20, toRadians(90));
+        public static Pose BLUE_FAR_LAUNCH = new Pose(60, 20, toRadians(90));
+        public static Pose RED_HUMAN_PLAYER = new Pose(20, 14, toRadians(90));
+        public static Pose BLUE_HUMAN_PLAYER = new Pose(124, 14, toRadians(90));
     }
 
     public static final String BLUE_TELEOP_NAME = "🟦Blue🟦 Main";

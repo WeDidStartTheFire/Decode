@@ -156,13 +156,13 @@ public class LaunchController {
                 desired = launchQueue.get(0);
                 current = robot.indexer.getCurrentArtifact();
                 currentReadings = robot.indexer.getCurrentArtifactReadings();
-                if (currentReadings >= MIN_ARTIFACT_READINGS && (current == desired || desired == UNKNOWN && current != EMPTY)) {
+                if (currentReadings < MIN_ARTIFACT_READINGS) break;
+                if (current == desired || desired == UNKNOWN && current != EMPTY) {
                     setState(State.PUSH_ARTIFACT);
                     break;
                 }
-                if (currentReadings < MIN_ARTIFACT_READINGS) break;
                 if (desired == UNKNOWN ? robot.indexer.rotateToAny() :
-                        robot.indexer.rotateToArtifact(desired)) break;
+                    robot.indexer.rotateToArtifact(desired)) break;
                 if (robot.indexer.rotateToArtifact(UNKNOWN)) break;
                 setStateNoWait(State.PUSH_ARTIFACT);
                 anyExpected = true;

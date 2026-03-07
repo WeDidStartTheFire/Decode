@@ -80,7 +80,7 @@ public class Feeder {
     public void retract() {
         if (feederServoA == null || feederServoB == null || feederPos == 0) return;
         feederPos = 0;
-        feederServoA.setPosition(0);
-        feederServoB.setPosition(0);
+        feederServoA.setPosition(0.05);
+        feederServoB.setPosition(0.05);
     }
 }

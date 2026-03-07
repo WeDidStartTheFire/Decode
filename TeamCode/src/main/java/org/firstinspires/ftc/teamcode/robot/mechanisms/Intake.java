@@ -31,11 +31,11 @@ public class Intake {
         intakeServoC = HardwareInitializer.init(hardwareMap, CRServo.class, "intakeServoC");
         if (intakeServoA == null)
             tm.warn(HIGH, "Intake Servo A disconnected. Check Expansion Hub servo port 3");
-        else intakeServoA.setDirection(REVERSE);
         if (intakeServoB == null)
             tm.warn(LOW, "Intake Servo B (roller) disconnected. Check Expansion Hub servo port 4");
         if (intakeServoC == null)
             tm.warn(HIGH, "Intake Servo C disconnected. Check Expansion Hub servo port 5");
+        else intakeServoC.setDirection(REVERSE);
     }
 
     /**

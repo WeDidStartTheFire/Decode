@@ -106,7 +106,7 @@ public class RobotConstants {
 
     public static com.pedropathing.control.PIDFCoefficients teleopHeadingPID =
             new com.pedropathing.control.PIDFCoefficients(1, 0, .05, 0);
-    public static com.pedropathing.control.PIDFCoefficients launcherPIDF = new com.pedropathing.control.PIDFCoefficients(.002, 0, 0, .00063);
+    public static com.pedropathing.control.PIDFCoefficients launcherPIDF = new com.pedropathing.control.PIDFCoefficients(.002, 0, 0, .00055);
     public static PIDFCoefficients launcherReversePIDF = new PIDFCoefficients(80, 0, 0, 20);
     public static final double LAUNCHER_HEIGHT = 15.5;
     public static final double LAUNCHER_ANGLE = toRadians(50);

@@ -101,6 +101,7 @@ public class Turret {
         if (abs(turretMotor.getCurrentPosition()) > 50) turretPIDController.reset();
         turretPIDController.updatePosition(0);
         if (target == Target.MANUAL) turretPIDController.setTargetPosition(0);
+        turretPIDController.updatePosition(0);
         turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // sets encoder back to 0
         turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }

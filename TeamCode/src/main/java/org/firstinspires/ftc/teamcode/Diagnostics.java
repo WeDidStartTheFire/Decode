@@ -109,6 +109,7 @@ public class Diagnostics extends LinearOpMode {
         if (!opModeIsActive()) return;
 
         if (feederServoA != null && feederServoB != null) {
+            feederServoA.setDirection(Servo.Direction.REVERSE);
             feederServoB.setPosition(.85);
             feederServoA.setPosition(.85);
             actionTm("Raising feeder servo", "Lowering feeder servo");

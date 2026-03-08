@@ -25,7 +25,7 @@ import org.firstinspires.ftc.teamcode.autos.BaseAuto;
 public final class Auto_BlueClose extends BaseAuto<Auto_BlueClose.State> {
 
     private PathChain startToMotif, motifToShoot, shootToIntake1, intake1, intakeToShoot1,
-            shootToIntake2, intake2, intakeToShoot2, shootToEnd;
+        shootToIntake2, intake2, intakeToShoot2, shootToEnd;
     private double launchRound = 0;
     static final String name = "🟦Blue🟦 Close";
     private final RobotConstants.Color color = RobotConstants.Color.BLUE;
@@ -44,7 +44,7 @@ public final class Auto_BlueClose extends BaseAuto<Auto_BlueClose.State> {
 
     private final Pose startPose = new Pose(19.541, 121.479, toRadians(54));
     private final Pose motifPose = new Pose(37, 104.5, toRadians(54));
-    private final Pose shootPose = new Pose(58.291, 84.670, toRadians(134.4257895029621));
+    private final Pose shootPose = new Pose(58.291, 84.670, toRadians(180));
     private final Pose intakeStart1 = new Pose(52, 58, toRadians(180));
     private final Pose intakeEnd1 = new Pose(19, 58, toRadians(180));
     private final Pose intakeStart2 = new Pose(52, 85, toRadians(180));
@@ -61,43 +61,43 @@ public final class Auto_BlueClose extends BaseAuto<Auto_BlueClose.State> {
 
     protected void buildPaths() {
         startToMotif = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(startPose, motifPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), motifPose.getHeading())
-                .build();
+            .addPath(new BezierLine(startPose, motifPose))
+            .setLinearHeadingInterpolation(startPose.getHeading(), motifPose.getHeading())
+            .build();
         motifToShoot = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(motifPose, shootPose))
-                .setLinearHeadingInterpolation(motifPose.getHeading(), shootPose.getHeading())
-                .build();
+            .addPath(new BezierLine(motifPose, shootPose))
+            .setLinearHeadingInterpolation(motifPose.getHeading(), shootPose.getHeading())
+            .build();
         shootToIntake1 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(shootPose, intakeStart1))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), intakeStart1.getHeading())
-                .build();
+            .addPath(new BezierLine(shootPose, intakeStart1))
+            .setLinearHeadingInterpolation(shootPose.getHeading(), intakeStart1.getHeading())
+            .build();
         intake1 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(intakeStart1, intakeEnd1))
-                .setConstantHeadingInterpolation(intakeEnd1.getHeading())
-                .setConstraints(slowIntakePathConstraints)
-                .build();
+            .addPath(new BezierLine(intakeStart1, intakeEnd1))
+            .setConstantHeadingInterpolation(intakeEnd1.getHeading())
+            .setConstraints(slowIntakePathConstraints)
+            .build();
         intakeToShoot1 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierCurve(intakeEnd1, new Pose(55.464, 59.222), shootPose))
-                .setLinearHeadingInterpolation(intakeEnd1.getHeading(), shootPose.getHeading())
-                .build();
+            .addPath(new BezierCurve(intakeEnd1, new Pose(55.464, 59.222), shootPose))
+            .setLinearHeadingInterpolation(intakeEnd1.getHeading(), shootPose.getHeading())
+            .build();
         shootToIntake2 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(shootPose, intakeStart2))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), intakeStart2.getHeading())
-                .build();
+            .addPath(new BezierLine(shootPose, intakeStart2))
+            .setLinearHeadingInterpolation(shootPose.getHeading(), intakeStart2.getHeading())
+            .build();
         intake2 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(intakeStart2, intakeEnd2))
-                .setLinearHeadingInterpolation(intakeStart2.getHeading(), intakeEnd2.getHeading())
-                .setConstraints(slowIntakePathConstraints)
-                .build();
+            .addPath(new BezierLine(intakeStart2, intakeEnd2))
+            .setLinearHeadingInterpolation(intakeStart2.getHeading(), intakeEnd2.getHeading())
+            .setConstraints(slowIntakePathConstraints)
+            .build();
         intakeToShoot2 = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(intakeEnd2, shootPose))
-                .setLinearHeadingInterpolation(intakeEnd2.getHeading(), shootPose.getHeading())
-                .build();
+            .addPath(new BezierLine(intakeEnd2, shootPose))
+            .setLinearHeadingInterpolation(intakeEnd2.getHeading(), shootPose.getHeading())
+            .build();
         shootToEnd = robot.drivetrain.follower.pathBuilder()
-                .addPath(new BezierLine(shootPose, endPose))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), endPose.getHeading())
-                .build();
+            .addPath(new BezierLine(shootPose, endPose))
+            .setLinearHeadingInterpolation(shootPose.getHeading(), endPose.getHeading())
+            .build();
     }
 
     protected void pathUpdate() {
@@ -113,7 +113,7 @@ public final class Auto_BlueClose extends BaseAuto<Auto_BlueClose.State> {
                 RobotConstants.Motif m = robot.limelight.getMotif();
                 if (m != RobotConstants.Motif.UNKNOWN) motif = m;
                 if (robot.drivetrain.follower.isBusy() || (motif == RobotConstants.Motif.UNKNOWN
-                        && stateTimer.getElapsedTimeSeconds() < MAX_MOTIF_DETECT_WAIT))
+                    && stateTimer.getElapsedTimeSeconds() < MAX_MOTIF_DETECT_WAIT))
                     break;
                 robot.drivetrain.follower.followPath(motifToShoot, true);
                 setState(State.LAUNCH_ARTIFACTS);
@@ -128,7 +128,7 @@ public final class Auto_BlueClose extends BaseAuto<Auto_BlueClose.State> {
             case SHOOT_TO_INTAKE:
                 if (launchController.isBusy()) break;
                 robot.drivetrain.follower.followPath(launchRound == 1 ? shootToIntake1 :
-                        shootToIntake2, true);
+                    shootToIntake2, true);
                 setState(State.INTAKE);
                 break;
             case INTAKE:
@@ -137,15 +137,15 @@ public final class Auto_BlueClose extends BaseAuto<Auto_BlueClose.State> {
                 if (robot.drivetrain.follower.isBusy()) break;
                 intakeController.intake();
                 robot.drivetrain.follower.followPath(launchRound == 1 ? intake1 : intake2,
-                        INTAKE_MOVE_MAX_SPEED, true);
+                    INTAKE_MOVE_MAX_SPEED, true);
                 setState(State.INTAKE_TO_SHOOT);
                 break;
             case INTAKE_TO_SHOOT:
                 if (robot.drivetrain.follower.isBusy() && intakeController.isBusy() &&
-                        stateTimer.getElapsedTimeSeconds() < MAX_INTAKE_PATH_WAIT) break;
+                    stateTimer.getElapsedTimeSeconds() < MAX_INTAKE_PATH_WAIT) break;
                 robot.drivetrain.follower.breakFollowing();
                 robot.drivetrain.follower.followPath(launchRound == 1 ? intakeToShoot1 :
-                        intakeToShoot2, true);
+                    intakeToShoot2, true);
                 launchController.manualSpin();
                 setState(State.LAUNCH_ARTIFACTS);
                 break;

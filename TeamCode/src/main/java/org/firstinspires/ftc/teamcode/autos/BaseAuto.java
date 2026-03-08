@@ -106,6 +106,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         tm.print("Path State", state);
         tm.print("Launcher State", launchController.getState());
         tm.print("Intake State", intakeController.getState());
+        tm.print("Queue", launchController.getQueue());
         tm.print("Motif", motif);
         tm.print("Indexer Pos", robot.indexer.getGoalPos());
         if (pose != null) tm.print(pose);

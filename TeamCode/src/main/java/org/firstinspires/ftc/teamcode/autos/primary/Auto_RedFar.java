@@ -40,8 +40,8 @@ public final class Auto_RedFar extends BaseAuto<Auto_RedFar.State> {
         SHOOT_TO_END,
     }
 
-    private final Pose startPose = new Pose(80.5, 8.5, toRadians(90));
-    private final Pose shootPose = new Pose(84, 20, toRadians(65.19433424518398));
+    private final Pose startPose = new Pose(81, 9.5, toRadians(90));
+    private final Pose shootPose = new Pose(84, 18, toRadians(90));
     private final Pose intakeStart1 = new Pose(99, 36, toRadians(0));
     private final Pose intakeEnd1 = new Pose(133, 36, toRadians(0));
     private final Pose intakeStart2 = new Pose(119, 12, toRadians(0));

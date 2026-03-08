@@ -113,7 +113,10 @@ public class Launcher {
         pidfController.updateFeedForwardInput(goalVel);
         pidfController.updatePosition(motorVel);
         double voltage = Math.max(voltageSensor.getVoltage(), 1e-6);
-        double power = pidfController.run() * 12.0 / voltage;
+        double manualPidf = pidfController.P() * pidfController.getError() + pidfController.F() * goalVel
+            + pidfController.D() * pidfController.getErrorDerivative();
+        double pidf = pidfController.run();
+        double power = (Double.isNaN(pidf) ? manualPidf : pidf) * 12.0 / voltage;
         if (launcherMotorA != null) launcherMotorA.setPower(power);
         if (launcherMotorB != null) launcherMotorB.setPower(power);
     }

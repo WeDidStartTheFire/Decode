@@ -260,8 +260,9 @@ public class Indexer {
      */
     public RobotConstants.Artifact getArtifactAtPos(double pos) {
         int idx = idxFromPos(pos);
-        if (idx >= 0 && idx < artifacts.length) return artifacts[idx];
-        return UNKNOWN;
+        if (idx < 0 || idx >= artifacts.length) return UNKNOWN;
+        if (artifactReadings[idx] < MIN_ARTIFACT_READINGS) return UNKNOWN;
+        return artifacts[idx];
     }
 
     /**

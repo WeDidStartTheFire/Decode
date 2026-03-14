@@ -44,12 +44,12 @@ public final class Auto_RedClose extends BaseAuto<Auto_RedClose.State> {
 
     private final Pose startPose = new Pose(124.459, 121.479, toRadians(126));
     private final Pose motifPose = new Pose(107, 104.5, toRadians(126));
-    private final Pose shootPose = new Pose(85.709, 84.670, toRadians(0));
+    private final Pose shootPose = new Pose(84.5, 86, toRadians(0));
     private final Pose intakeStart1 = new Pose(92, 58, toRadians(0));
     private final Pose intakeEnd1 = new Pose(125, 58, toRadians(0));
     private final Pose intakeStart2 = new Pose(92, 85, toRadians(0));
     private final Pose intakeEnd2 = new Pose(125, 85, toRadians(0));
-    private final Pose endPose = new Pose(111, 72, toRadians(0));
+    private final Pose endPose = new Pose(109, 72, toRadians(0));
 
     protected void configure() {
         super.color = color;

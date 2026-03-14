@@ -44,12 +44,12 @@ public final class Auto_BlueClose extends BaseAuto<Auto_BlueClose.State> {
 
     private final Pose startPose = new Pose(19.541, 121.479, toRadians(54));
     private final Pose motifPose = new Pose(37, 104.5, toRadians(54));
-    private final Pose shootPose = new Pose(58.291, 84.670, toRadians(180));
+    private final Pose shootPose = new Pose(59.5, 86, toRadians(180));
     private final Pose intakeStart1 = new Pose(52, 58, toRadians(180));
     private final Pose intakeEnd1 = new Pose(19, 58, toRadians(180));
     private final Pose intakeStart2 = new Pose(52, 85, toRadians(180));
     private final Pose intakeEnd2 = new Pose(19, 85, toRadians(180));
-    private final Pose endPose = new Pose(33, 72, toRadians(180));
+    private final Pose endPose = new Pose(35, 72, toRadians(180));
 
     protected void configure() {
         super.color = color;

@@ -141,8 +141,8 @@ public final class Auto_BlueClose extends BaseAuto<Auto_BlueClose.State> {
                 setState(State.INTAKE_TO_SHOOT);
                 break;
             case INTAKE_TO_SHOOT:
-                if (intakeController.isBusy() && stateTimer.getElapsedTimeSeconds() < MAX_INTAKE_PATH_WAIT)
-                    break;
+                if (robot.drivetrain.follower.isBusy() && intakeController.isBusy() &&
+                    stateTimer.getElapsedTimeSeconds() < MAX_INTAKE_PATH_WAIT) break;
                 robot.drivetrain.follower.breakFollowing();
                 robot.drivetrain.follower.followPath(launchRound == 1 ? intakeToShoot1 :
                     intakeToShoot2, true);

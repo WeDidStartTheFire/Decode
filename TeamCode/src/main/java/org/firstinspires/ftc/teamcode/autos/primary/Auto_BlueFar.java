@@ -45,7 +45,7 @@ public final class Auto_BlueFar extends BaseAuto<Auto_BlueFar.State> {
     private final Pose intakeStart1 = new Pose(46, 36, toRadians(180));
     private final Pose intakeEnd1 = new Pose(9, 36, toRadians(180));
     private final Pose intakeStart2 = new Pose(25, 12, toRadians(180));
-    private final Pose intakeEnd2 = new Pose(9, 12, toRadians(180));
+    private final Pose intakeEnd2 = new Pose(7, 12, toRadians(180));
     private final Pose endPose = new Pose(25, 12, toRadians(180));
 
     protected void configure() {
@@ -129,8 +129,8 @@ public final class Auto_BlueFar extends BaseAuto<Auto_BlueFar.State> {
                 setState(State.INTAKE_TO_SHOOT);
                 break;
             case INTAKE_TO_SHOOT:
-                if (intakeController.isBusy() && stateTimer.getElapsedTimeSeconds() < MAX_INTAKE_PATH_WAIT)
-                    break;
+                if (robot.drivetrain.follower.isBusy() && intakeController.isBusy() &&
+                    stateTimer.getElapsedTimeSeconds() < MAX_INTAKE_PATH_WAIT) break;
                 robot.drivetrain.follower.breakFollowing();
                 robot.drivetrain.follower.followPath(launchRound == 1 ? intakeToShoot1 : intakeToShoot2,
                     true);

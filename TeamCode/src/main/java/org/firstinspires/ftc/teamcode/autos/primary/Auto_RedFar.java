@@ -43,9 +43,9 @@ public final class Auto_RedFar extends BaseAuto<Auto_RedFar.State> {
     private final Pose startPose = new Pose(81, 9.5, toRadians(90));
     private final Pose shootPose = new Pose(84, 18, toRadians(90));
     private final Pose intakeStart1 = new Pose(99, 36, toRadians(0));
-    private final Pose intakeEnd1 = new Pose(134, 36, toRadians(0));
+    private final Pose intakeEnd1 = new Pose(133, 36, toRadians(0));
     private final Pose intakeStart2 = new Pose(119, 12, toRadians(0));
-    private final Pose intakeEnd2 = new Pose(136, 12, toRadians(0));
+    private final Pose intakeEnd2 = new Pose(137, 12, toRadians(0));
     private final Pose endPose = new Pose(119, 12, toRadians(0));
 
     protected void configure() {
@@ -129,8 +129,8 @@ public final class Auto_RedFar extends BaseAuto<Auto_RedFar.State> {
                 setState(State.INTAKE_TO_SHOOT);
                 break;
             case INTAKE_TO_SHOOT:
-                if (intakeController.isBusy() && stateTimer.getElapsedTimeSeconds() < MAX_INTAKE_PATH_WAIT)
-                    break;
+                if (robot.drivetrain.follower.isBusy() && intakeController.isBusy() &&
+                    stateTimer.getElapsedTimeSeconds() < MAX_INTAKE_PATH_WAIT) break;
                 robot.drivetrain.follower.breakFollowing();
                 robot.drivetrain.follower.followPath(launchRound == 1 ? intakeToShoot1 : intakeToShoot2,
                         true);

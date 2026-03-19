@@ -63,6 +63,13 @@ public class Drivetrain {
     }
 
     /**
+     * Configures the drivetrain to use complimentary filter localization.
+     */
+    public void useComplimentaryFollower() {
+        follower = Constants.createComplimentaryFollower(hardwareMap);
+    }
+
+    /**
      * Configures the drivetrain to use Limelight localization.
      */
     public void useLimelightFollower() {

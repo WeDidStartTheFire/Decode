@@ -10,6 +10,7 @@ import com.pedropathing.ftc.drivetrains.MecanumConstants;
 import com.pedropathing.ftc.localization.Encoder;
 import com.pedropathing.ftc.localization.constants.DriveEncoderConstants;
 import com.pedropathing.ftc.localization.constants.OTOSConstants;
+import com.pedropathing.localization.Localizer;
 import com.pedropathing.paths.PathConstraints;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
@@ -17,6 +18,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.pedroPathing.localizers.ComplimentaryLocalizer;
 import org.firstinspires.ftc.teamcode.pedroPathing.localizers.KalmanLocalizer;
 import org.firstinspires.ftc.teamcode.pedroPathing.localizers.LimelightLocalizer;
 import org.firstinspires.ftc.teamcode.pedroPathing.localizers.RedundantLocalizer;
@@ -85,12 +87,16 @@ public class Constants {
             1
     );
 
-    public static Follower createRedundantFollower(HardwareMap hardwareMap) {
+    public static Follower createCustomFollower(HardwareMap hardwareMap, Localizer localizer) {
         return new FollowerBuilder(followerConstants, hardwareMap)
             .mecanumDrivetrain(driveConstants)
-            .setLocalizer(new RedundantLocalizer(hardwareMap))
+            .setLocalizer(localizer)
             .pathConstraints(pathConstraints)
             .build();
+    }
+
+    public static Follower createRedundantFollower(HardwareMap hardwareMap) {
+        return createCustomFollower(hardwareMap, new RedundantLocalizer(hardwareMap));
     }
 
     public static Follower createOTOSFollower(HardwareMap hardwareMap) {
@@ -102,19 +108,15 @@ public class Constants {
     }
 
     public static Follower createKalmanFollower(HardwareMap hardwareMap) {
-        return new FollowerBuilder(followerConstants, hardwareMap)
-                .mecanumDrivetrain(driveConstants)
-                .setLocalizer(new KalmanLocalizer(hardwareMap))
-                .pathConstraints(pathConstraints)
-                .build();
+        return createCustomFollower(hardwareMap, new KalmanLocalizer(hardwareMap));
+    }
+
+    public static Follower createComplimentaryFollower(HardwareMap hardwareMap) {
+        return createCustomFollower(hardwareMap, new ComplimentaryLocalizer(hardwareMap));
     }
 
     public static Follower createLimelightFollower(HardwareMap hardwareMap) {
-        return new FollowerBuilder(followerConstants, hardwareMap)
-                .mecanumDrivetrain(driveConstants)
-                .setLocalizer(new LimelightLocalizer(hardwareMap))
-                .pathConstraints(pathConstraints)
-                .build();
+        return createCustomFollower(hardwareMap, new LimelightLocalizer(hardwareMap));
     }
 
     public static Follower createFollower(HardwareMap hardwareMap) {

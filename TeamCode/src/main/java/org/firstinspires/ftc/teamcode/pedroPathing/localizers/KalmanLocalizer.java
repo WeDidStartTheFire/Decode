@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.localizers;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.ZYX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 import static java.lang.Math.abs;
@@ -43,6 +44,7 @@ public class KalmanLocalizer implements Localizer {
 
     private final SparkFunOTOS otos;
     private final OTOSLocalizer otosLocalizer;
+    private Pose lastOtosPose;
 
     private final DriveEncoderLocalizer driveEncoderLocalizer;
 
@@ -88,8 +90,8 @@ public class KalmanLocalizer implements Localizer {
     public KalmanLocalizer(@NonNull HardwareMap map, Pose startPose) {
         imu = map.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
+            RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+            RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
         imu.resetYaw();
 
         driveEncoderLocalizer = new DriveEncoderLocalizer(map, Constants.driveEncoderConstants);
@@ -142,13 +144,14 @@ public class KalmanLocalizer implements Localizer {
 
     public void setStartPose(Pose setStart) {
         otosLocalizer.setStartPose(setStart);
+        lastOtosPose = otosLocalizer.getPose();
         IMUoffset = setStart.getHeading() - toRadians(90);
     }
 
     public void setPose(Pose setPose) {
         otosLocalizer.setPose(setPose);
         IMUoffset = otosAngleUnit.toRadians(setPose.getHeading())
-                - imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle;
+            - imu.getRobotOrientation(INTRINSIC, ZYX, RADIANS).firstAngle;
     }
 
     public void update() {
@@ -165,8 +168,8 @@ public class KalmanLocalizer implements Localizer {
         Pose driveEncoderVel = driveEncoderLocalizer.getVelocity();
 
         double llYaw = new Pose(0, 0, robotYaw, PedroCoordinates.INSTANCE)
-                .getAsCoordinateSystem(FTCCoordinates.INSTANCE)
-                .getHeading();
+            .getAsCoordinateSystem(FTCCoordinates.INSTANCE)
+            .getHeading();
 
         LLResult result = null;
         Pose3D botpose = null;
@@ -180,8 +183,9 @@ public class KalmanLocalizer implements Localizer {
 
         otosLocalizer.update();
         SparkFunOTOS.Pose2D otosStdDev = otos.getVelocityStdDev();
-        Pose otosVel = otosLocalizer.getVelocity();
-
+        Pose otosPose = otosLocalizer.getPose();
+        Pose otosDel = otosPose.minus(lastOtosPose);
+        lastOtosPose = otosPose;
 
         // ensure stable dt
         double safeDt = Math.min(Math.max(dtSeconds, 1e-6), 0.5);
@@ -190,9 +194,12 @@ public class KalmanLocalizer implements Localizer {
         double vyEnc = driveLinearUnit.toInches(driveEncoderVel.getY());
         double wEnc = driveAngleUnit.toRadians(driveEncoderVel.getHeading());
 
-        double vxO = otosLinearUnit.toInches(otosVel.getX());
-        double vyO = otosLinearUnit.toInches(otosVel.getY());
-        double wO = otosAngleUnit.toRadians(otosVel.getHeading());
+        double vxO = otosLinearUnit.toInches(otosDel.getX()) / safeDt;
+        double vyO = otosLinearUnit.toInches(otosDel.getY()) / safeDt;
+        double wO = normalizeRadians(otosAngleUnit.toRadians(otosDel.getHeading())) / safeDt;
+        if (abs(vxO) < .1) vxO = 0;
+        if (abs(vyO) < .1) vyO = 0;
+        if (abs(wO) < toRadians(1)) wO = 0;
 
         // configure F/Q if dt changed
         if (abs(lastDt - dtSeconds) > 1e-6) {
@@ -204,7 +211,6 @@ public class KalmanLocalizer implements Localizer {
 
         // Predict once for this loop
         kalmanFilter.predict();
-
 
         // Temporarily set H to H_vel for encoder and otos velocities
         kalmanFilter.setH(H_vel);
@@ -227,9 +233,9 @@ public class KalmanLocalizer implements Localizer {
         zVel.set(0, 0, vxO);
         zVel.set(1, 0, vyO);
         zVel.set(2, 0, wO);
-        double sx = Math.max(otosLinearUnit.toInches(otosStdDev.x), 1e-4);
-        double sy = Math.max(otosLinearUnit.toInches(otosStdDev.y), 1e-4);
-        double sh = Math.max(otosAngleUnit.toRadians(otosStdDev.h), 1e-6);
+        double sx = Math.max(otosLinearUnit.toInches(otosStdDev.x), 1e-4) * 3;
+        double sy = Math.max(otosLinearUnit.toInches(otosStdDev.y), 1e-4) * 3;
+        double sh = Math.max(otosAngleUnit.toRadians(otosStdDev.h), 1e-6) * 2;
         double vxVarO = (sx * sx) / (safeDt * safeDt);
         double vyVarO = (sy * sy) / (safeDt * safeDt);
         double wVarO = (sh * sh) / (safeDt * safeDt);
@@ -249,11 +255,11 @@ public class KalmanLocalizer implements Localizer {
             acceptMT2 = useMetatag2;
         }
         if ((acceptMT1 || acceptMT2) && result.getBotposeTagCount() > 0 && botpose != null &&
-                stddevs != null && stddevs.length >= 2 && abs(yawRate) < toRadians(360)) {
+            stddevs != null && stddevs.length >= 2 && abs(yawRate) < toRadians(360)) {
             pose = new Pose(LLLinearUnit.toInches(botpose.getPosition().x),
-                    LLLinearUnit.toInches(botpose.getPosition().y),
-                    LLAngleUnit.toRadians(robotYaw),
-                    FTCCoordinates.INSTANCE);
+                LLLinearUnit.toInches(botpose.getPosition().y),
+                LLAngleUnit.toRadians(robotYaw),
+                FTCCoordinates.INSTANCE);
             pose = pose.getAsCoordinateSystem(PedroCoordinates.INSTANCE);
             kalmanZ.set(0, 0, pose.getX());
             kalmanZ.set(1, 0, pose.getY());
@@ -271,17 +277,17 @@ public class KalmanLocalizer implements Localizer {
         }
 
         pose = new Pose(
-                Constants.otosConstants.linearUnit.fromInches(kalmanFilter.getState().get(0, 0)),
-                Constants.otosConstants.linearUnit.fromInches(kalmanFilter.getState().get(1, 0)),
-                Constants.otosConstants.angleUnit.fromRadians(robotYaw)
+            Constants.otosConstants.linearUnit.fromInches(kalmanFilter.getState().get(0, 0)),
+            Constants.otosConstants.linearUnit.fromInches(kalmanFilter.getState().get(1, 0)),
+            Constants.otosConstants.angleUnit.fromRadians(robotYaw)
         );
 
         double dtheta = AngleUnit.normalizeRadians(pose.getHeading() - prevPose.getHeading());
         totalHeading += dtheta;
         vel = new Pose(
-                Constants.otosConstants.linearUnit.fromInches(kalmanFilter.getState().get(3, 0)),
-                Constants.otosConstants.linearUnit.fromInches(kalmanFilter.getState().get(4, 0)),
-                Constants.otosConstants.angleUnit.fromRadians(yawRate)
+            Constants.otosConstants.linearUnit.fromInches(kalmanFilter.getState().get(3, 0)),
+            Constants.otosConstants.linearUnit.fromInches(kalmanFilter.getState().get(4, 0)),
+            Constants.otosConstants.angleUnit.fromRadians(yawRate)
         );
         prevPose = pose;
     }
@@ -312,6 +318,6 @@ public class KalmanLocalizer implements Localizer {
 
     public boolean isNAN() {
         return getPose() == null || Double.isNaN(getPose().getX()) || Double.isNaN(getPose().getY())
-                || Double.isNaN(getPose().getHeading());
+            || Double.isNaN(getPose().getHeading());
     }
 }

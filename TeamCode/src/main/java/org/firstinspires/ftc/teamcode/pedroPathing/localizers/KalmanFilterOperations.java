@@ -20,10 +20,10 @@ package org.firstinspires.ftc.teamcode.pedroPathing.localizers;
 
 import static org.ejml.dense.row.CommonOps_DDRM.addEquals;
 import static org.ejml.dense.row.CommonOps_DDRM.mult;
-import static org.ejml.dense.row.CommonOps_DDRM.multTransA;
 import static org.ejml.dense.row.CommonOps_DDRM.multTransB;
 import static org.ejml.dense.row.CommonOps_DDRM.subtract;
 import static org.ejml.dense.row.CommonOps_DDRM.subtractEquals;
+import static org.ejml.dense.row.CommonOps_DDRM.transpose;
 
 import org.ejml.data.DMatrixRMaj;
 import org.ejml.dense.row.factory.LinearSolverFactory_DDRM;
@@ -38,14 +38,14 @@ import org.ejml.interfaces.linsol.LinearSolverDense;
  */
 public class KalmanFilterOperations implements KalmanFilter {
     // kinematics description
-    private DMatrixRMaj F, Q, H;
+    private DMatrixRMaj F, Q, H, H_trans;
 
     // system state estimate
     private DMatrixRMaj x, P;
 
     // these are predeclared for efficiency reasons
     private DMatrixRMaj a, b;
-    private DMatrixRMaj y, S, S_inv, c, d;
+    private DMatrixRMaj y, S, c, d;
     private DMatrixRMaj K;
 
     private int dimenX, dimenZ;
@@ -57,6 +57,8 @@ public class KalmanFilterOperations implements KalmanFilter {
         this.F = F;
         this.Q = Q;
         this.H = H;
+        this.H_trans = new DMatrixRMaj(H.numCols, H.numRows);
+        transpose(H, H_trans);
 
         dimenX = F.numCols;
         dimenZ = H.numRows;
@@ -65,7 +67,7 @@ public class KalmanFilterOperations implements KalmanFilter {
         b = new DMatrixRMaj(dimenX, dimenX);
         y = new DMatrixRMaj(dimenZ, 1);
         S = new DMatrixRMaj(dimenZ, dimenZ);
-        S_inv = new DMatrixRMaj(dimenZ, dimenZ);
+//        S_inv = new DMatrixRMaj(dimenZ, dimenZ);
         c = new DMatrixRMaj(dimenZ, dimenX);
         d = new DMatrixRMaj(dimenX, dimenZ);
         K = new DMatrixRMaj(dimenX, dimenZ);
@@ -74,7 +76,7 @@ public class KalmanFilterOperations implements KalmanFilter {
         P = new DMatrixRMaj(dimenX, dimenX);
 
         // covariance matrices are symmetric positive semi-definite
-        solver = LinearSolverFactory_DDRM.symmPosDef(dimenX);
+        solver = LinearSolverFactory_DDRM.symmPosDef(dimenZ);
     }
 
     @Override
@@ -104,8 +106,10 @@ public class KalmanFilterOperations implements KalmanFilter {
             this.H = H;
             y = new DMatrixRMaj(dimenZ, 1);
             S = new DMatrixRMaj(dimenZ, dimenZ);
-            S_inv = new DMatrixRMaj(dimenZ, dimenZ);
+//            S_inv = new DMatrixRMaj(dimenZ, dimenZ);
+            solver = LinearSolverFactory_DDRM.symmPosDef(dimenZ);
         } else this.H.setTo(H);
+        transpose(H, H_trans);
 
         if (dimenZ != this.dimenZ || dimenX != this.dimenX) {
             c = new DMatrixRMaj(dimenZ, dimenX);
@@ -125,21 +129,27 @@ public class KalmanFilterOperations implements KalmanFilter {
 
         // S = H P H' + R
         mult(H, P, c);
-        multTransB(c, H, S);
+        mult(c, H_trans, S);
         addEquals(S, R);
 
         // K = PH'S^(-1)
+        // d = P H^T
+        mult(P, H_trans, d);   // (X×X)(X×Z) → (X×Z)
+
+        // solve S * X = d^T
+        transpose(d); // (Z×X)
         if (!solver.setA(S)) throw new RuntimeException("Invert failed");
-        solver.invert(S_inv);
-        multTransA(H, S_inv, d);
-        mult(P, d, K);
+        solver.solve(d, d); // d = S^-1 * d
+
+        // K = result^T
+        transpose(d);
+        K.setTo(d);
 
         // x = x + Ky
         mult(K, y, a);
         addEquals(x, a);
 
         // P = (I-kH)P = P - (KH)P = P-K(HP)
-        mult(H, P, c);
         mult(K, c, b);
         subtractEquals(P, b);
     }

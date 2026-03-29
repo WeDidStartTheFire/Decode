@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.localizers;
 
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
 
@@ -38,7 +38,7 @@ public class ComplimentaryLocalizer implements Localizer {
     //    boolean useMetatag2 = false;
 //    private final DistanceUnit LLLinearUnit = DistanceUnit.METER;
 //    private final AngleUnit LLAngleUnit = RADIANS;
-    private double IMUoffset = 0;
+//    private double IMUoffset = 0;
 
     public ComplimentaryLocalizer(HardwareMap map) {
         this(map, new Pose());
@@ -75,7 +75,7 @@ public class ComplimentaryLocalizer implements Localizer {
     }
 
     public void setStartPose(Pose setStart) {
-        IMUoffset = setStart.getHeading() - toRadians(90);
+//        IMUoffset = setStart.getHeading() - toRadians(90);
     }
 
     public void setPose(@NonNull Pose setPose) {
@@ -101,8 +101,8 @@ public class ComplimentaryLocalizer implements Localizer {
             double angle = robotPos.getOrientation().getYaw(AngleUnit.DEGREES) + 90;
             if (angle > 360) angle -= 360;
 
-            LLPose = new Pose(-robotPos.getPosition().x / 0.0254 + 72, robotPos.getPosition().y / 0.0254 + 72,
-                toRadians(angle));
+            LLPose = new Pose(-robotPos.getPosition().x / 0.0254 + 72,
+                robotPos.getPosition().y / 0.0254 + 72, toRadians(angle));
         }
 
 //        LLPose = null;
@@ -127,7 +127,7 @@ public class ComplimentaryLocalizer implements Localizer {
         prevRelPose = relPose;
         vel = relativeLocalizer.getVelocity();
         pose = pose.plus(relPoseDelta);
-        totalHeading += relPoseDelta.getHeading();
+        totalHeading += normalizeRadians(relPoseDelta.getHeading());
         if (LLPose != null) {
             double linAlpha = 0.95;
             double angAlpha = 0.98;
@@ -154,7 +154,7 @@ public class ComplimentaryLocalizer implements Localizer {
     }
 
     public double getIMUHeading() {
-        return imu.getRobotYawPitchRollAngles().getYaw(RADIANS) + IMUoffset;
+        return pose.getHeading();
     }
 
     public void resetIMU() {

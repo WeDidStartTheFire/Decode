@@ -5,6 +5,8 @@ import androidx.annotation.Nullable;
 
 import com.pedropathing.geometry.Pose;
 
+import java.io.BufferedWriter;
+
 public class Utils {
 
     /**
@@ -36,6 +38,15 @@ public class Utils {
     @Nullable
     public static Pose loadOdometryPosition() {
         return RobotState.savedPose;
+    }
+
+    public static void addLine(BufferedWriter bw, String line) {
+        try {
+            bw.write(line);
+            bw.newLine();
+        } catch (java.io.IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Deprecated

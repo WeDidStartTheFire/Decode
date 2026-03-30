@@ -25,7 +25,6 @@ public class ColorSensor {
 
     private final @Nullable RevColorSensorV3 colorSensorA, colorSensorB;
     private double inchesA, inchesB;
-    private @Nullable Scalar lastRGB;
     private @Nullable Scalar colorA, colorB;
     private @NonNull RobotConstants.Artifact color = UNKNOWN;
     private boolean aLast, lastSkipped = true;
@@ -59,7 +58,7 @@ public class ColorSensor {
         float r = colorSensorA.red() / a;
         float g = colorSensorA.green() / a;
         float b = colorSensorA.blue() / a;
-        return lastRGB = new Scalar(r, g, b);
+        return new Scalar(r, g, b);
     }
 
     /**
@@ -75,7 +74,7 @@ public class ColorSensor {
         float r = colorSensorB.red() / a;
         float g = colorSensorB.green() / a;
         float b = colorSensorB.blue() / a;
-        return lastRGB = new Scalar(r, g, b);
+        return new Scalar(r, g, b);
     }
 
     public Scalar getRGB(boolean bothSensors) {
@@ -84,18 +83,24 @@ public class ColorSensor {
         aLast = !aLast;
         if (colorA != null && colorB != null)
             return new Scalar((colorA.val[0] + colorB.val[0]) / 2, (colorA.val[1] + colorB.val[1]) / 2, (colorA.val[2] + colorB.val[2]) / 2);
-        return lastRGB = colorA != null ? colorA : colorB;
-    }
-
-    @Nullable
-    public Scalar getLastRGB() {
-        return lastRGB;
+        return colorA != null ? colorA : colorB;
     }
 
     @NonNull
     public Scalar getARGB() {
         if (colorSensorA == null) return new Scalar(0, 0, 0, 0);
         NormalizedRGBA color = colorSensorA.getNormalizedColors();
+        float r = color.red;
+        float g = color.green;
+        float b = color.blue;
+        float a = color.alpha;
+        return new Scalar(r, g, b, a);
+    }
+
+    @NonNull
+    public Scalar getARGBB() {
+        if (colorSensorB == null) return new Scalar(0, 0, 0, 0);
+        NormalizedRGBA color = colorSensorB.getNormalizedColors();
         float r = color.red;
         float g = color.green;
         float b = color.blue;
@@ -177,9 +182,5 @@ public class ColorSensor {
 
     public void skipLoop() {
         lastSkipped = true;
-    }
-
-    public boolean wasSkipped() {
-        return lastSkipped;
     }
 }

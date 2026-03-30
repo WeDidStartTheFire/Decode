@@ -64,12 +64,12 @@ public class TeleOp_ComplimentaryTest extends OpMode {
         if (result != null) {
             tm.print("LL Pose MT1", result.getBotpose());
             tm.print("LL Std Dev MT1 X", result.getStddevMt1()[0]);
-            tm.print("LL Std Dev MT1 Y", result.getStddevMt1()[2]);
+            tm.print("LL Std Dev MT1 Y", result.getStddevMt1()[1]);
             tm.print("LL Std Dev MT1 Heading", result.getStddevMt1()[5]);
             tm.print("====================");
             tm.print("LL Pose MT2", result.getBotpose_MT2());
             tm.print("LL Std Dev MT2 X", result.getStddevMt2()[0]);
-            tm.print("LL Std Dev MT2 Y", result.getStddevMt2()[2]);
+            tm.print("LL Std Dev MT2 Y", result.getStddevMt2()[1]);
             tm.print("LL Std Dev MT2 Heading", result.getStddevMt2()[5]);
         }
         teleop.update();

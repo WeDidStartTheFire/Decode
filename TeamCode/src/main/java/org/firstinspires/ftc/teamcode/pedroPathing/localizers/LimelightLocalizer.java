@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.localizers;
 
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
+import static java.lang.Math.abs;
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
 
@@ -18,7 +20,6 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 
@@ -84,7 +85,7 @@ public class LimelightLocalizer implements Localizer {
         double dt = (currTime - prevTime) / 1_000_000.0;
 
         double robotYaw = getIMUHeading();
-//        double yawRate = imu.getRobotAngularVelocity(RADIANS).zRotationRate;
+        double yawRate = imu.getRobotAngularVelocity(RADIANS).zRotationRate;
 
         double llYaw = new Pose(0, 0, robotYaw, PedroCoordinates.INSTANCE)
                 .getAsCoordinateSystem(FTCCoordinates.INSTANCE)
@@ -92,33 +93,30 @@ public class LimelightLocalizer implements Localizer {
         limelight.updateRobotOrientation(toDegrees(llYaw));
 
         LLResult result = limelight.getLatestResult();
+//        pose = null;
+//        if (result != null && result.isValid()) {
+//            Pose3D robotPos = result.getBotpose_MT2();
+//
+//            double angle = robotPos.getOrientation().getYaw(AngleUnit.DEGREES) - 90;
+//            if (angle < 0) angle += 360;
+//
+//            pose = new Pose(robotPos.getPosition().y / 0.0254 + 72,
+//                -robotPos.getPosition().x / 0.0254 + 72, toRadians(angle));
+//        }
+
         pose = null;
         if (result != null && result.isValid()) {
-            Pose3D robotPos = result.getBotpose();
+            Pose3D botpose = result.getBotpose_MT2();
+            double[] stdevs = result.getStddevMt2();
 
-            double angle = robotPos.getOrientation().getYaw(AngleUnit.DEGREES) + 90;
-            if (angle > 360) angle -= 360;
-
-            pose = new Pose(-robotPos.getPosition().x / 0.0254 + 72, robotPos.getPosition().y / 0.0254 + 72,
-                toRadians(angle));
+            if (result.getBotposeTagCount() > 0 && botpose != null && stdevs != null &&
+                stdevs.length >= 2 && abs(yawRate) < toRadians(360)) { // && hypot(vel.getX(), vel.getY()) < 24
+                double angle = botpose.getOrientation().getYaw(DEGREES) - 90;
+                if (angle < 0) angle += 360;
+                pose = new Pose(botpose.getPosition().y / 0.0254 + 72,
+                    -botpose.getPosition().x / 0.0254 + 72, toRadians(angle));
+            }
         }
-
-//        pose = null;
-//        if (result != null) {
-//            Pose3D botpose = useMetatag2 ? result.getBotpose_MT2() : result.getBotpose();
-//            double[] stdevs = useMetatag2 ? result.getStddevMt2() : result.getStddevMt1();
-//
-//            boolean acceptMT1 = !useMetatag2 && !(result.getBotposeTagCount() == 1 && result.getBotposeAvgDist() > 3/*m*/);
-//            boolean acceptMT2 = useMetatag2;
-//            if ((acceptMT1 || acceptMT2) && result.getBotposeTagCount() > 0 && botpose != null &&
-//                stdevs != null && stdevs.length >= 2 && abs(yawRate) < toRadians(360)) {
-//                pose = new Pose(LLLinearUnit.toInches(botpose.getPosition().x),
-//                    LLLinearUnit.toInches(botpose.getPosition().y),
-//                    LLAngleUnit.toRadians(robotYaw),
-//                    FTCCoordinates.INSTANCE);
-//                pose = pose.getAsCoordinateSystem(PedroCoordinates.INSTANCE);
-//            }
-//        }
 
         if (pose != null) {
             double dx = pose.getX() - prevPose.getX();

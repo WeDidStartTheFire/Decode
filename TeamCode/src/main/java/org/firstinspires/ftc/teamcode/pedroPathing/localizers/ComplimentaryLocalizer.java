@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.localizers;
 
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
@@ -19,7 +20,6 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
@@ -96,29 +96,26 @@ public class ComplimentaryLocalizer implements Localizer {
         LLResult result = limelight.getLatestResult();
         Pose LLPose = null;
         if (result != null && result.isValid()) {
-            Pose3D robotPos = result.getBotpose();
+            Pose3D robotPos = result.getBotpose_MT2();
 
-            double angle = robotPos.getOrientation().getYaw(AngleUnit.DEGREES) + 90;
-            if (angle > 360) angle -= 360;
+            double angle = result.getBotpose().getOrientation().getYaw(DEGREES) - 90;
+            if (angle < 0) angle += 360;
 
-            LLPose = new Pose(-robotPos.getPosition().x / 0.0254 + 72,
-                robotPos.getPosition().y / 0.0254 + 72, toRadians(angle));
+            LLPose = new Pose(robotPos.getPosition().y / 0.0254 + 72,
+                -robotPos.getPosition().x / 0.0254 + 72, toRadians(angle));
         }
 
 //        LLPose = null;
-//        if (result != null) {
-//            Pose3D botpose = useMetatag2 ? result.getBotpose_MT2() : result.getBotpose();
-//            double[] stdevs = useMetatag2 ? result.getStddevMt2() : result.getStddevMt1();
+//        if (result != null && result.isValid()) {
+//            Pose3D botpose = result.getBotpose_MT2();
+//            double[] stdevs = result.getStddevMt2();
 //
-//            boolean acceptMT1 = !useMetatag2 && !(result.getBotposeTagCount() == 1 && result.getBotposeAvgDist() > 3/*m*/);
-//            boolean acceptMT2 = useMetatag2;
-//            if ((acceptMT1 || acceptMT2) && result.getBotposeTagCount() > 0 && botpose != null &&
-//                stdevs != null && stdevs.length >= 2 && abs(yawRate) < toRadians(360)) {
-//                LLPose = new Pose(LLLinearUnit.toInches(botpose.getPosition().x),
-//                    LLLinearUnit.toInches(botpose.getPosition().y),
-//                    LLAngleUnit.toRadians(robotYaw),
-//                    FTCCoordinates.INSTANCE);
-//                LLPose = LLPose.getAsCoordinateSystem(PedroCoordinates.INSTANCE);
+//            if (result.getBotposeTagCount() > 0 && botpose != null && stdevs != null &&
+//                stdevs.length >= 2 && abs(yawRate) < toRadians(360)) {
+//                double angle = result.getBotpose().getOrientation().getYaw(DEGREES) - 90;
+//                if (angle < 0) angle += 360;
+//                LLPose = new Pose(botpose.getPosition().y / 0.0254 + 72,
+//                    -botpose.getPosition().x / 0.0254 + 72, toRadians(angle));
 //            }
 //        }
 
@@ -126,15 +123,17 @@ public class ComplimentaryLocalizer implements Localizer {
         Pose relPoseDelta = relPose.minus(prevRelPose);
         prevRelPose = relPose;
         vel = relativeLocalizer.getVelocity();
+        Pose lastPose = pose;
         pose = pose.plus(relPoseDelta);
-        totalHeading += normalizeRadians(relPoseDelta.getHeading());
         if (LLPose != null) {
             double linAlpha = 0.95;
             double angAlpha = 0.98;
             pose = new Pose(LLPose.getX() * (1 - linAlpha) + pose.getX() * linAlpha,
                 LLPose.getY() * (1 - linAlpha) + pose.getY() * linAlpha,
-                LLPose.getHeading() * (1 - angAlpha) + pose.getHeading() * angAlpha);
+                normalizeRadians(LLPose.getHeading() + angAlpha
+                    * normalizeRadians(pose.getHeading() - LLPose.getHeading())));
         }
+        totalHeading += normalizeRadians(pose.getHeading() - lastPose.getHeading());
     }
 
     public double getTotalHeading() {

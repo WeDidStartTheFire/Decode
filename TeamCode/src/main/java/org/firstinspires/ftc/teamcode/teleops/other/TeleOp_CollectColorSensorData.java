@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.Utils.addLine;
 import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -19,19 +20,22 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Locale;
 
 @TeleOp(name = "Collect Color Sensor Data", group = "C")
+@Disabled
 public class TeleOp_CollectColorSensorData extends OpMode {
     public TeleOpController teleop;
     public Robot robot;
     public TelemetryUtils tm;
-    public File file = new File("colors_0.csv");
     public FileWriter fw;
     public BufferedWriter bw;
 
     @Override
     public void init() {
+        File dir = new File(hardwareMap.appContext.getFilesDir().toURI());
+        File file = new File(dir, "colors_0.csv");
         RobotState.color = RobotConstants.Color.BLUE;
         Pose pose = loadOdometryPosition();
         validStartPose = pose != null;
@@ -47,10 +51,12 @@ public class TeleOp_CollectColorSensorData extends OpMode {
             try {
                 if (file.createNewFile()) break;
             } catch (IOException e) {
+                tm.print(Arrays.toString(e.getStackTrace()));
+                tm.update();
                 throw new RuntimeException(e);
             }
             i++;
-            file = new File("colors_" + i + ".csv");
+            file = new File(dir, "colors_" + i + ".csv");
         }
         try {
             fw = new FileWriter(file, true);

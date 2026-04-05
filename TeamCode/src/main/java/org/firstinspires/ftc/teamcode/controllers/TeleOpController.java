@@ -43,7 +43,6 @@ public class TeleOpController {
     private int totalUpdates;
     private final Timer softZeroTimer = new Timer(), hardZeroTimer = new Timer();
     private boolean softResetDone = false, hardResetDone = false;
-    private boolean keepLimelightOn = false;
 
     /**
      * Initializes the TeleOpController with robot hardware and gamepads. To be called in the init()
@@ -105,13 +104,8 @@ public class TeleOpController {
         robot.turret.rotateManual(gamepad2.right_stick_x * .001 * ms);
         robot.turret.update();
         if (motif == RobotConstants.Motif.UNKNOWN) motif = robot.limelight.getMotif();
-        if (!keepLimelightOn && motif != RobotConstants.Motif.UNKNOWN) robot.limelight.stop();
         robot.led.update();
         tm.updateOnlyPanels(10);
-    }
-
-    public void keepLimelightOn() {
-        keepLimelightOn = true;
     }
 
     /**

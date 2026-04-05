@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
+import static com.pedropathing.math.MathFunctions.quadraticFit;
 import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.changes;
 import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.draw;
 import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.drawOnlyCurrent;
 import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.follower;
 import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.stopRobot;
 import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.telemetryM;
+
+import android.annotation.SuppressLint;
 
 import com.bylazar.configurables.PanelsConfigurables;
 import com.bylazar.configurables.annotations.Configurable;
@@ -24,6 +27,7 @@ import com.pedropathing.telemetry.SelectableOpMode;
 import com.pedropathing.util.PoseHistory;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +61,7 @@ public class Tuning extends SelectableOpMode {
                 l.add("Turn Tuner", TurnTuner::new);
             });
             s.folder("Automatic", a -> {
+                a.add("Predictive Braking Tuner", PredictiveBrakingTuner::new);
                 a.add("Forward Velocity Tuner", ForwardVelocityTuner::new);
                 a.add("Lateral Velocity Tuner", LateralVelocityTuner::new);
                 a.add("Forward Zero Power Acceleration Tuner", ForwardZeroPowerAccelerationTuner::new);
@@ -96,7 +101,8 @@ public class Tuning extends SelectableOpMode {
     }
 
     @Override
-    public void onLog(List<String> lines) {}
+    public void onLog(List<String> lines) {
+    }
 
     public static void drawOnlyCurrent() {
         try {
@@ -114,7 +120,7 @@ public class Tuning extends SelectableOpMode {
     /** This creates a full stop of the robot by setting the drive motors to run at 0 power. */
     public static void stopRobot() {
         follower.startTeleopDrive(true);
-        follower.setTeleOpDrive(0,0,0,true);
+        follower.setTeleOpDrive(0, 0, 0, true);
     }
 }
 
@@ -137,7 +143,7 @@ class LocalizationTest extends OpMode {
     @Override
     public void init_loop() {
         telemetryM.debug("This will print your robot's position to telemetry while "
-                + "allowing robot control through a basic mecanum drive on gamepad 1.");
+            + "allowing robot control through a basic mecanum drive on gamepad 1.");
         telemetryM.update(telemetry);
         follower.update();
         drawOnlyCurrent();
@@ -386,7 +392,7 @@ class ForwardVelocityTuner extends OpMode {
                 end = true;
                 stopRobot();
             } else {
-                follower.setTeleOpDrive(1,0,0,true);
+                follower.setTeleOpDrive(1, 0, 0, true);
                 //double currentVelocity = Math.abs(follower.getVelocity().getXComponent());
                 double currentVelocity = Math.abs(follower.poseTracker.getLocalizer().getVelocity().getX());
                 velocities.add(currentVelocity);
@@ -493,7 +499,7 @@ class LateralVelocityTuner extends OpMode {
                 end = true;
                 stopRobot();
             } else {
-                follower.setTeleOpDrive(0,1,0,true);
+                follower.setTeleOpDrive(0, 1, 0, true);
                 double currentVelocity = Math.abs(follower.getVelocity().dot(new Vector(1, Math.PI / 2)));
                 velocities.add(currentVelocity);
                 velocities.remove(0);
@@ -568,7 +574,7 @@ class ForwardZeroPowerAccelerationTuner extends OpMode {
     public void start() {
         follower.startTeleopDrive(false);
         follower.update();
-        follower.setTeleOpDrive(1,0,0,true);
+        follower.setTeleOpDrive(1, 0, 0, true);
     }
 
     /**
@@ -594,7 +600,7 @@ class ForwardZeroPowerAccelerationTuner extends OpMode {
                     previousVelocity = follower.getVelocity().dot(heading);
                     previousTimeNano = System.nanoTime();
                     stopping = true;
-                    follower.setTeleOpDrive(0,0,0,true);
+                    follower.setTeleOpDrive(0, 0, 0, true);
                 }
             } else {
                 double currentVelocity = follower.getVelocity().dot(heading);
@@ -672,7 +678,7 @@ class LateralZeroPowerAccelerationTuner extends OpMode {
     public void start() {
         follower.startTeleopDrive(false);
         follower.update();
-        follower.setTeleOpDrive(0,1,0,true);
+        follower.setTeleOpDrive(0, 1, 0, true);
     }
 
     /**
@@ -698,7 +704,7 @@ class LateralZeroPowerAccelerationTuner extends OpMode {
                     previousVelocity = Math.abs(follower.getVelocity().dot(heading));
                     previousTimeNano = System.nanoTime();
                     stopping = true;
-                    follower.setTeleOpDrive(0,0,0,true);
+                    follower.setTeleOpDrive(0, 0, 0, true);
                 }
             } else {
                 double currentVelocity = Math.abs(follower.getVelocity().dot(heading));
@@ -913,16 +919,16 @@ class DriveTuner extends OpMode {
         follower.activateDrive();
 
         forwards = follower.pathBuilder()
-                .setGlobalDeceleration()
-                .addPath(new BezierLine(new Pose(72, 72), new Pose(DISTANCE + 72, 72)))
-                .setConstantHeadingInterpolation(0)
-                .build();
+            .setGlobalDeceleration()
+            .addPath(new BezierLine(new Pose(72, 72), new Pose(DISTANCE + 72, 72)))
+            .setConstantHeadingInterpolation(0)
+            .build();
 
         backwards = follower.pathBuilder()
-                .setGlobalDeceleration()
-                .addPath(new BezierLine(new Pose(DISTANCE + 72, 72), new Pose(72, 72)))
-                .setConstantHeadingInterpolation(0)
-                .build();
+            .setGlobalDeceleration()
+            .addPath(new BezierLine(new Pose(DISTANCE + 72, 72), new Pose(72, 72)))
+            .setConstantHeadingInterpolation(0)
+            .build();
 
         follower.followPath(forwards);
     }
@@ -1137,19 +1143,19 @@ class Triangle extends OpMode {
         drawOnlyCurrent();
     }
 
-    /** Creates the PathChain for the "triangle".*/
+    /** Creates the PathChain for the "triangle". */
     @Override
     public void start() {
         follower.setStartingPose(startPose);
 
         triangle = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, interPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), interPose.getHeading())
-                .addPath(new BezierLine(interPose, endPose))
-                .setLinearHeadingInterpolation(interPose.getHeading(), endPose.getHeading())
-                .addPath(new BezierLine(endPose, startPose))
-                .setLinearHeadingInterpolation(endPose.getHeading(), startPose.getHeading())
-                .build();
+            .addPath(new BezierLine(startPose, interPose))
+            .setLinearHeadingInterpolation(startPose.getHeading(), interPose.getHeading())
+            .addPath(new BezierLine(interPose, endPose))
+            .setLinearHeadingInterpolation(interPose.getHeading(), endPose.getHeading())
+            .addPath(new BezierLine(endPose, startPose))
+            .setLinearHeadingInterpolation(endPose.getHeading(), startPose.getHeading())
+            .build();
 
         follower.followPath(triangle);
     }
@@ -1172,15 +1178,15 @@ class Circle extends OpMode {
 
     public void start() {
         circle = follower.pathBuilder()
-                .addPath(new BezierCurve(new Pose(72, 72), new Pose(RADIUS + 72, 72), new Pose(RADIUS + 72, RADIUS + 72)))
-                .setHeadingInterpolation(HeadingInterpolator.facingPoint(72, RADIUS + 72))
-                .addPath(new BezierCurve(new Pose(RADIUS + 72, RADIUS + 72), new Pose(RADIUS + 72, (2 * RADIUS) + 72), new Pose(72, (2 * RADIUS) + 72)))
-                .setHeadingInterpolation(HeadingInterpolator.facingPoint(72, RADIUS + 72))
-                .addPath(new BezierCurve(new Pose(72, (2 * RADIUS) + 72), new Pose(-RADIUS + 72, (2 * RADIUS) + 72), new Pose(-RADIUS + 72, RADIUS + 72)))
-                .setHeadingInterpolation(HeadingInterpolator.facingPoint(72, RADIUS + 72))
-                .addPath(new BezierCurve(new Pose(-RADIUS + 72, RADIUS + 72), new Pose(-RADIUS + 72, 72), new Pose(72, 72)))
-                .setHeadingInterpolation(HeadingInterpolator.facingPoint(72, RADIUS + 72))
-                .build();
+            .addPath(new BezierCurve(new Pose(72, 72), new Pose(RADIUS + 72, 72), new Pose(RADIUS + 72, RADIUS + 72)))
+            .setHeadingInterpolation(HeadingInterpolator.facingPoint(72, RADIUS + 72))
+            .addPath(new BezierCurve(new Pose(RADIUS + 72, RADIUS + 72), new Pose(RADIUS + 72, (2 * RADIUS) + 72), new Pose(72, (2 * RADIUS) + 72)))
+            .setHeadingInterpolation(HeadingInterpolator.facingPoint(72, RADIUS + 72))
+            .addPath(new BezierCurve(new Pose(72, (2 * RADIUS) + 72), new Pose(-RADIUS + 72, (2 * RADIUS) + 72), new Pose(-RADIUS + 72, RADIUS + 72)))
+            .setHeadingInterpolation(HeadingInterpolator.facingPoint(72, RADIUS + 72))
+            .addPath(new BezierCurve(new Pose(-RADIUS + 72, RADIUS + 72), new Pose(-RADIUS + 72, 72), new Pose(72, 72)))
+            .setHeadingInterpolation(HeadingInterpolator.facingPoint(72, RADIUS + 72))
+            .build();
         follower.followPath(circle);
     }
 
@@ -1210,6 +1216,186 @@ class Circle extends OpMode {
 
         if (follower.atParametricEnd()) {
             follower.followPath(circle);
+        }
+    }
+}
+
+/**
+ * This is the Predictive Braking Tuner. It runs the robot forward and backward at various power
+ * levels, recording the robot’s velocity and position immediately before braking. The motors are
+ * then set to a reverse power, which represents the fastest theoretical braking the robot
+ * can achieve. Once the robot comes to a complete stop, the tuner measures the stopping distance.
+ * Using the collected data, it generates a velocity-vs-stopping-distance graph and fits a
+ * quadratic curve to model the braking behavior.
+ *
+ * @author Ashay Sarda - 19745 Turtle Walkers
+ * @author Jacob Ophoven - 18535 Frozen Code
+ * @version 1.0, 12/26/2025
+ */
+class PredictiveBrakingTuner extends OpMode {
+    private static final double[] TEST_POWERS =
+        {1, 1, 1, 0.9, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2};
+    private static final double BRAKING_POWER = -0.2;
+
+    private static final int DRIVE_TIME_MS = 1000;
+
+    private enum State {
+        START_MOVE,
+        WAIT_DRIVE_TIME,
+        APPLY_BRAKE,
+        WAIT_BRAKE_TIME,
+        RECORD,
+        DONE
+    }
+
+    private static class BrakeRecord {
+        double timeMs;
+        Pose pose;
+        double velocity;
+
+        BrakeRecord(double timeMs, Pose pose, double velocity) {
+            this.timeMs = timeMs;
+            this.pose = pose;
+            this.velocity = velocity;
+        }
+    }
+
+    private State state = State.START_MOVE;
+
+    private final ElapsedTime timer = new ElapsedTime();
+
+    private int iteration = 0;
+
+    private Vector startPosition;
+    private double measuredVelocity;
+
+    private final List<double[]> velocityToBrakingDistance = new ArrayList<>();
+    private final List<BrakeRecord> brakeData = new ArrayList<>();
+
+    @Override
+    public void init() {
+    }
+
+    @Override
+    public void init_loop() {
+        telemetryM.debug("The robot will move forwards and backwards starting at max speed and slowing down.");
+        telemetryM.debug("Make sure you have enough room. Leave at least 4-5 feet.");
+        telemetryM.debug("After stopping, kFriction and kBraking will be displayed.");
+        telemetryM.debug("Make sure to turn the timer off.");
+        telemetryM.debug("Press B on game pad 1 to stop.");
+        telemetryM.update(telemetry);
+        follower.update();
+        drawOnlyCurrent();
+    }
+
+    @Override
+    public void start() {
+        timer.reset();
+        follower.update();
+        follower.startTeleOpDrive(true);
+    }
+
+    @SuppressLint("DefaultLocale")
+    @Override
+    public void loop() {
+        follower.update();
+
+        if (gamepad1.b) {
+            stopRobot();
+            requestOpModeStop();
+            return;
+        }
+
+        double direction = (iteration % 2 == 0) ? 1 : -1;
+
+        switch (state) {
+            case START_MOVE: {
+                if (iteration >= TEST_POWERS.length) {
+                    state = State.DONE;
+                    break;
+                }
+
+                double currentPower = TEST_POWERS[iteration];
+                follower.setMaxPower(currentPower);
+                follower.setTeleOpDrive(direction, 0, 0, true);
+
+                timer.reset();
+                state = State.WAIT_DRIVE_TIME;
+                break;
+            }
+
+            case WAIT_DRIVE_TIME: {
+                if (timer.milliseconds() >= DRIVE_TIME_MS) {
+                    measuredVelocity = follower.getVelocity().getMagnitude();
+                    startPosition = follower.getPose().getAsVector();
+                    state = State.APPLY_BRAKE;
+                }
+                break;
+            }
+
+            case APPLY_BRAKE: {
+                follower.setTeleOpDrive(BRAKING_POWER * direction, 0, 0, true);
+
+                timer.reset();
+                state = State.WAIT_BRAKE_TIME;
+                break;
+            }
+
+            case WAIT_BRAKE_TIME: {
+                double t = timer.milliseconds();
+                Pose currentPose = follower.getPose();
+                double currentVelocity = follower.getVelocity().getMagnitude();
+
+                brakeData.add(new BrakeRecord(t, currentPose, currentVelocity));
+
+                if (follower.getVelocity().dot(new Vector(direction,
+                    follower.getHeading())) <= 0) {
+                    state = State.RECORD;
+                }
+                break;
+            }
+
+            case RECORD: {
+                Vector endPosition = follower.getPose().getAsVector();
+                double brakingDistance = endPosition.minus(startPosition).getMagnitude();
+
+                velocityToBrakingDistance.add(new double[]{measuredVelocity, brakingDistance});
+
+                telemetryM.debug("Test " + iteration,
+                    String.format("v=%.3f  d=%.3f", measuredVelocity,
+                        brakingDistance));
+                telemetryM.update(telemetry);
+
+                iteration++;
+                state = State.START_MOVE;
+
+                break;
+            }
+
+            case DONE: {
+                stopRobot();
+
+                double[] coefficients = quadraticFit(velocityToBrakingDistance);
+
+                telemetryM.debug("Tuning Complete");
+                telemetryM.debug("Braking Profile:");
+                telemetryM.debug("kQuadratic", coefficients[1]);
+                telemetryM.debug("kLinear", coefficients[0]);
+                telemetryM.update(telemetry);
+                telemetryM.debug("Tuning Complete");
+                telemetryM.debug("Braking Profile:");
+                telemetryM.debug("kQuadraticFriction", coefficients[1]);
+                telemetryM.debug("kLinearBraking", coefficients[0]);
+                for (BrakeRecord record : brakeData) {
+                    Pose p = record.pose;
+                    telemetryM.debug(String.format("t=%.0f ms, x=%.2f, y=%.2f, θ=%.2f, v=%.2f",
+                        record.timeMs, p.getX(), p.getY(),
+                        p.getHeading(),
+                        record.velocity));
+                }
+                telemetryM.update();
+                break;
+            }
         }
     }
 }

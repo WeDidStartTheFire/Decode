@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.Utils.loadOdometryPosition;
 
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -16,6 +17,7 @@ import org.firstinspires.ftc.teamcode.controllers.TeleOpController;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = "Limelight Test", group = "Test")
+@Disabled
 public class Test_Limelight extends OpMode {
     public TeleOpController teleop;
     public Robot robot;
@@ -33,7 +35,6 @@ public class Test_Limelight extends OpMode {
         robot.drivetrain.follower.setPose(RobotState.pose);
         robot.drivetrain.follower.startTeleopDrive();
         teleop = new TeleOpController(robot, gamepad1, gamepad2);
-        teleop.keepLimelightOn();
         tm = robot.drivetrain.tm;
     }
 

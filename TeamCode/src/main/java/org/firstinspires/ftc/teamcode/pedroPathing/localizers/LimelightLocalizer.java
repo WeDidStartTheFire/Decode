@@ -107,11 +107,9 @@ public class LimelightLocalizer implements Localizer {
         pose = null;
         if (result != null && result.isValid()) {
             Pose3D botpose = result.getBotpose_MT2();
-            double[] stdevs = result.getStddevMt2();
 
-            if (result.getBotposeTagCount() > 0 && botpose != null && stdevs != null &&
-                stdevs.length >= 2 && abs(yawRate) < toRadians(360)) { // && hypot(vel.getX(), vel.getY()) < 24
-                double angle = botpose.getOrientation().getYaw(DEGREES) - 90;
+            if (result.getBotposeTagCount() > 0 && abs(yawRate) < toRadians(360)) {
+                double angle = result.getBotpose().getOrientation().getYaw(DEGREES) - 90;
                 if (angle < 0) angle += 360;
                 pose = new Pose(botpose.getPosition().y / 0.0254 + 72,
                     -botpose.getPosition().x / 0.0254 + 72, toRadians(angle));

@@ -37,7 +37,7 @@ public class Robot {
         feeder = new Feeder(hardwareMap, tm);
         colorSensor = new ColorSensor(hardwareMap, tm);
         led = new LED(hardwareMap, tm);
-        indexer = new Indexer(hardwareMap, tm, colorSensor, led, feeder);
+        indexer = new Indexer(hardwareMap, tm, colorSensor, feeder);
         limelight = new Limelight(hardwareMap, tm);
         launcher = new Launcher(hardwareMap, tm);
         turret = new Turret(hardwareMap, tm);

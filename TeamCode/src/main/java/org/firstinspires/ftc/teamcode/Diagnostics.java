@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Feeder;
 import org.firstinspires.ftc.teamcode.robot.mechanisms.Indexer;
-import org.firstinspires.ftc.teamcode.robot.mechanisms.LED;
 
 @TeleOp(name = "Diagnostics", group= "A")
 public class Diagnostics extends LinearOpMode {
@@ -102,7 +101,7 @@ public class Diagnostics extends LinearOpMode {
 
         indexer = new Indexer(hardwareMap, tm,
             new org.firstinspires.ftc.teamcode.robot.mechanisms.ColorSensor(hardwareMap, tm),
-            new LED(hardwareMap, tm), new Feeder(hardwareMap, tm));
+            new Feeder(hardwareMap, tm));
 
         tm.update();
         waitForStart();

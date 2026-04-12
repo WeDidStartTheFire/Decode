@@ -6,13 +6,8 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.PURPLE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Artifact.UNKNOWN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_POS_EPSILON;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_SPEED;
-import static org.firstinspires.ftc.teamcode.RobotConstants.MAX_ARTIFACT_READINGS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
-import static org.firstinspires.ftc.teamcode.RobotConstants.MIN_ARTIFACT_READINGS;
-import static org.firstinspires.ftc.teamcode.RobotState.artifactReadings;
 import static org.firstinspires.ftc.teamcode.RobotState.artifacts;
-import static org.firstinspires.ftc.teamcode.RobotState.launcherIntaking;
-import static org.firstinspires.ftc.teamcode.RobotState.normalIntaking;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
@@ -38,15 +33,13 @@ public class Indexer {
     private double tempMinIndexerPos = -.25, tempMaxIndexerPos = 1.25;
     private Timer indexerTimer = null;
     private final ColorSensor colorSensor;
-    private final LED led;
     private final TelemetryUtils tm;
     private final Feeder feeder;
 
     public Indexer(@NonNull HardwareMap hardwareMap, @NonNull TelemetryUtils tm,
-                   @NonNull ColorSensor colorSensor, @NonNull LED led, @NonNull Feeder feeder) {
+                   @NonNull ColorSensor colorSensor, @NonNull Feeder feeder) {
         this.tm = tm;
         this.colorSensor = colorSensor;
-        this.led = led;
         this.feeder = feeder;
         indexerServo = HardwareInitializer.init(hardwareMap, Servo.class, "indexerServo");
         if (indexerServo == null)
@@ -57,55 +50,29 @@ public class Indexer {
      * Updates what artifact is in the active indexer slot
      */
     public void update() {
-        tm.print("Distance A", colorSensor.getLastInchesA());
-        tm.print("Distance B", colorSensor.getLastInchesB());
 //        tm.print("RGB", colorSensor.getLastRGB() == null ? new Scalar(0, 0, 0) : colorSensor.getLastRGB());
-        tm.print("Artifact 1", artifacts[0] + " " + artifactReadings[0]);
-        tm.print("Artifact 2", artifacts[1] + " " + artifactReadings[1]);
-        tm.print("Artifact 3", artifacts[2] + " " + artifactReadings[2]);
+        tm.print("Artifact 1", artifacts[0]);
+        tm.print("Artifact 2", artifacts[1]);
+        tm.print("Artifact 3", artifacts[2]);
         updateLED();
-        boolean highPriority = normalIntaking || launcherIntaking || getCurrentArtifactReadings() < MIN_ARTIFACT_READINGS;
         if (!isStill() || feeder.isGoalUp()) {
-            colorSensor.skipLoop();
-            if (feeder.isGoalUp()) setCurrentArtifact(UNKNOWN, false);
+            if (feeder.isGoalUp()) setCurrentArtifact(UNKNOWN);
             tm.print("ColorSensor Update (ms)", 0);
             tm.print("Artifact", getCurrentArtifact());
             return;
         }
         long t0 = System.currentTimeMillis();
-        colorSensor.update(highPriority);
+        colorSensor.update();
         RobotConstants.Artifact artifact = colorSensor.getArtifact();
         long t1 = System.currentTimeMillis();
         tm.print("ColorSensor Update (ms)", t1 - t0);
         tm.print("Artifact", artifact);
-        if (artifact == UNKNOWN) {
-            reduceCurrentArtifactReadings();
-            return;
-        }
-        setCurrentArtifact(artifact, highPriority);
+        setCurrentArtifact(artifact);
     }
 
-    private void reduceCurrentArtifactReadings() {
-        int idx = idxFromPos(getGoalPos());
-        if (idx < 0 || idx >= artifactReadings.length) return;
-        artifactReadings[idx] -= 2;
-        if (artifactReadings[idx] <= 0) setCurrentArtifact(UNKNOWN, false);
-    }
-
-    public int getCurrentArtifactReadings() {
-        int idx = idxFromPos(getGoalPos());
-        if (idx < 0 || idx >= artifactReadings.length) return 0;
-        return artifactReadings[idx];
-    }
-
-    private void setCurrentArtifact(RobotConstants.Artifact artifact, boolean doubleReading) {
+    private void setCurrentArtifact(RobotConstants.Artifact artifact) {
         int idx = idxFromPos(getGoalPos());
         if (idx < 0 || idx >= artifacts.length) return;
-        int numReads = doubleReading ? 2 : 1;
-        if (artifact == UNKNOWN) artifactReadings[idx] = 0;
-        else if (artifacts[idx] == artifact)
-            artifactReadings[idx] = Math.min(MAX_ARTIFACT_READINGS, artifactReadings[idx] + numReads);
-        else artifactReadings[idx] = numReads;
         artifacts[idx] = artifact;
     }
 
@@ -208,20 +175,20 @@ public class Indexer {
      * </ul>
      */
     private void updateLED() {
-        switch (getCurrentArtifact()) {
-            case GREEN:
-                led.setColor(RobotConstants.LEDColors.SAGE, LED.Priority.MEDIUM);
-                break;
-            case PURPLE:
-                led.setColor(RobotConstants.LEDColors.VIOLET, LED.Priority.MEDIUM);
-                break;
-            case EMPTY:
-                led.setColor(RobotConstants.LEDColors.WHITE, LED.Priority.LOW);
-                break;
-            case UNKNOWN:
-                led.setColor(RobotConstants.LEDColors.OFF, LED.Priority.LOW);
-                break;
-        }
+//        switch (getCurrentArtifact()) {
+//            case GREEN:
+//                led.setColor(RobotConstants.LEDColors.SAGE, LED.Priority.MEDIUM);
+//                break;
+//            case PURPLE:
+//                led.setColor(RobotConstants.LEDColors.VIOLET, LED.Priority.MEDIUM);
+//                break;
+//            case EMPTY:
+//                led.setColor(RobotConstants.LEDColors.WHITE, LED.Priority.LOW);
+//                break;
+//            case UNKNOWN:
+//                led.setColor(RobotConstants.LEDColors.OFF, LED.Priority.LOW);
+//                break;
+//        }
     }
 
     /**

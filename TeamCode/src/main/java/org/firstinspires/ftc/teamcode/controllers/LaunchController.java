@@ -13,7 +13,6 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MAX
 import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MAX_LAUNCHER_SPIN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MIN_FEEDER_DOWN_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.STOP_LAUNCHER_WAIT;
-import static org.firstinspires.ftc.teamcode.RobotConstants.MIN_ARTIFACT_READINGS;
 import static org.firstinspires.ftc.teamcode.RobotState.auto;
 import static org.firstinspires.ftc.teamcode.RobotState.motif;
 import static java.lang.Math.max;
@@ -92,7 +91,7 @@ public class LaunchController {
         boolean toSpeed = robot.launcher.toSpeed() && !overSpeed;
         if (getLaunchSolution() == null)
             robot.led.setColor(RobotConstants.LEDColors.RED, isBusy || robot.launcher.isSpinning()
-                    ? LED.Priority.HIGH : LED.Priority.MEDIUM);
+                ? LED.Priority.HIGH : LED.Priority.LOW);
         else if (toSpeed) robot.led.setColor(YELLOW, LED.Priority.CRITICAL);
         else if (overSpeed) robot.led.setColor(GREEN, LED.Priority.CRITICAL);
         else if (robot.launcher.almostToSpeed()) robot.led.setColor(ORANGE, LED.Priority.HIGH);
@@ -112,7 +111,6 @@ public class LaunchController {
 
         RobotConstants.Artifact desired, current;
         double pos;
-        int currentReadings;
         switch (state) {
             case IDLE:
                 RobotState.launcherIntaking = false;
@@ -155,8 +153,6 @@ public class LaunchController {
                 }
                 desired = launchQueue.get(0);
                 current = robot.indexer.getCurrentArtifact();
-                currentReadings = robot.indexer.getCurrentArtifactReadings();
-                if (currentReadings < MIN_ARTIFACT_READINGS) break;
                 if (current == desired || desired == UNKNOWN && current != EMPTY) {
                     setState(State.PUSH_ARTIFACT);
                     break;
@@ -192,9 +188,7 @@ public class LaunchController {
                 }
                 desired = launchQueue.get(0);
                 current = robot.indexer.getCurrentArtifact();
-                currentReadings = robot.indexer.getCurrentArtifactReadings();
-                if ((desired != UNKNOWN && current != desired && !anyExpected)
-                    || currentReadings < MIN_ARTIFACT_READINGS || current == EMPTY) {
+                if ((desired != UNKNOWN && current != desired && !anyExpected) || current == EMPTY) {
                     failedCount++;
                     if (failedCount <= MAX_FAILED_ATTEMPTS) break;
                     failedCount = 0;

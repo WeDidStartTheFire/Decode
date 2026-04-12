@@ -15,7 +15,9 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_SPEED_
 import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_SPEED_OFFSET;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_STATIC_FEEDFORWARD;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_TS_OFFSET_ENC;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.USE_TURRET_VELOCITY_PID;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.turretMotorPID;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.turretVelocityPID;
 import static org.firstinspires.ftc.teamcode.RobotState.panelsResetTurret;
 import static org.firstinspires.ftc.teamcode.RobotState.pose;
 import static org.firstinspires.ftc.teamcode.RobotState.vel;
@@ -47,7 +49,8 @@ public class Turret {
     public final @Nullable TouchSensor turretTouchSensor;
     private final VoltageSensor voltageSensor;
     private Target target = Target.HOLD;
-    public PIDFController turretPIDController = new PIDFController(turretMotorPID);
+    public final PIDFController turretPIDController = new PIDFController(turretMotorPID);
+    private final PIDFController velocityPIDController = new PIDFController(turretVelocityPID);
     private final TelemetryUtils tm;
     public boolean changeable = true;
     private double offset = 0;
@@ -67,6 +70,7 @@ public class Turret {
             turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             int currentPos = turretMotor.getCurrentPosition();
             turretPIDController.setTargetPosition(abs(currentPos - 7000) < 250 ? 7000 : currentPos);
+            velocityPIDController.setTargetPosition(0);
         }
         turretTouchSensor = HardwareInitializer.init(hardwareMap, TouchSensor.class, "turretTouchSensor");
         if (turretTouchSensor == null)
@@ -87,6 +91,7 @@ public class Turret {
         if (target == Target.MANUAL) {
             turretPIDController.setTargetPosition(-turretPIDController.getTargetPosition() +
                 speed * TURRET_SPEED_MANUAL);
+            velocityPIDController.setTargetPosition(TURRET_SPEED_MANUAL);
             return;
         }
         offset -= TURRET_SPEED_OFFSET * speed;
@@ -132,6 +137,9 @@ public class Turret {
 
         double pos = turretMotor.getCurrentPosition();
         turretPIDController.updatePosition(pos);
+        if (vel != null)
+            velocityPIDController.setTargetPosition(-toDegrees(vel.getTheta()) * TURRET_ENCODERS_PER_DEGREE);
+        velocityPIDController.updatePosition(turretMotor.getVelocity());
         tm.print("Turret Pos", pos);
         tm.print("Turret Goal", turretPIDController.getTargetPosition());
         tm.print("Turret Offset", offset);
@@ -141,6 +149,7 @@ public class Turret {
         feedforward = Math.clamp(feedforward, -TURRET_MAX_POWER, TURRET_MAX_POWER);
         if (target == Target.HOLD || target == Target.MANUAL) feedforward = 0;
         double pid = turretPIDController.run();
+        if (USE_TURRET_VELOCITY_PID) pid += velocityPIDController.run();
         double staticFeedforward = TURRET_STATIC_FEEDFORWARD * signum(pid);
         double power = pid + feedforward + staticFeedforward;
         double modifier = TURRET_ADJUST_FOR_VOLTAGE ? 12 / Math.max(voltageSensor.getVoltage(), 1e-6) : 1;

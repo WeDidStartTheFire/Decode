@@ -44,17 +44,17 @@ public class Test_ColorSensor extends OpMode {
 
     @Override
     public void loop() {
-        robot.colorSensor.update(false);
+        robot.colorSensor.update();
         double dt1 = getRuntime();
-        Scalar rgb = Objects.requireNonNull(robot.colorSensor.getRGB(false));
+        Scalar rgb = Objects.requireNonNull(robot.colorSensor.getRGB());
         dt1 = (getRuntime() - dt1) * 1000;
         double dt2 = getRuntime();
-        Scalar rgb2 = Objects.requireNonNull(robot.colorSensor.getRGB2());
+//        Scalar rgb2 = Objects.requireNonNull(robot.colorSensor.getRGB2());
         dt2 = (getRuntime() - dt2) * 1000;
         double dt0 = getRuntime();
-        Scalar argb = robot.colorSensor.getARGB();
+        Scalar argb = robot.colorSensor.getRGB_A();
         dt0 = (getRuntime() - dt0) * 1000;
-        float brightness = robot.colorSensor.getBrightness();
+//        float brightness = robot.colorSensor.getBrightness();
         tm.print("==============");
         tm.print("A0", ((int) (argb.val[0] * 10000)) / 10000.0);
         tm.print("R0", ((int) (argb.val[1] * 10000)) / 10000.0);
@@ -62,20 +62,20 @@ public class Test_ColorSensor extends OpMode {
         tm.print("B0", ((int) (argb.val[3] * 10000)) / 10000.0);
         tm.print("dt0", dt0);
         tm.print("==============");
-        tm.print("A1", brightness);
+//        tm.print("A1", brightness);
         tm.print("R1", ((int) (rgb.val[0] * 10000)) / 10000.0);
         tm.print("G1", ((int) (rgb.val[1] * 10000)) / 10000.0);
         tm.print("B1", ((int) (rgb.val[2] * 10000)) / 10000.0);
         tm.print("dt1", dt1);
-        tm.print("==============");
-        tm.print("R2", ((int) (rgb2.val[0] * 10000)) / 10000.0);
-        tm.print("G2", ((int) (rgb2.val[1] * 10000)) / 10000.0);
-        tm.print("B2", ((int) (rgb2.val[2] * 10000)) / 10000.0);
+//        tm.print("==============");
+//        tm.print("R2", ((int) (rgb2.val[0] * 10000)) / 10000.0);
+//        tm.print("G2", ((int) (rgb2.val[1] * 10000)) / 10000.0);
+//        tm.print("B2", ((int) (rgb2.val[2] * 10000)) / 10000.0);
         tm.print("dt2", dt2);
         tm.print("==============");
         tm.print("Distance A (in)", robot.colorSensor.getInchesA());
         tm.print("Distance B (in)", robot.colorSensor.getInchesB());
-        tm.print("Color", robot.colorSensor.getColor(false));
+        tm.print("Color", robot.colorSensor.getColor());
         tm.print("Artifact", robot.colorSensor.getArtifact());
         tm.update();
     }

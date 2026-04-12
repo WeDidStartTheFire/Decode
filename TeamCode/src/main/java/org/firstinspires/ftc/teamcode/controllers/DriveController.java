@@ -32,14 +32,12 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.ProjectileSolver;
 import org.firstinspires.ftc.teamcode.RobotState;
-import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 public class DriveController {
 
     private final Robot robot;
     private final PIDFController headingPIDController = new PIDFController(teleopHeadingPID);
-    private final TelemetryUtils tm;
     private final Timer driveInputTimer = new Timer();
     private boolean aiming = false, holding = false, following = false;
 
@@ -50,7 +48,6 @@ public class DriveController {
      */
     public DriveController(Robot robot) {
         this.robot = robot;
-        this.tm = robot.drivetrain.tm;
     }
 
     /**
@@ -172,7 +169,6 @@ public class DriveController {
         }
 
         aiming = aiming && abs(gp.right_stick_x) <= .05;
-        tm.print("aiming", aiming);
         double turn = -gp.right_stick_x * speedMultiplier;
         if (aiming && !holding) {
             ProjectileSolver.LaunchSolution sol = getLaunchSolution();

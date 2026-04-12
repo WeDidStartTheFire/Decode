@@ -78,8 +78,8 @@ public class TeleOp_CollectColorSensorData extends OpMode {
     @Override
     public void loop() {
         if (gamepad1.a) {
-            Scalar argbA = robot.colorSensor.getARGB();
-            Scalar argbB = robot.colorSensor.getARGBB();
+            Scalar argbA = robot.colorSensor.getRGB_A();
+            Scalar argbB = robot.colorSensor.getRGB_B();
             double distanceA = robot.colorSensor.getInchesA();
             double distanceB = robot.colorSensor.getInchesB();
             addLine(bw, String.format(Locale.US, "Green,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
@@ -95,8 +95,8 @@ public class TeleOp_CollectColorSensorData extends OpMode {
                 distanceB));
         }
         if (gamepad1.b) {
-            Scalar argbA = robot.colorSensor.getARGB();
-            Scalar argbB = robot.colorSensor.getARGBB();
+            Scalar argbA = robot.colorSensor.getRGB_A();
+            Scalar argbB = robot.colorSensor.getRGB_B();
             double distanceA = robot.colorSensor.getInchesA();
             double distanceB = robot.colorSensor.getInchesB();
             addLine(bw, String.format(Locale.US, "Purple,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
@@ -112,8 +112,8 @@ public class TeleOp_CollectColorSensorData extends OpMode {
                 distanceB));
         }
         if (gamepad1.x) {
-            Scalar argbA = robot.colorSensor.getARGB();
-            Scalar argbB = robot.colorSensor.getARGBB();
+            Scalar argbA = robot.colorSensor.getRGB_A();
+            Scalar argbB = robot.colorSensor.getRGB_B();
             double distanceA = robot.colorSensor.getInchesA();
             double distanceB = robot.colorSensor.getInchesB();
             addLine(bw, String.format(Locale.US, "Unknown,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",

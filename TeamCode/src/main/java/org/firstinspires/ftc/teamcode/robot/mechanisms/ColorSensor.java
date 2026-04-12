@@ -15,7 +15,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.ColorRange;
 import org.firstinspires.ftc.teamcode.RobotConstants;
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.HardwareInitializer;
@@ -24,13 +23,11 @@ import org.opencv.core.Scalar;
 public class ColorSensor {
 
     private final @Nullable RevColorSensorV3 colorSensorA, colorSensorB;
-    private double inchesA, inchesB;
-    private @Nullable Scalar colorA, colorB;
     private @NonNull RobotConstants.Artifact color = UNKNOWN;
-    private boolean aLast, lastSkipped = true;
-    private double distanceA, distanceB;
+    private final TelemetryUtils tm;
 
     public ColorSensor(HardwareMap hardwareMap, TelemetryUtils tm) {
+        this.tm = tm;
         colorSensorA = HardwareInitializer.init(hardwareMap, RevColorSensorV3.class, "colorSensorA");
         colorSensorB = HardwareInitializer.init(hardwareMap, RevColorSensorV3.class, "colorSensorB");
         if (colorSensorA == null || colorSensorB == null) {
@@ -38,6 +35,11 @@ public class ColorSensor {
         } else setBusSpeed(LynxI2cDeviceSynch.BusSpeed.FAST_400K);
     }
 
+    /**
+     * Sets the bus speed for the color sensors
+     *
+     * @param busSpeed Bus speed to set the color sensors to
+     */
     public void setBusSpeed(LynxI2cDeviceSynch.BusSpeed busSpeed) {
         if (colorSensorA != null)
             ((LynxI2cDeviceSynch) colorSensorA.getDeviceClient()).setBusSpeed(busSpeed);
@@ -46,115 +48,69 @@ public class ColorSensor {
     }
 
     /**
-     * Gets the RGB reading from the color sensor, normalized by the brightness
+     * Gets the averaged normalized RGB values from the color sensors
      *
-     * @return Scalar(r, g, b) or null if the color sensor is disconnected
+     * @return The normalized RGB values, Scalar(R, G, B)
      */
-    @Nullable
-    public Scalar getRGBA() {
-        if (colorSensorA == null) return null;
-        float a = colorSensorA.alpha();
-        if (a == 0) a = 1;
-        float r = colorSensorA.red() / a;
-        float g = colorSensorA.green() / a;
-        float b = colorSensorA.blue() / a;
-        return new Scalar(r, g, b);
+    public Scalar getRGB() {
+        Scalar colorA = getRGB_A();
+        Scalar colorB = getRGB_B();
+        return new Scalar((colorA.val[0] + colorB.val[0]) / 2, (colorA.val[1] + colorB.val[1]) / 2, (colorA.val[2] + colorB.val[2]) / 2);
     }
 
     /**
-     * Gets the RGB reading from the color sensor, normalized by the brightness
+     * Gets the normalized RGB values from color sensor A
      *
-     * @return Scalar(r, g, b) or null if the color sensor is disconnected
+     * @return The normalized RGB values, Scalar(R, G, B)
      */
-    @Nullable
-    public Scalar getRGBB() {
-        if (colorSensorB == null) return null;
-        float a = colorSensorB.alpha();
-        if (a == 0) a = 1;
-        float r = colorSensorB.red() / a;
-        float g = colorSensorB.green() / a;
-        float b = colorSensorB.blue() / a;
-        return new Scalar(r, g, b);
-    }
-
-    public Scalar getRGB(boolean bothSensors) {
-        colorA = lastSkipped || bothSensors || !aLast ? getRGBA() : colorA;
-        colorB = lastSkipped || bothSensors || aLast ? getRGBB() : colorB;
-        aLast = !aLast;
-        if (colorA != null && colorB != null)
-            return new Scalar((colorA.val[0] + colorB.val[0]) / 2, (colorA.val[1] + colorB.val[1]) / 2, (colorA.val[2] + colorB.val[2]) / 2);
-        return colorA != null ? colorA : colorB;
-    }
-
     @NonNull
-    public Scalar getARGB() {
-        if (colorSensorA == null) return new Scalar(0, 0, 0, 0);
-        NormalizedRGBA color = colorSensorA.getNormalizedColors();
-        float r = color.red;
-        float g = color.green;
-        float b = color.blue;
-        float a = color.alpha;
-        return new Scalar(r, g, b, a);
-    }
-
-    @NonNull
-    public Scalar getARGBB() {
-        if (colorSensorB == null) return new Scalar(0, 0, 0, 0);
-        NormalizedRGBA color = colorSensorB.getNormalizedColors();
-        float r = color.red;
-        float g = color.green;
-        float b = color.blue;
-        float a = color.alpha;
-        return new Scalar(r, g, b, a);
-    }
-
-    public Scalar getRGB2() {
+    public Scalar getRGB_A() {
         if (colorSensorA == null) return new Scalar(0, 0, 0);
-        float r = colorSensorA.red();
-        float g = colorSensorA.green();
-        float b = colorSensorA.blue();
-        float a = (r + g + b) / 3.f;
-        r /= a;
-        g /= a;
-        b /= a;
+        NormalizedRGBA color = colorSensorA.getNormalizedColors();
+        float r = color.red / color.alpha;
+        float g = color.green / color.alpha;
+        float b = color.blue / color.alpha;
         return new Scalar(r, g, b);
     }
 
-    public float getBrightness() {
-        if (colorSensorA == null) return 0;
-        return colorSensorA.alpha();
+    /**
+     * Gets the normalized RGB values from color sensor B
+     *
+     * @return The normalized RGB values, Scalar(R, G, B)
+     */
+    @NonNull
+    public Scalar getRGB_B() {
+        if (colorSensorB == null) return new Scalar(0, 0, 0);
+        NormalizedRGBA color = colorSensorB.getNormalizedColors();
+        float r = color.red / color.alpha;
+        float g = color.green / color.alpha;
+        float b = color.blue / color.alpha;
+        return new Scalar(r, g, b);
     }
 
     /**
-     * Gets the distance reading from the color sensor
+     * Reads the two color sensors and stores the detected color
+     */
+    public void update() {
+        color = getColor();
+    }
+
+    /**
+     * Gets the distance reading from color sensor A
      *
      * @return Distance (double) or -1 if the color sensor is disconnected
      */
     public double getInchesA() {
-        return inchesA = colorSensorA == null ? -1 : colorSensorA.getDistance(DistanceUnit.INCH);
+        return colorSensorA == null ? -1 : colorSensorA.getDistance(DistanceUnit.INCH);
     }
 
+    /**
+     * Gets the distance reading from color sensor B
+     *
+     * @return Distance (double) or -1 if the color sensor is disconnected
+     */
     public double getInchesB() {
-        return inchesB = colorSensorB == null ? -1 : colorSensorB.getDistance(DistanceUnit.INCH);
-    }
-
-    public double getLastInchesA() {
-        return inchesA;
-    }
-
-    public double getLastInchesB() {
-        return inchesB;
-    }
-
-    public void update(boolean bothSensors) {
-        if (lastSkipped || bothSensors || !aLast) distanceA = getInchesA();
-        if (lastSkipped || bothSensors || aLast) distanceB = getInchesB();
-        color = getColor(bothSensors);
-        if (distanceA != -1 && distanceB != -1) {
-            if (color == EMPTY && distanceA < 3 && distanceB < 3) color = UNKNOWN;
-            if (color != EMPTY && distanceA > 5.5 && distanceB > 5.5) color = UNKNOWN;
-        }
-        lastSkipped = false;
+        return colorSensorB == null ? -1 : colorSensorB.getDistance(DistanceUnit.INCH);
     }
 
     /**
@@ -162,25 +118,24 @@ public class ColorSensor {
      *
      * @return The detected color
      */
-    public RobotConstants.Artifact getColor(boolean bothSensors) {
-        Scalar color = getRGB(bothSensors);
+    public RobotConstants.Artifact getColor() {
+        Scalar color = getRGB();
         if (color == null) return UNKNOWN;
-        if (ColorRange.ARTIFACT_GREEN.contains(color)) return GREEN;
-        if (ColorRange.ARTIFACT_PURPLE.contains(color)) return PURPLE;
-        return EMPTY;
+        double g = color.val[1];
+        if (g < 1e-6) return UNKNOWN;
+        double ratio = (color.val[0] + color.val[2]) / g;
+        tm.print("Ratio", ratio);
+        if (ratio < 1.390) return GREEN;
+        if (ratio < 1.55) return EMPTY;
+        return PURPLE;
     }
 
     /**
      * Gets the artifact detected by the sensor
      *
-     * @return The artifact color. Returns UNKNOWN if sensor is disconnected, and returns UNKNOWN
-     * if the distance doesn't match up with the color
+     * @return The artifact color. Returns UNKNOWN if sensor is disconnected.
      */
     public RobotConstants.Artifact getArtifact() {
         return color;
-    }
-
-    public void skipLoop() {
-        lastSkipped = true;
     }
 }

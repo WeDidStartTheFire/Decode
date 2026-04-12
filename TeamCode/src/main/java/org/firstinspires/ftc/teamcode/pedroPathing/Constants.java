@@ -38,9 +38,9 @@ public class Constants {
 //            .translationalPIDFCoefficients(new PIDFCoefficients(0.12, 0, 0.008, 0.025))
 //            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.18, 0, 0.016, 0.022))
 //            .useSecondaryTranslationalPIDF(true)
-            .headingPIDFCoefficients(new PIDFCoefficients(1.5, 0, 0.05, 0.025))
-            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(3, 0, 0.1, 0.02))
-            .useSecondaryHeadingPIDF(true)
+        .headingPIDFCoefficients(new PIDFCoefficients(1.5, 0, 0.05, 0.025))
+        .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(3, 0, 0.1, 0.02))
+        .useSecondaryHeadingPIDF(true)
 //            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.008, 0, 0.001, 0.6, 0.05))
         ;
 
@@ -76,11 +76,11 @@ public class Constants {
         .leftRearEncoderDirection(Encoder.FORWARD)
         .rightFrontEncoderDirection(Encoder.FORWARD)
         .rightRearEncoderDirection(Encoder.FORWARD)
-        .robotLength(16.2677165354)// TODO: Confirm (dist from wheel centers)
-        .robotWidth(13.228) // TODO: Confirm (dist from wheel centers)
-        // .forwardTicksToInches(multiplier) // TODO: Find this number
-        // .strafeTicksToInches(multiplier) // TODO: Find this number
-        // .turnTicksToInches(multiplier) // TODO: Find this number
+        .robotLength(16.2677165354)
+        .robotWidth(13.228)
+        // .forwardTicksToInches(multiplier)
+        // .strafeTicksToInches(multiplier)
+        // .turnTicksToInches(multiplier)
         ;
 
     public static PathConstraints pathConstraints = new PathConstraints(
@@ -100,14 +100,6 @@ public class Constants {
 
     public static Follower createRedundantFollower(HardwareMap hardwareMap) {
         return createCustomFollower(hardwareMap, new RedundantLocalizer(hardwareMap));
-    }
-
-    public static Follower createOTOSFollower(HardwareMap hardwareMap) {
-        return new FollowerBuilder(followerConstants, hardwareMap)
-            .mecanumDrivetrain(driveConstants)
-            .OTOSLocalizer(otosConstants)
-            .pathConstraints(pathConstraints)
-            .build();
     }
 
     public static Follower createKalmanFollower(HardwareMap hardwareMap) {

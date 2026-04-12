@@ -65,7 +65,7 @@ public class TeleOp_TestBusSpeed extends OpMode {
             totalOTOSTime = 0;
         }
         double t0 = getRuntime();
-        robot.colorSensor.getRGB(true);
+        robot.colorSensor.getRGB();
         double t1 = getRuntime();
         totalColorTime += t1 - t0;
         totalColorCalls++;

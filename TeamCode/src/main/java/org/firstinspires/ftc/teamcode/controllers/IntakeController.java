@@ -6,7 +6,6 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_ARTIFACT_DET
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.AZURE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.BLUE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.GREEN;
-import static org.firstinspires.ftc.teamcode.RobotConstants.MIN_ARTIFACT_READINGS;
 
 import com.pedropathing.util.Timer;
 
@@ -51,7 +50,7 @@ public class IntakeController {
      */
     public void update() {
         if (robot.indexer.getTotalArtifacts() == 3)
-            robot.led.setColor(GREEN, isBusy ? LED.Priority.HIGH : LED.Priority.LOW);
+            robot.led.setColor(GREEN, isBusy ? LED.Priority.HIGH : LED.Priority.MEDIUM);
         else if (robot.indexer.getTotalArtifacts() == 2)
             robot.led.setColor(AZURE, isBusy ? LED.Priority.MEDIUM : LED.Priority.LOW);
         else if (robot.indexer.getTotalArtifacts() <= 1)
@@ -79,7 +78,7 @@ public class IntakeController {
                     robot.intake.powerInside(1);
                     robot.intake.powerOutside(0);
                 }
-                if (robot.indexer.isActiveSlotEmpty() && robot.indexer.getCurrentArtifactReadings() >= MIN_ARTIFACT_READINGS) {
+                if (robot.indexer.isActiveSlotEmpty()) {
                     artifactDetectedTimer.resetTimer();
                 } else if (artifactDetectedTimer.getElapsedTimeSeconds() > INDEXER_ARTIFACT_DETECTION_WAIT) {
                     robot.intake.powerOutside(.5);

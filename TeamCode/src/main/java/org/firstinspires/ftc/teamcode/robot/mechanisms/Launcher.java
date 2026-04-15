@@ -40,6 +40,7 @@ public class Launcher {
     private final PIDFController pidfController = new PIDFController(launcherPIDF);
     private final VoltageSensor voltageSensor;
     private final TelemetryUtils tm;
+    private double cachedVel;
 
     /**
      * Initializes the launcher with hardware components.
@@ -133,9 +134,9 @@ public class Launcher {
     /**
      * @return Whether the launch motors are spinning outward (>= 100 ticks/sec)
      */
-    public boolean isSpinning() {
+    public boolean isSpinning(double vel) {
         if (launcherMotorA == null || launcherMotorB == null) return false;
-        return getVel() >= 100;
+        return vel >= 100;
     }
 
     /**
@@ -144,9 +145,9 @@ public class Launcher {
      *
      * @return Whether the launch motors are almost to speed (within 100 ticks/sec).
      */
-    public boolean almostToSpeed() {
+    public boolean almostToSpeed(double vel) {
         if (launcherMotorA == null || launcherMotorB == null) return false;
-        return getVel() >= getGoalVel() - 100;
+        return vel >= getGoalVel() - 100;
     }
 
     /**
@@ -169,18 +170,18 @@ public class Launcher {
      * @return Whether the launch motors are to speed (above the target launch velocity at the
      * current position)
      */
-    public boolean toSpeed() {
+    public boolean toSpeed(double vel) {
         double motorVel = getGoalVel();
-        return getVel() >= motorVel;
+        return vel >= motorVel;
     }
 
     /**
      * @return Whether the launch motors spinning too fast (above the target launch velocity at the
      * current position + 50 ticks/sec)
      */
-    public boolean overSpeed() {
+    public boolean overSpeed(double vel) {
         double motorVel = getGoalVel();
-        return getVel() > motorVel + 50;
+        return vel > motorVel + 50;
     }
 
     /**
@@ -224,6 +225,10 @@ public class Launcher {
         double bVel = bRawVel == 0 && aRawVel > 100 ? aRawVel : bRawVel;
         if (aRawVel == 0 && bRawVel > 100) tm.warn(MEDIUM, "Launch encoder A disconnected");
         if (bRawVel == 0 && aRawVel > 100) tm.warn(MEDIUM, "Launch encoder B disconnected");
-        return (aVel + bVel) / 2;
+        return cachedVel = (aVel + bVel) / 2;
+    }
+
+    public double getCachedVel() {
+        return cachedVel;
     }
 }

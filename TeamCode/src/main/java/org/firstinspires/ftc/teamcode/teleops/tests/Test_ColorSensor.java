@@ -44,9 +44,9 @@ public class Test_ColorSensor extends OpMode {
 
     @Override
     public void loop() {
-        robot.colorSensor.update();
+        robot.colorSensor.update(true);
         double dt1 = getRuntime();
-        Scalar rgb = Objects.requireNonNull(robot.colorSensor.getRGB());
+        Scalar rgb = Objects.requireNonNull(robot.colorSensor.getRGB(true));
         dt1 = (getRuntime() - dt1) * 1000;
         double dt2 = getRuntime();
 //        Scalar rgb2 = Objects.requireNonNull(robot.colorSensor.getRGB2());
@@ -75,7 +75,7 @@ public class Test_ColorSensor extends OpMode {
         tm.print("==============");
         tm.print("Distance A (in)", robot.colorSensor.getInchesA());
         tm.print("Distance B (in)", robot.colorSensor.getInchesB());
-        tm.print("Color", robot.colorSensor.getColor());
+        tm.print("Color", robot.colorSensor.getColor(true));
         tm.print("Artifact", robot.colorSensor.getArtifact());
         tm.update();
     }

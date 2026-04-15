@@ -87,14 +87,15 @@ public class LaunchController {
      * - INTAKE: Manual intake mode, overrides normal flow
      */
     public void update() {
-        boolean overSpeed = robot.launcher.overSpeed();
-        boolean toSpeed = robot.launcher.toSpeed() && !overSpeed;
+        double vel = robot.launcher.getVel();
+        boolean overSpeed = robot.launcher.overSpeed(vel);
+        boolean toSpeed = robot.launcher.toSpeed(vel) && !overSpeed;
         if (getLaunchSolution() == null)
-            robot.led.setColor(RobotConstants.LEDColors.RED, isBusy || robot.launcher.isSpinning()
+            robot.led.setColor(RobotConstants.LEDColors.RED, isBusy || robot.launcher.isSpinning(vel)
                 ? LED.Priority.HIGH : LED.Priority.LOW);
         else if (toSpeed) robot.led.setColor(YELLOW, LED.Priority.CRITICAL);
         else if (overSpeed) robot.led.setColor(GREEN, LED.Priority.CRITICAL);
-        else if (robot.launcher.almostToSpeed()) robot.led.setColor(ORANGE, LED.Priority.HIGH);
+        else if (robot.launcher.almostToSpeed(vel)) robot.led.setColor(ORANGE, LED.Priority.HIGH);
 
         if (launchCommanded && !launchQueue.isEmpty() && !toSpeed) {
             launchCommanded = false;
@@ -177,7 +178,7 @@ public class LaunchController {
                         (robot.launcher.getSpinningDuration() < MAX_LAUNCHER_SPIN_WAIT ||
                                 stateTimer.getElapsedTimeSeconds() < MAX_DROOP_WAIT))) break;
                 tm.log("Spin Up (s)", robot.launcher.getSpinningDuration());
-                tm.log("Launch Vel", robot.launcher.getVel());
+                tm.log("Launch Vel", robot.launcher.getCachedVel());
                 tm.log("Goal Launch Vel", robot.launcher.getGoalVel());
                 if (launchQueue.isEmpty()) {
                     robot.launcher.stop();
@@ -231,7 +232,7 @@ public class LaunchController {
         n = min(3, max(n, 0));
         for (int i = 0; i < n; i++)
             launchArtifact(motifOrder ? motif.getNthArtifact(auto ? numLaunched + i : i) : UNKNOWN);
-        if (!motifOrder && !robot.launcher.almostToSpeed()) {
+        if (!motifOrder && !robot.launcher.almostToSpeed(robot.launcher.getVel())) {
             if (robot.indexer.getGoalPos() == .5) {
                 if (robot.indexer.getArtifactAtPos(0) != EMPTY) robot.indexer.setPos(0);
                 else if (robot.indexer.getArtifactAtPos(1) != EMPTY) robot.indexer.setPos(1);

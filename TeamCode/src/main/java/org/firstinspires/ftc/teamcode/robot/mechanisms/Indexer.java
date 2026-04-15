@@ -8,6 +8,8 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_POS_EPSILON;
 import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_SPEED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.MIDDLE_INDEXER_POS;
 import static org.firstinspires.ftc.teamcode.RobotState.artifacts;
+import static org.firstinspires.ftc.teamcode.RobotState.launcherIntaking;
+import static org.firstinspires.ftc.teamcode.RobotState.normalIntaking;
 import static org.firstinspires.ftc.teamcode.TelemetryUtils.ErrorLevel.CRITICAL;
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
@@ -55,14 +57,16 @@ public class Indexer {
         tm.print("Artifact 2", artifacts[1]);
         tm.print("Artifact 3", artifacts[2]);
         updateLED();
+        boolean highPriority = normalIntaking || launcherIntaking;
         if (!isStill() || feeder.isGoalUp()) {
+            colorSensor.skipLoop();
             if (feeder.isGoalUp()) setCurrentArtifact(UNKNOWN);
             tm.print("ColorSensor Update (ms)", 0);
             tm.print("Artifact", getCurrentArtifact());
             return;
         }
         long t0 = System.currentTimeMillis();
-        colorSensor.update();
+        colorSensor.update(highPriority);
         RobotConstants.Artifact artifact = colorSensor.getArtifact();
         long t1 = System.currentTimeMillis();
         tm.print("ColorSensor Update (ms)", t1 - t0);

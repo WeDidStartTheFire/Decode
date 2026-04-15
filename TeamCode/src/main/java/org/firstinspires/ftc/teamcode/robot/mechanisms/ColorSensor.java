@@ -23,8 +23,10 @@ import org.opencv.core.Scalar;
 public class ColorSensor {
 
     private final @Nullable RevColorSensorV3 colorSensorA, colorSensorB;
+    private @Nullable Scalar colorA, colorB;
     private @NonNull RobotConstants.Artifact color = UNKNOWN;
     private final TelemetryUtils tm;
+    private boolean aLast, lastSkipped = true;
 
     public ColorSensor(HardwareMap hardwareMap, TelemetryUtils tm) {
         this.tm = tm;
@@ -52,10 +54,13 @@ public class ColorSensor {
      *
      * @return The normalized RGB values, Scalar(R, G, B)
      */
-    public Scalar getRGB() {
-        Scalar colorA = getRGB_A();
-        Scalar colorB = getRGB_B();
-        return new Scalar((colorA.val[0] + colorB.val[0]) / 2, (colorA.val[1] + colorB.val[1]) / 2, (colorA.val[2] + colorB.val[2]) / 2);
+    public Scalar getRGB(boolean bothSensors) {
+        colorA = lastSkipped || bothSensors || !aLast ? getRGB_A() : colorA;
+        colorB = lastSkipped || bothSensors || aLast ? getRGB_B() : colorB;
+        aLast = !aLast;
+        if (colorA != null && colorB != null)
+            return new Scalar((colorA.val[0] + colorB.val[0]) / 2, (colorA.val[1] + colorB.val[1]) / 2, (colorA.val[2] + colorB.val[2]) / 2);
+        return colorA != null ? colorA : colorB;
     }
 
     /**
@@ -91,8 +96,9 @@ public class ColorSensor {
     /**
      * Reads the two color sensors and stores the detected color
      */
-    public void update() {
-        color = getColor();
+    public void update(boolean bothSensors) {
+        color = getColor(bothSensors);
+        lastSkipped = false;
     }
 
     /**
@@ -118,8 +124,8 @@ public class ColorSensor {
      *
      * @return The detected color
      */
-    public RobotConstants.Artifact getColor() {
-        Scalar color = getRGB();
+    public RobotConstants.Artifact getColor(boolean bothSensors) {
+        Scalar color = getRGB(bothSensors);
         if (color == null) return UNKNOWN;
         double g = color.val[1];
         if (g < 1e-6) return UNKNOWN;
@@ -137,5 +143,9 @@ public class ColorSensor {
      */
     public RobotConstants.Artifact getArtifact() {
         return color;
+    }
+
+    public void skipLoop() {
+        lastSkipped = true;
     }
 }

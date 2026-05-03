@@ -38,7 +38,7 @@ public class RobotConstants {
     public static final double DRIVETRAIN_VELOCITY = 2000;
 
     public static final double MIDDLE_INDEXER_POS = 0.455;
-    public static double INDEXER_SPEED = 1;
+    public static double INDEXER_SPEED = 0.9;
     public static final double INDEXER_POS_EPSILON = 1e-4;
 
     public static final double[] speeds = {0.2, 0.6, 1};
@@ -47,11 +47,12 @@ public class RobotConstants {
     public static class LaunchController {
         public static double MAX_LAUNCHER_SPIN_WAIT = 5;
         public static double MAX_DROOP_WAIT = 3;
-        public static double MAX_FEEDER_DOWN_WAIT = .25;
+        public static double MAX_FEEDER_DOWN_WAIT = .35;
         public static double MIN_FEEDER_DOWN_WAIT = .15;
         public static double ARTIFACT_LAUNCH_WAIT = .15;
         public static int MAX_FAILED_ATTEMPTS = 5;
         public static double STOP_LAUNCHER_WAIT = 0.25;
+        public static int MAX_ARTIFACT_PRESENT_COUNT = 1;
     }
 
     @Configurable
@@ -81,7 +82,8 @@ public class RobotConstants {
         public static double INTAKE_AFTER_LAUNCH_WAIT = 1;
     }
 
-    public static double INDEXER_ARTIFACT_DETECTION_WAIT = 0.8;
+    public static double INDEXER_ARTIFACT_DETECTION_WAIT = 0.9;
+    public static double PARTIAL_INDEXER_ARTIFACT_DETECTION_WAIT = 0.2;
 
     @Configurable
     public static class Turret {
@@ -103,6 +105,7 @@ public class RobotConstants {
         public static double TURRET_SPEED_OFFSET = 3000;
         public static double TURRET_SPEED_MANUAL = 6000;
         public static boolean TURRET_ADJUST_FOR_VOLTAGE = false;
+        public static int MAX_TIMES_NOT_RESET = 10;
     }
 
     public static com.pedropathing.control.PIDFCoefficients teleopHeadingPID =

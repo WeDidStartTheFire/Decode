@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.localizers;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
 import static java.lang.Math.abs;
 import static java.lang.Math.hypot;
@@ -19,9 +18,7 @@ import com.pedropathing.localization.Localizer;
 import com.pedropathing.math.Vector;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -29,7 +26,6 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 @Configurable
 public class ComplimentaryLocalizer implements Localizer {
     private final Limelight3A limelight;
-    private final IMU imu;
     @NonNull
     private Pose pose;
     @NonNull
@@ -41,21 +37,12 @@ public class ComplimentaryLocalizer implements Localizer {
     private boolean invalidPose = false;
     public static double linAlpha = .97;
     public static double angAlpha = .999;
-    //    boolean useMetatag2 = false;
-//    private final DistanceUnit LLLinearUnit = DistanceUnit.METER;
-//    private final AngleUnit LLAngleUnit = RADIANS;
-//    private double IMUoffset = 0;
 
     public ComplimentaryLocalizer(HardwareMap map) {
         this(map, null);
     }
 
     public ComplimentaryLocalizer(@NonNull HardwareMap map, @Nullable Pose startPose) {
-        imu = map.get(IMU.class, "imu");
-        imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
-            RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-            RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
-        imu.resetYaw();
         limelight = map.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100);
         limelight.pipelineSwitch(0);
@@ -85,7 +72,6 @@ public class ComplimentaryLocalizer implements Localizer {
     }
 
     public void setStartPose(Pose setStart) {
-//        IMUoffset = setStart.getHeading() - toRadians(90);
     }
 
     public void setPose(@NonNull Pose setPose) {
@@ -97,21 +83,11 @@ public class ComplimentaryLocalizer implements Localizer {
     public void update() {
         relativeLocalizer.update();
 
-        double yawRate = imu.getRobotAngularVelocity(RADIANS).zRotationRate;
+        double yawRate = relativeLocalizer.getVelocity().getHeading(); // imu.getRobotAngularVelocity(RADIANS).zRotationRate;
 
         limelight.updateRobotOrientation(toDegrees(getIMUHeading()) + 90);
 
         LLResult result = limelight.getLatestResult();
-//        Pose LLPose = null;
-//        if (result != null && result.isValid()) {
-//            Pose3D robotPos = result.getBotpose_MT2();
-//
-//            double angle = result.getBotpose().getOrientation().getYaw(DEGREES) - 90;
-//            if (angle < 0) angle += 360;
-//
-//            LLPose = new Pose(robotPos.getPosition().y / 0.0254 + 72,
-//                -robotPos.getPosition().x / 0.0254 + 72, toRadians(angle));
-//        }
 
         Pose relPose = relativeLocalizer.getPose();
         Pose relPoseDelta = relPose.minus(prevRelPose);
@@ -173,8 +149,8 @@ public class ComplimentaryLocalizer implements Localizer {
         return pose.getHeading();
     }
 
-    public void resetIMU() {
-        imu.resetYaw();
+    public void resetIMU() throws InterruptedException {
+        relativeLocalizer.resetIMU();
     }
 
     public boolean isNAN() {

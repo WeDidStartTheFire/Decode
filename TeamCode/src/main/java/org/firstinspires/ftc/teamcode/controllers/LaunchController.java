@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.GREEN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.ORANGE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.YELLOW;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.ARTIFACT_LAUNCH_WAIT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MAX_ARTIFACT_PRESENT_COUNT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MAX_DROOP_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MAX_FAILED_ATTEMPTS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MAX_FEEDER_DOWN_WAIT;
@@ -48,13 +49,15 @@ public class LaunchController {
     private boolean launchCommanded = false;
     private boolean droopRecorded = false;
     private int framesUnder;
+    private int presentCount = 0;
 
     enum State {
         IDLE,
         INTAKE,
         ROTATE_INDEXER,
         RETRACT_FEEDER,
-        PUSH_ARTIFACT
+        PUSH_ARTIFACT,
+        FEEDER_DOWN_WAIT
     }
 
     public LaunchController(Robot robot) {
@@ -87,14 +90,15 @@ public class LaunchController {
      * - INTAKE: Manual intake mode, overrides normal flow
      */
     public void update() {
-        boolean overSpeed = robot.launcher.overSpeed();
-        boolean toSpeed = robot.launcher.toSpeed() && !overSpeed;
+        double vel = robot.launcher.getVel();
+        boolean overSpeed = robot.launcher.overSpeed(vel);
+        boolean toSpeed = robot.launcher.toSpeed(vel) && !overSpeed;
         if (getLaunchSolution() == null)
-            robot.led.setColor(RobotConstants.LEDColors.RED, isBusy || robot.launcher.isSpinning()
+            robot.led.setColor(RobotConstants.LEDColors.RED, isBusy || robot.launcher.isSpinning(vel)
                 ? LED.Priority.HIGH : LED.Priority.LOW);
         else if (toSpeed) robot.led.setColor(YELLOW, LED.Priority.CRITICAL);
         else if (overSpeed) robot.led.setColor(GREEN, LED.Priority.CRITICAL);
-        else if (robot.launcher.almostToSpeed()) robot.led.setColor(ORANGE, LED.Priority.HIGH);
+        else if (robot.launcher.almostToSpeed(vel)) robot.led.setColor(ORANGE, LED.Priority.HIGH);
 
         if (launchCommanded && !launchQueue.isEmpty() && !toSpeed) {
             launchCommanded = false;
@@ -177,7 +181,7 @@ public class LaunchController {
                         (robot.launcher.getSpinningDuration() < MAX_LAUNCHER_SPIN_WAIT ||
                                 stateTimer.getElapsedTimeSeconds() < MAX_DROOP_WAIT))) break;
                 tm.log("Spin Up (s)", robot.launcher.getSpinningDuration());
-                tm.log("Launch Vel", robot.launcher.getVel());
+                tm.log("Launch Vel", robot.launcher.getCachedVel());
                 tm.log("Goal Launch Vel", robot.launcher.getGoalVel());
                 if (launchQueue.isEmpty()) {
                     robot.launcher.stop();
@@ -206,10 +210,21 @@ public class LaunchController {
                 robot.turret.setTarget(Turret.Target.GOAL);
                 if (stateTimer.getElapsedTimeSeconds() < ARTIFACT_LAUNCH_WAIT) break;
                 robot.feeder.retract();
+                setState(State.FEEDER_DOWN_WAIT);
+                break;
+            case FEEDER_DOWN_WAIT:
+                if (((robot.feeder.isUp() || stateTimer.getElapsedTimeSeconds() < MIN_FEEDER_DOWN_WAIT) &&
+                    stateTimer.getElapsedTimeSeconds() < MAX_FEEDER_DOWN_WAIT) || robot.feeder.isGoalUp())
+                    break;
+                if (robot.indexer.getCurrentArtifact() != EMPTY) {
+                    presentCount++;
+                    if (presentCount > MAX_ARTIFACT_PRESENT_COUNT) setState(State.PUSH_ARTIFACT);
+                    break;
+                }
                 if (!launchQueue.isEmpty() && !robot.indexer.isEmpty()) {
                     numLaunched++;
                     launchQueue.remove(0);
-                    setState(State.ROTATE_INDEXER);
+                    setStateNoWait(State.ROTATE_INDEXER);
                 } else if (stateTimer.getElapsedTimeSeconds() > STOP_LAUNCHER_WAIT) {
                     numLaunched++;
                     launchQueue.remove(0);
@@ -231,7 +246,7 @@ public class LaunchController {
         n = min(3, max(n, 0));
         for (int i = 0; i < n; i++)
             launchArtifact(motifOrder ? motif.getNthArtifact(auto ? numLaunched + i : i) : UNKNOWN);
-        if (!motifOrder && !robot.launcher.almostToSpeed()) {
+        if (!motifOrder && !robot.launcher.almostToSpeed(robot.launcher.getVel())) {
             if (robot.indexer.getGoalPos() == .5) {
                 if (robot.indexer.getArtifactAtPos(0) != EMPTY) robot.indexer.setPos(0);
                 else if (robot.indexer.getArtifactAtPos(1) != EMPTY) robot.indexer.setPos(1);

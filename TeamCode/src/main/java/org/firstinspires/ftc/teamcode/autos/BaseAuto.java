@@ -111,7 +111,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         tm.print("Indexer Pos", robot.indexer.getGoalPos());
         if (pose != null) tm.print(pose);
         tm.print("Motor Goal Vel", robot.launcher.getGoalVel(shootPose, null));
-        tm.print("Launcher Vel", robot.launcher.getVel());
+        tm.print("Launcher Vel", robot.launcher.getCachedVel());
         long t = runtime.nanoseconds();
         if (lastUpdateTime != 0) {
             int ms = Math.toIntExact((t - lastUpdateTime) / 1_000_000);

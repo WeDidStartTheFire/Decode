@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.INDEXER_ARTIFACT_DET
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.AZURE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.BLUE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.GREEN;
+import static org.firstinspires.ftc.teamcode.RobotConstants.PARTIAL_INDEXER_ARTIFACT_DETECTION_WAIT;
 
 import com.pedropathing.util.Timer;
 
@@ -84,6 +85,8 @@ public class IntakeController {
                     robot.intake.powerOutside(.5);
                     if (!robot.indexer.rotateToArtifact(EMPTY))
                         robot.indexer.rotateToArtifact(UNKNOWN);
+                } else if (artifactDetectedTimer.getElapsedTimeSeconds() > PARTIAL_INDEXER_ARTIFACT_DETECTION_WAIT) {
+                    robot.intake.powerOutside(0);
                 }
                 break;
             case OUTTAKE:

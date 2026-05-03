@@ -27,6 +27,7 @@ public class TelemetryUtils {
     public TelemetryUtils(Telemetry telemetry) {
         this.telemetry = telemetry;
         telemetry.setAutoClear(true);
+        telemetry.setMsTransmissionInterval(50);
     }
 
     /**

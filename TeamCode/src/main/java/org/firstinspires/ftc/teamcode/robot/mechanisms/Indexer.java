@@ -55,14 +55,16 @@ public class Indexer {
         tm.print("Artifact 2", artifacts[1]);
         tm.print("Artifact 3", artifacts[2]);
         updateLED();
+        boolean highPriority = true;
         if (!isStill() || feeder.isGoalUp()) {
+            colorSensor.skipLoop();
             if (feeder.isGoalUp()) setCurrentArtifact(UNKNOWN);
             tm.print("ColorSensor Update (ms)", 0);
             tm.print("Artifact", getCurrentArtifact());
             return;
         }
         long t0 = System.currentTimeMillis();
-        colorSensor.update();
+        colorSensor.update(highPriority);
         RobotConstants.Artifact artifact = colorSensor.getArtifact();
         long t1 = System.currentTimeMillis();
         tm.print("ColorSensor Update (ms)", t1 - t0);

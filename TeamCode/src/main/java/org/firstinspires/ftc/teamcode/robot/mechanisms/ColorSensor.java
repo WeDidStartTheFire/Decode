@@ -132,7 +132,7 @@ public class ColorSensor {
         double ratio = (color.val[0] + color.val[2]) / g;
         tm.print("Ratio", ratio);
         if (ratio < 1.390) return GREEN;
-        if (ratio < 1.55) return EMPTY;
+        if (ratio < 1.57) return EMPTY;
         return PURPLE;
     }
 

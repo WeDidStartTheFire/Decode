@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.GREEN;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.ORANGE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LEDColors.YELLOW;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.ARTIFACT_LAUNCH_WAIT;
+import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MAX_ARTIFACT_PRESENT_COUNT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MAX_DROOP_WAIT;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MAX_FAILED_ATTEMPTS;
 import static org.firstinspires.ftc.teamcode.RobotConstants.LaunchController.MAX_FEEDER_DOWN_WAIT;
@@ -48,13 +49,15 @@ public class LaunchController {
     private boolean launchCommanded = false;
     private boolean droopRecorded = false;
     private int framesUnder;
+    private int presentCount = 0;
 
     enum State {
         IDLE,
         INTAKE,
         ROTATE_INDEXER,
         RETRACT_FEEDER,
-        PUSH_ARTIFACT
+        PUSH_ARTIFACT,
+        FEEDER_DOWN_WAIT
     }
 
     public LaunchController(Robot robot) {
@@ -207,10 +210,21 @@ public class LaunchController {
                 robot.turret.setTarget(Turret.Target.GOAL);
                 if (stateTimer.getElapsedTimeSeconds() < ARTIFACT_LAUNCH_WAIT) break;
                 robot.feeder.retract();
+                setState(State.FEEDER_DOWN_WAIT);
+                break;
+            case FEEDER_DOWN_WAIT:
+                if (((robot.feeder.isUp() || stateTimer.getElapsedTimeSeconds() < MIN_FEEDER_DOWN_WAIT) &&
+                    stateTimer.getElapsedTimeSeconds() < MAX_FEEDER_DOWN_WAIT) || robot.feeder.isGoalUp())
+                    break;
+                if (robot.indexer.getCurrentArtifact() != EMPTY) {
+                    presentCount++;
+                    if (presentCount > MAX_ARTIFACT_PRESENT_COUNT) setState(State.PUSH_ARTIFACT);
+                    break;
+                }
                 if (!launchQueue.isEmpty() && !robot.indexer.isEmpty()) {
                     numLaunched++;
                     launchQueue.remove(0);
-                    setState(State.ROTATE_INDEXER);
+                    setStateNoWait(State.ROTATE_INDEXER);
                 } else if (stateTimer.getElapsedTimeSeconds() > STOP_LAUNCHER_WAIT) {
                     numLaunched++;
                     launchQueue.remove(0);

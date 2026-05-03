@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.robot.mechanisms;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Color.RED;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.BLUE_HUMAN_PLAYER_POSE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Positions.RED_HUMAN_PLAYER_POSE;
+import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.MAX_TIMES_NOT_RESET;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_ADJUST_FOR_VOLTAGE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_ENCODERS_PER_DEGREE;
 import static org.firstinspires.ftc.teamcode.RobotConstants.Turret.TURRET_FEEDFORWARD;
@@ -54,6 +55,8 @@ public class Turret {
     private final TelemetryUtils tm;
     public boolean changeable = true;
     private double offset = 0;
+    private int timesNotReset = 0;
+    private boolean reset = false;
 
     public enum Target {
         GOAL, HUMAN_PLAYER, NONE, HOLD, MANUAL
@@ -109,6 +112,7 @@ public class Turret {
         turretPIDController.updatePosition(0);
         turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // sets encoder back to 0
         turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        reset = true;
     }
 
     /**
@@ -119,11 +123,16 @@ public class Turret {
 
         if (panelsResetTurret) resetEncoder();
         panelsResetTurret = false;
+        double motorVel = turretMotor.getVelocity();
 
         // Positive velocity check makes it so it only zeros the touch sensor when coming from one
         // side, so the "zero" on the touch sensor is always on the right side, and not changing
         // between the left and right sides
-        if (turretTouchSensor != null && turretTouchSensor.isPressed()) resetEncoder();
+        if (turretTouchSensor != null && turretTouchSensor.isPressed() && motorVel < 50)
+            resetEncoder();
+
+        if (!reset) timesNotReset++;
+        if (!reset && timesNotReset < MAX_TIMES_NOT_RESET) return;
 
         if (target == Target.GOAL) {
             ProjectileSolver.LaunchSolution sol = ProjectileSolver.getLaunchSolution();
@@ -139,10 +148,11 @@ public class Turret {
         turretPIDController.updatePosition(pos);
         if (vel != null)
             velocityPIDController.setTargetPosition(-toDegrees(vel.getTheta()) * TURRET_ENCODERS_PER_DEGREE);
-        velocityPIDController.updatePosition(turretMotor.getVelocity());
+        velocityPIDController.updatePosition(motorVel);
         tm.print("Turret Pos", pos);
         tm.print("Turret Goal", turretPIDController.getTargetPosition());
         tm.print("Turret Offset", offset);
+        tm.print("Turret Vel", motorVel);
         if (target == Target.NONE) return;
         double feedforward = vel == null ? 0 : -vel.getTheta() * TURRET_FEEDFORWARD;
         feedforward *= min(1, min(max(0, pos - TURRET_MIN_POS), max(0, TURRET_MAX_POS - pos)) / TURRET_FEEDFORWARD_SLOW_START);

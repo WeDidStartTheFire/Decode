@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.controllers;
 import static org.firstinspires.ftc.teamcode.RobotState.robotCentric;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.bylazar.gamepad.GamepadManager;
+import com.bylazar.gamepad.PanelsGamepad;
 
 import org.firstinspires.ftc.teamcode.TelemetryUtils;
 import org.firstinspires.ftc.teamcode.robot.Robot;
@@ -10,6 +12,7 @@ import org.firstinspires.ftc.teamcode.robot.ServoFred;
 
 public class TeleOpController {
     Gamepad gamepad1, gamepad2;
+    GamepadManager vgamepad1, vgamepad2;
     DriveController driveController;
     ServoFred fred;
     Robot robot;

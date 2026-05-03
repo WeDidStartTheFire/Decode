@@ -1,6 +1,10 @@
 package org.firstinspires.ftc.teamcode.teleops;
 
 import static org.firstinspires.ftc.teamcode.RobotState.validStartPose;
+
+import com.bylazar.gamepad.Gamepad;
+import com.bylazar.gamepad.GamepadManager;
+import com.bylazar.gamepad.PanelsGamepad;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -19,6 +23,7 @@ public class TeleOp_Fred extends OpMode {
     private TelemetryUtils tm;
     private TeleOpController teleop;
     private ServoFred fred;
+    private GamepadManager vgamepad1;
 
     @Override
     public void init() {

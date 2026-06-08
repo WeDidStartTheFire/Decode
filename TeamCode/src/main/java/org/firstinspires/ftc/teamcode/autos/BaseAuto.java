@@ -96,7 +96,7 @@ public abstract class BaseAuto<S extends Enum<S>> extends OpMode {
         pose = robot.drivetrain.follower.getPose();
         vel = robot.drivetrain.follower.getVelocity();
         pathUpdate();
-        robot.turret.update();
+        robot.turret.update(true);
         robot.indexer.update();
         launchController.update();
         intakeController.update();

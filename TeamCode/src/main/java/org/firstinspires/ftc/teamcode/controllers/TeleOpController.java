@@ -102,7 +102,7 @@ public class TeleOpController {
             robot.turret.changeable = !robot.turret.changeable;
         }
         robot.turret.rotateManual(gamepad2.right_stick_x * .001 * ms);
-        robot.turret.update();
+        robot.turret.update(true);
         if (motif == RobotConstants.Motif.UNKNOWN) motif = robot.limelight.getMotif();
         robot.led.update();
         tm.updateOnlyPanels(10);

@@ -86,7 +86,7 @@ public class TeleOp_TuneTurretPIDF extends OpMode {
         pidf = new PIDFCoefficients(P, 0, D, F);
         robot.turret.turretPIDController.setCoefficients(pidf);
         robot.turret.turretPIDController.setTargetPosition(encoderGoal);
-        robot.turret.update();
+        robot.turret.update(gamepad2.left_stick_button);
         double pos = robot.turret.turretMotor.getCurrentPosition();
         double error = pos - encoderGoal;
         tm.print("Position", pos);

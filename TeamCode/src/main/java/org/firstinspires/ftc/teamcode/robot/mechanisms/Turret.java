@@ -118,7 +118,7 @@ public class Turret {
     /**
      * Updates the turret PID and continues aiming at the target
      */
-    public void update() {
+    public void update(boolean canReset) {
         if (turretMotor == null) return;
 
         if (panelsResetTurret) resetEncoder();
@@ -128,7 +128,8 @@ public class Turret {
         // Positive velocity check makes it so it only zeros the touch sensor when coming from one
         // side, so the "zero" on the touch sensor is always on the right side, and not changing
         // between the left and right sides
-        if (turretTouchSensor != null && turretTouchSensor.isPressed() && motorVel < 50)
+        if (turretTouchSensor != null && turretTouchSensor.isPressed() && motorVel < 50 &&
+            (canReset || !reset))
             resetEncoder();
 
         if (!reset) timesNotReset++;

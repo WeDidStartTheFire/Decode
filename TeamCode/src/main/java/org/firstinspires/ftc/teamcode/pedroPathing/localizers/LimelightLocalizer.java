@@ -1,0 +1,158 @@
+package org.firstinspires.ftc.teamcode.pedroPathing.localizers;
+
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
+import static java.lang.Math.abs;
+import static java.lang.Math.toDegrees;
+import static java.lang.Math.toRadians;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.pedropathing.ftc.FTCCoordinates;
+import com.pedropathing.geometry.PedroCoordinates;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.localization.Localizer;
+import com.pedropathing.math.Vector;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
+
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+
+
+public class LimelightLocalizer implements Localizer {
+    private final Limelight3A limelight;
+    private final IMU imu;
+    private long prevTime;
+    @Nullable
+    private Pose pose;
+    @NonNull
+    private Pose prevPose;
+    @NonNull
+    private Pose vel;
+    private double totalHeading;
+    //    boolean useMetatag2 = false;
+//    private final DistanceUnit LLLinearUnit = DistanceUnit.METER;
+//    private final AngleUnit LLAngleUnit = RADIANS;
+    private double IMUoffset = 0;
+
+    public LimelightLocalizer(HardwareMap map) {
+        this(map, new Pose());
+    }
+
+    public LimelightLocalizer(@NonNull HardwareMap map, @Nullable Pose startPose) {
+        imu = map.get(IMU.class, "imu");
+        imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
+        imu.resetYaw();
+        limelight = map.get(Limelight3A.class, "limelight");
+        limelight.setPollRateHz(100);
+        limelight.pipelineSwitch(0);
+        limelight.start();
+        prevTime = System.currentTimeMillis();
+        if (startPose == null) startPose = new Pose();
+        prevPose = startPose;
+        setStartPose(startPose);
+        vel = new Pose();
+    }
+
+    public @NonNull Pose getPose() {
+        if (pose == null) return prevPose;
+        return pose.getAsCoordinateSystem(PedroCoordinates.INSTANCE);
+    }
+
+    public @NonNull Pose getVelocity() {
+        return vel;
+    }
+
+    public Vector getVelocityVector() {
+        return getVelocity().getAsVector();
+    }
+
+    public void setStartPose(Pose setStart) {
+        IMUoffset = setStart.getHeading() - toRadians(90);
+    }
+
+    public void setPose(Pose setPose) {
+    }
+
+    public void update() {
+        long currTime = System.nanoTime();
+        double dt = (currTime - prevTime) / 1_000_000.0;
+
+        double robotYaw = getIMUHeading();
+        double yawRate = imu.getRobotAngularVelocity(RADIANS).zRotationRate;
+
+        double llYaw = new Pose(0, 0, robotYaw, PedroCoordinates.INSTANCE)
+                .getAsCoordinateSystem(FTCCoordinates.INSTANCE)
+                .getHeading();
+        limelight.updateRobotOrientation(toDegrees(llYaw));
+
+        LLResult result = limelight.getLatestResult();
+//        pose = null;
+//        if (result != null && result.isValid()) {
+//            Pose3D robotPos = result.getBotpose_MT2();
+//
+//            double angle = robotPos.getOrientation().getYaw(AngleUnit.DEGREES) - 90;
+//            if (angle < 0) angle += 360;
+//
+//            pose = new Pose(robotPos.getPosition().y / 0.0254 + 72,
+//                -robotPos.getPosition().x / 0.0254 + 72, toRadians(angle));
+//        }
+
+        pose = null;
+        if (result != null && result.isValid()) {
+            Pose3D botpose = result.getBotpose_MT2();
+
+            if (result.getBotposeTagCount() > 0 && abs(yawRate) < toRadians(360)) {
+                double angle = result.getBotpose().getOrientation().getYaw(DEGREES) - 90;
+                if (angle < 0) angle += 360;
+                pose = new Pose(botpose.getPosition().y / 0.0254 + 72,
+                    -botpose.getPosition().x / 0.0254 + 72, toRadians(angle));
+            }
+        }
+
+        if (pose != null) {
+            double dx = pose.getX() - prevPose.getX();
+            double dy = pose.getY() - prevPose.getY();
+            double dtheta = pose.getHeading() - prevPose.getHeading();
+            totalHeading += dtheta;
+            vel = new Pose(dx / dt, dy / dt, dtheta / dt);
+            prevPose = pose;
+            prevTime = currTime;
+        }
+    }
+
+    public double getTotalHeading() {
+        return totalHeading;
+    }
+
+    public double getForwardMultiplier() {
+        return 0.0;
+    }
+
+    public double getLateralMultiplier() {
+        return 0.0;
+    }
+
+    public double getTurningMultiplier() {
+        return 0.0;
+    }
+
+    public double getIMUHeading() {
+        return imu.getRobotYawPitchRollAngles().getYaw(RADIANS) + IMUoffset;
+    }
+
+    public void resetIMU() {
+        imu.resetYaw();
+    }
+
+    public boolean isNAN() {
+        return pose == null || Double.isNaN(getPose().getX()) || Double.isNaN(getPose().getY())
+                || Double.isNaN(getPose().getHeading());
+    }
+}

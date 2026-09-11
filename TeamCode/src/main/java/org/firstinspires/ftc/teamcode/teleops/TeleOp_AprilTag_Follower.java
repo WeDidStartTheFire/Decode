@@ -36,7 +36,7 @@ public class TeleOp_AprilTag_Follower extends OpMode {
 
     @Override
     public void init() {
-        Gamepad gamepad = new Gamepad();
+        gamepad = new Gamepad();
         gamepad.left_stick_x = 0;
         limelight = hardwareMap.get(Limelight3A.class, "Limelight");
         RobotState.color = RobotConstants.Color.BLUE;
